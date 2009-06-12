@@ -13,7 +13,7 @@ public class NorthPanel{
 		northPanel.setHeight("45px");
 		
 		Label lbl = new Label();
-		lbl.setText("Logos or anaything else?");
+		lbl.setText("Logos or anything else?");
 		northPanel.add(lbl);
 	}
 

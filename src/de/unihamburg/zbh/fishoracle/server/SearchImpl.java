@@ -28,17 +28,17 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			Location featuresLoc = null;
 			
 			
-			if(searchType.equals("amplicon")){
+			if(searchType.equals("Amplicon Search")){
 			
 				double ampQuery = new Double(query).doubleValue();
 			
 				featuresLoc = db.getLocationForAmpliconStableId(ampQuery);
 			
-			} else if(searchType.equals("gene")){
+			} else if(searchType.equals("Gene Search")){
 				
 				featuresLoc = db.getLocationForGene(query);
 				
-			} else if(searchType.equals("band")){
+			} else if(searchType.equals("Band Search")){
 				
 				Pattern pChr = Pattern.compile("^\\d{1,2}");
 				Matcher mChr = pChr.matcher(query);

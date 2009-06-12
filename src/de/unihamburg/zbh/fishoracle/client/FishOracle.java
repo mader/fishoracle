@@ -8,7 +8,6 @@ public class FishOracle implements EntryPoint {
 	public void onModuleLoad() {
 		
 		MainPanel mainPanel = new MainPanel();
-		
 		new Viewport(mainPanel.getMainPanel());
 	}
 }
