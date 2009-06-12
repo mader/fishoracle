@@ -1,6 +1,7 @@
 package de.unihamburg.zbh.fishoracle.server.data;
 
 import java.io.*;
+import java.util.Random;
 
 import org.ensembl.datamodel.Location;
 
@@ -12,8 +13,14 @@ public class GFF3Creator {
 	
 	public String generateGFF3(Amplicon[] amps, Gen[] genes, Karyoband[] kband, Location loc){
 		
+		Random generator = new Random();
+		 
+		int gff3FileName = generator.nextInt( 1000000000 );
+		
+		String urlStr = Integer.toString(gff3FileName);
+		
 		try {
-			FileWriter file = new FileWriter("tmp/amp.gff3",true);
+			FileWriter file = new FileWriter("tmp/"+ gff3FileName + ".gff3",true);
 			
 			// data defining the sequence region
 			String seqid = loc.getSeqRegionName();
@@ -120,8 +127,7 @@ public class GFF3Creator {
 			e.printStackTrace();
 		} 
 		
-		
-		return "tmp/amp.gff3";
+		return urlStr;
 	}
 
 }
