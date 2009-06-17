@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.TextBox;
 import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.Panel;
+import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.form.FormPanel;
 import com.gwtext.client.widgets.form.Radio;
@@ -24,11 +25,12 @@ public class WestPanel{
 	private Radio geneRadio = null;
 	private Radio bandRadio = null;
 	private MainPanel parentObj = null;
-	
+	private TabPanel centerPanel = null;
 
-	public WestPanel(MainPanel obj) {
+	public WestPanel(MainPanel obj, TabPanel cp) {
 		
 		parentObj = obj;
+		centerPanel = cp;
 		
 		final AccordionLayout accordion = new AccordionLayout(true);  
 		
@@ -91,7 +93,7 @@ public class WestPanel{
 					typeStr = bandRadio.getBoxLabel();
 				}
 				
-				search(searchBox.getText() ,typeStr);
+				search(searchBox.getText() ,typeStr, centerPanel.getInnerWidth());
         		
         	}
 
@@ -120,7 +122,7 @@ public class WestPanel{
 	 * */	
 		
 		
-	public void search(String query, String type){
+	public void search(String query, String type, int winWidth){
 			
 			final SearchAsync req = (SearchAsync) GWT.create(Search.class);
 			ServiceDefTarget endpoint = (ServiceDefTarget) req;
@@ -138,7 +140,7 @@ public class WestPanel{
 					System.out.println(caught.getMessage());
 				}
 			};
-			req.generateImage(query, type, callback);
+			req.generateImage(query, type, winWidth, callback);
 		}
 		
 	}

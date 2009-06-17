@@ -23,8 +23,7 @@ public class CenterPanel{
         startingPanel.setClosable(true);  
         
         centerPanel.add(startingPanel);
-  
-		
+  		
 	}
 
 	public TabPanel getCenterPanel() {

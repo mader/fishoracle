@@ -1,15 +1,9 @@
 package de.unihamburg.zbh.fishoracle.server;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.regex.*;
-
 import org.ensembl.datamodel.Location;
-
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
-
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
 import de.unihamburg.zbh.fishoracle.server.data.*;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
@@ -18,11 +12,11 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String gff3File;
+	private String imageUrl;
 	
 	
-	public String generateImage(String query, String searchType) {
-		try {
+	public String generateImage(String query, String searchType, int winWidth) {
+			
 			DBQuery db = new DBQuery();
 			
 			Amplicon[] amps = null;
@@ -96,51 +90,11 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				}
 			}
 			
-			String maxRangeLoc = "chromosome:" + band[0].getChr() + ":" + Integer.toString(minstart) + "-" + Integer.toString(maxend);
+			SketchTool sketch = new SketchTool();
 			
-			Location maxRange = null;
+			imageUrl = sketch.generateImage(amps, genes, band, maxAmpRange, winWidth);
 			
-			try {
-				maxRange = new Location(maxRangeLoc);
-			} catch (ParseException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-			GFF3Creator gff = new GFF3Creator();
-			
-			gff3File = gff.generateGFF3(amps, genes, band, maxRange);
-			
-			//Process rmproc = Runtime.getRuntime().exec("rm tmp/samp.png tmp/samp.gff3");
-			
-			System.out.println("gt gff3 -sort -o tmp/s" + gff3File + ".gff3 " + "tmp/" + gff3File + ".gff3");
-			
-			Process sortproc = Runtime.getRuntime().exec("gt gff3 -sort -o tmp/s" + gff3File + ".gff3 " + "tmp/" + gff3File + ".gff3");
-			
-			System.out.println("gt sketch -start " + maxAmpRange.getStart() + " -end " + maxAmpRange.getEnd() + " -input gff -format png tmp/s" + gff3File + ".png " + "tmp/s" + gff3File + ".gff3");
-			
-			Process genproc = Runtime.getRuntime().exec("gt sketch -start " + maxAmpRange.getStart() + " -end " + maxAmpRange.getEnd() + " -input gff -format png tmp/s" + gff3File + ".png " + "tmp/s" + gff3File + ".gff3");
-			
-			//Process rmproc2 = Runtime.getRuntime().exec("rm tmp/amp.gff3");
-			
-			//db.connectEnsemble();
- 			try {
-				//proc.waitFor();
-				sortproc.waitFor();
-				genproc.waitFor();
-				//rmproc.waitFor();
-				//rmproc2.waitFor();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            //System.out.println(proc.exitValue());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.err.println(e.getMessage());
-		}
-		return "tmp/s" + gff3File + ".png";
+		return imageUrl;
 	}
 
 }

@@ -389,7 +389,5 @@ public class DBQuery {
 			}	
 			
 			return karyoband;
-				
 	}
-	
 }

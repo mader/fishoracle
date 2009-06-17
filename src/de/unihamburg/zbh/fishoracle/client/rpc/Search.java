@@ -9,7 +9,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 public interface Search extends RemoteService {
 
 	
-	public String generateImage(String query, String searchType);
+	public String generateImage(String query, String searchType, int winWidth);
 	
 	
 	public static class Util {

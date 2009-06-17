@@ -28,8 +28,10 @@ public class MainPanel{
     borderPanel.setLayout(new BorderLayout());
 	
     NorthPanel northPanel = new NorthPanel();
-    WestPanel westPanel = new WestPanel(this);
     CenterPanel centerPanel = new CenterPanel();
+    cp = centerPanel.getCenterPanel();
+    WestPanel westPanel = new WestPanel(this, cp);
+    
     
     BorderLayoutData westData = new BorderLayoutData(RegionPosition.WEST);
     westData.setSplit(true);
@@ -37,7 +39,7 @@ public class MainPanel{
     westData.setMaxSize(400);
     westData.setMargins(new Margins(0, 5, 0, 0));
 
-    cp = centerPanel.getCenterPanel();
+   
     
     
     borderPanel.add(northPanel.getNorthPanel(), new BorderLayoutData(RegionPosition.NORTH));
