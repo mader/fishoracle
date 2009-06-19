@@ -5,11 +5,13 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
+import de.unihamburg.zbh.fishoracle.client.data.ImageInfo;
+
 @RemoteServiceRelativePath("testbild")
 public interface Search extends RemoteService {
 
 	
-	public String generateImage(String query, String searchType, int winWidth);
+	public ImageInfo generateImage(String query, String searchType, int winWidth);
 	
 	
 	public static class Util {

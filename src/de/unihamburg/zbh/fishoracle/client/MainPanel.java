@@ -9,6 +9,8 @@ import com.gwtext.client.widgets.layout.BorderLayout;
 import com.gwtext.client.widgets.layout.BorderLayoutData;
 import com.gwtext.client.widgets.layout.FitLayout;
 
+import de.unihamburg.zbh.fishoracle.client.data.ImageInfo;
+
 
 public class MainPanel{
 
@@ -38,9 +40,6 @@ public class MainPanel{
     westData.setMinSize(175);
     westData.setMaxSize(400);
     westData.setMargins(new Margins(0, 5, 0, 0));
-
-   
-    
     
     borderPanel.add(northPanel.getNorthPanel(), new BorderLayoutData(RegionPosition.NORTH));
     borderPanel.add(westPanel.getWestPanel(), westData);
@@ -57,26 +56,31 @@ public class MainPanel{
 	public void setMainPanel(Panel mainPanel) {
 		this.mainPanel = mainPanel;
 	}
-	  
 	
-	public void newImageTab(String url){
+	public void newImageTab(ImageInfo imgInfo){
 		
-		Image image = new Image(url);
-		Panel tab = addTab("new Tab");
+		Image image = new Image(imgInfo.getImgUrl());
+		ImgPanel tab = addImgTab(imgInfo.getQuery());
 		tab.add(image);
+		tab.setImageInfo(imgInfo);
 		cp.add(tab);
-		cp.activate(tab.getId());  
-		cp.scrollToTab(tab, true); 
+		cp.activate(tab.getId());
+		cp.scrollToTab(tab, true);
 	}
 	
-	private Panel addTab(String name) {  
-        Panel tab = new Panel();  
+	private Panel addTab(String name) {
+        Panel tab = new Panel();
         tab.setAutoScroll(true);
         tab.setTitle(name);
         tab.setClosable(true);
         return tab;
-    } 
+    }
+	
+	private ImgPanel addImgTab(String name) {
+        ImgPanel tab = new ImgPanel();
+        tab.setAutoScroll(true);
+        tab.setTitle(name);
+        tab.setClosable(true);
+        return tab;
+    }
 }
-	
-	
-

@@ -14,6 +14,7 @@ import com.gwtext.client.widgets.layout.AccordionLayout;
 import com.gwtext.client.core.EventObject;
 
 
+import de.unihamburg.zbh.fishoracle.client.data.ImageInfo;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 
@@ -128,8 +129,8 @@ public class WestPanel{
 			ServiceDefTarget endpoint = (ServiceDefTarget) req;
 			String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
 			endpoint.setServiceEntryPoint(moduleRelativeURL);
-			final AsyncCallback<String> callback = new AsyncCallback<String>(){
-				public void onSuccess(String result){
+			final AsyncCallback<ImageInfo> callback = new AsyncCallback<ImageInfo>(){
+				public void onSuccess(ImageInfo result){
 					
 					
 					parentObj.newImageTab(result);

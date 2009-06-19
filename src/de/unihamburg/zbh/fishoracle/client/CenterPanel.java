@@ -20,7 +20,7 @@ public class CenterPanel{
         
         startingPanel.setTitle("Welcome");  
         startingPanel.setAutoScroll(true);  
-        startingPanel.setClosable(true);  
+        startingPanel.setClosable(false);  
         
         centerPanel.add(startingPanel);
   		

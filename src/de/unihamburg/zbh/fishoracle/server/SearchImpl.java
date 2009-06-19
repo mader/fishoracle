@@ -5,6 +5,7 @@ import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.server.data.*;
+import de.unihamburg.zbh.fishoracle.client.data.ImageInfo;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
 
@@ -15,7 +16,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	private String imageUrl;
 	
 	
-	public String generateImage(String query, String searchType, int winWidth) {
+	public ImageInfo generateImage(String query, String searchType, int winWidth) {
 			
 			DBQuery db = new DBQuery();
 			
@@ -94,7 +95,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			imageUrl = sketch.generateImage(amps, genes, band, maxAmpRange, winWidth);
 			
-		return imageUrl;
+			ImageInfo imgInfo = new ImageInfo(imageUrl, 0, winWidth, maxAmpRange.getStart(), maxAmpRange.getEnd(), query, searchType);
+			
+		return imgInfo;
 	}
 
 }
