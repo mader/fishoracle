@@ -12,6 +12,7 @@ public interface Search extends RemoteService {
 
 	
 	public ImageInfo generateImage(String query, String searchType, int winWidth);
+	public String resizeImage(ImageInfo imageInfo);
 	
 	
 	public static class Util {

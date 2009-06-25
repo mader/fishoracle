@@ -62,12 +62,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				
 			} 
 			
-			
-			amps = db.getAmpliconData(Integer.parseInt(featuresLoc.getSeqRegionName()), featuresLoc.getStart(), featuresLoc.getEnd());
-			
-			
 			Location maxAmpRange = db.getMaxAmpliconRange(Integer.parseInt(featuresLoc.getSeqRegionName()), featuresLoc.getStart(), featuresLoc.getEnd());
 			
+			amps = db.getAmpliconData(Integer.parseInt(maxAmpRange.getSeqRegionName()), maxAmpRange.getStart(), maxAmpRange.getEnd());
 			
 			Gen[] genes = null;
 			genes = db.getEnsembleGenes(Integer.parseInt(maxAmpRange.getSeqRegionName()), maxAmpRange.getStart(), maxAmpRange.getEnd());
@@ -76,28 +73,44 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			Karyoband[] band = null;
 			band = db.getEnsemblKaryotypes(Integer.parseInt(maxAmpRange.getSeqRegionName()), maxAmpRange.getStart(), maxAmpRange.getEnd());
 			
-			
-			int i;
-			int minstart= Integer.MAX_VALUE;
-			int maxend = 0;
-			for(i=0;i<band.length;i++){
-				
-				if(minstart > band[i].getStart()){
-					
-					minstart = band[i].getStart();
-				}  
-				if(maxend < band[i].getEnd()){
-					maxend = band[i].getEnd();
-				}
-			}
-			
 			SketchTool sketch = new SketchTool();
 			
 			imageUrl = sketch.generateImage(amps, genes, band, maxAmpRange, winWidth);
 			
-			ImageInfo imgInfo = new ImageInfo(imageUrl, 0, winWidth, maxAmpRange.getStart(), maxAmpRange.getEnd(), query, searchType);
+			ImageInfo imgInfo = new ImageInfo(imageUrl, 0, winWidth, Integer.parseInt(maxAmpRange.getSeqRegionName()), maxAmpRange.getStart(), maxAmpRange.getEnd(), query, searchType);
 			
 		return imgInfo;
 	}
+
+	
+	public String resizeImage(ImageInfo imageInfo) {
+		
+		int chr = imageInfo.getChromosome();
+		int start = imageInfo.getStart();
+		int end = imageInfo.getEnd();
+		
+		DBQuery db = new DBQuery();
+		
+		Amplicon[] amps = null;
+		
+		Location maxAmpRange = db.getMaxAmpliconRange(chr, start, end);
+		
+		amps = db.getAmpliconData(chr, start, end);
+		
+		Gen[] genes = null;
+		genes = db.getEnsembleGenes(chr, start, end);
+		
+		
+		Karyoband[] band = null;
+		band = db.getEnsemblKaryotypes(chr, start, end);
+		
+		SketchTool sketch = new SketchTool();
+		
+		String imageUrl = sketch.generateImage(amps, genes, band, maxAmpRange, imageInfo.getWidth());
+		
+		return imageUrl;
+	}
+	
+	
 
 }

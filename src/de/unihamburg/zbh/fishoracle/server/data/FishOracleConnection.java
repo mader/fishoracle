@@ -5,7 +5,7 @@ import java.sql.*;
 public class FishOracleConnection {
 
 	public static Connection connect() throws Exception {
-		String url = "jdbc:mysql://localhost/fish_oracle";
+		String url = "jdbc:mysql://localhost/oracle";
 		String userName = "fouser";
 		String password = "fish4me";
 		

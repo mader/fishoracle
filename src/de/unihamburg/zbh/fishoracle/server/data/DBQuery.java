@@ -335,6 +335,8 @@ public class DBQuery {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			coreDriver.closeAllConnections();
 
 		} catch (AdaptorException e) {
 			// TODO Auto-generated catch block

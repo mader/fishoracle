@@ -41,11 +41,11 @@ public class WestPanel{
         westPanel.setWidth(200);  
         westPanel.setLayout(accordion);
         
-        Panel userPanel = new Panel();
-        userPanel.setHtml("<p>User specific menu.</p>");  
-        userPanel.setTitle("User");  
-        userPanel.setBorder(false);   
-        westPanel.add(userPanel);  
+        //Panel userPanel = new Panel();
+        //userPanel.setHtml("<p>User specific menu.</p>");  
+        //userPanel.setTitle("User");  
+        //userPanel.setBorder(false);   
+        //westPanel.add(userPanel);  
            
         Panel searchPanel = new Panel();  
         searchPanel.setTitle("Search");  

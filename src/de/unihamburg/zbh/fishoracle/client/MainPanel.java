@@ -62,6 +62,7 @@ public class MainPanel{
 		Image image = new Image(imgInfo.getImgUrl());
 		ImgPanel tab = addImgTab(imgInfo.getQuery());
 		tab.add(image);
+		tab.setImage(image);
 		tab.setImageInfo(imgInfo);
 		cp.add(tab);
 		cp.activate(tab.getId());
