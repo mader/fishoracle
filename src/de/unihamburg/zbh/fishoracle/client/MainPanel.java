@@ -1,15 +1,26 @@
 package de.unihamburg.zbh.fishoracle.client;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Image;
+import com.gwtext.client.core.EventObject;
 import com.gwtext.client.core.Margins;
 import com.gwtext.client.core.RegionPosition;
+import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
+import com.gwtext.client.widgets.Toolbar;
+import com.gwtext.client.widgets.ToolbarButton;
+import com.gwtext.client.widgets.event.ButtonListenerAdapter;
+import com.gwtext.client.widgets.form.TextField;
 import com.gwtext.client.widgets.layout.BorderLayout;
 import com.gwtext.client.widgets.layout.BorderLayoutData;
 import com.gwtext.client.widgets.layout.FitLayout;
 
 import de.unihamburg.zbh.fishoracle.client.data.ImageInfo;
+import de.unihamburg.zbh.fishoracle.client.rpc.Search;
+import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 
 
 public class MainPanel{
@@ -17,6 +28,8 @@ public class MainPanel{
 	private Panel mainPanel = null;
 	private Panel borderPanel = null;
 	private TabPanel cp = null;
+	private CenterPanel cpContainer = null;
+	
 	
 	public MainPanel() {
 	
@@ -31,6 +44,7 @@ public class MainPanel{
 	
     NorthPanel northPanel = new NorthPanel();
     CenterPanel centerPanel = new CenterPanel();
+    cpContainer = centerPanel;
     cp = centerPanel.getCenterPanel();
     WestPanel westPanel = new WestPanel(this, cp);
     
@@ -59,8 +73,185 @@ public class MainPanel{
 	
 	public void newImageTab(ImageInfo imgInfo){
 		
+Toolbar toolbar = new Toolbar();
+        
+        ToolbarButton left = new ToolbarButton("left", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {
+				
+				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
+    			ImageInfo imgInfo = imagePanel.getImageInfo();
+				
+    			
+    			int range;
+    			int percRange;
+    			int perc = 10;
+    			int newStart;
+    			int newEnd;
+    			
+    			range = imgInfo.getEnd() - imgInfo.getStart(); 
+    			
+    		    percRange = range * perc / 100;
+    			
+    		    
+    		    newStart = imgInfo.getStart() - percRange;
+    		    
+    		    newEnd = imgInfo.getEnd() - percRange;
+    		    
+    		    imgInfo.setStart(newStart);
+    		    
+    		    imgInfo.setEnd(newEnd);
+    			
+				cpContainer.imageRedraw(imgInfo);
+        		
+        	}
+
+       });
+        
+        
+        ToolbarButton right = new ToolbarButton("right", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {
+				
+				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
+    			ImageInfo imgInfo = imagePanel.getImageInfo();
+				
+    			int range;
+    			int percRange;
+    			int perc = 10;
+    			int newStart;
+    			int newEnd;
+    			
+    			range = imgInfo.getEnd() - imgInfo.getStart(); 
+    			
+    		    percRange = range * perc / 100;
+    			
+    		    
+    		    newStart = imgInfo.getStart() + percRange;
+    		    
+    		    newEnd = imgInfo.getEnd() + percRange;
+    		    
+    		    imgInfo.setStart(newStart);
+    		    
+    		    imgInfo.setEnd(newEnd);
+    		    
+				cpContainer.imageRedraw(imgInfo);
+        		
+        	}
+
+       });
+        
+        ToolbarButton zoomin = new ToolbarButton("zoom in", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {
+				
+				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
+    			ImageInfo imgInfo = imagePanel.getImageInfo();
+				
+    			int range;
+    			int percRange;
+    			int perc = 10;
+    			int newStart;
+    			int newEnd;
+    			
+    			range = imgInfo.getEnd() - imgInfo.getStart(); 
+    			
+    		    percRange = range * perc / 100;
+    			
+    		    
+    		    newStart = imgInfo.getStart() + percRange;
+    		    
+    		    newEnd = imgInfo.getEnd() - percRange;
+    		    
+    		    imgInfo.setStart(newStart);
+    		    
+    		    imgInfo.setEnd(newEnd);
+    			
+				cpContainer.imageRedraw(imgInfo);
+        		
+        	}
+
+       });
+        
+        ToolbarButton zoomout = new ToolbarButton("zoom out", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {
+				
+				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
+    			ImageInfo imgInfo = imagePanel.getImageInfo();
+				
+    			int range;
+    			int percRange;
+    			int perc = 10;
+    			int newStart;
+    			int newEnd;
+    			
+    			range = imgInfo.getEnd() - imgInfo.getStart(); 
+    			
+    		    percRange = range * perc / 100;
+    			
+    		    
+    		    newStart = imgInfo.getStart() - percRange;
+    		    
+    		    newEnd = imgInfo.getEnd() + percRange;
+    		    
+    		    imgInfo.setStart(newStart);
+    		    
+    		    imgInfo.setEnd(newEnd);
+    			
+				cpContainer.imageRedraw(imgInfo);
+        		
+        	}
+
+       });
+        
+        TextField chr = new TextField(); 
+        chr.setWidth("25px");
+        chr.setValue(Integer.toString(imgInfo.getChromosome()));
+        
+        TextField start = new TextField();
+        start.setWidth("75px");
+        start.setValue(Integer.toString(imgInfo.getStart()));
+        
+        TextField end = new TextField();
+        end.setWidth("75px");
+        end.setValue(Integer.toString(imgInfo.getEnd()));
+        
+        toolbar.addButton(left);
+        toolbar.addButton(right);
+        
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        
+        toolbar.addButton(zoomin);
+        toolbar.addButton(zoomout);
+        
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        toolbar.addSpacer();
+        
+        toolbar.addText("Chromosome: ");
+        toolbar.addField(chr);
+        toolbar.addText("Start: ");
+        toolbar.addField(start);
+        toolbar.addText("End: ");
+        toolbar.addField(end);
+		
 		Image image = new Image(imgInfo.getImgUrl());
 		ImgPanel tab = addImgTab(imgInfo.getQuery());
+		tab.add(toolbar);
+		tab.setToolbar(toolbar);
 		tab.add(image);
 		tab.setImage(image);
 		tab.setImageInfo(imgInfo);
@@ -84,4 +275,5 @@ public class MainPanel{
         tab.setClosable(true);
         return tab;
     }
+	
 }

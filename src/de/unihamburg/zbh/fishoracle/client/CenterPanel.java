@@ -3,11 +3,7 @@ package de.unihamburg.zbh.fishoracle.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.SourcesLoadEvents;
 import com.gwtext.client.widgets.BoxComponent;
-import com.gwtext.client.widgets.Component;
-import com.gwtext.client.widgets.Container;
 import com.gwtext.client.widgets.HTMLPanel;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
@@ -37,13 +33,13 @@ public class CenterPanel{
         startingPanel.setClosable(false);  
         
         centerPanel.add(startingPanel);
-  	
+        
         centerPanel.addListener(new PanelListenerAdapter(){
         	public void onResize(BoxComponent component, int adjWidth, int adjHeight, int rawWidth, int rawHeight){
         		if(component.getWidth() >= 150){
         			ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
         			imagePanel.getImageInfo().setWidth(component.getWidth());
-        			imageResize(imagePanel.getImageInfo());
+        			imageRedraw(imagePanel.getImageInfo());
         		}
         	}
         });
@@ -65,26 +61,25 @@ public class CenterPanel{
 	 * */	
 		
 		
-	public void imageResize(ImageInfo imgInfo){
+	public void imageRedraw(ImageInfo imgInfo){
 			
-			final SearchAsync req = (SearchAsync) GWT.create(Search.class);
-			ServiceDefTarget endpoint = (ServiceDefTarget) req;
-			String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
-			endpoint.setServiceEntryPoint(moduleRelativeURL);
-			final AsyncCallback<String> callback = new AsyncCallback<String>(){
-				public void onSuccess(String result){
-					
-					
-					ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
-					imagePanel.getImage().setUrl(result);
+		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<String> callback = new AsyncCallback<String>(){
+			public void onSuccess(String result){
+				
+				
+				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
+				imagePanel.getImage().setUrl(result);
 
-				}
-				public void onFailure(Throwable caught){
-					System.out.println(caught.getMessage());
-				}
-			};
-			req.resizeImage(imgInfo, callback);
-		}
-	
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+			}
+		};
+		req.redrawImage(imgInfo, callback);
+	}
 	
 }

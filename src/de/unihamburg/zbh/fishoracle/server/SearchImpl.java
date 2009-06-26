@@ -1,5 +1,6 @@
 package de.unihamburg.zbh.fishoracle.server;
 
+import java.text.ParseException;
 import java.util.regex.*;
 import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
@@ -83,7 +84,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	}
 
 	
-	public String resizeImage(ImageInfo imageInfo) {
+	public String redrawImage(ImageInfo imageInfo) {
 		
 		int chr = imageInfo.getChromosome();
 		int start = imageInfo.getStart();
@@ -93,7 +94,14 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		Amplicon[] amps = null;
 		
-		Location maxAmpRange = db.getMaxAmpliconRange(chr, start, end);
+		Location maxRange = null;
+		
+		try {
+			maxRange = new Location("chromosome:" + chr + ":" + start + "-" + end);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		amps = db.getAmpliconData(chr, start, end);
 		
@@ -106,7 +114,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		SketchTool sketch = new SketchTool();
 		
-		String imageUrl = sketch.generateImage(amps, genes, band, maxAmpRange, imageInfo.getWidth());
+		String imageUrl = sketch.generateImage(amps, genes, band, maxRange, imageInfo.getWidth());
 		
 		return imageUrl;
 	}
