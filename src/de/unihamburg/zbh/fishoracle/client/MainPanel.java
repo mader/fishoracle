@@ -201,12 +201,10 @@ public class MainPanel{
         chr.setValue(Integer.toString(imgInfo.getChromosome()));
         
         TextField start = new TextField();
-        start.setId("start");
         start.setWidth("75px");
         start.setValue(Integer.toString(imgInfo.getStart()));
         
         TextField end = new TextField();
-        end.setId("end");
         end.setWidth("75px");
         end.setValue(Integer.toString(imgInfo.getEnd()));
         

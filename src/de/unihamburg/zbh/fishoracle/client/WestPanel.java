@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 //import com.google.gwt.user.client.ui.TextBox;
 import com.gwtext.client.widgets.Button;
+import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
@@ -99,6 +100,7 @@ public class WestPanel{
 					typeStr = bandRadio.getBoxLabel();
 				}
 				
+				MessageBox.wait("Searching for " + searchBox.getText());
 				search(searchBox.getText() ,typeStr, centerPanel.getInnerWidth());
         		
         	}
@@ -110,7 +112,6 @@ public class WestPanel{
         searchPanel.add(formPanel);
         
         westPanel.add(searchPanel);
-        
                 
 	}
 
@@ -130,7 +131,7 @@ public class WestPanel{
 			if(bandRadio.getValue()){
 				typeStr = bandRadio.getBoxLabel();
 			}
-			
+			MessageBox.wait("Searching for " + searchBox.getText());
 			search(searchBox.getText() ,typeStr, centerPanel.getInnerWidth());
 		}
 		
@@ -160,7 +161,7 @@ public class WestPanel{
 			final AsyncCallback<ImageInfo> callback = new AsyncCallback<ImageInfo>(){
 				public void onSuccess(ImageInfo result){
 					
-					
+					MessageBox.hide();
 					parentObj.newImageTab(result);
 					
 					
