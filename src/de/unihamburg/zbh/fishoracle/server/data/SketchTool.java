@@ -30,6 +30,7 @@ public class SketchTool {
 		long height;
 		
 		String imgUrl = null;
+		String imgGenUrl = null;
 		
 		seqid = loc.getSeqRegionName();
 		
@@ -65,7 +66,7 @@ public class SketchTool {
 		
 		style = new Style();
 		System.out.println("Style laden ...");
-		style.load_file("config/default.style");
+		style.load_file("/home/mader/Desktop/jetty-6.1.18/webapps/fishoracle/config/default.style");
 		
 		range = new Range(loc.getStart(), loc.getEnd());
 		System.out.println(range.get_start() + " " + range.get_end());
@@ -106,11 +107,13 @@ public class SketchTool {
 		
 		String fileName = Integer.toString(number);
 		
+		imgGenUrl = "/home/mader/Desktop/jetty-6.1.18/webapps/fishoracle/tmp/" + fileName + ".png";
+		
 		imgUrl = "tmp/" + fileName + ".png";
 		
-		file = new File(imgUrl);
+		file = new File(imgGenUrl);
 	    System.out.println("Datei schreiben ...");
-	    canvas.to_file(imgUrl);
+	    canvas.to_file(imgGenUrl);
 	    
 		} catch (GTerror e) {
 			// TODO Auto-generated catch block

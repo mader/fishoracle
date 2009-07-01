@@ -24,7 +24,7 @@ public class CenterPanel{
         centerPanel.setDeferredRender(false);  
         centerPanel.setActiveTab(0);
         
-        Panel startingPanel = new HTMLPanel();  
+        Panel startingPanel = new HTMLPanel();
         
         startingPanel.setHtml("<br>Greeting text and information how to use Fish Oracle, loaded from a properties file or a database ...");
         
