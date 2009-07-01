@@ -8,6 +8,7 @@ import com.gwtext.client.widgets.HTMLPanel;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.event.PanelListenerAdapter;
+import com.gwtext.client.widgets.form.TextField;
 
 import de.unihamburg.zbh.fishoracle.client.data.ImageInfo;
 import de.unihamburg.zbh.fishoracle.client.ImgPanel;
@@ -73,7 +74,7 @@ public class CenterPanel{
 				
 				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
 				imagePanel.getImage().setUrl(result);
-
+				
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());

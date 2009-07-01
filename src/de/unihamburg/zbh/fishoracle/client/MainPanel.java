@@ -1,8 +1,5 @@
 package de.unihamburg.zbh.fishoracle.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Image;
 import com.gwtext.client.core.EventObject;
 import com.gwtext.client.core.Margins;
@@ -19,8 +16,6 @@ import com.gwtext.client.widgets.layout.BorderLayoutData;
 import com.gwtext.client.widgets.layout.FitLayout;
 
 import de.unihamburg.zbh.fishoracle.client.data.ImageInfo;
-import de.unihamburg.zbh.fishoracle.client.rpc.Search;
-import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 
 
 public class MainPanel{
@@ -60,7 +55,7 @@ public class MainPanel{
     borderPanel.add(centerPanel.getCenterPanel(), new BorderLayoutData(RegionPosition.CENTER));
     
     mainPanel.add(borderPanel);
-	
+
 	}
 
 	public Panel getMainPanel() {
@@ -73,7 +68,7 @@ public class MainPanel{
 	
 	public void newImageTab(ImageInfo imgInfo){
 		
-Toolbar toolbar = new Toolbar();
+	Toolbar toolbar = new Toolbar();
         
         ToolbarButton left = new ToolbarButton("left", new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
@@ -206,10 +201,12 @@ Toolbar toolbar = new Toolbar();
         chr.setValue(Integer.toString(imgInfo.getChromosome()));
         
         TextField start = new TextField();
+        start.setId("start");
         start.setWidth("75px");
         start.setValue(Integer.toString(imgInfo.getStart()));
         
         TextField end = new TextField();
+        end.setId("end");
         end.setWidth("75px");
         end.setValue(Integer.toString(imgInfo.getEnd()));
         

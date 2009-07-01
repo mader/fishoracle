@@ -1,15 +1,18 @@
 package de.unihamburg.zbh.fishoracle.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.TextBox;
+//import com.google.gwt.user.client.ui.TextBox;
 import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
+import com.gwtext.client.widgets.event.KeyListener;
 import com.gwtext.client.widgets.form.FormPanel;
 import com.gwtext.client.widgets.form.Radio;
+import com.gwtext.client.widgets.form.TextField;
 import com.gwtext.client.widgets.layout.AccordionLayout;
 import com.gwtext.client.core.EventObject;
 
@@ -21,7 +24,7 @@ import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 public class WestPanel{
 
 	private Panel westPanel = null;
-	private TextBox searchBox = null;
+	private TextField searchBox = null;
 	private Radio ampRadio = null;
 	private Radio geneRadio = null;
 	private Radio bandRadio = null;
@@ -57,8 +60,9 @@ public class WestPanel{
         formPanel.setHideLabels(true);
         formPanel.setMargins(10);
         
-        searchBox = new TextBox();
-        searchBox.setText("00.03");
+        searchBox = new TextField();
+        //searchBox.setText("00.03");
+        searchBox.addKeyListener(KeyCodes.KEY_ENTER, searchListener);
         
         formPanel.add(searchBox);
         
@@ -66,12 +70,13 @@ public class WestPanel{
         ampRadio = new Radio();  
         ampRadio.setName("searchtype");
         ampRadio.setBoxLabel("Amplicon Search");  
-        ampRadio.setChecked(true);
+        //ampRadio.setChecked(true);
         formPanel.add(ampRadio);
           
         geneRadio = new Radio();  
         geneRadio.setName("searchtype");  
-        geneRadio.setBoxLabel("Gene Search");  
+        geneRadio.setBoxLabel("Gene Search");
+        geneRadio.setChecked(true);
         formPanel.add(geneRadio);  
                
         bandRadio = new Radio();  
@@ -109,6 +114,29 @@ public class WestPanel{
                 
 	}
 
+	KeyListener searchListener = new KeyListener(){
+
+		@Override
+		public void onKey(int key, EventObject e) {
+			
+			String typeStr = null;
+			
+			if(ampRadio.getValue()){
+				typeStr = ampRadio.getBoxLabel();
+			}
+			if(geneRadio.getValue()){
+				typeStr = geneRadio.getBoxLabel();
+			}	
+			if(bandRadio.getValue()){
+				typeStr = bandRadio.getBoxLabel();
+			}
+			
+			search(searchBox.getText() ,typeStr, centerPanel.getInnerWidth());
+		}
+		
+		
+	};
+	
 	public Panel getWestPanel() {
 		return westPanel;
 	}
