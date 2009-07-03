@@ -46,7 +46,7 @@ public class DBQuery {
 				s.executeQuery("SELECT * from amplicon WHERE amplicon_stable_id = " + ampliconStableId);
 				ResultSet ampRs = s.getResultSet();
 				
-				ampRs.next();
+				while(ampRs.next()){
 				ampStart = ampRs.getInt(4);
 				ampEnd = ampRs.getInt(5);
 				ampChr = ampRs.getInt(3);
@@ -56,7 +56,7 @@ public class DBQuery {
 				String locStr = "chromosome:" + ampChr + ":" + ampStart + "-" + ampEnd;
 				
 				loc = new Location(locStr);
-				
+				}
 				ampRs.close();
 				
 		} catch (Exception e){
@@ -260,10 +260,10 @@ public class DBQuery {
 				int amplevel = regRs.getInt(9);
 				
 				amps[count] = new Amplicon(newAmpliconStableId, newChr, newStart, newEnd);
-				/*
+				
 				System.out.println("AmpId: " + ampliconId + ", stableId: " + newAmpliconStableId + ", Chromosome: " + newChr
 						            + ", start: " + newStart + ", end: " + newEnd + ", case: " + caseName
-						            + ", tumor_type: " + tumorType + ", continuous: " + contin + ", amplevel: " + amplevel + "\n");*/
+						            + ", tumor_type: " + tumorType + ", continuous: " + contin + ", amplevel: " + amplevel + "\n");
 				count++;
 			}
 			
@@ -326,10 +326,10 @@ public class DBQuery {
 					
 					genes[j] = new Gen(g.getDisplayName(), g.getLocation().getStart(), g.getLocation().getEnd(), g.getLocation().getStrand());
 					
-					/*
+					
 					System.out.println(g.getAccessionID() + " " + g.getDisplayName() + " " + g.getLocation().getStart() + " " + g.getLocation().getEnd() + " " +
 							g.getLocation().getSeqRegionName() + " " + g.getLocation().getStrand() + " " +
-							" " + g.getBioType() + " " + g.getAnalysis() );*/
+							" " + g.getBioType() + " " + g.getAnalysis() );
 				}
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
@@ -378,7 +378,7 @@ public class DBQuery {
 				
 				KaryotypeBand k = (KaryotypeBand) ensChrs.get(i);
 				
-				//System.out.println(k.getLocation().getSeqRegionName() + " " + k.getBand() + " " + k.getLocation().getStart() + " " + k.getLocation().getEnd());
+				System.out.println(k.getLocation().getSeqRegionName() + " " + k.getBand() + " " + k.getLocation().getStart() + " " + k.getLocation().getEnd());
 				
 				karyoband[i] = new Karyoband(k.getLocation().getSeqRegionName(), k.getBand(), k.getLocation().getStart(), k.getLocation().getEnd());
 			}

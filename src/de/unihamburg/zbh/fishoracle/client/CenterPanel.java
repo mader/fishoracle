@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.gwtext.client.widgets.BoxComponent;
 import com.gwtext.client.widgets.HTMLPanel;
+import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.event.PanelListenerAdapter;
@@ -78,6 +79,7 @@ public class CenterPanel{
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
+				MessageBox.alert("Nothing found!");
 			}
 		};
 		req.redrawImage(imgInfo, callback);

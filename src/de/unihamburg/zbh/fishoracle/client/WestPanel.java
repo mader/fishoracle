@@ -100,7 +100,7 @@ public class WestPanel{
 					typeStr = bandRadio.getBoxLabel();
 				}
 				
-				MessageBox.wait("Searching for " + searchBox.getText());
+				MessageBox.wait("Searching for " + searchBox.getText() + "\n" + MessageBox.CANCEL);
 				search(searchBox.getText() ,typeStr, centerPanel.getInnerWidth());
         		
         	}
@@ -168,6 +168,8 @@ public class WestPanel{
 				}
 				public void onFailure(Throwable caught){
 					System.out.println(caught.getMessage());
+					MessageBox.hide();
+					MessageBox.alert("Nothing found!");
 				}
 			};
 			req.generateImage(query, type, winWidth, callback);

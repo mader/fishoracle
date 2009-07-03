@@ -59,14 +59,15 @@ public class SketchTool {
 		
 		for(int k=0; k < kband.length; k++ ){
 			
-			features.add(new FeatureNode(seqid, "band", kband[k].getStart(), kband[k].getEnd(), "."));
+			features.add(new FeatureNode(seqid, "chromosome", kband[k].getStart(), kband[k].getEnd(), "."));
 			features.get(k + all).add_attribute("ID", loc.getSeqRegionName() + kband[k].getBand());
 			
 		}
 		
 		style = new Style();
 		System.out.println("Style laden ...");
-		style.load_file("/home/mader/Desktop/jetty-6.1.18/webapps/fishoracle/config/default.style");
+		style.load_file("config/default.style");
+		//style.load_file("/home/mader/Desktop/jetty-6.1.18/webapps/fishoracle/config/default.style");
 		
 		range = new Range(loc.getStart(), loc.getEnd());
 		System.out.println(range.get_start() + " " + range.get_end());
@@ -77,7 +78,7 @@ public class SketchTool {
 		      {
 		    	  String typeNumber = null;
 
-		    	  if(b.get_type().equals("band") ){
+		    	  if(b.get_type().equals("chromosome") ){
 		    		  typeNumber = "1:";
 		    	  }
 		    	  if(b.get_type().equals("gene") ){
@@ -111,9 +112,11 @@ public class SketchTool {
 		
 		imgUrl = "tmp/" + fileName + ".png";
 		
-		file = new File(imgGenUrl);
+		//file = new File(imgGenUrl);
+		file = new File(imgUrl);
 	    System.out.println("Datei schreiben ...");
-	    canvas.to_file(imgGenUrl);
+	    //canvas.to_file(imgGenUrl);
+	    canvas.to_file(imgUrl);
 	    
 		} catch (GTerror e) {
 			// TODO Auto-generated catch block

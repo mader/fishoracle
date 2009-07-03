@@ -65,6 +65,47 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			Location maxAmpRange = db.getMaxAmpliconRange(Integer.parseInt(featuresLoc.getSeqRegionName()), featuresLoc.getStart(), featuresLoc.getEnd());
 			
+			if(maxAmpRange.getEnd() - maxAmpRange.getStart() == 0){
+				
+				if(searchType.equals("Band Search")){
+				
+					maxAmpRange = featuresLoc;
+				
+				}
+				if(searchType.equals("Gene Search")){
+					
+					int perc = 200;
+					int percRange;
+					int newStart;
+					int newEnd;
+					int start = featuresLoc.getStart();
+					int end = featuresLoc.getEnd();
+					
+					
+					int range = end - start;
+					
+					percRange = range * perc / 100;
+					
+					if((start - percRange/2) < 0){
+						newStart = 0;
+					} else {
+						newStart = start - percRange/2; 
+					}
+					
+					if((start - percRange/2) < 0){
+						newEnd = end + percRange/2 - (start - percRange/2);
+					} else{
+						newEnd = end + percRange/2;
+					}
+					
+					maxAmpRange.setSeqRegionName(featuresLoc.getSeqRegionName());
+					maxAmpRange.setStart(newStart);
+					maxAmpRange.setEnd(newEnd);
+				
+				}
+				
+			}
+			
 			amps = db.getAmpliconData(Integer.parseInt(maxAmpRange.getSeqRegionName()), maxAmpRange.getStart(), maxAmpRange.getEnd());
 			
 			Gen[] genes = null;
