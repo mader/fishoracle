@@ -100,7 +100,7 @@ public class WestPanel{
 					typeStr = bandRadio.getBoxLabel();
 				}
 				
-				MessageBox.wait("Searching for " + searchBox.getText() + "\n" + MessageBox.CANCEL);
+				MessageBox.wait("Searching for " + searchBox.getText());
 				search(searchBox.getText() ,typeStr, centerPanel.getInnerWidth());
         		
         	}

@@ -5,6 +5,7 @@ import com.gwtext.client.core.EventObject;
 import com.gwtext.client.core.Margins;
 import com.gwtext.client.core.RegionPosition;
 import com.gwtext.client.widgets.Button;
+import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.Toolbar;
@@ -92,12 +93,17 @@ public class MainPanel{
     		    
     		    newEnd = imgInfo.getEnd() - percRange;
     		    
-    		    imgInfo.setStart(newStart);
+    		    if(newStart > 0){
     		    
-    		    imgInfo.setEnd(newEnd);
+    		    	imgInfo.setStart(newStart);
+    		    
+    		    	imgInfo.setEnd(newEnd);
     			
-				cpContainer.imageRedraw(imgInfo);
-        		
+    		    	cpContainer.imageRedraw(imgInfo);
+    		    	
+    		    } else {
+    		    	MessageBox.alert("You have reached the chromsomes end ...");
+    		    }
         	}
 
        });
@@ -155,12 +161,17 @@ public class MainPanel{
     		    
     		    newEnd = imgInfo.getEnd() - percRange;
     		    
-    		    imgInfo.setStart(newStart);
+    		    if(newEnd - newStart > 10){
     		    
-    		    imgInfo.setEnd(newEnd);
+    		    	imgInfo.setStart(newStart);
+    		    
+    		    	imgInfo.setEnd(newEnd);
     			
-				cpContainer.imageRedraw(imgInfo);
-        		
+    		    	cpContainer.imageRedraw(imgInfo);
+    		    	
+    		    } else {
+    		    	MessageBox.alert("You have reached the highest zoom level ...");
+    		    }
         	}
 
        });
