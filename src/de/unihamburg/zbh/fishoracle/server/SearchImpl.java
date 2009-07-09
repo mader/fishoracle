@@ -98,9 +98,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 						newEnd = end + percRange/2;
 					}
 					
-					maxAmpRange.setSeqRegionName(featuresLoc.getSeqRegionName());
-					maxAmpRange.setStart(newStart);
-					maxAmpRange.setEnd(newEnd);
+						maxAmpRange.setSeqRegionName(featuresLoc.getSeqRegionName());
+						maxAmpRange.setStart(newStart);
+						maxAmpRange.setEnd(newEnd);
 				
 				}
 				
