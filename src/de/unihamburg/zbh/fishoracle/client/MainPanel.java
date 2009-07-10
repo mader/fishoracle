@@ -1,5 +1,6 @@
 package de.unihamburg.zbh.fishoracle.client;
 
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.ui.Image;
 import com.gwtext.client.core.EventObject;
 import com.gwtext.client.core.Margins;
@@ -11,6 +12,7 @@ import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.Toolbar;
 import com.gwtext.client.widgets.ToolbarButton;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
+import com.gwtext.client.widgets.event.KeyListener;
 import com.gwtext.client.widgets.form.TextField;
 import com.gwtext.client.widgets.layout.BorderLayout;
 import com.gwtext.client.widgets.layout.BorderLayoutData;
@@ -67,7 +69,48 @@ public class MainPanel{
 		this.mainPanel = mainPanel;
 	}
 	
+	
+	public void jumpto(){
+		
+		ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
+		ImageInfo imgInfo = imagePanel.getImageInfo();
+		
+		int newChr;
+	    int newStart;
+	    int newEnd;
+		
+		newChr = Integer.parseInt(imagePanel.getChrBox().getValueAsString());
+	    
+	    newStart = Integer.parseInt(imagePanel.getStartBox().getValueAsString());
+	    
+	    newEnd = Integer.parseInt(imagePanel.getEndBox().getValueAsString());
+	    
+	    if(newStart >= newEnd || newEnd - newStart <= 10){
+	    	
+	    	MessageBox.alert("The end value must at least be 10 base pairs greater than the start value!");
+	    	
+	    } else {
+	    
+	    	imgInfo.setChromosome(newChr);
+	    	
+	    	imgInfo.setStart(newStart);
+	    
+	    	imgInfo.setEnd(newEnd);
+		
+	    	cpContainer.imageRedraw(imgInfo);
+	    }
+
+	}
+	
 	public void newImageTab(ImageInfo imgInfo){
+		
+	KeyListener rangeListener = new KeyListener(){
+			@Override
+			public void onKey(int key, EventObject e) {	
+				jumpto();
+			}
+		};	
+		
 		
 	Toolbar toolbar = new Toolbar();
         
@@ -75,39 +118,34 @@ public class MainPanel{
 			public void onClick(Button button, EventObject e) {
 				
 				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
-    			ImageInfo imgInfo = imagePanel.getImageInfo();
-				
-    			
-    			int range;
-    			int percRange;
-    			int perc = 10;
-    			int newStart;
-    			int newEnd;
-    			
-    			range = imgInfo.getEnd() - imgInfo.getStart(); 
-    			
-    		    percRange = range * perc / 100;
-    			
-    		    
-    		    newStart = imgInfo.getStart() - percRange;
-    		    
-    		    newEnd = imgInfo.getEnd() - percRange;
-    		    
-    		    if(newStart > 0){
-    		    
-    		    	imgInfo.setStart(newStart);
-    		    
-    		    	imgInfo.setEnd(newEnd);
-    			
-    		    	cpContainer.imageRedraw(imgInfo);
-    		    	
-    		    } else {
-    		    	MessageBox.alert("You have reached the chromsomes end ...");
-    		    }
+				ImageInfo imgInfo = imagePanel.getImageInfo();
+				int range;
+				int percRange;
+				int perc = 10;
+				int newStart;
+				int newEnd;
+		
+				range = imgInfo.getEnd() - imgInfo.getStart(); 
+		
+				percRange = range * perc / 100;
+	    
+				newStart = imgInfo.getStart() - percRange;
+	    
+				newEnd = imgInfo.getEnd() - percRange;
+	    
+				if(newStart > 0){
+	    
+					imgInfo.setStart(newStart);
+	    
+					imgInfo.setEnd(newEnd);
+		
+					cpContainer.imageRedraw(imgInfo);
+	    	
+				} else {
+					MessageBox.alert("You have reached the chromsomes end ...");
+				}
         	}
-
        });
-        
         
         ToolbarButton right = new ToolbarButton("right", new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
@@ -207,16 +245,26 @@ public class MainPanel{
 
        });
         
+        ToolbarButton jumpTo = new ToolbarButton("show region", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {
+				
+				jumpto();
+        	}
+
+       });
         TextField chr = new TextField(); 
         chr.setWidth("25px");
+        chr.addKeyListener(KeyCodes.KEY_ENTER, rangeListener);
         chr.setValue(Integer.toString(imgInfo.getChromosome()));
         
         TextField start = new TextField();
         start.setWidth("75px");
+        start.addKeyListener(KeyCodes.KEY_ENTER, rangeListener);
         start.setValue(Integer.toString(imgInfo.getStart()));
         
         TextField end = new TextField();
         end.setWidth("75px");
+        end.addKeyListener(KeyCodes.KEY_ENTER, rangeListener);
         end.setValue(Integer.toString(imgInfo.getEnd()));
         
         toolbar.addButton(left);
@@ -254,6 +302,8 @@ public class MainPanel{
         toolbar.addText("End: ");
         toolbar.addField(end);
 		
+        toolbar.addButton(jumpTo);
+        
 		Image image = new Image(imgInfo.getImgUrl());
 		ImgPanel tab = addImgTab(imgInfo.getQuery());
 		tab.add(toolbar);
