@@ -114,7 +114,7 @@ public class MainPanel{
 		
 	Toolbar toolbar = new Toolbar();
         
-        ToolbarButton left = new ToolbarButton("left", new ButtonListenerAdapter(){
+        ToolbarButton left = new ToolbarButton(null, new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
 				
 				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
@@ -147,7 +147,9 @@ public class MainPanel{
         	}
        });
         
-        ToolbarButton right = new ToolbarButton("right", new ButtonListenerAdapter(){
+        left.setIcon("icons/arrow_left.png");
+        
+        ToolbarButton right = new ToolbarButton(null, new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
 				
 				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
@@ -172,13 +174,13 @@ public class MainPanel{
     		    
     		    imgInfo.setEnd(newEnd);
     		    
-				cpContainer.imageRedraw(imgInfo);
-        		
+				cpContainer.imageRedraw(imgInfo);	
         	}
-
        });
         
-        ToolbarButton zoomin = new ToolbarButton("zoom in", new ButtonListenerAdapter(){
+        right.setIcon("icons/arrow_right.png");
+        
+        ToolbarButton zoomin = new ToolbarButton(null, new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
 				
 				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
@@ -211,10 +213,11 @@ public class MainPanel{
     		    	MessageBox.alert("You have reached the highest zoom level ...");
     		    }
         	}
-
        });
         
-        ToolbarButton zoomout = new ToolbarButton("zoom out", new ButtonListenerAdapter(){
+        zoomin.setIcon("icons/arrow_in.png");
+        
+        ToolbarButton zoomout = new ToolbarButton(null, new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
 				
 				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
@@ -239,19 +242,21 @@ public class MainPanel{
     		    
     		    imgInfo.setEnd(newEnd);
     			
-				cpContainer.imageRedraw(imgInfo);
-        		
+				cpContainer.imageRedraw(imgInfo);	
         	}
-
        });
         
-        ToolbarButton jumpTo = new ToolbarButton("show region", new ButtonListenerAdapter(){
+        zoomout.setIcon("icons/arrow_out.png");
+        
+        ToolbarButton jumpTo = new ToolbarButton(null, new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
 				
 				jumpto();
         	}
-
        });
+        
+        jumpTo.setIcon("icons/arrow_refresh.png");
+        
         TextField chr = new TextField(); 
         chr.setWidth("25px");
         chr.addKeyListener(KeyCodes.KEY_ENTER, rangeListener);
@@ -268,32 +273,16 @@ public class MainPanel{
         end.setValue(Integer.toString(imgInfo.getEnd()));
         
         toolbar.addButton(left);
+        toolbar.addText("scroll");
         toolbar.addButton(right);
         
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
+        toolbar.addSeparator();
         
         toolbar.addButton(zoomin);
+        toolbar.addText("zoom");
         toolbar.addButton(zoomout);
         
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
-        toolbar.addSpacer();
+        toolbar.addSeparator();
         
         toolbar.addText("Chromosome: ");
         toolbar.addField(chr);
