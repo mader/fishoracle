@@ -90,19 +90,23 @@ public class WestPanel{
         		
         		String typeStr = null;
 				
-				if(ampRadio.getValue()){
-					typeStr = ampRadio.getBoxLabel();
-				}
-				if(geneRadio.getValue()){
-					typeStr = geneRadio.getBoxLabel();
-				}	
-				if(bandRadio.getValue()){
-					typeStr = bandRadio.getBoxLabel();
-				}
-				
-				MessageBox.wait("Searching for " + searchBox.getText());
-				search(searchBox.getText() ,typeStr, centerPanel.getInnerWidth());
+        		if(searchBox.getText().equals("")){
+        			MessageBox.alert("You have to type in a search term!");
+        		} else {
         		
+        			if(ampRadio.getValue()){
+        				typeStr = ampRadio.getBoxLabel();
+        			}
+        			if(geneRadio.getValue()){
+        				typeStr = geneRadio.getBoxLabel();
+        			}	
+        			if(bandRadio.getValue()){
+        				typeStr = bandRadio.getBoxLabel();
+        			}
+        			
+        			MessageBox.wait("Searching for " + searchBox.getText());
+        			search(searchBox.getText() ,typeStr, centerPanel.getInnerWidth() - 20);
+        		}
         	}
 
        });
@@ -132,7 +136,7 @@ public class WestPanel{
 				typeStr = bandRadio.getBoxLabel();
 			}
 			MessageBox.wait("Searching for " + searchBox.getText());
-			search(searchBox.getText() ,typeStr, centerPanel.getInnerWidth());
+			search(searchBox.getText() ,typeStr, centerPanel.getInnerWidth() - 20);
 		}
 		
 		

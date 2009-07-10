@@ -257,7 +257,11 @@ public class MainPanel{
 		Image image = new Image(imgInfo.getImgUrl());
 		ImgPanel tab = addImgTab(imgInfo.getQuery());
 		tab.add(toolbar);
-		tab.setToolbar(toolbar);
+		
+		tab.setChrBox(chr);
+		tab.setStartBox(start);
+		tab.setEndBox(end);
+		
 		tab.add(image);
 		tab.setImage(image);
 		tab.setImageInfo(imgInfo);

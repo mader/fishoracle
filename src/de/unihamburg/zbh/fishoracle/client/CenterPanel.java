@@ -30,9 +30,9 @@ public class CenterPanel{
         
         startingPanel.setHtml("<br>Greeting text and information how to use Fish Oracle, loaded from a properties file or a database ...");
         
-        startingPanel.setTitle("Welcome");  
-        startingPanel.setAutoScroll(true);  
-        startingPanel.setClosable(false);  
+        startingPanel.setTitle("Welcome");
+        startingPanel.setAutoScroll(true);
+        startingPanel.setClosable(false);
         
         centerPanel.add(startingPanel);
         
@@ -40,7 +40,7 @@ public class CenterPanel{
         	public void onResize(BoxComponent component, int adjWidth, int adjHeight, int rawWidth, int rawHeight){
         		if(component.getWidth() >= 150){
         			ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
-        			imagePanel.getImageInfo().setWidth(component.getWidth());
+        			imagePanel.getImageInfo().setWidth(component.getWidth() - 20);
         			imageRedraw(imagePanel.getImageInfo());
         		}
         	}
@@ -75,6 +75,10 @@ public class CenterPanel{
 				
 				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
 				imagePanel.getImage().setUrl(result);
+				
+				imagePanel.getChrBox().setValue(Integer.toString(imagePanel.getImageInfo().getChromosome()));
+				imagePanel.getStartBox().setValue(Integer.toString(imagePanel.getImageInfo().getStart()));
+				imagePanel.getEndBox().setValue(Integer.toString(imagePanel.getImageInfo().getEnd()));
 				
 			}
 			public void onFailure(Throwable caught){
