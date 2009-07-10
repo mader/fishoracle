@@ -3,15 +3,15 @@ package de.unihamburg.zbh.fishoracle.server.data;
 public class Amplicon {
 
 	private double ampliconStableId;
-	private int chromosome;
+	private String chromosome;
 	private int start;
 	private int end;
 	
 	
-	public Amplicon(double ampliconStableId, int chromosome, int start, int end) {
+	public Amplicon(double ampliconStableId, String newChr, int start, int end) {
 	
 		this.ampliconStableId = ampliconStableId;
-		this.chromosome = chromosome;
+		this.chromosome = newChr;
 		this.start = start;
 		this.end = end;
 		
@@ -28,12 +28,12 @@ public class Amplicon {
 	}
 
 
-	public int getChromosome() {
+	public String getChromosome() {
 		return chromosome;
 	}
 
 
-	public void setChromosome(int chromosome) {
+	public void setChromosome(String chromosome) {
 		this.chromosome = chromosome;
 	}
 

@@ -75,11 +75,11 @@ public class MainPanel{
 		ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
 		ImageInfo imgInfo = imagePanel.getImageInfo();
 		
-		int newChr;
+		String newChr;
 	    int newStart;
 	    int newEnd;
 		
-		newChr = Integer.parseInt(imagePanel.getChrBox().getValueAsString());
+		newChr = imagePanel.getChrBox().getValueAsString();
 	    
 	    newStart = Integer.parseInt(imagePanel.getStartBox().getValueAsString());
 	    
@@ -255,7 +255,7 @@ public class MainPanel{
         TextField chr = new TextField(); 
         chr.setWidth("25px");
         chr.addKeyListener(KeyCodes.KEY_ENTER, rangeListener);
-        chr.setValue(Integer.toString(imgInfo.getChromosome()));
+        chr.setValue(imgInfo.getChromosome());
         
         TextField start = new TextField();
         start.setWidth("75px");

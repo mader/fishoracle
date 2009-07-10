@@ -106,20 +106,20 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				
 			}
 			
-			amps = db.getAmpliconData(Integer.parseInt(maxAmpRange.getSeqRegionName()), maxAmpRange.getStart(), maxAmpRange.getEnd());
+			amps = db.getAmpliconData(maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd());
 			
 			Gen[] genes = null;
-			genes = db.getEnsembleGenes(Integer.parseInt(maxAmpRange.getSeqRegionName()), maxAmpRange.getStart(), maxAmpRange.getEnd());
+			genes = db.getEnsembleGenes(maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd());
 			
 			
 			Karyoband[] band = null;
-			band = db.getEnsemblKaryotypes(Integer.parseInt(maxAmpRange.getSeqRegionName()), maxAmpRange.getStart(), maxAmpRange.getEnd());
+			band = db.getEnsemblKaryotypes(maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd());
 			
 			SketchTool sketch = new SketchTool();
 			
 			imageUrl = sketch.generateImage(amps, genes, band, maxAmpRange, winWidth);
 			
-			ImageInfo imgInfo = new ImageInfo(imageUrl, 0, winWidth, Integer.parseInt(maxAmpRange.getSeqRegionName()), maxAmpRange.getStart(), maxAmpRange.getEnd(), query, searchType);
+			ImageInfo imgInfo = new ImageInfo(imageUrl, 0, winWidth, maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd(), query, searchType);
 			
 		return imgInfo;
 	}
@@ -127,7 +127,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	
 	public String redrawImage(ImageInfo imageInfo) {
 		
-		int chr = imageInfo.getChromosome();
+		String chr = imageInfo.getChromosome();
 		int start = imageInfo.getStart();
 		int end = imageInfo.getEnd();
 		

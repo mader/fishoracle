@@ -76,7 +76,7 @@ public class CenterPanel{
 				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
 				imagePanel.getImage().setUrl(result);
 				
-				imagePanel.getChrBox().setValue(Integer.toString(imagePanel.getImageInfo().getChromosome()));
+				imagePanel.getChrBox().setValue(imagePanel.getImageInfo().getChromosome());
 				imagePanel.getStartBox().setValue(Integer.toString(imagePanel.getImageInfo().getStart()));
 				imagePanel.getEndBox().setValue(Integer.toString(imagePanel.getImageInfo().getEnd()));
 				

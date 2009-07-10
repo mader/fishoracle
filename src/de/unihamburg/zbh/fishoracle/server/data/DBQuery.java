@@ -209,7 +209,7 @@ public class DBQuery {
 	 * @return		Array containing amplicon objects
 	 * 
 	 * */
-	public Amplicon[] getAmpliconData(int chr, int start, int end){
+	public Amplicon[] getAmpliconData(String chr, int start, int end){
 		
 		Connection conn = null;
 		Amplicon[] amps = null;
@@ -222,9 +222,9 @@ public class DBQuery {
 				
 			int ampStart = start;
 			int ampEnd = end;
-			int ampChr = chr;
+			String ampChr = chr;
 			
-			s.executeQuery("SELECT count(*) from amplicon WHERE chromosome = " + ampChr + " AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
+			s.executeQuery("SELECT count(*) from amplicon WHERE chromosome = \"" + ampChr + "\" AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
 				       " (start >= " + ampStart + " AND end <= " + ampEnd + ") OR" +
 				       " (start >= " + ampStart + " AND start <= " + ampEnd + ") OR" +
 				       " (end >= " + ampStart + " AND end <= " + ampEnd + "))");
@@ -237,7 +237,7 @@ public class DBQuery {
 			
 			countRegRs.close();
 			
-			s.executeQuery("SELECT * from amplicon WHERE chromosome = " + ampChr + " AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
+			s.executeQuery("SELECT * from amplicon WHERE chromosome = \"" + ampChr + "\" AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
 					       " (start >= " + ampStart + " AND end <= " + ampEnd + ") OR" +
 					       " (start >= " + ampStart + " AND start <= " + ampEnd + ") OR" +
 					       " (end >= " + ampStart + " AND end <= " + ampEnd + "))");
@@ -251,7 +251,7 @@ public class DBQuery {
 			while(regRs.next()){
 				int ampliconId = regRs.getInt(1);
 				double newAmpliconStableId = regRs.getDouble(2);
-				int newChr = regRs.getInt(3);
+				String newChr = regRs.getString(3);
 				int newStart = regRs.getInt(4);
 				int newEnd = regRs.getInt(5);
 				String caseName = regRs.getString(6);
@@ -298,11 +298,11 @@ public class DBQuery {
 	 * @return 		Array containing gen objects
 	 * 
 	 * */
-	public Gen[] getEnsembleGenes(int chr, int start, int end){
+	public Gen[] getEnsembleGenes(String chr, int start, int end){
 		
 		Gen[] genes = null;
 		
-		String loc = "chromosome:" + Integer.toString(chr) + ":" + Integer.toString(start) + "-" + Integer.toString(end);
+		String loc = "chromosome:" + chr + ":" + Integer.toString(start) + "-" + Integer.toString(end);
 		
 		System.out.println(loc);
 		
@@ -354,7 +354,7 @@ public class DBQuery {
 	 * @return 		Array containing karyoband objects
 	 * 
 	 * */
-	public Karyoband[] getEnsemblKaryotypes(int chr, int start, int end){
+	public Karyoband[] getEnsemblKaryotypes(String chr, int start, int end){
 
 	        Karyoband[] karyoband = null;
 		
@@ -365,7 +365,7 @@ public class DBQuery {
 
 			coreDriver.getConnection();
 			
-			String loc = "chromosome:" + Long.toString(chr) + ":" + Long.toString(start) + "-" + Long.toString(end);
+			String loc = "chromosome:" + chr + ":" + Long.toString(start) + "-" + Long.toString(end);
 			
 			KaryotypeBandAdaptor ktba = coreDriver.getKaryotypeBandAdaptor();
 			

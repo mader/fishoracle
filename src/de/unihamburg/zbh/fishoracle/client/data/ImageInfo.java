@@ -7,7 +7,7 @@ public class ImageInfo implements IsSerializable{
 	private String imgUrl;
 	private int height;
 	private int width;
-	private int chromosome;
+	private String chromosome;
 	private int start;
 	private int end;
 	private String query;
@@ -18,7 +18,7 @@ public class ImageInfo implements IsSerializable{
 		
 	}
 
-	public ImageInfo(String imgUrl, int height, int width, int chromosome, int start, int end,
+	public ImageInfo(String imgUrl, int height, int width, String chromosome, int start, int end,
 			String query, String searchType) {
 		super();
 		this.imgUrl = imgUrl;
@@ -62,11 +62,11 @@ public class ImageInfo implements IsSerializable{
 	}
 
 
-	public int getChromosome() {
+	public String getChromosome() {
 		return chromosome;
 	}
 
-	public void setChromosome(int chromosome) {
+	public void setChromosome(String chromosome) {
 		this.chromosome = chromosome;
 	}
 

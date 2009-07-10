@@ -23,19 +23,19 @@ public class TestDBQuery {
 		
 		amps = new Amplicon[5];
 		
-		amps[0] = new Amplicon(00.00, 2, 17000000, 18000000);
-		amps[1] = new Amplicon(00.01, 2, 17300000, 17700000);
-		amps[2] = new Amplicon(00.02, 2, 16500000, 18500000);
-		amps[3] = new Amplicon(00.03, 2, 16500000, 17400000);
-		amps[4] = new Amplicon(00.04, 2, 17500000, 19500000);
+		amps[0] = new Amplicon(00.00, "2", 17000000, 18000000);
+		amps[1] = new Amplicon(00.01, "2", 17300000, 17700000);
+		amps[2] = new Amplicon(00.02, "2", 16500000, 18500000);
+		amps[3] = new Amplicon(00.03, "2", 16500000, 17400000);
+		amps[4] = new Amplicon(00.04, "2", 17500000, 19500000);
 		
 		amps2 = new Amplicon[5];
 		
-		amps2[0] = new Amplicon(01.01, 3, 17000000, 18000000);
-		amps2[1] = new Amplicon(01.02, 3, 17300000, 17700000);
-		amps2[2] = new Amplicon(01.03, 3, 16500000, 18500000);
-		amps2[3] = new Amplicon(01.04, 3, 16500000, 17400000);
-		amps2[4] = new Amplicon(01.05, 3, 17500000, 19500000);
+		amps2[0] = new Amplicon(01.01, "3", 17000000, 18000000);
+		amps2[1] = new Amplicon(01.02, "3", 17300000, 17700000);
+		amps2[2] = new Amplicon(01.03, "3", 16500000, 18500000);
+		amps2[3] = new Amplicon(01.04, "3", 16500000, 17400000);
+		amps2[4] = new Amplicon(01.05, "3", 17500000, 19500000);
 		
 		genes = new Gen[21];
 		
@@ -198,7 +198,7 @@ public class TestDBQuery {
 		Karyoband[] testkbands = null;
 		Karyoband[] testkbands2 = null;
 		
-		testkbands = db.getEnsemblKaryotypes(2, 16500000, 19500000);
+		testkbands = db.getEnsemblKaryotypes("2", 16500000, 19500000);
 		
 		Assert.assertEquals(testkbands[0].getChr(), kbands[0].getChr());
 		Assert.assertEquals(testkbands[0].getBand(), kbands[0].getBand());
@@ -216,7 +216,7 @@ public class TestDBQuery {
 		Assert.assertEquals(testkbands[2].getEnd(), kbands[2].getEnd());
 		
 		
-		testkbands2 = db.getEnsemblKaryotypes(3, 16500000, 19500000);
+		testkbands2 = db.getEnsemblKaryotypes("3", 16500000, 19500000);
 		
 		Assert.assertEquals(testkbands2[0].getChr(), kbands2[0].getChr());
 		Assert.assertEquals(testkbands2[0].getBand(), kbands2[0].getBand());
@@ -231,7 +231,7 @@ public class TestDBQuery {
 		Gen[] testgenes = null;
 		Gen[] testgenes2 = null;
 		
-		testgenes = db.getEnsembleGenes(2,16500000, 19500000);
+		testgenes = db.getEnsembleGenes("2",16500000, 19500000);
 		
 		Assert.assertEquals(testgenes[0].getGenName(), genes[0].getGenName());
 		Assert.assertEquals(testgenes[0].getStart(), genes[0].getStart());
@@ -318,7 +318,7 @@ public class TestDBQuery {
 		Assert.assertEquals(testgenes[20].getEnd(), genes[20].getEnd());
 		
 		
-		testgenes2 = db.getEnsembleGenes(3,16500000, 19500000);
+		testgenes2 = db.getEnsembleGenes("3",16500000, 19500000);
 		
 		Assert.assertEquals(testgenes2[0].getGenName(), genes2[0].getGenName());
 		Assert.assertEquals(testgenes2[0].getStart(), genes2[0].getStart());
@@ -365,7 +365,7 @@ public class TestDBQuery {
 		Amplicon[] testamps = null;
 		Amplicon[] testamps2 = null;
 		
-		testamps = db.getAmpliconData(2, 16500000, 18500000);
+		testamps = db.getAmpliconData("2", 16500000, 18500000);
 		
 		Assert.assertEquals(testamps[0].getAmpliconStableId(), amps[0].getAmpliconStableId());
 		Assert.assertEquals(testamps[0].getChromosome(), amps[0].getChromosome());
@@ -392,7 +392,7 @@ public class TestDBQuery {
 		Assert.assertEquals(testamps[4].getStart(), amps[4].getStart());
 		Assert.assertEquals(testamps[4].getEnd(), amps[4].getEnd());
 		
-		testamps2 = db.getAmpliconData(3, 16500000, 18500000);
+		testamps2 = db.getAmpliconData("3", 16500000, 18500000);
 		
 		Assert.assertEquals(testamps2[0].getAmpliconStableId(), amps2[0].getAmpliconStableId());
 		Assert.assertEquals(testamps2[0].getChromosome(), amps2[0].getChromosome());
