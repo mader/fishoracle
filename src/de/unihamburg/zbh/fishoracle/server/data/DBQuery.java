@@ -324,7 +324,7 @@ public class DBQuery {
 				for (int j = 0; j < ensGenes.size(); j++) {
 					Gene g = (Gene) ensGenes.get(j);
 					
-					genes[j] = new Gen(g.getDisplayName(), g.getLocation().getStart(), g.getLocation().getEnd(), g.getLocation().getStrand());
+					genes[j] = new Gen(g.getDisplayName(), g.getLocation().getSeqRegionName(), g.getLocation().getStart(), g.getLocation().getEnd(), Integer.toString(g.getLocation().getStrand()));
 					
 					
 					System.out.println(g.getAccessionID() + " " + g.getDisplayName() + " " + g.getLocation().getStart() + " " + g.getLocation().getEnd() + " " +

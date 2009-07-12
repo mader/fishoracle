@@ -3,16 +3,25 @@ package de.unihamburg.zbh.fishoracle.server.data;
 public class Gen {
 
 	private String genName;
+	private String chr = null;
 	private int start;
 	private int end;
-	private int strand;
+	private String strand;
 	
 	
-	public Gen(String genName, int start, int end, int strand) {
+	public Gen(String genName, String chr, int start, int end, String strand) {
 		this.genName = genName;
+		this.chr = chr;
 		this.start = start;
 		this.end = end;
-		this.strand = strand;
+		if(strand.equals("-1") || strand.equals("1")){
+			
+			this.strand = this.convertEnsembl2GFF3Strand(strand);
+			
+		} else {
+			
+			this.strand = strand;
+		}
 	}
 
 
@@ -23,6 +32,16 @@ public class Gen {
 
 	public void setGenName(String genName) {
 		this.genName = genName;
+	}
+
+	
+	public String getChr() {
+		return chr;
+	}
+
+
+	public void setChr(String chr) {
+		this.chr = chr;
 	}
 
 
@@ -46,15 +65,36 @@ public class Gen {
 	}
 
 
-	public int getStrand() {
+	public String getStrand() {
 		return strand;
 	}
 
 
-	public void setStrand(int strand) {
+	public void setStrand(String strand) {
 		this.strand = strand;
 	}
 	
-	
+	public String convertEnsembl2GFF3Strand(String strand2){
+		String ret = null;
+		if(strand2.equals("1")){
+			ret = "+";
+		} else if(strand2.equals("-1")) {
+			ret = "-";
+		} else if (strand2.equals("0")){
+			ret = ".";
+		}
+		return ret;
+	}
 
+	public int convertGFF32EnsemblStrand(String strand){
+		int ret = 0;
+		if(strand.equals("+")){
+			ret = 1;
+		} else if(strand.equals("-")) {
+			ret = -1;
+		} else if(strand.equals(".")){
+			ret = 0;
+		}
+		return ret;
+	}
 }

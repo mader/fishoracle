@@ -50,7 +50,7 @@ public class SketchTool {
 		
 		for(int j=0; j < genes.length; j++ ){
 			
-			features.add(new FeatureNode(seqid, "gene", genes[j].getStart(), genes[j].getEnd(), "."));
+			features.add(new FeatureNode(seqid, "gene", genes[j].getStart(), genes[j].getEnd(), genes[j].getStrand()));
 			features.get(j + all).add_attribute("ID", genes[j].getGenName());
 			
 		}
