@@ -6,7 +6,7 @@ import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.server.data.*;
-import de.unihamburg.zbh.fishoracle.client.data.ImageInfo;
+import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
 
@@ -14,10 +14,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String imageUrl;
+	private GWTImageInfo imgInfo;
 	
 	
-	public ImageInfo generateImage(String query, String searchType, int winWidth) {
+	public GWTImageInfo generateImage(String query, String searchType, int winWidth) {
 			
 			DBQuery db = new DBQuery();
 			
@@ -117,15 +117,19 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			SketchTool sketch = new SketchTool();
 			
-			imageUrl = sketch.generateImage(amps, genes, band, maxAmpRange, winWidth);
+			imgInfo = sketch.generateImage(amps, genes, band, maxAmpRange, winWidth);
 			
-			ImageInfo imgInfo = new ImageInfo(imageUrl, 0, winWidth, maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd(), query, searchType);
+			imgInfo.setChromosome(maxAmpRange.getSeqRegionName());
+			imgInfo.setStart(maxAmpRange.getStart());
+			imgInfo.setEnd(maxAmpRange.getEnd());
+			imgInfo.setQuery(query);
+			imgInfo.setSearchType(searchType);
 			
 		return imgInfo;
 	}
 
 	
-	public String redrawImage(ImageInfo imageInfo) {
+	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) {
 		
 		String chr = imageInfo.getChromosome();
 		int start = imageInfo.getStart();
@@ -155,9 +159,15 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		SketchTool sketch = new SketchTool();
 		
-		String imageUrl = sketch.generateImage(amps, genes, band, maxRange, imageInfo.getWidth());
+		imgInfo = sketch.generateImage(amps, genes, band, maxRange, imageInfo.getWidth());
 		
-		return imageUrl;
+		imgInfo.setChromosome(maxRange.getSeqRegionName());
+		imgInfo.setStart(maxRange.getStart());
+		imgInfo.setEnd(maxRange.getEnd());
+		imgInfo.setQuery(imageInfo.getQuery());
+		imgInfo.setSearchType(imageInfo.getSearchType());
+		
+		return imgInfo;
 	}
 	
 	

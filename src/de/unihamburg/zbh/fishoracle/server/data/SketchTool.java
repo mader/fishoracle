@@ -4,11 +4,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
+import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
+
 import org.ensembl.datamodel.Location;
 
 import annotationsketch.*;
 import core.*;
+import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import extended.*;
+
 
 public class SketchTool {
 
@@ -16,7 +20,7 @@ public class SketchTool {
 		
 	}
 	
-	public String generateImage(Amplicon[] amps, Gen[] genes, Karyoband[] kband, Location loc, int winWidth) {
+	public GWTImageInfo generateImage(Amplicon[] amps, Gen[] genes, Karyoband[] kband, Location loc, int winWidth) {
 		
 		ArrayList<FeatureNode> features;
 		
@@ -31,6 +35,8 @@ public class SketchTool {
 		
 		String imgUrl = null;
 		String imgGenUrl = null;
+		
+		 GWTImageInfo imgInfo = null;
 		
 		seqid = loc.getSeqRegionName();
 		
@@ -98,9 +104,13 @@ public class SketchTool {
 		
 		height = layout.get_height();
 		
-		canvas = new CanvasCairoFile(style, winWidth, (int) height);
+		ImageInfo info = new ImageInfo();
 		
+		canvas = new CanvasCairoFile(style, winWidth, (int) height, info);
+				
 		layout.sketch(canvas);
+		
+		ArrayList<RecMapInfo> recmapinfoArr = getRecMapElements(info);
 		
 		File file;
 		Random generator = new Random();
@@ -118,13 +128,32 @@ public class SketchTool {
 	    //canvas.to_file(imgGenUrl);
 	    canvas.to_file(imgUrl);
 	    
+	    imgInfo = new GWTImageInfo(imgUrl, info.get_height(), winWidth, recmapinfoArr);
+		
 		} catch (GTerror e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-	    return imgUrl;
+	    return imgInfo;
 		
 	}
-
+	
+	private ArrayList<RecMapInfo> getRecMapElements(ImageInfo info){
+		
+		ArrayList<RecMapInfo> recmapinfoArray = new ArrayList<RecMapInfo>();
+		
+		for(int i=0; i < info.num_of_rec_maps(); i++){
+		
+			RecMapInfo recmapinfo = new RecMapInfo(info.get_rec_map(i).get_northwest_x(),
+													info.get_rec_map(i).get_northwest_y(),
+													info.get_rec_map(i).get_southeast_x(),
+													info.get_rec_map(i).get_southeast_x(),
+													info.get_rec_map(i).get_genome_feature().get_type(),
+													info.get_rec_map(i).get_genome_feature().get_attribute("ID"));
+			
+			recmapinfoArray.add(recmapinfo);
+		}		
+		return recmapinfoArray;
+	}
 }

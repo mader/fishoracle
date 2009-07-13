@@ -18,7 +18,7 @@ import com.gwtext.client.widgets.layout.BorderLayout;
 import com.gwtext.client.widgets.layout.BorderLayoutData;
 import com.gwtext.client.widgets.layout.FitLayout;
 
-import de.unihamburg.zbh.fishoracle.client.data.ImageInfo;
+import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 
 
 public class MainPanel{
@@ -73,7 +73,7 @@ public class MainPanel{
 	public void jumpto(){
 		
 		ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
-		ImageInfo imgInfo = imagePanel.getImageInfo();
+		GWTImageInfo imgInfo = imagePanel.getImageInfo();
 		
 		String newChr;
 	    int newStart;
@@ -102,7 +102,7 @@ public class MainPanel{
 
 	}
 	
-	public void newImageTab(ImageInfo imgInfo){
+	public void newImageTab(GWTImageInfo imgInfo){
 		
 	KeyListener rangeListener = new KeyListener(){
 			@Override
@@ -118,7 +118,7 @@ public class MainPanel{
 			public void onClick(Button button, EventObject e) {
 				
 				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
-				ImageInfo imgInfo = imagePanel.getImageInfo();
+				GWTImageInfo imgInfo = imagePanel.getImageInfo();
 				int range;
 				int percRange;
 				int perc = 10;
@@ -153,7 +153,7 @@ public class MainPanel{
 			public void onClick(Button button, EventObject e) {
 				
 				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
-    			ImageInfo imgInfo = imagePanel.getImageInfo();
+    			GWTImageInfo imgInfo = imagePanel.getImageInfo();
 				
     			int range;
     			int percRange;
@@ -184,7 +184,7 @@ public class MainPanel{
 			public void onClick(Button button, EventObject e) {
 				
 				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
-    			ImageInfo imgInfo = imagePanel.getImageInfo();
+    			GWTImageInfo imgInfo = imagePanel.getImageInfo();
 				
     			int range;
     			int percRange;
@@ -221,7 +221,7 @@ public class MainPanel{
 			public void onClick(Button button, EventObject e) {
 				
 				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
-    			ImageInfo imgInfo = imagePanel.getImageInfo();
+    			GWTImageInfo imgInfo = imagePanel.getImageInfo();
 				
     			int range;
     			int percRange;

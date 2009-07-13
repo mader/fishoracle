@@ -5,11 +5,11 @@ import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.Toolbar;
 import com.gwtext.client.widgets.form.TextField;
 
-import de.unihamburg.zbh.fishoracle.client.data.ImageInfo;
+import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 
 public class ImgPanel extends Panel{
 
-	private ImageInfo imageInfo;
+	private GWTImageInfo imageInfo;
 	private Image image;
 	private TextField chrBox;
 	private TextField startBox;
@@ -19,16 +19,16 @@ public class ImgPanel extends Panel{
 		
 	}
 	
-	public ImgPanel(ImageInfo imageInfo) {
+	public ImgPanel(GWTImageInfo imageInfo) {
 		super();
 		this.imageInfo = imageInfo;
 	}
 
-	public ImageInfo getImageInfo() {
+	public GWTImageInfo getImageInfo() {
 		return imageInfo;
 	}
 
-	public void setImageInfo(ImageInfo imageInfo) {
+	public void setImageInfo(GWTImageInfo imageInfo) {
 		this.imageInfo = imageInfo;
 	}
 

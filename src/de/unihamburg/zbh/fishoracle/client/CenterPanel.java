@@ -11,7 +11,7 @@ import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.event.PanelListenerAdapter;
 import com.gwtext.client.widgets.form.TextField;
 
-import de.unihamburg.zbh.fishoracle.client.data.ImageInfo;
+import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.ImgPanel;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
@@ -63,18 +63,20 @@ public class CenterPanel{
 	 * */	
 		
 		
-	public void imageRedraw(ImageInfo imgInfo){
+	public void imageRedraw(GWTImageInfo imgInfo){
 			
 		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<String> callback = new AsyncCallback<String>(){
-			public void onSuccess(String result){
+		final AsyncCallback<GWTImageInfo> callback = new AsyncCallback<GWTImageInfo>(){
+			public void onSuccess(GWTImageInfo result){
 				
 				
 				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
-				imagePanel.getImage().setUrl(result);
+				imagePanel.getImage().setUrl(result.getImgUrl());
+				
+				imagePanel.setImageInfo(result);
 				
 				imagePanel.getChrBox().setValue(imagePanel.getImageInfo().getChromosome());
 				imagePanel.getStartBox().setValue(Integer.toString(imagePanel.getImageInfo().getStart()));
