@@ -3,6 +3,7 @@ package de.unihamburg.zbh.fishoracle.server.data;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
+import java.math.*;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 
@@ -103,7 +104,7 @@ public class SketchTool {
 		layout = new Layout(diagram, winWidth, style);
 		
 		height = layout.get_height();
-		
+
 		ImageInfo info = new ImageInfo();
 		
 		canvas = new CanvasCairoFile(style, winWidth, (int) height, info);
@@ -143,16 +144,19 @@ public class SketchTool {
 		
 		ArrayList<RecMapInfo> recmapinfoArray = new ArrayList<RecMapInfo>();
 		
+		
 		for(int i=0; i < info.num_of_rec_maps(); i++){
 		
-			RecMapInfo recmapinfo = new RecMapInfo(info.get_rec_map(i).get_northwest_x(),
-													info.get_rec_map(i).get_northwest_y(),
-													info.get_rec_map(i).get_southeast_x(),
-													info.get_rec_map(i).get_southeast_x(),
-													info.get_rec_map(i).get_genome_feature().get_type(),
-													info.get_rec_map(i).get_genome_feature().get_attribute("ID"));
+			if(!info.get_rec_map(i).get_genome_feature().get_type().equals("chromosome")){
+				RecMapInfo recmapinfo = new RecMapInfo(info.get_rec_map(i).get_northwest_x(),
+														info.get_rec_map(i).get_northwest_y(),
+														info.get_rec_map(i).get_southeast_x(),
+														info.get_rec_map(i).get_southeast_y(),
+														info.get_rec_map(i).get_genome_feature().get_type(),
+														info.get_rec_map(i).get_genome_feature().get_attribute("ID"));
 			
-			recmapinfoArray.add(recmapinfo);
+				recmapinfoArray.add(recmapinfo);
+			}
 		}		
 		return recmapinfoArray;
 	}

@@ -1,18 +1,26 @@
 package de.unihamburg.zbh.fishoracle.client;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.gwtext.client.core.EventObject;
 import com.gwtext.client.core.Margins;
 import com.gwtext.client.core.RegionPosition;
 import com.gwtext.client.widgets.Button;
+import com.gwtext.client.widgets.Component;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.Toolbar;
 import com.gwtext.client.widgets.ToolbarButton;
+import com.gwtext.client.widgets.Window;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
+import com.gwtext.client.widgets.event.ComponentListenerAdapter;
 import com.gwtext.client.widgets.event.KeyListener;
+//import com.gwtext.client.widgets.form.Label;
 import com.gwtext.client.widgets.form.TextField;
 import com.gwtext.client.widgets.layout.BorderLayout;
 import com.gwtext.client.widgets.layout.BorderLayoutData;
@@ -293,6 +301,9 @@ public class MainPanel{
 		
         toolbar.addButton(jumpTo);
         
+        AbsolutePanel absPanel = new AbsolutePanel();
+        absPanel.setPixelSize(imgInfo.getWidth(), imgInfo.getHeight());
+        
 		Image image = new Image(imgInfo.getImgUrl());
 		ImgPanel tab = addImgTab(imgInfo.getQuery());
 		tab.add(toolbar);
@@ -301,12 +312,56 @@ public class MainPanel{
 		tab.setStartBox(start);
 		tab.setEndBox(end);
 		
-		tab.add(image);
+		absPanel.add(image);
+		
+		for(int i=0; i < imgInfo.getRecmapinfo().size(); i++){
+			
+			
+			final Image spaceImg = new Image();
+			
+			spaceImg.addClickHandler(new ClickHandler(){
+				@Override
+				public void onClick(ClickEvent event) {
+					loadWindow(spaceImg);
+					
+				}
+			});
+			
+			int southeast_x = (int) imgInfo.getRecmapinfo().get(i).getSoutheastX();
+			
+			int northwest_x = (int) imgInfo.getRecmapinfo().get(i).getNorthwestX();
+			
+			spaceImg.setUrl("images/1pximg.gif");
+			
+			spaceImg.setWidth(Integer.toString((southeast_x - northwest_x)));
+			
+			spaceImg.setHeight(Integer.toString((int) (imgInfo.getRecmapinfo().get(i).getSoutheastY() - imgInfo.getRecmapinfo().get(i).getNorthwestY())));
+
+			absPanel.add(spaceImg, (int) imgInfo.getRecmapinfo().get(i).getNorthwestX(), (int) imgInfo.getRecmapinfo().get(i).getNorthwestY());
+			
+		}
+		
+		tab.add(absPanel);
+		
+		
 		tab.setImage(image);
 		tab.setImageInfo(imgInfo);
 		cp.add(tab);
 		cp.activate(tab.getId());
 		cp.scrollToTab(tab, true);
+	}
+	
+	private void loadWindow(Image spaceImg){
+		
+		Window window = new Window();
+		window.setTitle("Layout Window");  
+		window.setClosable(true);  
+		window.setWidth(600);  
+		window.setHeight(350);  
+		window.setPlain(true);  
+		//window.setLayout(new BorderLayout());  
+		window.setCloseAction(Window.HIDE);
+		window.show(spaceImg.getElement().getId());
 	}
 	
 	private Panel addTab(String name) {
