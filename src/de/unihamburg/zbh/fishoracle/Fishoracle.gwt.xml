@@ -16,7 +16,7 @@
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='de.unihamburg.zbh.fishoracle.client.FishOracle'/>
-  <stylesheet src="../js/ext-2.0.2/resources/css/ext-all.css" />
+  <stylesheet src="../js/ext-2.0.2/resources/css/ext-all.css" /> 
   <script src="../js/ext-2.0.2/adapter/ext/ext-base.js" />
   <script src="../js/ext-2.0.2/ext-all.js" />
 </module>

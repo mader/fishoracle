@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-//import com.google.gwt.user.client.ui.TextBox;
 import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
@@ -51,13 +50,14 @@ public class WestPanel{
         //userPanel.setBorder(false);   
         //westPanel.add(userPanel);  
            
-        Panel searchPanel = new Panel();  
+        Panel searchPanel = new Panel();
         searchPanel.setTitle("Search");  
-        searchPanel.setBorder(false);   
+        searchPanel.setBorder(false);
+        searchPanel.setVisible(true);
        
 
         FormPanel formPanel = new FormPanel();  
-        formPanel.setBorder(false);  
+        formPanel.setBorder(false);
         formPanel.setHideLabels(true);
         formPanel.setMargins(10);
         

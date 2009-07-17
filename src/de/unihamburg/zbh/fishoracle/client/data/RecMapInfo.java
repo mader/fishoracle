@@ -2,7 +2,7 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class RecMapInfo implements IsSerializable{
+public class RecMapInfo implements IsSerializable {
 
 	private double northwestX;
 	private double northwestY;

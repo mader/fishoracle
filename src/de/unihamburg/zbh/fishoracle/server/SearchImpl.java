@@ -6,7 +6,9 @@ import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.server.data.*;
+import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
+import de.unihamburg.zbh.fishoracle.client.data.Gen;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
 
@@ -169,7 +171,26 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		return imgInfo;
 	}
-	
-	
+
+	@Override
+	public Amplicon getAmpliconInfo(
+			String query) {
+		
+		DBQuery db = new DBQuery();
+		
+		Amplicon  amp = db.getAmpliconInfos(query);
+		
+		
+		return amp;
+	}
+
+	@Override
+	public Gen getGeneInfo(String query) {
+		
+		DBQuery db = new DBQuery();
+		
+		Gen  gene = db.getGeneInfos(query);
+		return gene;
+	}
 
 }

@@ -1,20 +1,30 @@
-package de.unihamburg.zbh.fishoracle.server.data;
+package de.unihamburg.zbh.fishoracle.client.data;
 
-public class Gen {
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-	private String genName;
+public class Gen implements IsSerializable{
+
+	
+	private String accessionID = null;
+	private String bioType = null;
+	private String description = null;
+	private String genName = null;
 	private String chr = null;
 	private int start;
 	private int end;
-	private String strand;
+	private int length;
+	private String strand = null;
 	
-	
+	public Gen() {
+		
+	}
+
 	public Gen(String genName, String chr, int start, int end, String strand) {
 		this.genName = genName;
 		this.chr = chr;
 		this.start = start;
 		this.end = end;
-		if(strand.equals("-1") || strand.equals("1")){
+		if(strand.equals("-1") || strand.equals("1") || strand.equals("0")){
 			
 			this.strand = this.convertEnsembl2GFF3Strand(strand);
 			
@@ -23,7 +33,6 @@ public class Gen {
 			this.strand = strand;
 		}
 	}
-
 
 	public String getGenName() {
 		return genName;
@@ -71,9 +80,50 @@ public class Gen {
 
 
 	public void setStrand(String strand) {
-		this.strand = strand;
+		if(strand.equals("-1") || strand.equals("1") || strand.equals("0")){
+			
+			this.strand = this.convertEnsembl2GFF3Strand(strand);
+			
+		} else {
+			
+			this.strand = strand;
+		}
+		
 	}
 	
+	
+	public String getAccessionID() {
+		return accessionID;
+	}
+
+	public void setAccessionID(String accessionID) {
+		this.accessionID = accessionID;
+	}
+
+	public String getBioType() {
+		return bioType;
+	}
+
+	public void setBioType(String bioType) {
+		this.bioType = bioType;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public int getLength() {
+		return length;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+
 	public String convertEnsembl2GFF3Strand(String strand2){
 		String ret = null;
 		if(strand2.equals("1")){

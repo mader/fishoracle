@@ -14,6 +14,9 @@ import org.ensembl.driver.CoreDriver;
 import org.ensembl.driver.CoreDriverFactory;
 import org.ensembl.driver.KaryotypeBandAdaptor;
 
+import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
+import de.unihamburg.zbh.fishoracle.client.data.Gen;
+
 public class DBQuery {
 
 	public DBQuery() {
@@ -288,6 +291,89 @@ public class DBQuery {
 		return amps;
 	}
 	
+	public Amplicon getAmpliconInfos(String query){
+		
+		Connection conn = null;
+		Amplicon amp = null;
+		try{
+		
+			conn = FishOracleConnection.connect();
+			System.out.println("Connection established");
+			
+			Statement s = conn.createStatement();
+			
+			s.executeQuery("select * FROM amplicon WHERE amplicon_stable_id = " + query);
+			
+			ResultSet ampRs = s.getResultSet();
+			
+			while(ampRs.next()){
+				
+				double ampliconStableId = ampRs.getDouble(2);
+				String chr = ampRs.getString(3);
+				int start = ampRs.getInt(4);
+				int end = ampRs.getInt(5);
+				String caseName = ampRs.getString(6);
+				String tumorType = ampRs.getString(7);
+				int contin = ampRs.getInt(8);
+				int amplevel = ampRs.getInt(9);
+				
+				amp = new Amplicon(ampliconStableId, chr, start, end, caseName, tumorType, contin, amplevel);
+				
+			}
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.exit(1);
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+					System.out.println("Connection closed ...");
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		
+		return amp;
+	}
+	
+	public Gen getGeneInfos(String query) {
+		
+		Gen gene = null;
+		
+		CoreDriver coreDriver;
+		try {
+			coreDriver = CoreDriverFactory.createCoreDriver("localhost",
+			3306, "homo_sapiens_core_54_36p", "fouser", "fish4me");
+		
+			coreDriver.getConnection();
+			
+			List<Gene> ensGene =  coreDriver.getGeneAdaptor().fetchBySynonym(query);
+
+			gene = new Gen();
+			for (int j = 0; j < ensGene.size(); j++) {
+				
+				gene.setGenName(ensGene.get(j).getDisplayName());
+				gene.setChr(ensGene.get(j).getLocation().getSeqRegionName());
+				gene.setStart(ensGene.get(j).getLocation().getStart());
+				gene.setEnd(ensGene.get(j).getLocation().getEnd());
+				gene.setStrand(Integer.toBinaryString(ensGene.get(j).getLocation().getStrand()));
+				gene.setAccessionID(ensGene.get(j).getAccessionID());
+				gene.setBioType(ensGene.get(j).getBioType());
+				gene.setDescription(ensGene.get(j).getDescription());
+				gene.setLength(ensGene.get(j).getLocation().getLength());
+				
+			}
+		} catch (AdaptorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		return gene;
+	}
 	
 	/**
 	 * For a range on a chromosome an array with all opverlapping genes is returned.
@@ -392,4 +478,5 @@ public class DBQuery {
 			
 			return karyoband;
 	}
+
 }

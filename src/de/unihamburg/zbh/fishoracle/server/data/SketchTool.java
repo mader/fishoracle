@@ -3,9 +3,10 @@ package de.unihamburg.zbh.fishoracle.server.data;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
-import java.math.*;
 
+import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
+import de.unihamburg.zbh.fishoracle.client.data.Gen;
 
 import org.ensembl.datamodel.Location;
 

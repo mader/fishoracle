@@ -1,8 +1,8 @@
 package de.unihamburg.zbh.fishoracle.client;
 
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.gwtext.client.widgets.Panel;
-import com.gwtext.client.widgets.Toolbar;
 import com.gwtext.client.widgets.form.TextField;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
@@ -14,6 +14,7 @@ public class ImgPanel extends Panel{
 	private TextField chrBox;
 	private TextField startBox;
 	private TextField endBox;
+	private AbsolutePanel imageLayer; 
 	
 	public ImgPanel() {
 		
@@ -62,6 +63,14 @@ public class ImgPanel extends Panel{
 
 	public void setEndBox(TextField endBox) {
 		this.endBox = endBox;
+	}
+
+	public AbsolutePanel getImageLayer() {
+		return imageLayer;
+	}
+
+	public void setImageLayer(AbsolutePanel imageLayer) {
+		this.imageLayer = imageLayer;
 	}
 	
 }

@@ -3,13 +3,13 @@ package de.unihamburg.zbh.fishoracle.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.gwtext.client.widgets.BoxComponent;
 import com.gwtext.client.widgets.HTMLPanel;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.event.PanelListenerAdapter;
-import com.gwtext.client.widgets.form.TextField;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.ImgPanel;
@@ -19,11 +19,15 @@ import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 public class CenterPanel{
 
 	private TabPanel centerPanel = null;
+	private MainPanel mp = null;;
 	
-	public CenterPanel() {
+	public CenterPanel(MainPanel mainPanel) {
+		
+		mp = mainPanel;
 		
 		centerPanel = new TabPanel();  
         centerPanel.setDeferredRender(false);  
+        centerPanel.setEnableTabScroll(true);
         centerPanel.setActiveTab(0);
         
         Panel startingPanel = new HTMLPanel();
@@ -72,15 +76,23 @@ public class CenterPanel{
 		final AsyncCallback<GWTImageInfo> callback = new AsyncCallback<GWTImageInfo>(){
 			public void onSuccess(GWTImageInfo result){
 				
-				
 				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
-				imagePanel.getImage().setUrl(result.getImgUrl());
+				
+				imagePanel.remove(imagePanel.getImageLayer().getElement().getId(), true);
 				
 				imagePanel.setImageInfo(result);
 				
 				imagePanel.getChrBox().setValue(imagePanel.getImageInfo().getChromosome());
 				imagePanel.getStartBox().setValue(Integer.toString(imagePanel.getImageInfo().getStart()));
 				imagePanel.getEndBox().setValue(Integer.toString(imagePanel.getImageInfo().getEnd()));
+				
+				AbsolutePanel absp =  mp.createImageLayer(result);
+				
+				imagePanel.add(absp);
+				
+				imagePanel.setImageLayer(absp);
+				
+				imagePanel.doLayout();
 				
 			}
 			public void onFailure(Throwable caught){
