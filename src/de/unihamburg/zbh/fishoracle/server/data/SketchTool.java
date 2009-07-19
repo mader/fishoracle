@@ -22,7 +22,7 @@ public class SketchTool {
 		
 	}
 	
-	public GWTImageInfo generateImage(Amplicon[] amps, Gen[] genes, Karyoband[] kband, Location loc, int winWidth) {
+	public GWTImageInfo generateImage(Amplicon[] amps, Gen[] genes, Karyoband[] kband, Location loc, int winWidth, String query) {
 		
 		ArrayList<FeatureNode> features;
 		
@@ -51,7 +51,9 @@ public class SketchTool {
 			
 			features.add(new FeatureNode(seqid, "amplicon", amps[i].getStart(), amps[i].getEnd(), "."));
 			features.get(i).add_attribute("ID", Double.toString(amps[i].getAmpliconStableId()));
-			
+			if(Double.toString(amps[i].getAmpliconStableId()).equals(query)){
+				features.get(i).gt_genome_node_mark();
+			}
 		}
 		
 		all = amps.length;
@@ -60,7 +62,9 @@ public class SketchTool {
 			
 			features.add(new FeatureNode(seqid, "gene", genes[j].getStart(), genes[j].getEnd(), genes[j].getStrand()));
 			features.get(j + all).add_attribute("ID", genes[j].getGenName());
-			
+			if(genes[j].getGenName().equalsIgnoreCase(query)){
+				features.get(j + all).gt_genome_node_mark();
+			}
 		}
 		
 		all = all + genes.length;

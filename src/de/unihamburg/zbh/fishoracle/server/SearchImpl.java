@@ -119,7 +119,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			SketchTool sketch = new SketchTool();
 			
-			imgInfo = sketch.generateImage(amps, genes, band, maxAmpRange, winWidth);
+			imgInfo = sketch.generateImage(amps, genes, band, maxAmpRange, winWidth, query);
 			
 			imgInfo.setChromosome(maxAmpRange.getSeqRegionName());
 			imgInfo.setStart(maxAmpRange.getStart());
@@ -161,7 +161,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		SketchTool sketch = new SketchTool();
 		
-		imgInfo = sketch.generateImage(amps, genes, band, maxRange, imageInfo.getWidth());
+		imgInfo = sketch.generateImage(amps, genes, band, maxRange, imageInfo.getWidth(), imageInfo.getQuery());
 		
 		imgInfo.setChromosome(maxRange.getSeqRegionName());
 		imgInfo.setStart(maxRange.getStart());
