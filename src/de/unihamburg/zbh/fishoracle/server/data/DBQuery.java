@@ -359,7 +359,7 @@ public class DBQuery {
 				gene.setChr(ensGene.get(j).getLocation().getSeqRegionName());
 				gene.setStart(ensGene.get(j).getLocation().getStart());
 				gene.setEnd(ensGene.get(j).getLocation().getEnd());
-				gene.setStrand(Integer.toBinaryString(ensGene.get(j).getLocation().getStrand()));
+				gene.setStrand(Integer.toString(ensGene.get(j).getLocation().getStrand()));
 				gene.setAccessionID(ensGene.get(j).getAccessionID());
 				gene.setBioType(ensGene.get(j).getBioType());
 				gene.setDescription(ensGene.get(j).getDescription());

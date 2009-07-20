@@ -289,6 +289,13 @@ public class MainPanel{
     		    
     		    newEnd = imgInfo.getEnd() + percRange;
     		    
+    		    
+    		    if(newStart < 0){
+    		    	
+    		    	newEnd = newEnd - newStart;
+    		    	newStart = 0;
+    		    }
+    		    
     		    imgInfo.setStart(newStart);
     		    
     		    imgInfo.setEnd(newEnd);
@@ -433,7 +440,7 @@ public class MainPanel{
 		panel.setPaddings(15);  
 
 		PropertyGridPanel grid = new PropertyGridPanel();    
-		grid.setWidth(700);  
+		grid.setWidth(700);
 		grid.setAutoHeight(true);  
 		grid.setSorted(false);   
 		

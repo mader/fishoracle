@@ -124,13 +124,13 @@ public class Gen implements IsSerializable{
 		this.length = length;
 	}
 
-	public String convertEnsembl2GFF3Strand(String strand2){
+	public String convertEnsembl2GFF3Strand(String strand){
 		String ret = null;
-		if(strand2.equals("1")){
+		if(strand.equals("1")){
 			ret = "+";
-		} else if(strand2.equals("-1")) {
+		} else if(strand.equals("-1")) {
 			ret = "-";
-		} else if (strand2.equals("0")){
+		} else if (strand.equals("0")){
 			ret = ".";
 		}
 		return ret;
