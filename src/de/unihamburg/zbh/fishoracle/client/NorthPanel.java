@@ -1,29 +1,26 @@
 package de.unihamburg.zbh.fishoracle.client;
 
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.gwtext.client.widgets.Panel;
+import com.google.gwt.user.client.ui.HTML;
+import com.gwtext.client.widgets.BoxComponent;
 
 public class NorthPanel{
 
-	private HorizontalPanel northPanel = null;
+	private BoxComponent northPanel = null;
 	
 	public NorthPanel() {
 		
-		northPanel = new HorizontalPanel();
-		northPanel.setHeight("45px");
+		northPanel = new BoxComponent();
+	 	northPanel.setHeight(65);
+		
+		northPanel.setEl(new HTML("<img src='images/zbh.jpg' style='float: left'><img src='images/uke.png' style='float: right'>").getElement());
 
-		Panel content = new Panel();
-		
-		content.setHtml("<img src='images/zbh.jpg' style='float: left'><img src='images/uke.png' style='float: right'>");
-		
-		northPanel.add(content);
 	}
 
-	public HorizontalPanel getNorthPanel() {
+	public BoxComponent getNorthPanel() {
 		return northPanel;
 	}
 
-	public void setNorthPanel(HorizontalPanel northPanel) {
+	public void setNorthPanel(BoxComponent northPanel) {
 		this.northPanel = northPanel;
 	}
 

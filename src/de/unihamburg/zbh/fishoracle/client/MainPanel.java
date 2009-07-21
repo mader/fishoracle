@@ -67,6 +67,18 @@ public class MainPanel{
     westData.setMaxSize(400);
     westData.setMargins(new Margins(0, 5, 0, 0));
     
+    
+    Panel southPanel = new Panel();
+    southPanel.setHeight(0);
+    
+    Panel eastPanel = new Panel();
+    eastPanel.setWidth(0);
+    BorderLayoutData eastData = new BorderLayoutData(RegionPosition.EAST);    
+    eastData.setMargins(new Margins(0, 0, 5, 0));  
+	
+
+    borderPanel.add(eastPanel, eastData);  
+    borderPanel.add(southPanel, new BorderLayoutData(RegionPosition.SOUTH));
     borderPanel.add(northPanel.getNorthPanel(), new BorderLayoutData(RegionPosition.NORTH));
     borderPanel.add(westPanel.getWestPanel(), westData);
     borderPanel.add(centerPanel.getCenterPanel(), new BorderLayoutData(RegionPosition.CENTER));

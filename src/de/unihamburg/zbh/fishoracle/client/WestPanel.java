@@ -38,31 +38,28 @@ public class WestPanel{
 		
 		final AccordionLayout accordion = new AccordionLayout(true);  
 		
-		westPanel = new Panel();  
-        westPanel.setTitle("Menu");  
-        westPanel.setCollapsible(true);  
-        westPanel.setWidth(200);  
+		westPanel = new Panel();
+        westPanel.setTitle("Menu");
+        westPanel.setCollapsible(true);
+        westPanel.setWidth(200);
         westPanel.setLayout(accordion);
         
-        //Panel userPanel = new Panel();
-        //userPanel.setHtml("<p>User specific menu.</p>");  
-        //userPanel.setTitle("User");  
-        //userPanel.setBorder(false);   
-        //westPanel.add(userPanel);  
-           
+        Panel userPanel = new Panel();
+        userPanel.setHtml("<p>User specific menu. Not implemented yet.</p>");  
+        userPanel.setTitle("User");  
+        userPanel.setBorder(false);   
+        
         Panel searchPanel = new Panel();
         searchPanel.setTitle("Search");  
         searchPanel.setBorder(false);
-        searchPanel.setVisible(true);
-       
-
+        searchPanel.setVisible(true); 
+        
         FormPanel formPanel = new FormPanel();  
         formPanel.setBorder(false);
         formPanel.setHideLabels(true);
         formPanel.setMargins(10);
         
         searchBox = new TextField();
-        //searchBox.setText("00.03");
         searchBox.addKeyListener(KeyCodes.KEY_ENTER, searchListener);
         
         formPanel.add(searchBox);
@@ -71,7 +68,6 @@ public class WestPanel{
         ampRadio = new Radio();  
         ampRadio.setName("searchtype");
         ampRadio.setBoxLabel("Amplicon Search");  
-        //ampRadio.setChecked(true);
         formPanel.add(ampRadio);
           
         geneRadio = new Radio();  
@@ -116,6 +112,9 @@ public class WestPanel{
         searchPanel.add(formPanel);
         
         westPanel.add(searchPanel);
+        
+        westPanel.add(userPanel);  
+        
                 
 	}
 
