@@ -7,12 +7,14 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
+import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.event.KeyListener;
 import com.gwtext.client.widgets.form.FormPanel;
 import com.gwtext.client.widgets.form.Radio;
 import com.gwtext.client.widgets.form.TextField;
 import com.gwtext.client.widgets.layout.AccordionLayout;
+import com.gwtext.client.widgets.layout.FitLayout;
 import com.gwtext.client.core.EventObject;
 
 
@@ -20,7 +22,7 @@ import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 
-public final class WestPanel extends Panel{
+public final class WestPanel extends TabPanel{
 
 	private TextField searchBox = null;
 	private Radio ampRadio = null;
@@ -40,13 +42,9 @@ public final class WestPanel extends Panel{
 		parentObj = obj;
 		centerPanel = cp;
 		
-		final AccordionLayout accordion = new AccordionLayout(true);  
-		
-		
         this.setTitle("Menu");
         this.setCollapsible(true);
         this.setWidth(200);
-        this.setLayout(accordion);
         
         Panel userPanel = new Panel();
         userPanel.setHtml("<p>User specific menu. Not implemented yet.</p>");  
