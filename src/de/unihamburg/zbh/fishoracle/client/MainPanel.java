@@ -36,29 +36,27 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 
 
-public class MainPanel{
+public class MainPanel extends Panel{
 
-	private Panel mainPanel = null;
 	private Panel borderPanel = null;
-	private TabPanel cp = null;
-	private CenterPanel cpContainer = null;
+	private CenterPanel centerPanel = null;
+
 	
 	public MainPanel() {
 	
-	mainPanel = new Panel();
+	//mainPanel = new Panel();
 	
-    mainPanel.setBorder(false);
-    mainPanel.setPaddings(15);
-    mainPanel.setLayout(new FitLayout());
+    this.setBorder(false);
+    this.setPaddings(15);
+    this.setLayout(new FitLayout());
 
     borderPanel = new Panel();
     borderPanel.setLayout(new BorderLayout());
 	
     NorthPanel northPanel = new NorthPanel();
-    CenterPanel centerPanel = new CenterPanel(this);
-    cpContainer = centerPanel;
-    cp = centerPanel.getCenterPanel();
-    WestPanel westPanel = new WestPanel(this, cp);
+    centerPanel = new CenterPanel(this);
+
+    WestPanel westPanel = new WestPanel(this, centerPanel);
     
     
     BorderLayoutData westData = new BorderLayoutData(RegionPosition.WEST);
@@ -79,23 +77,13 @@ public class MainPanel{
 
     borderPanel.add(eastPanel, eastData);  
     borderPanel.add(southPanel, new BorderLayoutData(RegionPosition.SOUTH));
-    borderPanel.add(northPanel.getNorthPanel(), new BorderLayoutData(RegionPosition.NORTH));
-    borderPanel.add(westPanel.getWestPanel(), westData);
-    borderPanel.add(centerPanel.getCenterPanel(), new BorderLayoutData(RegionPosition.CENTER));
+    borderPanel.add(northPanel, new BorderLayoutData(RegionPosition.NORTH));
+    borderPanel.add(westPanel, westData);
+    borderPanel.add(centerPanel, new BorderLayoutData(RegionPosition.CENTER));
     
-    mainPanel.add(borderPanel);
+    this.add(borderPanel);
     
-	}
-
-	public Panel getMainPanel() {
-		return mainPanel;
-	}
-
-	public void setMainPanel(Panel mainPanel) {
-		this.mainPanel = mainPanel;
-	}
-	
-	
+	}	
 	
 	public AbsolutePanel createImageLayer(GWTImageInfo imgInfo){
 		
@@ -135,7 +123,7 @@ public class MainPanel{
 	
 	public void jumpto(){
 		
-		ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
+		ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
 		GWTImageInfo imgInfo = imagePanel.getImageInfo();
 		
 		String newChr;
@@ -159,8 +147,8 @@ public class MainPanel{
 	    	imgInfo.setStart(newStart);
 	    
 	    	imgInfo.setEnd(newEnd);
-		
-	    	cpContainer.imageRedraw(imgInfo);
+
+	    	centerPanel.imageRedraw(imgInfo);
 	    }
 
 	}
@@ -180,7 +168,7 @@ public class MainPanel{
         ToolbarButton left = new ToolbarButton(null, new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
 				
-				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
+				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
 				GWTImageInfo imgInfo = imagePanel.getImageInfo();
 				int range;
 				int percRange;
@@ -202,7 +190,7 @@ public class MainPanel{
 	    
 					imgInfo.setEnd(newEnd);
 		
-					cpContainer.imageRedraw(imgInfo);
+					centerPanel.imageRedraw(imgInfo);
 	    	
 				} else {
 					MessageBox.alert("You have reached the chromsomes end ...");
@@ -215,7 +203,7 @@ public class MainPanel{
         ToolbarButton right = new ToolbarButton(null, new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
 				
-				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
+				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
     			GWTImageInfo imgInfo = imagePanel.getImageInfo();
 				
     			int range;
@@ -237,7 +225,7 @@ public class MainPanel{
     		    
     		    imgInfo.setEnd(newEnd);
     		    
-				cpContainer.imageRedraw(imgInfo);	
+    		    centerPanel.imageRedraw(imgInfo);	
         	}
        });
         
@@ -246,7 +234,7 @@ public class MainPanel{
         ToolbarButton zoomin = new ToolbarButton(null, new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
 				
-				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
+				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
     			GWTImageInfo imgInfo = imagePanel.getImageInfo();
 				
     			int range;
@@ -270,7 +258,7 @@ public class MainPanel{
     		    
     		    	imgInfo.setEnd(newEnd);
     			
-    		    	cpContainer.imageRedraw(imgInfo);
+    		    	centerPanel.imageRedraw(imgInfo);
     		    	
     		    } else {
     		    	MessageBox.alert("You have reached the highest zoom level ...");
@@ -283,7 +271,7 @@ public class MainPanel{
         ToolbarButton zoomout = new ToolbarButton(null, new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
 				
-				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
+				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
     			GWTImageInfo imgInfo = imagePanel.getImageInfo();
 				
     			int range;
@@ -312,7 +300,7 @@ public class MainPanel{
     		    
     		    imgInfo.setEnd(newEnd);
     			
-				cpContainer.imageRedraw(imgInfo);	
+    		    centerPanel.imageRedraw(imgInfo);	
         	}
        });
         
@@ -378,9 +366,9 @@ public class MainPanel{
 		
 		//tab.setImage(image);
 		tab.setImageInfo(imgInfo);
-		cp.add(tab);
-		cp.activate(tab.getId());
-		cp.scrollToTab(tab, true);
+		centerPanel.add(tab);
+		centerPanel.activate(tab.getId());
+		centerPanel.scrollToTab(tab, true);
 	}
 	
 

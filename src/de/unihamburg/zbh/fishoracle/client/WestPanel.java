@@ -7,7 +7,6 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
-import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.event.KeyListener;
 import com.gwtext.client.widgets.form.FormPanel;
@@ -21,28 +20,33 @@ import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 
-public class WestPanel{
+public final class WestPanel extends Panel{
 
-	private Panel westPanel = null;
 	private TextField searchBox = null;
 	private Radio ampRadio = null;
 	private Radio geneRadio = null;
 	private Radio bandRadio = null;
 	private MainPanel parentObj = null;
-	private TabPanel centerPanel = null;
+	private CenterPanel centerPanel = null;
 
-	public WestPanel(MainPanel obj, TabPanel cp) {
+	static WestPanel west = new WestPanel();
+	
+	public WestPanel() {
+		
+	}
+	
+	public WestPanel(MainPanel obj, CenterPanel cp) {
 		
 		parentObj = obj;
 		centerPanel = cp;
 		
 		final AccordionLayout accordion = new AccordionLayout(true);  
 		
-		westPanel = new Panel();
-        westPanel.setTitle("Menu");
-        westPanel.setCollapsible(true);
-        westPanel.setWidth(200);
-        westPanel.setLayout(accordion);
+		
+        this.setTitle("Menu");
+        this.setCollapsible(true);
+        this.setWidth(200);
+        this.setLayout(accordion);
         
         Panel userPanel = new Panel();
         userPanel.setHtml("<p>User specific menu. Not implemented yet.</p>");  
@@ -111,9 +115,9 @@ public class WestPanel{
        
         searchPanel.add(formPanel);
         
-        westPanel.add(searchPanel);
+        this.add(searchPanel);
         
-        westPanel.add(userPanel);  
+        this.add(userPanel);  
         
                 
 	}
@@ -141,14 +145,6 @@ public class WestPanel{
 		
 	};
 	
-	public Panel getWestPanel() {
-		return westPanel;
-	}
-
-	public void setWestPanel(Panel westPanel) {
-		this.westPanel = westPanel;
-	}
-
 	/*=============================================================================
 	 *||                              RPC Calls                                  ||
 	 *=============================================================================
@@ -177,7 +173,14 @@ public class WestPanel{
 			};
 			req.generateImage(query, type, winWidth, callback);
 		}
-		
+	
+	public static WestPanel getInstance(){
+		if(west == null){
+			west = new WestPanel();
+		}
+		return west;
 	}
+	
+}
 	
 
