@@ -35,7 +35,18 @@ public class CenterPanel extends TabPanel{
         
         Panel startingPanel = new HTMLPanel();
         
-        startingPanel.setHtml("<br>Greeting text and information how to use Fish Oracle, loaded from a properties file or a database ...");
+        startingPanel.setHtml("" +
+        		"<br><center><h1>FISH Oracle</h1> <i>alpha</i></center><br>" +
+        		"You can serach for Amplicons by giving an Amplicon Stable ID" +
+        		" e.g. '60.01' or for a gene specified by a gene name e.g. 'kras'" +
+        		" or a Karyoband giving the exact Karyoband identifier e.g. '8q21.3'." +
+        		" By clicking on an element a window opens that shows additional information." +
+        		"<br><br>" +
+        		"FISH Oracle uses:<br><br> " +
+        		"<li> the Google Web Toolkit <a href=\"http://code.google.com/webtoolkit/\" target=_blank>http://code.google.com/webtoolkit/</a></li>" +
+        		"<li> the Ensembl human core database <a href=\"http://www.ensembl.org\" target=_blank>http://www.ensembl.org</a></li>" +
+        		"<li> AnnotationSketch of the GenomeTools <a href=\"http://www.genometools.org\" target=_blank>http://www.genometools.org</a></li>" +
+        		"</ul>");
         
         startingPanel.setTitle("Welcome");
         startingPanel.setAutoScroll(true);

@@ -22,7 +22,7 @@ import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 
-public final class WestPanel extends TabPanel{
+public class WestPanel extends TabPanel{
 
 	private TextField searchBox = null;
 	private Radio ampRadio = null;
@@ -30,12 +30,6 @@ public final class WestPanel extends TabPanel{
 	private Radio bandRadio = null;
 	private MainPanel parentObj = null;
 	private CenterPanel centerPanel = null;
-
-	static WestPanel west = new WestPanel();
-	
-	public WestPanel() {
-		
-	}
 	
 	public WestPanel(MainPanel obj, CenterPanel cp) {
 		
@@ -170,15 +164,7 @@ public final class WestPanel extends TabPanel{
 				}
 			};
 			req.generateImage(query, type, winWidth, callback);
-		}
-	
-	public static WestPanel getInstance(){
-		if(west == null){
-			west = new WestPanel();
-		}
-		return west;
-	}
-	
+		}	
 }
 	
 

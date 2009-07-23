@@ -133,6 +133,8 @@ public class SketchTool {
 		} catch (GTerror e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			e.getMessage();
+			e.getCause();
 		}
 		
 	    return imgInfo;
