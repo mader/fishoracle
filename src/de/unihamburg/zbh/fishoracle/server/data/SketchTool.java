@@ -22,7 +22,7 @@ public class SketchTool {
 		
 	}
 	
-	public GWTImageInfo generateImage(Amplicon[] amps, Gen[] genes, Karyoband[] kband, Location loc, int winWidth, String query) {
+	public GWTImageInfo generateImage(Amplicon[] amps, Gen[] genes, Karyoband[] kband, Location loc, int winWidth, String query, String serverPath) {
 		
 		ArrayList<FeatureNode> features;
 		
@@ -36,9 +36,8 @@ public class SketchTool {
 		long height;
 		
 		String imgUrl = null;
-		String imgGenUrl = null;
-		
-		 GWTImageInfo imgInfo = null;
+
+		GWTImageInfo imgInfo = null;
 		
 		seqid = loc.getSeqRegionName();
 		
@@ -78,8 +77,7 @@ public class SketchTool {
 		
 		style = new Style();
 		System.out.println("Style laden ...");
-		style.load_file("config/default.style");
-		//style.load_file("/home/mader/Desktop/jetty-6.1.18/webapps/fishoracle/config/default.style");
+		style.load_file(serverPath + "config/default.style");
 		
 		range = new Range(loc.getStart(), loc.getEnd());
 		System.out.println(range.get_start() + " " + range.get_end());
@@ -124,15 +122,11 @@ public class SketchTool {
 		
 		String fileName = Integer.toString(number);
 		
-		imgGenUrl = "/home/mader/Desktop/jetty-6.1.18/webapps/fishoracle/tmp/" + fileName + ".png";
-		
 		imgUrl = "tmp/" + fileName + ".png";
 		
-		//file = new File(imgGenUrl);
-		file = new File(imgUrl);
+		file = new File(serverPath + imgUrl);
 	    System.out.println("Datei schreiben ...");
-	    //canvas.to_file(imgGenUrl);
-	    canvas.to_file(imgUrl);
+	    canvas.to_file(serverPath + imgUrl);
 	    
 	    imgInfo = new GWTImageInfo(imgUrl, info.get_height(), winWidth, recmapinfoArr);
 		
@@ -144,7 +138,7 @@ public class SketchTool {
 	    return imgInfo;
 		
 	}
-	
+
 	private ArrayList<RecMapInfo> getRecMapElements(ImageInfo info){
 		
 		ArrayList<RecMapInfo> recmapinfoArray = new ArrayList<RecMapInfo>();

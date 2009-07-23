@@ -2,6 +2,9 @@ package de.unihamburg.zbh.fishoracle.server;
 
 import java.text.ParseException;
 import java.util.regex.*;
+import javax.servlet.*;
+
+import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -12,14 +15,23 @@ import de.unihamburg.zbh.fishoracle.client.data.Gen;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
 
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -6555234092930978494L;
+	
 	private GWTImageInfo imgInfo;
 	
 	
+	
+
+	
 	public GWTImageInfo generateImage(String query, String searchType, int winWidth) {
+		
+			String servletContext = this.getServletContext().getRealPath("/");
+		
+			System.out.println(servletContext);
 			
 			DBQuery db = new DBQuery();
 			
@@ -119,7 +131,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			SketchTool sketch = new SketchTool();
 			
-			imgInfo = sketch.generateImage(amps, genes, band, maxAmpRange, winWidth, query);
+			imgInfo = sketch.generateImage(amps, genes, band, maxAmpRange, winWidth, query, servletContext);
 			
 			imgInfo.setChromosome(maxAmpRange.getSeqRegionName());
 			imgInfo.setStart(maxAmpRange.getStart());
@@ -132,6 +144,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 
 	
 	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) {
+		
+		String servletContext = this.getServletContext().getRealPath("/");
 		
 		String chr = imageInfo.getChromosome();
 		int start = imageInfo.getStart();
@@ -161,7 +175,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		SketchTool sketch = new SketchTool();
 		
-		imgInfo = sketch.generateImage(amps, genes, band, maxRange, imageInfo.getWidth(), imageInfo.getQuery());
+		imgInfo = sketch.generateImage(amps, genes, band, maxRange, imageInfo.getWidth(), imageInfo.getQuery(), servletContext);
 		
 		imgInfo.setChromosome(maxRange.getSeqRegionName());
 		imgInfo.setStart(maxRange.getStart());

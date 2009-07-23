@@ -19,7 +19,20 @@ import de.unihamburg.zbh.fishoracle.client.data.Gen;
 
 public class DBQuery {
 
+	private String host = null;
+	private int port;
+	private String db = null;
+	private String user = null;
+	private String pw = null;
+	
 	public DBQuery() {
+		
+		host = "localhost";
+		port = 3306;
+		db = "homo_sapiens_core_54_36p";
+		user = "fouser";
+		pw = "fish4me";
+		
 	}
 	
 	
@@ -92,8 +105,8 @@ public class DBQuery {
 		Gene gene = null;
 		CoreDriver coreDriver;
 		try {
-			coreDriver = CoreDriverFactory.createCoreDriver("localhost",
-			3306, "homo_sapiens_core_54_36p", "fouser", "fish4me");
+			coreDriver = CoreDriverFactory.createCoreDriver(host,
+			port, db, user, pw);
 			coreDriver.getConnection();
 		
 			gene = (Gene) coreDriver.getGeneAdaptor().fetchBySynonym(symbol).get(0);
@@ -122,8 +135,8 @@ public class DBQuery {
 		KaryotypeBand k = null;
 		CoreDriver coreDriver;
 		try {
-			coreDriver = CoreDriverFactory.createCoreDriver("localhost",
-			3306, "homo_sapiens_core_54_36p", "fouser", "fish4me");
+			coreDriver = CoreDriverFactory.createCoreDriver(host,
+			port, db, user, pw);
 			coreDriver.getConnection();
 			
 			KaryotypeBandAdaptor kband = coreDriver.getKaryotypeBandAdaptor();
@@ -345,8 +358,8 @@ public class DBQuery {
 		
 		CoreDriver coreDriver;
 		try {
-			coreDriver = CoreDriverFactory.createCoreDriver("localhost",
-			3306, "homo_sapiens_core_54_36p", "fouser", "fish4me");
+			coreDriver = CoreDriverFactory.createCoreDriver(host,
+			port, db, user, pw);
 		
 			coreDriver.getConnection();
 			
@@ -397,8 +410,8 @@ public class DBQuery {
 			//CoreDriver coreDriver = registry.getGroup("human").getCoreDriver();
 			
 			CoreDriver coreDriver =
-				CoreDriverFactory.createCoreDriver("localhost",
-				3306, "homo_sapiens_core_54_36p", "fouser", "fish4me");
+				CoreDriverFactory.createCoreDriver(host,
+				port, db, user, pw);
 
 			coreDriver.getConnection();
 			
@@ -446,8 +459,8 @@ public class DBQuery {
 		
 			CoreDriver coreDriver;
 			try {
-				coreDriver = CoreDriverFactory.createCoreDriver("localhost",
-				3306, "homo_sapiens_core_54_36p", "fouser", "fish4me");
+				coreDriver = CoreDriverFactory.createCoreDriver(host,
+				port, db, user, pw);
 
 			coreDriver.getConnection();
 			
