@@ -363,22 +363,22 @@ public class DBQuery {
 		
 			coreDriver.getConnection();
 			
-			List<Gene> ensGene =  coreDriver.getGeneAdaptor().fetchBySynonym(query);
+			Gene ensGene =  coreDriver.getGeneAdaptor().fetch(query);
 
 			gene = new Gen();
-			for (int j = 0; j < ensGene.size(); j++) {
+			
 				
-				gene.setGenName(ensGene.get(j).getDisplayName());
-				gene.setChr(ensGene.get(j).getLocation().getSeqRegionName());
-				gene.setStart(ensGene.get(j).getLocation().getStart());
-				gene.setEnd(ensGene.get(j).getLocation().getEnd());
-				gene.setStrand(Integer.toString(ensGene.get(j).getLocation().getStrand()));
-				gene.setAccessionID(ensGene.get(j).getAccessionID());
-				gene.setBioType(ensGene.get(j).getBioType());
-				gene.setDescription(ensGene.get(j).getDescription());
-				gene.setLength(ensGene.get(j).getLocation().getLength());
+				gene.setGenName(ensGene.getDisplayName());
+				gene.setChr(ensGene.getLocation().getSeqRegionName());
+				gene.setStart(ensGene.getLocation().getStart());
+				gene.setEnd(ensGene.getLocation().getEnd());
+				gene.setStrand(Integer.toString(ensGene.getLocation().getStrand()));
+				gene.setAccessionID(ensGene.getAccessionID());
+				gene.setBioType(ensGene.getBioType());
+				gene.setDescription(ensGene.getDescription());
+				gene.setLength(ensGene.getLocation().getLength());
 				
-			}
+			
 		} catch (AdaptorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -425,6 +425,7 @@ public class DBQuery {
 					
 					genes[j] = new Gen(g.getDisplayName(), g.getLocation().getSeqRegionName(), g.getLocation().getStart(), g.getLocation().getEnd(), Integer.toString(g.getLocation().getStrand()));
 					
+					genes[j].setAccessionID(g.getAccessionID());
 					
 					System.out.println(g.getAccessionID() + " " + g.getDisplayName() + " " + g.getLocation().getStart() + " " + g.getLocation().getEnd() + " " +
 							g.getLocation().getSeqRegionName() + " " + g.getLocation().getStrand() + " " +

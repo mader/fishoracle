@@ -61,6 +61,7 @@ public class SketchTool {
 			
 			features.add(new FeatureNode(seqid, "gene", genes[j].getStart(), genes[j].getEnd(), genes[j].getStrand()));
 			features.get(j + all).add_attribute("ID", genes[j].getGenName());
+			features.get(j + all).add_attribute("NAME", genes[j].getAccessionID());
 			if(genes[j].getGenName().equalsIgnoreCase(query)){
 				features.get(j + all).gt_genome_node_mark();
 			}
@@ -144,17 +145,30 @@ public class SketchTool {
 	private ArrayList<RecMapInfo> getRecMapElements(ImageInfo info){
 		
 		ArrayList<RecMapInfo> recmapinfoArray = new ArrayList<RecMapInfo>();
-		
+		int countGenes = 0;
+		String identifier = null;
 		
 		for(int i=0; i < info.num_of_rec_maps(); i++){
 		
+			if(info.get_rec_map(i).get_genome_feature().get_type().equals("gene")){
+				
+				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("NAME");
+				
+				countGenes++;
+			} else if (info.get_rec_map(i).get_genome_feature().get_type().equals("amplicon")){
+				
+				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("ID");
+				
+			}
+			
+			
 			if(!info.get_rec_map(i).get_genome_feature().get_type().equals("chromosome")){
 				RecMapInfo recmapinfo = new RecMapInfo(info.get_rec_map(i).get_northwest_x(),
 														info.get_rec_map(i).get_northwest_y(),
 														info.get_rec_map(i).get_southeast_x(),
 														info.get_rec_map(i).get_southeast_y(),
 														info.get_rec_map(i).get_genome_feature().get_type(),
-														info.get_rec_map(i).get_genome_feature().get_attribute("ID"));
+														identifier);
 			
 				recmapinfoArray.add(recmapinfo);
 			}
