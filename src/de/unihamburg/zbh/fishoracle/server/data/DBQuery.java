@@ -32,9 +32,8 @@ public class DBQuery {
 		db = "homo_sapiens_core_54_36p";
 		user = "fouser";
 		pw = "fish4me";
-		
+
 	}
-	
 	
 	/**
 	 * 
@@ -366,7 +365,6 @@ public class DBQuery {
 			Gene ensGene =  coreDriver.getGeneAdaptor().fetch(query);
 
 			gene = new Gen();
-			
 				
 				gene.setGenName(ensGene.getDisplayName());
 				gene.setChr(ensGene.getLocation().getSeqRegionName());
@@ -375,7 +373,13 @@ public class DBQuery {
 				gene.setStrand(Integer.toString(ensGene.getLocation().getStrand()));
 				gene.setAccessionID(ensGene.getAccessionID());
 				gene.setBioType(ensGene.getBioType());
-				gene.setDescription(ensGene.getDescription());
+				
+				if(ensGene.getDescription() == null){
+					gene.setDescription("not available");
+				} else {
+					gene.setDescription(ensGene.getDescription());
+				}
+				
 				gene.setLength(ensGene.getLocation().getLength());
 				
 			

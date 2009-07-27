@@ -15,7 +15,6 @@ import com.gwtext.client.core.RegionPosition;
 import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
-import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.Toolbar;
 import com.gwtext.client.widgets.ToolbarButton;
 import com.gwtext.client.widgets.Window;
@@ -35,16 +34,12 @@ import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 
-
 public class MainPanel extends Panel{
 
 	private Panel borderPanel = null;
 	private CenterPanel centerPanel = null;
 
-	
 	public MainPanel() {
-	
-	//mainPanel = new Panel();
 	
     this.setBorder(false);
     this.setPaddings(15);
@@ -364,7 +359,6 @@ public class MainPanel extends Panel{
 		
 		tab.setImageLayer(absPanel);
 		
-		//tab.setImage(image);
 		tab.setImageInfo(imgInfo);
 		centerPanel.add(tab);
 		centerPanel.activate(tab.getId());
@@ -440,7 +434,7 @@ public class MainPanel extends Panel{
 		panel.setPaddings(15);  
 
 		PropertyGridPanel grid = new PropertyGridPanel();    
-		grid.setWidth(700);
+		grid.setWidth(500);
 		grid.setAutoHeight(true);  
 		grid.setSorted(false);   
 		
@@ -449,7 +443,7 @@ public class MainPanel extends Panel{
 		view.setScrollOffset(2); // the grid will never have scrollbars  
 		grid.setView(view);  
 		   
-		NameValuePair[] source = new NameValuePair[9];  
+		NameValuePair[] source = new NameValuePair[8];  
 		source[0] = new NameValuePair("Ensembl Stable ID", gene.getAccessionID()); 
 		source[1] = new NameValuePair("Name", gene.getGenName());
 		source[2] = new NameValuePair("Chromosome", gene.getChr());  
@@ -458,12 +452,18 @@ public class MainPanel extends Panel{
 		source[5] = new NameValuePair("Length", gene.getLength());
 		source[6] = new NameValuePair("Strand", gene.getStrand());  
 		source[7] = new NameValuePair("Bio Type" ,gene.getBioType()); 
-		source[8] = new NameValuePair("Description", gene.getDescription());
+		
+		Panel desc = new Panel();
+		
+		desc.setHtml("<center>" + gene.getDescription() + "</center>");
+		desc.setPaddings(5);
+		desc.setWidth(500);		
 		
 		grid.setSource(source);
 		
 		panel.add(grid);
 		
+		panel.add(desc);
 		window.add(panel);
 		
 		window.setCloseAction(Window.HIDE);

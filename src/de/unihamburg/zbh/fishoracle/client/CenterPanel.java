@@ -9,7 +9,6 @@ import com.gwtext.client.widgets.HTMLPanel;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
-import com.gwtext.client.widgets.event.PanelListener;
 import com.gwtext.client.widgets.event.PanelListenerAdapter;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
@@ -28,7 +27,6 @@ public class CenterPanel extends TabPanel{
 		mp = mainPanel;
 		cp = this;
 		
-		//centerPanel = new TabPanel();  
         this.setDeferredRender(false);  
         this.setEnableTabScroll(true);
         this.setActiveTab(0);
@@ -41,6 +39,10 @@ public class CenterPanel extends TabPanel{
         		" e.g. '60.01' or for a gene specified by a gene name e.g. 'kras'" +
         		" or a Karyoband giving the exact Karyoband identifier e.g. '8q21.3'." +
         		" By clicking on an element a window opens that shows additional information." +
+        		" As the amplicon data is incompatible to the Ensembl version 55 the currently" +
+        		" used Ensembl version is 54. If you want to search for a gene in the Ensembl " +
+        		" browser you better also use version 54 " +
+        		"<a href=\"http://may2009.archive.ensembl.org\" target=_blank>http://may09.archive.ensembl.org</a>" +
         		"<br><br>" +
         		"FISH Oracle uses:<br><br> " +
         		"<li> the Google Web Toolkit <a href=\"http://code.google.com/webtoolkit/\" target=_blank>http://code.google.com/webtoolkit/</a></li>" +

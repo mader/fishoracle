@@ -131,7 +131,7 @@ public class SketchTool {
 	    
 	    imgInfo = new GWTImageInfo(imgUrl, info.get_height(), winWidth, recmapinfoArr);
 		
-		} catch (GTerror e) {
+		} catch (GTerrorJava e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			e.getMessage();

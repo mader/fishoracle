@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.util.regex.*;
 import javax.servlet.*;
 
-import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -22,10 +21,6 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	private static final long serialVersionUID = -6555234092930978494L;
 	
 	private GWTImageInfo imgInfo;
-	
-	
-	
-
 	
 	public GWTImageInfo generateImage(String query, String searchType, int winWidth) {
 		
