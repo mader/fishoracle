@@ -1,8 +1,14 @@
 package de.unihamburg.zbh.fishoracle.server.data;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.sql.*;
 import java.text.ParseException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.ensembl.datamodel.CoordinateSystem;
 import org.ensembl.datamodel.Gene;
@@ -19,20 +25,111 @@ import de.unihamburg.zbh.fishoracle.client.data.Gen;
 
 public class DBQuery {
 
-	private String host = null;
-	private int port;
-	private String db = null;
-	private String user = null;
-	private String pw = null;
+	private String ehost = null;
+	private int eport;
+	private String edb = null;
+	private String euser = null;
+	private String epw = null;
 	
-	public DBQuery() {
+	private String fhost = null;
+	private String fdb = null;
+	private String fuser = null;
+	private String fpw = null;
+	
+	public DBQuery(String serverPath) {
 		
-		host = "localhost";
-		port = 3306;
-		db = "homo_sapiens_core_54_36p";
-		user = "fouser";
-		pw = "fish4me";
+		try{
 
+	    FileInputStream fStream = new FileInputStream(serverPath + "config/database.conf");
+
+	    DataInputStream inStream = new DataInputStream(fStream);
+	    BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
+	    String strLine;
+	    String[] dataStr;
+	    Boolean ensmbl = false;
+	    Boolean fishoracle = false;   
+	    
+	    while ((strLine = br.readLine()) != null)   {
+		  
+	      Pattern pensmbl = Pattern.compile("^\\[ensembl\\]$");
+		  Matcher mensmbl = pensmbl.matcher(strLine);
+	      
+		  if(mensmbl.find()){
+			  ensmbl = true;  
+			  fishoracle = false; 
+		  }
+		  
+		  Pattern pforacle = Pattern.compile("^\\[fishoracle\\]$");
+		  Matcher mforacle = pforacle.matcher(strLine);
+		  
+		  if(mforacle.find()){
+			  fishoracle = true; 
+			  ensmbl = false; 
+		  }
+		  
+		  Pattern phost = Pattern.compile("^host");
+		  Matcher mhost = phost.matcher(strLine);
+	      
+		  Pattern pport = Pattern.compile("^port");
+		  Matcher mport = pport.matcher(strLine);
+		  
+		  Pattern pdb = Pattern.compile("^db");
+		  Matcher mdb = pdb.matcher(strLine);
+		  
+		  Pattern puser = Pattern.compile("^user");
+		  Matcher muser = puser.matcher(strLine);
+		  
+		  Pattern ppw = Pattern.compile("^pw");
+		  Matcher mpw = ppw.matcher(strLine);
+		  
+		  if(ensmbl){
+			  
+			  if(mhost.find()){
+				  dataStr = strLine.split("=");
+				  ehost = dataStr[1].trim();
+			  }
+			  if(mport.find()){
+				  dataStr = strLine.split("=");
+				  eport = Integer.parseInt(dataStr[1].trim());
+			  }
+			  if(mdb.find()){
+				  dataStr = strLine.split("=");
+				  edb = dataStr[1].trim();
+			  }
+			  if(muser.find()){
+				  dataStr = strLine.split("=");
+				  euser = dataStr[1].trim();
+			  }
+			  if(mpw.find()){
+				  dataStr = strLine.split("=");
+				  epw = dataStr[1].trim();
+			  }
+		  }
+		  if(fishoracle){
+			  
+			  if(mhost.find()){
+				  dataStr = strLine.split("=");
+				  fhost = dataStr[1].trim();
+			  }
+			  if(mdb.find()){
+				  dataStr = strLine.split("=");
+				  fdb = dataStr[1].trim();
+			  }
+			  if(muser.find()){
+				  dataStr = strLine.split("=");
+				  fuser = dataStr[1].trim();
+			  }
+			  if(mpw.find()){
+				  dataStr = strLine.split("=");
+				  fpw = dataStr[1].trim();
+			  }
+		  }
+	    }
+
+	    inStream.close();
+	    } catch (Exception e){
+	      System.err.println("Error: " + e.getMessage());
+	    }
 	}
 	
 	/**
@@ -53,7 +150,7 @@ public class DBQuery {
 			int ampEnd = 0;
 			int ampChr = 0;
 			
-			conn = FishOracleConnection.connect();
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
 			System.out.println("Connection established");
 			
 			Statement s = conn.createStatement();
@@ -104,8 +201,8 @@ public class DBQuery {
 		Gene gene = null;
 		CoreDriver coreDriver;
 		try {
-			coreDriver = CoreDriverFactory.createCoreDriver(host,
-			port, db, user, pw);
+			coreDriver = CoreDriverFactory.createCoreDriver(ehost,
+			eport, edb, euser, epw);
 			coreDriver.getConnection();
 		
 			gene = (Gene) coreDriver.getGeneAdaptor().fetchBySynonym(symbol).get(0);
@@ -134,8 +231,8 @@ public class DBQuery {
 		KaryotypeBand k = null;
 		CoreDriver coreDriver;
 		try {
-			coreDriver = CoreDriverFactory.createCoreDriver(host,
-			port, db, user, pw);
+			coreDriver = CoreDriverFactory.createCoreDriver(ehost,
+			eport, edb, euser, epw);
 			coreDriver.getConnection();
 			
 			KaryotypeBandAdaptor kband = coreDriver.getKaryotypeBandAdaptor();
@@ -174,7 +271,7 @@ public class DBQuery {
 		int ampEnd = end;
 		try{
 			
-			conn = FishOracleConnection.connect();
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
 			System.out.println("Connection established");
 			
 			Statement s = conn.createStatement();
@@ -230,7 +327,7 @@ public class DBQuery {
 		Amplicon[] amps = null;
 		try{
 			
-			conn = FishOracleConnection.connect();
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
 			System.out.println("Connection established");
 			
 			Statement s = conn.createStatement();
@@ -309,7 +406,7 @@ public class DBQuery {
 		Amplicon amp = null;
 		try{
 		
-			conn = FishOracleConnection.connect();
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
 			System.out.println("Connection established");
 			
 			Statement s = conn.createStatement();
@@ -357,8 +454,8 @@ public class DBQuery {
 		
 		CoreDriver coreDriver;
 		try {
-			coreDriver = CoreDriverFactory.createCoreDriver(host,
-			port, db, user, pw);
+			coreDriver = CoreDriverFactory.createCoreDriver(ehost,
+			eport, edb, euser, epw);
 		
 			coreDriver.getConnection();
 			
@@ -414,8 +511,8 @@ public class DBQuery {
 			//CoreDriver coreDriver = registry.getGroup("human").getCoreDriver();
 			
 			CoreDriver coreDriver =
-				CoreDriverFactory.createCoreDriver(host,
-				port, db, user, pw);
+				CoreDriverFactory.createCoreDriver(ehost,
+				eport, edb, euser, epw);
 
 			coreDriver.getConnection();
 			
@@ -464,8 +561,8 @@ public class DBQuery {
 		
 			CoreDriver coreDriver;
 			try {
-				coreDriver = CoreDriverFactory.createCoreDriver(host,
-				port, db, user, pw);
+				coreDriver = CoreDriverFactory.createCoreDriver(ehost,
+				eport, edb, euser, epw);
 
 			coreDriver.getConnection();
 			

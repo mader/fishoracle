@@ -107,7 +107,7 @@ public class TestDBQuery {
 	@Test
 	public void testGetLocationForAmpliconStableId(){
 		
-		DBQuery db = new DBQuery();
+		DBQuery db = new DBQuery(System.getProperty("user.dir") + "/war/");
 		
 		Location testloc1 = db.getLocationForAmpliconStableId(00.01);
 		Location testloc2 = db.getLocationForAmpliconStableId(00.02);
@@ -169,7 +169,7 @@ public class TestDBQuery {
 	@Test
 	public void testGetMaxAmpliconRange(){
 		
-		DBQuery db = new DBQuery();
+		DBQuery db = new DBQuery(System.getProperty("user.dir") + "/war/");
 		
 		Location testloc = db.getMaxAmpliconRange(2, 16500000, 18500000);
 		Location testloc2 = db.getMaxAmpliconRange(3, 16500000, 18500000);
@@ -196,7 +196,7 @@ public class TestDBQuery {
 	@Test
 	public void testGetEsemblKaryotypes(){
 		
-		DBQuery db = new DBQuery();
+		DBQuery db = new DBQuery(System.getProperty("user.dir") + "/war/");
 		Karyoband[] testkbands = null;
 		Karyoband[] testkbands2 = null;
 		
@@ -229,7 +229,7 @@ public class TestDBQuery {
 	@Test
 	public void testGetEnsemblGenes(){
 		
-		DBQuery db = new DBQuery();
+		DBQuery db = new DBQuery(System.getProperty("user.dir") + "/war/");
 		Gen[] testgenes = null;
 		Gen[] testgenes2 = null;
 		
@@ -363,7 +363,7 @@ public class TestDBQuery {
 	@Test
 	public void testGetAmpliconData(){
 		
-		DBQuery db = new DBQuery();
+		DBQuery db = new DBQuery(System.getProperty("user.dir") + "/war/");
 		Amplicon[] testamps = null;
 		Amplicon[] testamps2 = null;
 		

@@ -4,10 +4,10 @@ import java.sql.*;
 
 public class FishOracleConnection {
 
-	public static Connection connect() throws Exception {
-		String url = "jdbc:mysql://localhost/oracle";
-		String userName = "fouser";
-		String password = "fish4me";
+	public static Connection connect(String host, String db, String user, String pw) throws Exception {
+		String url = "jdbc:mysql://" + host + "/" + db + "";
+		String userName = user;
+		String password = pw;
 		
 		Class.forName("com.mysql.jdbc.Driver").newInstance();
 		

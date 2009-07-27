@@ -25,10 +25,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	public GWTImageInfo generateImage(String query, String searchType, int winWidth) {
 		
 			String servletContext = this.getServletContext().getRealPath("/");
-		
-			System.out.println(servletContext);
 			
-			DBQuery db = new DBQuery();
+			DBQuery db = new DBQuery(servletContext);
 			
 			Amplicon[] amps = null;
 			Location featuresLoc = null;
@@ -146,7 +144,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		int start = imageInfo.getStart();
 		int end = imageInfo.getEnd();
 		
-		DBQuery db = new DBQuery();
+		DBQuery db = new DBQuery(servletContext);
 		
 		Amplicon[] amps = null;
 		
@@ -185,7 +183,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	public Amplicon getAmpliconInfo(
 			String query) {
 		
-		DBQuery db = new DBQuery();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBQuery db = new DBQuery(servletContext);
 		
 		Amplicon  amp = db.getAmpliconInfos(query);
 		
@@ -196,7 +196,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	@Override
 	public Gen getGeneInfo(String query) {
 		
-		DBQuery db = new DBQuery();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBQuery db = new DBQuery(servletContext);
 		
 		Gen  gene = db.getGeneInfos(query);
 		return gene;
