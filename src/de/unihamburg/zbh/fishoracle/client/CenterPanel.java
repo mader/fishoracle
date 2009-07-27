@@ -83,6 +83,8 @@ public class CenterPanel extends TabPanel{
 		final AsyncCallback<GWTImageInfo> callback = new AsyncCallback<GWTImageInfo>(){
 			public void onSuccess(GWTImageInfo result){
 				
+				if(cp.getActiveTab() instanceof ImgPanel){	
+				
 				ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
 				
 				imagePanel.remove(imagePanel.getImageLayer().getElement().getId(), true);
@@ -100,6 +102,8 @@ public class CenterPanel extends TabPanel{
 				imagePanel.setImageLayer(absp);
 				
 				imagePanel.doLayout();
+				
+				}
 				
 			}
 			public void onFailure(Throwable caught){
@@ -125,9 +129,11 @@ class MyPanelListenerAdapter extends PanelListenerAdapter {
 	
 	public void onResize(BoxComponent component, int adjWidth, int adjHeight, int rawWidth, int rawHeight){
 		if(component.getWidth() >= 150){
+			if(cp.getActiveTab() instanceof ImgPanel){	
 			ImgPanel imagePanel = (ImgPanel) cp.getActiveTab();
 			imagePanel.getImageInfo().setWidth(component.getWidth() - 20);
 			cp.imageRedraw(imagePanel.getImageInfo());
+			}
 		}
 	}
 
