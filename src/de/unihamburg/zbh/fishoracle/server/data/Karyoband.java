@@ -1,5 +1,9 @@
 package de.unihamburg.zbh.fishoracle.server.data;
 
+/**
+ * Stores karyoband information that is needed for the image generation.
+ * 
+ * */
 public class Karyoband {
 
 	private String chr;

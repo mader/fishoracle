@@ -23,29 +23,49 @@ import org.ensembl.driver.KaryotypeBandAdaptor;
 import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 
+/**
+ * Fetches various information from the fish oracle database an gene
+ * information from the ensembl database using the ensembl Java API.
+ * 
+ * */
 public class DBQuery {
 
+	//ensembl connection parameters
 	private String ehost = null;
 	private int eport;
 	private String edb = null;
 	private String euser = null;
 	private String epw = null;
 	
+	//fish oracle connection parameters
 	private String fhost = null;
 	private String fdb = null;
 	private String fuser = null;
 	private String fpw = null;
 	
+	/**
+	 * Initializes the database object by fetching the database connection 
+	 * parameters from the database.conf file.
+	 * 
+	 * 
+	 * 
+	 * @param serverPath should contain the realPath of a servlet context to the 
+	 *         database.conf file. e.g.:
+	 *         <p> 
+	 *         <code>new DBQuery(getServletContext().getRealPath("/"));<code>
+	 * 
+	 * */
 	public DBQuery(String serverPath) {
 		
 		try{
 
 	    FileInputStream fStream = new FileInputStream(serverPath + "config/database.conf");
-
 	    DataInputStream inStream = new DataInputStream(fStream);
 	    BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
+	    
 	    String strLine;
 	    String[] dataStr;
+	    
 	    Boolean ensmbl = false;
 	    Boolean fishoracle = false;   
 	    
@@ -128,16 +148,16 @@ public class DBQuery {
 
 	    inStream.close();
 	    } catch (Exception e){
-	      System.err.println("Error: " + e.getMessage());
+	    	e.printStackTrace();
+	    	System.err.println("Error: " + e.getMessage());
 	    }
 	}
 	
 	/**
-	 * 
-	 * looks location information (chromosome, start, end) for an amplicon stable id up.
+	 * Looks location information (chromosome, start, end) for an amplicon stable id up.
 	 * 
 	 * @param ampliconStableId The stable id of an amplicon.
-	 * @return		a ensembl API location object storing chromosome, start and end of an amplicon. 
+	 * @return		An ensembl API location object storing chromosome, start and end of an amplicon. 
 	 * 
 	 * */
 	public Location getLocationForAmpliconStableId(double ampliconStableId){
@@ -151,7 +171,6 @@ public class DBQuery {
 			int ampChr = 0;
 			
 			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
-			System.out.println("Connection established");
 			
 			Statement s = conn.createStatement();
 				
@@ -159,15 +178,13 @@ public class DBQuery {
 				ResultSet ampRs = s.getResultSet();
 				
 				while(ampRs.next()){
-				ampStart = ampRs.getInt(4);
-				ampEnd = ampRs.getInt(5);
-				ampChr = ampRs.getInt(3);
+					ampStart = ampRs.getInt(4);
+					ampEnd = ampRs.getInt(5);
+					ampChr = ampRs.getInt(3);
 				
-				System.out.println(ampChr + ":" + ampStart + "-" + ampEnd);
+					String locStr = "chromosome:" + ampChr + ":" + ampStart + "-" + ampEnd;
 				
-				String locStr = "chromosome:" + ampChr + ":" + ampStart + "-" + ampEnd;
-				
-				loc = new Location(locStr);
+					loc = new Location(locStr);
 				}
 				ampRs.close();
 				
@@ -178,7 +195,6 @@ public class DBQuery {
 			if(conn != null){
 				try{
 					conn.close();
-					System.out.println("Connection closed ...");
 				} catch(Exception e) {
 					String err = FishOracleConnection.getErrorMessage(e);
 					System.out.println(err);
@@ -190,19 +206,17 @@ public class DBQuery {
 	}
 	
 	/**
+	 * Looks location information (chromosome, start, end) for a gene symbol up.
 	 * 
-	 * looks location information (chromosome, start, end) for a gene symbol up.
-	 * 
-	 * @param symbol The gene symbol.
-	 * @return		a ensembl API location object storing chromosome, start and end of a gene. 
+	 * @param symbol The gene symbol, that was specified in the search query.
+	 * @return		An ensembl API location object storing chromosome, start and end of a gene. 
 	 * 
 	 * */
 	public Location getLocationForGene(String symbol){
 		Gene gene = null;
 		CoreDriver coreDriver;
 		try {
-			coreDriver = CoreDriverFactory.createCoreDriver(ehost,
-			eport, edb, euser, epw);
+			coreDriver = CoreDriverFactory.createCoreDriver(ehost, eport, edb, euser, epw);
 			coreDriver.getConnection();
 		
 			gene = (Gene) coreDriver.getGeneAdaptor().fetchBySynonym(symbol).get(0);
@@ -210,20 +224,19 @@ public class DBQuery {
 			coreDriver.closeAllConnections();
 		
 		} catch (AdaptorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Error: " + e.getMessage());
+			System.out.println(e.getCause());
 		}	
-		
 		return gene.getLocation();
 	}
 	
-	/**
-	 * 
-	 * looks location information (chromosome, start, end) for an karyoband up.
+	/** 
+	 * Looks location information (chromosome, start, end) for a karyoband up.
 	 * 
 	 * @param chr The chromosome number
 	 * @param band The karyoband
-	 * @return		a ensembl API location object storing chromosome, start and end of a chromosome and chromosome band. 
+	 * @return		An ensembl API location object storing chromosome, start and end of a chromosome and  karyoband. 
 	 * 
 	 * */
 	public Location getLocationForKaryoband(String chr, String band){
@@ -231,8 +244,7 @@ public class DBQuery {
 		KaryotypeBand k = null;
 		CoreDriver coreDriver;
 		try {
-			coreDriver = CoreDriverFactory.createCoreDriver(ehost,
-			eport, edb, euser, epw);
+			coreDriver = CoreDriverFactory.createCoreDriver(ehost, eport, edb, euser, epw);
 			coreDriver.getConnection();
 			
 			KaryotypeBandAdaptor kband = coreDriver.getKaryotypeBandAdaptor();
@@ -244,23 +256,22 @@ public class DBQuery {
 			coreDriver.closeAllConnections();
 		
 		} catch (AdaptorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Error: " + e.getMessage());
+			System.out.println(e.getCause());
 		}	
-		
 		return k.getLocation();
 	}
 	
 	
 	/**
-	 * 
-	 * finds all amplicons that overlap with a given range on a chromosome and returns the 
+	 * Finds all amplicons that overlap with a given range on a chromosome and returns the 
 	 * maximum range over all overlapping amplicons as an ensembl location object.
 	 * 
-	 * @param chr Chromosome
-	 * @param start starting position
-	 * @param end ending postion
-	 * @return 		a ensembl API location object storing chromosome, start and end
+	 * @param chr chromosome number
+	 * @param start Starting position on the chromosome.
+	 * @param end Ending postion on the chromosome.
+	 * @return 		An ensembl API location object storing chromosome, start and end
 	 * 
 	 * */
 	public Location getMaxAmpliconRange(int chr, int start, int end){
@@ -272,14 +283,14 @@ public class DBQuery {
 		try{
 			
 			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
-			System.out.println("Connection established");
 			
 			Statement s = conn.createStatement();
 			
-			s.executeQuery("SELECT MIN(start) as minstart, MAX(end) as maxend FROM amplicon WHERE chromosome = " + ampChr + " AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
-				       " (start >= " + ampStart + " AND end <= " + ampEnd + ") OR" +
-				       " (start >= " + ampStart + " AND start <= " + ampEnd + ") OR" +
-				       " (end >= " + ampStart + " AND end <= " + ampEnd + "))");
+			s.executeQuery("SELECT MIN(start) as minstart, MAX(end) as maxend FROM amplicon WHERE chromosome = " + ampChr + 
+					" AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
+				        " (start >= " + ampStart + " AND end <= " + ampEnd + ") OR" +
+				        " (start >= " + ampStart + " AND start <= " + ampEnd + ") OR" +
+				        " (end >= " + ampStart + " AND end <= " + ampEnd + "))");
 			
 			ResultSet rangeRs = s.getResultSet();
 			rangeRs.next();
@@ -300,7 +311,6 @@ public class DBQuery {
 			if(conn != null){
 				try{
 					conn.close();
-					System.out.println("Connection closed ...");
 				} catch(Exception e) {
 					String err = FishOracleConnection.getErrorMessage(e);
 					System.out.println(err);
@@ -312,12 +322,11 @@ public class DBQuery {
 	}
 	
 	/**
+	 * For a range on a chromosome an array with all overlapping amplicons is returned.
 	 * 
-	 * For a range on a chromosome an array with all opverlapping amplicons is returned.
-	 * 
-	 * @param chr Chromosome
-	 * @param start starting position
-	 * @param end ending postion
+	 * @param chr chromosome
+	 * @param start Starting position on the chromosome.
+	 * @param end Ending postion on the chromosome.
 	 * @return		Array containing amplicon objects
 	 * 
 	 * */
@@ -328,7 +337,6 @@ public class DBQuery {
 		try{
 			
 			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
-			System.out.println("Connection established");
 			
 			Statement s = conn.createStatement();
 				
@@ -336,23 +344,23 @@ public class DBQuery {
 			int ampEnd = end;
 			String ampChr = chr;
 			
-			s.executeQuery("SELECT count(*) from amplicon WHERE chromosome = \"" + ampChr + "\" AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
-				       " (start >= " + ampStart + " AND end <= " + ampEnd + ") OR" +
-				       " (start >= " + ampStart + " AND start <= " + ampEnd + ") OR" +
-				       " (end >= " + ampStart + " AND end <= " + ampEnd + "))");
+			s.executeQuery("SELECT count(*) from amplicon WHERE chromosome = \"" + ampChr + "\" " +
+					"AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
+				        " (start >= " + ampStart + " AND end <= " + ampEnd + ") OR" +
+				        " (start >= " + ampStart + " AND start <= " + ampEnd + ") OR" +
+				        " (end >= " + ampStart + " AND end <= " + ampEnd + "))");
 			
 			ResultSet countRegRs = s.getResultSet();
 			countRegRs.next();
 			int ampCount = countRegRs.getInt(1);
 			
-			System.out.println("Anzah: "  + ampCount);
-			
 			countRegRs.close();
 			
-			s.executeQuery("SELECT * from amplicon WHERE chromosome = \"" + ampChr + "\" AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
-					       " (start >= " + ampStart + " AND end <= " + ampEnd + ") OR" +
-					       " (start >= " + ampStart + " AND start <= " + ampEnd + ") OR" +
-					       " (end >= " + ampStart + " AND end <= " + ampEnd + "))");
+			s.executeQuery("SELECT * from amplicon WHERE chromosome = \"" + ampChr + "\" " +
+					"AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
+					    " (start >= " + ampStart + " AND end <= " + ampEnd + ") OR" +
+					    " (start >= " + ampStart + " AND start <= " + ampEnd + ") OR" +
+				        " (end >= " + ampStart + " AND end <= " + ampEnd + "))");
 			
 			ResultSet regRs = s.getResultSet();
 			
@@ -361,27 +369,18 @@ public class DBQuery {
 			amps = new Amplicon[ampCount];
 			
 			while(regRs.next()){
-				int ampliconId = regRs.getInt(1);
 				double newAmpliconStableId = regRs.getDouble(2);
 				String newChr = regRs.getString(3);
 				int newStart = regRs.getInt(4);
 				int newEnd = regRs.getInt(5);
-				String caseName = regRs.getString(6);
-				String tumorType = regRs.getString(7);
-				int contin = regRs.getInt(8);
-				int amplevel = regRs.getInt(9);
 				
 				amps[count] = new Amplicon(newAmpliconStableId, newChr, newStart, newEnd);
-				
-				System.out.println("AmpId: " + ampliconId + ", stableId: " + newAmpliconStableId + ", Chromosome: " + newChr
-						            + ", start: " + newStart + ", end: " + newEnd + ", case: " + caseName
-						            + ", tumor_type: " + tumorType + ", continuous: " + contin + ", amplevel: " + amplevel + "\n");
+
 				count++;
 			}
 			
 			regRs.close();
 			s.close();
-			System.out.println(count + " rows were obtained");
 			
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
@@ -390,7 +389,6 @@ public class DBQuery {
 			if(conn != null){
 				try{
 					conn.close();
-					System.out.println("Connection closed ...");
 				} catch(Exception e) {
 					String err = FishOracleConnection.getErrorMessage(e);
 					System.out.println(err);
@@ -400,6 +398,13 @@ public class DBQuery {
 		return amps;
 	}
 	
+	/**
+	 * Fetch all data for a given Amplicon stable id
+	 * 
+	 * @param query Amplicon Stable ID
+	 * @return		Amplicon object conaiting all amplicon data.
+	 * 
+	 * */
 	public Amplicon getAmpliconInfos(String query){
 		
 		Connection conn = null;
@@ -407,7 +412,6 @@ public class DBQuery {
 		try{
 		
 			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
-			System.out.println("Connection established");
 			
 			Statement s = conn.createStatement();
 			
@@ -429,7 +433,6 @@ public class DBQuery {
 				amp = new Amplicon(ampliconStableId, chr, start, end, caseName, tumorType, contin, amplevel);
 				
 			}
-			
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
 			System.exit(1);
@@ -437,25 +440,29 @@ public class DBQuery {
 			if(conn != null){
 				try{
 					conn.close();
-					System.out.println("Connection closed ...");
 				} catch(Exception e) {
 					String err = FishOracleConnection.getErrorMessage(e);
 					System.out.println(err);
 				}
 			}
 		}
-		
 		return amp;
 	}
 	
+	/**
+	 * Fetch all data for a gene given by an ensembl stable id.
+	 * 
+	 * @param query Ensembl Stable ID
+	 * @return		Gen object conaiting all gene data.
+	 * 
+	 * */
 	public Gen getGeneInfos(String query) {
 		
 		Gen gene = null;
 		
 		CoreDriver coreDriver;
 		try {
-			coreDriver = CoreDriverFactory.createCoreDriver(ehost,
-			eport, edb, euser, epw);
+			coreDriver = CoreDriverFactory.createCoreDriver(ehost, eport, edb, euser, epw);
 		
 			coreDriver.getConnection();
 			
@@ -479,10 +486,10 @@ public class DBQuery {
 				
 				gene.setLength(ensGene.getLocation().getLength());
 				
-			
 		} catch (AdaptorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace();			
+			System.out.println("Error: " + e.getMessage());
+			System.out.println(e.getCause());
 		}
 
 		
@@ -490,11 +497,11 @@ public class DBQuery {
 	}
 	
 	/**
-	 * For a range on a chromosome an array with all opverlapping genes is returned.
+	 * For a range on a chromosome an array with all overlapping genes is returned.
 	 * 
-	 * @param chr Chromosome
-	 * @param start starting position
-	 * @param end ending postion
+	 * @param chr chromosome
+	 * @param start Starting position on the chromosome.
+	 * @param end ending postion on the chromosome.
 	 * @return 		Array containing gen objects
 	 * 
 	 * */
@@ -504,15 +511,10 @@ public class DBQuery {
 		
 		String loc = "chromosome:" + chr + ":" + Integer.toString(start) + "-" + Integer.toString(end);
 		
-		System.out.println(loc);
-		
 		try {
-			//Registry registry = Registry.createDefaultRegistry();
-			//CoreDriver coreDriver = registry.getGroup("human").getCoreDriver();
 			
 			CoreDriver coreDriver =
-				CoreDriverFactory.createCoreDriver(ehost,
-				eport, edb, euser, epw);
+				CoreDriverFactory.createCoreDriver(ehost, eport, edb, euser, epw);
 
 			coreDriver.getConnection();
 			
@@ -524,35 +526,38 @@ public class DBQuery {
 				for (int j = 0; j < ensGenes.size(); j++) {
 					Gene g = (Gene) ensGenes.get(j);
 					
-					genes[j] = new Gen(g.getDisplayName(), g.getLocation().getSeqRegionName(), g.getLocation().getStart(), g.getLocation().getEnd(), Integer.toString(g.getLocation().getStrand()));
+					genes[j] = new Gen(g.getDisplayName(), 
+							           g.getLocation().getSeqRegionName(),
+							           g.getLocation().getStart(),
+							           g.getLocation().getEnd(),
+							           Integer.toString(g.getLocation().getStrand()));
 					
 					genes[j].setAccessionID(g.getAccessionID());
 					
-					System.out.println(g.getAccessionID() + " " + g.getDisplayName() + " " + g.getLocation().getStart() + " " + g.getLocation().getEnd() + " " +
-							g.getLocation().getSeqRegionName() + " " + g.getLocation().getStrand() + " " +
-							" " + g.getBioType() + " " + g.getAnalysis() );
 				}
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.out.println("Error: " + e.getMessage());
+				System.out.println(e.getCause());
 			}
 			
 			coreDriver.closeAllConnections();
 
 		} catch (AdaptorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Error: " + e.getMessage());
+			System.out.println(e.getCause());
 		}
 		return genes;
 	}
 	
 	/**
-	 * For a range on a chromosome an array with all opverlapping karyobands is returned.
+	 * For a range on a chromosome an array with all overlapping karyobands is returned.
 	 * 
 	 * @param chr Chromosome
-	 * @param start starting position
-	 * @param end ending postion
-	 * @return 		Array containing karyoband objects
+	 * @param start Starting position on the chromosome.
+	 * @param end Ending postion on the chromosome.
+	 * @return 		Array containing karyoband objects.
 	 * 
 	 * */
 	public Karyoband[] getEnsemblKaryotypes(String chr, int start, int end){
@@ -561,37 +566,36 @@ public class DBQuery {
 		
 			CoreDriver coreDriver;
 			try {
-				coreDriver = CoreDriverFactory.createCoreDriver(ehost,
-				eport, edb, euser, epw);
+				coreDriver = CoreDriverFactory.createCoreDriver(ehost, eport, edb, euser, epw);
 
-			coreDriver.getConnection();
+				coreDriver.getConnection();
 			
-			String loc = "chromosome:" + chr + ":" + Long.toString(start) + "-" + Long.toString(end);
+				String loc = "chromosome:" + chr + ":" + Long.toString(start) + "-" + Long.toString(end);
+				
+				KaryotypeBandAdaptor ktba = coreDriver.getKaryotypeBandAdaptor();
+				
+				List<?> ensChrs; 
+				
+				ensChrs = ktba.fetch(loc);
 			
-			KaryotypeBandAdaptor ktba = coreDriver.getKaryotypeBandAdaptor();
-			
-			List<?> ensChrs; 
+				karyoband = new Karyoband[ensChrs.size()];
+				for (int i = 0; i < ensChrs.size(); i++) {
 				
-			ensChrs = ktba.fetch(loc);
-			
-			karyoband = new Karyoband[ensChrs.size()];
-			for (int i = 0; i < ensChrs.size(); i++) {
+					KaryotypeBand k = (KaryotypeBand) ensChrs.get(i);
+								
+					karyoband[i] = new Karyoband(k.getLocation().getSeqRegionName(),
+												k.getBand(), 
+												k.getLocation().getStart(), 
+												k.getLocation().getEnd());
+				}
 				
-				KaryotypeBand k = (KaryotypeBand) ensChrs.get(i);
-				
-				System.out.println(k.getLocation().getSeqRegionName() + " " + k.getBand() + " " + k.getLocation().getStart() + " " + k.getLocation().getEnd());
-				
-				karyoband[i] = new Karyoband(k.getLocation().getSeqRegionName(), k.getBand(), k.getLocation().getStart(), k.getLocation().getEnd());
-			}
-				
-			coreDriver.closeAllConnections();
+				coreDriver.closeAllConnections();
 			
 			} catch (AdaptorException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}	
-			
+				System.out.println("Error: " + e.getMessage());
+				System.out.println(e.getCause());
+			}			
 			return karyoband;
 	}
-
 }

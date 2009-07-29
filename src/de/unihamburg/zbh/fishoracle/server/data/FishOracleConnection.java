@@ -2,6 +2,10 @@ package de.unihamburg.zbh.fishoracle.server.data;
 
 import java.sql.*;
 
+/**
+ * Establishes a mysql connection to the fish oracle database.
+ * 
+ * */
 public class FishOracleConnection {
 
 	public static Connection connect(String host, String db, String user, String pw) throws Exception {

@@ -2,7 +2,7 @@ package de.unihamburg.zbh.fishoracle.server;
 
 import java.text.ParseException;
 import java.util.regex.*;
-import javax.servlet.*;
+import java.util.*;
 
 import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
@@ -14,14 +14,25 @@ import de.unihamburg.zbh.fishoracle.client.data.Gen;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
 
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6555234092930978494L;
 	
 	private GWTImageInfo imgInfo;
 	
+	/**
+	 * Searching for genomic data,
+	 * visualizing the data and sending it to the client side 
+	 * for further processing.
+	 * 
+	 * @param query The search query that can be  an amplicon stable id, a gene name
+	 *         or a karyoband identifier.
+	 * @param searchType Determines what data the query represents.
+	 * @param intWidth The inner width of the center panel.
+	 * 
+	 * @return imgInfo image info object that stores additional information of
+	 *          the generated image that need to be displayed or further processed
+	 *          at the client side.
+	 *          @see GWTImageInfo
+	 * */
 	public GWTImageInfo generateImage(String query, String searchType, int winWidth) {
 		
 			String servletContext = this.getServletContext().getRealPath("/");
@@ -31,13 +42,17 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			Amplicon[] amps = null;
 			Location featuresLoc = null;
 			
+			Date dt = new Date();
+			
+			System.out.println(dt + " Search: " + query);
+			System.out.println(dt + " Search type: " + searchType);
 			
 			if(searchType.equals("Amplicon Search")){
 			
 				double ampQuery = new Double(query).doubleValue();
 			
 				featuresLoc = db.getLocationForAmpliconStableId(ampQuery);
-			
+				
 			} else if(searchType.equals("Gene Search")){
 				
 				featuresLoc = db.getLocationForGene(query);
@@ -56,13 +71,13 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				if(mChr.find()){
 					
 					chrStr = (String) query.subSequence(mChr.start(), mChr.end());
-					//System.out.println(chrStr);
+
 				}
 				
 				if(mBand.find()){
 					
 					bandStr = (String) query.subSequence(mBand.start(), mBand.end());
-					//System.out.println(bandStr);
+
 				}
 				featuresLoc = db.getLocationForKaryoband(chrStr, bandStr);
 				
@@ -135,7 +150,16 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		return imgInfo;
 	}
 
-	
+	/**
+	 * Redraws an image for a given image info object. This is necessary 
+	 * when the browser is resized or the user wants to scroll over the chromosome.
+	 * 
+	 * @param imgInfo image info object that stores additional information of
+	 *         the generated image that need to be displayed or further processed
+	 *         at the client side.
+	 *         
+	 * @return imgInfo image info object
+	 * */
 	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
@@ -143,6 +167,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		String chr = imageInfo.getChromosome();
 		int start = imageInfo.getStart();
 		int end = imageInfo.getEnd();
+		
+		Date dt = new Date();
+		
+		System.out.println(dt + " Redraw range: " + chr + ":" +  start + "-" + end);
 		
 		DBQuery db = new DBQuery(servletContext);
 		
@@ -153,8 +181,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		try {
 			maxRange = new Location("chromosome:" + chr + ":" + start + "-" + end);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Error: " + e.getMessage());
+			System.out.println(e.getCause());
 		}
 		
 		amps = db.getAmpliconData(chr, start, end);
@@ -179,11 +208,20 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		return imgInfo;
 	}
 
-	@Override
+	/**
+	 * Fetches amplicon data for a particular amplicon.
+	 * 
+	 * @param query The amplicon stable id
+	 * 
+	 * @return Amplicon
+	 * */
 	public Amplicon getAmpliconInfo(
 			String query) {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
+		
+		Date dt = new Date();
+		System.out.println(dt + " Get amplicon data for: " + query);
 		
 		DBQuery db = new DBQuery(servletContext);
 		
@@ -193,10 +231,19 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		return amp;
 	}
 
-	@Override
+	/**
+	 * Fetches gene data for a particular gene.
+	 * 
+	 * @param query The ensembl stable id
+	 * 
+	 * @return gene
+	 * */
 	public Gen getGeneInfo(String query) {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
+		
+		Date dt = new Date();
+		System.out.println(dt + " Get gene data for: " + query);
 		
 		DBQuery db = new DBQuery(servletContext);
 		

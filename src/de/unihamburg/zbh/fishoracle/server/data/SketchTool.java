@@ -15,13 +15,39 @@ import core.*;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import extended.*;
 
-
+/**
+ *  Draws images visualizing the genomic data especially chromosome,
+ *   gene and amplicon data. The drawing is done by AnnotaionsSketch
+ *   of the GenomeTools which is a bioinformatics library written in C.
+ *   The connection to C library is established via the java bindings
+ *   genometools-java that are based on JNA (Java Native Access).
+ * 
+ * */
 public class SketchTool {
 
 	public SketchTool() {
 		
 	}
 	
+	/**
+	 * Draws an image and creates an image info object that stores the URL
+	 * to the image and addional image information liek a ReqMap of all
+	 * features in the image.
+	 * 
+	 * @param amps Array of amplicons normally retrieved from the database.
+	 * @param genes Array of genes normally retrieved from the database.
+	 * @param kband Array of karyobands normally retrieved from the database.
+	 * @param loc ensembl API location object
+	 * @param winWidth The inner width of the center panel.
+	 * @param query The original search query. Needed to mark the searched feature.
+	 * @param serverPath the realPath of a servlet context retrieved from 
+	 *         <code>getServletContext().getRealPath("/");<code>.
+	 * 
+	 * @return imgInfo image info object that stores additional information of
+	 *          the generated image that need to be displayed or further processed
+	 *          at the client side.
+	 *          @see GWTImageInfo
+ 	 * */
 	public GWTImageInfo generateImage(Amplicon[] amps, Gen[] genes, Karyoband[] kband, Location loc, int winWidth, String query, String serverPath) {
 		
 		ArrayList<FeatureNode> features;
@@ -77,7 +103,7 @@ public class SketchTool {
 		}
 		
 		style = new Style();
-		System.out.println("Style laden ...");
+		
 		style.load_file(serverPath + "config/default.style");
 		
 		range = new Range(loc.getStart(), loc.getEnd());
@@ -117,6 +143,7 @@ public class SketchTool {
 		
 		ArrayList<RecMapInfo> recmapinfoArr = getRecMapElements(info);
 		
+		@SuppressWarnings("unused")
 		File file;
 		Random generator = new Random();
 		int number = generator.nextInt( Integer.MAX_VALUE );
@@ -126,22 +153,25 @@ public class SketchTool {
 		imgUrl = "tmp/" + fileName + ".png";
 		
 		file = new File(serverPath + imgUrl);
-	    System.out.println("Datei schreiben ...");
+
 	    canvas.to_file(serverPath + imgUrl);
 	    
 	    imgInfo = new GWTImageInfo(imgUrl, info.get_height(), winWidth, recmapinfoArr);
 		
 		} catch (GTerrorJava e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-			e.getMessage();
-			e.getCause();
+			System.out.println("Error: " + e.getMessage());
+			System.out.println(e.getCause());
 		}
-		
 	    return imgInfo;
-		
 	}
 
+	
+	/*
+	 * Copies the GTReqMap object into the custom ReqMapInfo object
+	 * and stores additional information in it.
+	 *  
+	 * */
 	private ArrayList<RecMapInfo> getRecMapElements(ImageInfo info){
 		
 		ArrayList<RecMapInfo> recmapinfoArray = new ArrayList<RecMapInfo>();
@@ -150,18 +180,20 @@ public class SketchTool {
 		
 		for(int i=0; i < info.num_of_rec_maps(); i++){
 		
+			// for genes we need to set an unique identifier like the ensembl stable id
 			if(info.get_rec_map(i).get_genome_feature().get_type().equals("gene")){
 				
 				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("NAME");
 				
 				countGenes++;
+			// the same applies to the amplicons but here the caption equals the amplicon stable id	
 			} else if (info.get_rec_map(i).get_genome_feature().get_type().equals("amplicon")){
 				
 				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("ID");
 				
 			}
 			
-			
+			// we don't need reqmap information for the karyoband
 			if(!info.get_rec_map(i).get_genome_feature().get_type().equals("chromosome")){
 				RecMapInfo recmapinfo = new RecMapInfo(info.get_rec_map(i).get_northwest_x(),
 														info.get_rec_map(i).get_northwest_y(),
