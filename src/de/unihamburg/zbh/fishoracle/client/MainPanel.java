@@ -365,8 +365,6 @@ public class MainPanel extends Panel{
 		centerPanel.scrollToTab(tab, true);
 	}
 	
-
-	
 	private ImgPanel addImgTab(String name) {
         ImgPanel tab = new ImgPanel();
         tab.setAutoScroll(true);
@@ -492,7 +490,7 @@ class MyClickHandler implements ClickHandler{
 			
 		}
 		if(recInfo.getType().equals("gene")){
-			System.out.println("blubb");
+
 			geneDetails(recInfo.getElementName());
 			
 		}

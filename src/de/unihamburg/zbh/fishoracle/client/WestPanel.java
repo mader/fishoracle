@@ -5,25 +5,34 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.gwtext.client.widgets.Button;
+import com.gwtext.client.widgets.Component;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.event.KeyListener;
 import com.gwtext.client.widgets.form.FormPanel;
+import com.gwtext.client.widgets.form.Label;
 import com.gwtext.client.widgets.form.Radio;
 import com.gwtext.client.widgets.form.TextField;
-import com.gwtext.client.widgets.layout.AccordionLayout;
-import com.gwtext.client.widgets.layout.FitLayout;
 import com.gwtext.client.core.EventObject;
 
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
+import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
+import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
+import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
 public class WestPanel extends TabPanel{
-
+	
+	private Panel searchPanel = null;
+	private Button logoutButton = null;
+	private FormPanel userFormPanel = null;
+	private TextField userName = null;
+	private TextField pw = null;
+	private Panel userPanel = null;
 	private TextField searchBox = null;
 	private Radio ampRadio = null;
 	private Radio geneRadio = null;
@@ -40,15 +49,73 @@ public class WestPanel extends TabPanel{
         this.setCollapsible(true);
         this.setWidth(200);
         
-        Panel userPanel = new Panel();
-        userPanel.setHtml("<p>User specific menu. Not implemented yet.</p>");  
+        userPanel = new Panel();  
         userPanel.setTitle("User");  
-        userPanel.setBorder(false);   
+        userPanel.setBorder(false);
         
-        Panel searchPanel = new Panel();
+        userFormPanel = new FormPanel();
+        userFormPanel.setBorder(false);
+        userFormPanel.setVisible(true);
+        userFormPanel.setHideLabels(true);
+        
+        userName = new TextField();
+        pw = new TextField();
+        pw.setInputType("password");
+        Button loginButton = new Button("log in", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {
+        			
+        			MessageBox.wait("Logging in " + userName.getText());
+        			userLogin(userName.getText(), pw.getText());
+        		
+        	}
+
+        });
+        
+        logoutButton = new Button("log out", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {     
+        			
+        			MessageBox.wait("Logging in " + userName.getText());
+        			userLogout();
+        		
+        	}
+
+        });
+        
+        logoutButton.hide();
+        
+        Button registerButton = new Button("register", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {     
+        			
+					Panel tab = centerPanel.openRegisterTab();
+				
+        			centerPanel.add(tab);
+        			centerPanel.activate(tab.getId());
+        			centerPanel.scrollToTab(tab, true);
+        	}
+
+        });
+        
+        Label emailLbl = new Label("user name: ");
+        Label passwordLbl = new Label("password: ");
+        
+        userFormPanel.add(emailLbl);
+        userFormPanel.add(userName);
+        userFormPanel.add(passwordLbl);
+        userFormPanel.add(pw);
+        userFormPanel.add(loginButton);
+        
+        
+        userPanel.add(userFormPanel);
+        
+        userPanel.add(logoutButton);
+        
+        userPanel.add(registerButton);
+        
+        searchPanel = new Panel();
         searchPanel.setTitle("Search");  
         searchPanel.setBorder(false);
         searchPanel.setVisible(true); 
+        searchPanel.setDisabled(true);
         
         FormPanel formPanel = new FormPanel();  
         formPanel.setBorder(false);
@@ -59,7 +126,6 @@ public class WestPanel extends TabPanel{
         searchBox.addKeyListener(KeyCodes.KEY_ENTER, searchListener);
         
         formPanel.add(searchBox);
-        
     
         ampRadio = new Radio();  
         ampRadio.setName("searchtype");
@@ -165,6 +231,66 @@ public class WestPanel extends TabPanel{
 			};
 			req.generateImage(query, type, winWidth, callback);
 		}	
+	
+	public void userLogin(String userName, String password){
+		
+		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<User> callback = new AsyncCallback<User>(){
+			public void onSuccess(User result){
+				
+				searchPanel.setDisabled(false);
+				userFormPanel.hide();
+				logoutButton.show();
+				MessageBox.hide();
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				MessageBox.hide();
+				MessageBox.alert("Nothing found!");
+			}
+		};
+		req.login(userName, password, callback);
+	}	
+	
+	public void userLogout(){
+		
+		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<User> callback = new AsyncCallback<User>(){
+			public void onSuccess(User result){
+				
+				userName.reset();
+				pw.reset();
+				logoutButton.hide();
+				searchPanel.setDisabled(true);
+				userFormPanel.show();
+				
+				Component[] items = centerPanel.getItems();  
+					for (int i = 0; i < items.length; i++) {  
+						Component component = items[i];  
+						if (!component.getTitle().equals("Welcome")) {  
+							centerPanel.remove(component);  
+						}
+					}
+				
+				
+				MessageBox.hide();
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				MessageBox.hide();
+				MessageBox.alert("Nothing found!");
+			}
+		};
+		req.logout(callback);
+	}	
 }
 	
 

@@ -5,22 +5,36 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.gwtext.client.widgets.BoxComponent;
+import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.HTMLPanel;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
+import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.event.PanelListenerAdapter;
+import com.gwtext.client.widgets.form.FormPanel;
+import com.gwtext.client.widgets.form.TextField;
+import com.gwtext.client.core.EventObject;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
+import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.ImgPanel;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
+import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
+import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
 public class CenterPanel extends TabPanel{
 
 	private TabPanel centerPanel = null;
 	private MainPanel mp = null;;
 	private CenterPanel cp = null;
+	
+	private TextField userName = null;
+	private TextField email = null;
+	private TextField firstName = null;
+	private TextField lastName = null;
+	private TextField pw = null;
 	
 	public CenterPanel(MainPanel mainPanel) {
 		
@@ -68,6 +82,59 @@ public class CenterPanel extends TabPanel{
 		this.centerPanel = centerPanel;
 	}	
 	
+	private Panel addTab(String name) {
+        Panel tab = new Panel();
+        tab.setAutoScroll(true);
+        tab.setTitle(name);
+        tab.setClosable(true);
+        return tab;
+    }
+	
+	public Panel openRegisterTab(){
+		
+		Panel tab = addTab("register");
+		
+		FormPanel reg = new FormPanel();
+		
+		reg.setBorder(false);
+		reg.setVisible(true);
+		
+		userName = new TextField();
+		userName.setLabel("user name");
+		email = new TextField();
+		email.setLabel("e-mail");
+		firstName = new TextField();
+		firstName.setLabel("first name");
+		lastName = new TextField();
+		lastName.setLabel("lastName");
+		pw = new TextField();
+		pw.setInputType("password");
+		pw.setLabel("password");
+		
+		Button submit = new Button("submit", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {     
+    			
+				User user = new User(firstName.getText(), lastName.getText(), userName.getText(), email.getText(), pw.getText(), false);
+				
+				registerUser(user);
+				
+    		}
+		});
+		
+		reg.add(userName);
+		reg.add(email);
+		reg.add(firstName);
+		reg.add(lastName);
+		reg.add(pw);
+		reg.add(submit);
+		
+		tab.add(reg);
+		
+		return tab;
+		
+		
+	}
+	
 	/*=============================================================================
 	 *||                              RPC Calls                                  ||
 	 *=============================================================================
@@ -114,7 +181,25 @@ public class CenterPanel extends TabPanel{
 		req.redrawImage(imgInfo, callback);
 	}
 
-	
+	public void registerUser(User user){
+		
+		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<User> callback = new AsyncCallback<User>(){
+			public void onSuccess(User result){
+				
+				MessageBox.alert("registered!");
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				MessageBox.alert("Nothing found!");
+			}
+		};
+		req.register(user, callback);
+	}
 }
 
 class MyPanelListenerAdapter extends PanelListenerAdapter {
@@ -136,7 +221,5 @@ class MyPanelListenerAdapter extends PanelListenerAdapter {
 			}
 		}
 	}
-
-
 
 }

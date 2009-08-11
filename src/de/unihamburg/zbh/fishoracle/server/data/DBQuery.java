@@ -22,6 +22,7 @@ import org.ensembl.driver.KaryotypeBandAdaptor;
 
 import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.User;
 
 /**
  * Fetches various information from the fish oracle database an gene
@@ -597,5 +598,97 @@ public class DBQuery {
 				System.out.println(e.getCause());
 			}			
 			return karyoband;
+	}
+	
+	/* USER DATA */
+	
+	public User getUserData(String userName, String pw){
+		Connection conn = null;
+		User user = null;
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			
+			s.executeQuery("SELECT * FROM user WHERE username = '" + userName + "' AND password = '" + pw + "'");
+			
+			ResultSet userRs = s.getResultSet();
+			
+			int id = 0;
+			String fistName = null;
+			String lastName = null;
+			String dbUserName = null;
+			String email = null;
+			Boolean isAdmin = null;
+			
+			while(userRs.next()){
+				
+				id = userRs.getInt(1);
+				fistName = userRs.getString(2);
+				lastName = userRs.getString(3);
+				dbUserName = userRs.getString(4);
+				email = userRs.getString(5);
+				isAdmin = userRs.getBoolean(7);
+			}
+			
+			user = new User(id, fistName, lastName, dbUserName, email, isAdmin);
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.exit(1);
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		return user;	
+	}
+	
+	public void insertUserData(User user){
+		Connection conn = null;
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			
+			s.executeQuery("SELECT count(*) FROM user where username = '" + user.getUserName() + "'");
+			
+			ResultSet countRs = s.getResultSet();
+			countRs.next();
+			int ampCount = countRs.getInt(1);
+			
+			if(ampCount == 0){
+			
+			s.executeUpdate("INSERT INTO user (first_name, last_name, username, email, password, isadmin) VALUES" +
+							" ('" + user.getFirstName() + "', '" + user.getLastName() + "', '" + user.getUserName() +
+							"', '" + user.getEmail() + "', '" + user.getPw() + "', '" + user.getIsAdmin() + "')");
+			} else {
+				
+				System.out.println("benutzter schon vorhanden");
+				
+			}
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.exit(1);
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
 	}
 }
