@@ -486,6 +486,8 @@ public class DBQuery {
 				
 				gene.setLength(ensGene.getLocation().getLength());
 				
+	    coreDriver.closeAllConnections();
+		
 		} catch (AdaptorException e) {
 			e.printStackTrace();			
 			System.out.println("Error: " + e.getMessage());

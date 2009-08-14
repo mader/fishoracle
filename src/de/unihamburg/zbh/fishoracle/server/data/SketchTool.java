@@ -49,7 +49,7 @@ public class SketchTool {
 	 *          @see GWTImageInfo
  	 * */
 	public GWTImageInfo generateImage(Amplicon[] amps, Gen[] genes, Karyoband[] kband, Location loc, int winWidth, String query, String serverPath) {
-		
+			
 		ArrayList<FeatureNode> features;
 		
 		String seqid;
@@ -68,6 +68,7 @@ public class SketchTool {
 		seqid = loc.getSeqRegionName();
 		
 		features = new ArrayList<FeatureNode>();
+		
 		try {
 		
 		int all;
