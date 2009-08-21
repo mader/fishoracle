@@ -11,6 +11,8 @@ import de.unihamburg.zbh.fishoracle.server.data.*;
 import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
+import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
 
@@ -31,9 +33,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * @return imgInfo image info object that stores additional information of
 	 *          the generated image that need to be displayed or further processed
 	 *          at the client side.
-	 *          @see GWTImageInfo
+	 * @throws Exception 
+	 * @see GWTImageInfo
 	 * */
-	public GWTImageInfo generateImage(String query, String searchType, int winWidth) {
+	public GWTImageInfo generateImage(String query, String searchType, int winWidth) throws Exception {
 		
 			String servletContext = this.getServletContext().getRealPath("/");
 			
@@ -48,10 +51,24 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			System.out.println(dt + " Search type: " + searchType);
 			
 			if(searchType.equals("Amplicon Search")){
+
+				
 			
-				double ampQuery = new Double(query).doubleValue();
-			
-				featuresLoc = db.getLocationForAmpliconStableId(ampQuery);
+				try {
+					
+					double ampQuery = new Double(query).doubleValue();
+					
+					featuresLoc = db.getLocationForAmpliconStableId(ampQuery);
+					
+					
+				} catch (DBQueryException e) {
+					throw e;
+				} catch (Exception e) {
+					
+					if(e instanceof NumberFormatException){	
+						throw new SearchException("The input has to be a number! e.g. 1.01", e.getCause());
+					}
+				}
 				
 			} else if(searchType.equals("Gene Search")){
 				
@@ -79,7 +96,11 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 					bandStr = (String) query.subSequence(mBand.start(), mBand.end());
 
 				}
-				featuresLoc = db.getLocationForKaryoband(chrStr, bandStr);
+				if(chrStr == null || bandStr == null){
+					throw new SearchException("The input for a karyoband has to follow the rule ^\\d{1,2}[p,q]{1}\\d{1,2}\\.?\\d{1,2}?$");
+				} else {
+					featuresLoc = db.getLocationForKaryoband(chrStr, bandStr);
+				}
 				
 			} else if(searchType.equals("range")){
 				

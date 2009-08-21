@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.gwtext.client.widgets.BoxComponent;
 import com.gwtext.client.widgets.Button;
+import com.gwtext.client.widgets.Component;
 import com.gwtext.client.widgets.HTMLPanel;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
@@ -190,7 +191,21 @@ public class CenterPanel extends TabPanel{
 		final AsyncCallback<User> callback = new AsyncCallback<User>(){
 			public void onSuccess(User result){
 				
-				MessageBox.alert("registered!");
+				
+				
+				Component[] items = cp.getItems();
+				for (int i = 0; i < items.length; i++) {  
+					Component component = items[i];  
+					if (component.getTitle().equals("register")) {  
+						cp.remove(component);  
+					}
+				}
+			
+				String msg = "Registered! You can now login with your User Name " + result.getUserName();
+				
+				System.out.println(msg);
+				
+				MessageBox.alert(msg);
 				
 			}
 			public void onFailure(Throwable caught){

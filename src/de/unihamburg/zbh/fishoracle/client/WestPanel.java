@@ -20,6 +20,7 @@ import com.gwtext.client.core.EventObject;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
@@ -224,9 +225,24 @@ public class WestPanel extends TabPanel{
 					
 				}
 				public void onFailure(Throwable caught){
-					System.out.println(caught.getMessage());
+					
+					
+					//MessageBox.alert("Nothing found!");
+
 					MessageBox.hide();
-					MessageBox.alert("Nothing found!");
+					MessageBox.alert(caught.getMessage());
+/*
+					if (caught instanceof DBQueryException) {
+							DBQueryException DBcaught = (DBQueryException) caught;
+							MessageBox.hide();
+							MessageBox.alert(DBcaught.getMessage());
+					   }else{
+						   MessageBox.hide();
+						   MessageBox.alert("blubb");
+						   
+					   }
+	*/				
+					
 				}
 			};
 			req.generateImage(query, type, winWidth, callback);
@@ -250,7 +266,7 @@ public class WestPanel extends TabPanel{
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
 				MessageBox.hide();
-				MessageBox.alert("Nothing found!");
+				MessageBox.alert(caught.getMessage());
 			}
 		};
 		req.login(userName, password, callback);

@@ -23,6 +23,7 @@ import org.ensembl.driver.KaryotypeBandAdaptor;
 import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
 /**
  * Fetches various information from the fish oracle database an gene
@@ -159,9 +160,10 @@ public class DBQuery {
 	 * 
 	 * @param ampliconStableId The stable id of an amplicon.
 	 * @return		An ensembl API location object storing chromosome, start and end of an amplicon. 
+	 * @throws Exception 
 	 * 
 	 * */
-	public Location getLocationForAmpliconStableId(double ampliconStableId){
+	public Location getLocationForAmpliconStableId(double ampliconStableId) throws Exception{
 	
 		Connection conn = null;
 		Location loc = null;
@@ -189,9 +191,19 @@ public class DBQuery {
 				}
 				ampRs.close();
 				
-		} catch (Exception e){
+				if(loc == null){
+					
+					DBQueryException e = new DBQueryException("Couldn't find the amplicon with the stable ID " + ampliconStableId);
+					throw e;
+				}
+				
+		} catch (DBQueryException e){
+			System.out.println(e.getMessage());
+			throw e;
+		} catch (Exception e) {
 			FishOracleConnection.printErrorMessage(e);
-			System.exit(1);
+			throw e;
+			//System.exit(1);
 		} finally {
 			if(conn != null){
 				try{
@@ -211,9 +223,10 @@ public class DBQuery {
 	 * 
 	 * @param symbol The gene symbol, that was specified in the search query.
 	 * @return		An ensembl API location object storing chromosome, start and end of a gene. 
+	 * @throws DBQueryException 
 	 * 
 	 * */
-	public Location getLocationForGene(String symbol){
+	public Location getLocationForGene(String symbol) throws DBQueryException{
 		Gene gene = null;
 		CoreDriver coreDriver;
 		try {
@@ -228,7 +241,12 @@ public class DBQuery {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getMessage());
 			System.out.println(e.getCause());
-		}	
+		} catch (Exception e) {
+			
+			if(e instanceof IndexOutOfBoundsException){
+				throw new DBQueryException("Couldn't find gene with gene symbol " + symbol, e.getCause());
+			}
+		}
 		return gene.getLocation();
 	}
 	
@@ -238,9 +256,10 @@ public class DBQuery {
 	 * @param chr The chromosome number
 	 * @param band The karyoband
 	 * @return		An ensembl API location object storing chromosome, start and end of a chromosome and  karyoband. 
+	 * @throws DBQueryException 
 	 * 
 	 * */
-	public Location getLocationForKaryoband(String chr, String band){
+	public Location getLocationForKaryoband(String chr, String band) throws DBQueryException{
 		CoordinateSystem coordSys = null;
 		KaryotypeBand k = null;
 		CoreDriver coreDriver;
@@ -260,7 +279,12 @@ public class DBQuery {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getMessage());
 			System.out.println(e.getCause());
-		}	
+		} catch (Exception e) {
+			
+			if(e instanceof IndexOutOfBoundsException){
+				throw new DBQueryException("Couldn't find karyoband " + chr + band, e.getCause());
+			}
+		}
 		return k.getLocation();
 	}
 	
@@ -626,6 +650,7 @@ public class DBQuery {
 			while(userRs.next()){
 				
 				id = userRs.getInt(1);
+				System.out.println("blubb");
 				fistName = userRs.getString(2);
 				lastName = userRs.getString(3);
 				dbUserName = userRs.getString(4);
@@ -673,7 +698,7 @@ public class DBQuery {
 							"', '" + user.getEmail() + "', '" + user.getPw() + "', '" + user.getIsAdmin() + "')");
 			} else {
 				
-				System.out.println("benutzter schon vorhanden");
+				 System.out.println("benutzter schon vorhanden");
 				
 			}
 			

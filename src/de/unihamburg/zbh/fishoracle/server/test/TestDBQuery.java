@@ -105,7 +105,7 @@ public class TestDBQuery {
 	}
 	
 	@Test
-	public void testGetLocationForAmpliconStableId(){
+	public void testGetLocationForAmpliconStableId() throws Exception{
 		
 		DBQuery db = new DBQuery(System.getProperty("user.dir") + "/war/");
 		

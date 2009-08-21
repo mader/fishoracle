@@ -19,11 +19,9 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		
 		DBQuery db = new DBQuery(servletContext);
 		
-		
-		
 		db.insertUserData(user);
 		
-		return null;
+		return user;
 	}
 	
 	public User login(String userName, String password){
