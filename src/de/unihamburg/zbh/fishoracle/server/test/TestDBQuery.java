@@ -171,10 +171,10 @@ public class TestDBQuery {
 		
 		DBQuery db = new DBQuery(System.getProperty("user.dir") + "/war/");
 		
-		Location testloc = db.getMaxAmpliconRange(2, 16500000, 18500000);
-		Location testloc2 = db.getMaxAmpliconRange(3, 16500000, 18500000);
-		Location testloc3 = db.getMaxAmpliconRange(2, 16500000, 17400000);
-		Location testloc4 = db.getMaxAmpliconRange(3, 16500000, 16900000);
+		Location testloc = db.getMaxAmpliconRange("2", 16500000, 18500000);
+		Location testloc2 = db.getMaxAmpliconRange("3", 16500000, 18500000);
+		Location testloc3 = db.getMaxAmpliconRange("2", 16500000, 17400000);
+		Location testloc4 = db.getMaxAmpliconRange("3", 16500000, 16900000);
 		
 		Assert.assertEquals(testloc.getSeqRegionName(), maxLoc1.getSeqRegionName());
 		Assert.assertEquals(testloc.getStart(), maxLoc1.getStart());

@@ -168,7 +168,7 @@ public class DBQuery {
 			
 			int ampStart = 0;
 			int ampEnd = 0;
-			int ampChr = 0;
+			String ampChr = null;
 			
 			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
 			
@@ -180,7 +180,7 @@ public class DBQuery {
 				while(ampRs.next()){
 					ampStart = ampRs.getInt(4);
 					ampEnd = ampRs.getInt(5);
-					ampChr = ampRs.getInt(3);
+					ampChr = ampRs.getString(3);
 				
 					String locStr = "chromosome:" + ampChr + ":" + ampStart + "-" + ampEnd;
 				
@@ -274,10 +274,10 @@ public class DBQuery {
 	 * @return 		An ensembl API location object storing chromosome, start and end
 	 * 
 	 * */
-	public Location getMaxAmpliconRange(int chr, int start, int end){
+	public Location getMaxAmpliconRange(String chr, int start, int end){
 		Location loc = null;
 		Connection conn = null;
-		int ampChr = chr;
+		String ampChr = chr;
 		int ampStart = start;
 		int ampEnd = end;
 		try{
@@ -286,8 +286,8 @@ public class DBQuery {
 			
 			Statement s = conn.createStatement();
 			
-			s.executeQuery("SELECT MIN(start) as minstart, MAX(end) as maxend FROM amplicon WHERE chromosome = " + ampChr + 
-					" AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
+			s.executeQuery("SELECT MIN(start) as minstart, MAX(end) as maxend FROM amplicon WHERE chromosome = \"" + ampChr + 
+					"\" AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
 				        " (start >= " + ampStart + " AND end <= " + ampEnd + ") OR" +
 				        " (start >= " + ampStart + " AND start <= " + ampEnd + ") OR" +
 				        " (end >= " + ampStart + " AND end <= " + ampEnd + "))");
@@ -297,7 +297,7 @@ public class DBQuery {
 			int qstart = rangeRs.getInt(1);
 			int qend = rangeRs.getInt(2);
 			
-			String locStr = "chromosome:" + Integer.toString(ampChr) + ":" + qstart + "-" + qend;
+			String locStr = "chromosome:" + ampChr + ":" + qstart + "-" + qend;
 			
 			loc = new Location(locStr);
 			

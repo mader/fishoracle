@@ -85,7 +85,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				
 			} 
 			
-			Location maxAmpRange = db.getMaxAmpliconRange(Integer.parseInt(featuresLoc.getSeqRegionName()), featuresLoc.getStart(), featuresLoc.getEnd());
+			Location maxAmpRange = db.getMaxAmpliconRange(featuresLoc.getSeqRegionName(), featuresLoc.getStart(), featuresLoc.getEnd());
 			
 			if(maxAmpRange.getEnd() - maxAmpRange.getStart() == 0){
 				
