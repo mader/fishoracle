@@ -21,4 +21,23 @@
     <url-pattern>/fishoracle/Search</url-pattern>
   </servlet-mapping>
 
+  <security-constraint>
+    <web-resource-collection>
+    <web-resource-name>fishoracle</web-resource-name>
+    <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>fishrole</role-name>
+    </auth-constraint>
+  </security-constraint>
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>fish oracle</realm-name>
+  </login-config>
+
+  <security-role>
+    <description> Test role </description>
+    <role-name> fishrole </role-name>
+   </security-role>
+
 </web-app>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="fishoracle" default="build" basedir=".">
   <!-- Configure path to GWT SDK -->
-  <property name="gwt.sdk" location="/home/mader/Desktop/gwt-linux-1.6.4" />
+  <property name="gwt.sdk" location="/home/mader/gwt-linux-1.7.0" />
 
   <path id="project.class.path">
     <pathelement location="war/WEB-INF/classes"/>
