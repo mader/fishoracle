@@ -16,6 +16,7 @@ public interface Search extends RemoteService {
 	public GWTImageInfo redrawImage(GWTImageInfo imageInfo);
 	public Amplicon getAmpliconInfo(String query);
 	public Gen getGeneInfo(String query);
+	public String exportData(GWTImageInfo imageInfo);
 	
 	public static class Util {
 

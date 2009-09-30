@@ -9,6 +9,7 @@ import com.gwtext.client.widgets.HTMLPanel;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
+import com.gwtext.client.widgets.Window;
 import com.gwtext.client.widgets.event.PanelListenerAdapter;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
@@ -114,6 +115,39 @@ public class CenterPanel extends TabPanel{
 		req.redrawImage(imgInfo, callback);
 	}
 
+	public void exportExcel(GWTImageInfo imgInfo){
+		
+		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<String> callback = new AsyncCallback<String>(){
+			public void onSuccess(String result){
+				
+				Window window = new Window();
+				window.setTitle("export image as Excel document");
+				 
+				window.setClosable(true);  
+				window.setPlain(true); 
+				Panel panel = new Panel();  
+				panel.setBorder(false);
+				panel.setPaddings(15);
+				
+				panel.setHtml("<a href=\"" + result + "\">download Excel document</a>");
+				
+				window.add(panel);
+				
+				window.setCloseAction(Window.HIDE);
+				
+				window.show();
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				MessageBox.alert("Nothing found!");
+			}
+		};
+		req.exportData(imgInfo, callback);
+	}
 	
 }
 

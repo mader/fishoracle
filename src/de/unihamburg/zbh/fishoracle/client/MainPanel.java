@@ -353,6 +353,66 @@ public class MainPanel extends Panel{
 		tab.setStartBox(start);
 		tab.setEndBox(end);
 		
+		toolbar.addSeparator();
+		
+		ToolbarButton exportButton = new ToolbarButton("export image to Excel", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {
+				
+				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
+    			GWTImageInfo imgInfo = imagePanel.getImageInfo();
+    			
+    		    centerPanel.exportExcel(imgInfo);	
+        	}
+       });  
+		exportButton.setText("export");  
+		
+		/*
+		Menu menu = new Menu();
+		
+		Item excelItem = new Item("export image to Excel", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {
+				
+				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
+    			GWTImageInfo imgInfo = imagePanel.getImageInfo();
+				
+    			int range;
+    			int percRange;
+    			int perc = 10;
+    			int newStart;
+    			int newEnd;
+    			
+    			range = imgInfo.getEnd() - imgInfo.getStart(); 
+    			
+    		    percRange = range * perc / 100;
+    			
+    		    
+    		    newStart = imgInfo.getStart() - percRange;
+    		    
+    		    newEnd = imgInfo.getEnd() + percRange;
+    		    
+    		    
+    		    if(newStart < 0){
+    		    	
+    		    	newEnd = newEnd - newStart;
+    		    	newStart = 0;
+    		    }
+    		    
+    		    imgInfo.setStart(newStart);
+    		    
+    		    imgInfo.setEnd(newEnd);
+    			
+    		    centerPanel.imageRedraw(imgInfo);	
+        	}
+       });
+		
+		menu.addItem(excelItem); 
+		
+		exportButton.setMenu(menu);
+		
+		*/
+		
+		toolbar.addButton(exportButton);
+		
 		AbsolutePanel absPanel = createImageLayer(imgInfo);
 		
 		tab.add(absPanel);
@@ -544,4 +604,5 @@ class MyClickHandler implements ClickHandler{
 		};
 		req.getGeneInfo(query, callback);
 	}
+	
 }

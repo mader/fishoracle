@@ -12,4 +12,5 @@ public interface SearchAsync {
 	public void redrawImage(GWTImageInfo imageInfo, AsyncCallback<GWTImageInfo> callback);
 	public void getAmpliconInfo(String query, AsyncCallback<Amplicon> callback);
 	public void getGeneInfo(String query, AsyncCallback<Gen> callback);
+	public void exportData(GWTImageInfo imageInfo, AsyncCallback<String> callback);
 }
