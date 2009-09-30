@@ -26,6 +26,10 @@ import com.gwtext.client.widgets.grid.PropertyGridPanel;
 import com.gwtext.client.widgets.layout.BorderLayout;
 import com.gwtext.client.widgets.layout.BorderLayoutData;
 import com.gwtext.client.widgets.layout.FitLayout;
+import com.gwtext.client.widgets.menu.BaseItem;
+import com.gwtext.client.widgets.menu.Item;
+import com.gwtext.client.widgets.menu.Menu;
+import com.gwtext.client.widgets.menu.event.BaseItemListenerAdapter;
 
 import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
@@ -355,61 +359,27 @@ public class MainPanel extends Panel{
 		
 		toolbar.addSeparator();
 		
-		ToolbarButton exportButton = new ToolbarButton("export image to Excel", new ButtonListenerAdapter(){
-			public void onClick(Button button, EventObject e) {
-				
-				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
-    			GWTImageInfo imgInfo = imagePanel.getImageInfo();
-    			
-    		    centerPanel.exportExcel(imgInfo);	
-        	}
-       });  
-		exportButton.setText("export");  
+		ToolbarButton exportButton = new ToolbarButton("export");
 		
-		/*
 		Menu menu = new Menu();
 		
-		Item excelItem = new Item("export image to Excel", new ButtonListenerAdapter(){
-			public void onClick(Button button, EventObject e) {
-				
-				ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
+		Item excelItem = new Item("export image as Excel document");
+		excelItem.addListener(new BaseItemListenerAdapter() {
+            public void onClick(BaseItem item, EventObject e) {
+            	ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
     			GWTImageInfo imgInfo = imagePanel.getImageInfo();
 				
-    			int range;
-    			int percRange;
-    			int perc = 10;
-    			int newStart;
-    			int newEnd;
-    			
-    			range = imgInfo.getEnd() - imgInfo.getStart(); 
-    			
-    		    percRange = range * perc / 100;
-    			
-    		    
-    		    newStart = imgInfo.getStart() - percRange;
-    		    
-    		    newEnd = imgInfo.getEnd() + percRange;
-    		    
-    		    
-    		    if(newStart < 0){
-    		    	
-    		    	newEnd = newEnd - newStart;
-    		    	newStart = 0;
-    		    }
-    		    
-    		    imgInfo.setStart(newStart);
-    		    
-    		    imgInfo.setEnd(newEnd);
-    			
-    		    centerPanel.imageRedraw(imgInfo);	
-        	}
-       });
+				centerPanel.exportExcel(imgInfo);
+            }
+        });
+
+		
 		
 		menu.addItem(excelItem); 
 		
 		exportButton.setMenu(menu);
 		
-		*/
+		
 		
 		toolbar.addButton(exportButton);
 		
