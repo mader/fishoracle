@@ -25,19 +25,19 @@ public class TestDBQuery {
 		
 		amps = new CopyNumberChange[5];
 		
-		amps[0] = new CopyNumberChange(00.00, "2", 17000000, 18000000);
-		amps[1] = new CopyNumberChange(00.01, "2", 17300000, 17700000);
-		amps[2] = new CopyNumberChange(00.02, "2", 16500000, 18500000);
-		amps[3] = new CopyNumberChange(00.03, "2", 16500000, 17400000);
-		amps[4] = new CopyNumberChange(00.04, "2", 17500000, 19500000);
+		amps[0] = new CopyNumberChange("AMP00.00", "2", 17000000, 18000000, true);
+		amps[1] = new CopyNumberChange("AMP00.01", "2", 17300000, 17700000, true);
+		amps[2] = new CopyNumberChange("AMP00.02", "2", 16500000, 18500000, true);
+		amps[3] = new CopyNumberChange("AMP00.03", "2", 16500000, 17400000, true);
+		amps[4] = new CopyNumberChange("AMP00.04", "2", 17500000, 19500000, true);
 		
 		amps2 = new CopyNumberChange[5];
 		
-		amps2[0] = new CopyNumberChange(01.01, "3", 17000000, 18000000);
-		amps2[1] = new CopyNumberChange(01.02, "3", 17300000, 17700000);
-		amps2[2] = new CopyNumberChange(01.03, "3", 16500000, 18500000);
-		amps2[3] = new CopyNumberChange(01.04, "3", 16500000, 17400000);
-		amps2[4] = new CopyNumberChange(01.05, "3", 17500000, 19500000);
+		amps2[0] = new CopyNumberChange("AMP01.01", "3", 17000000, 18000000, true);
+		amps2[1] = new CopyNumberChange("AMP01.02", "3", 17300000, 17700000, true);
+		amps2[2] = new CopyNumberChange("AMP01.03", "3", 16500000, 18500000, true);
+		amps2[3] = new CopyNumberChange("AMP01.04", "3", 16500000, 17400000, true);
+		amps2[4] = new CopyNumberChange("AMP01.05", "3", 17500000, 19500000, true);
 		
 		genes = new Gen[21];
 		
@@ -109,11 +109,11 @@ public class TestDBQuery {
 		
 		DBQuery db = new DBQuery(System.getProperty("user.dir") + "/war/");
 		
-		Location testloc1 = db.getLocationForCNCId(00.01);
-		Location testloc2 = db.getLocationForCNCId(00.02);
-		Location testloc3 = db.getLocationForCNCId(00.03);
-		Location testloc4 = db.getLocationForCNCId(00.04);
-		Location testloc5 = db.getLocationForCNCId(00.05);
+		Location testloc1 = db.getLocationForCNCId("AMP00.01");
+		Location testloc2 = db.getLocationForCNCId("AMP00.02");
+		Location testloc3 = db.getLocationForCNCId("AMP00.03");
+		Location testloc4 = db.getLocationForCNCId("AMP00.04");
+		Location testloc5 = db.getLocationForCNCId("AMP00.05");
 		
 		Assert.assertEquals(testloc1.getSeqRegionName(), ampLoc1.getSeqRegionName());
 		Assert.assertEquals(testloc1.getStart(), ampLoc1.getStart());
@@ -137,11 +137,11 @@ public class TestDBQuery {
 		
 		
 		
-		Location testloc11 = db.getLocationForCNCId(01.01);
-		Location testloc12 = db.getLocationForCNCId(01.02);
-		Location testloc13 = db.getLocationForCNCId(01.03);
-		Location testloc14 = db.getLocationForCNCId(01.04);
-		Location testloc15 = db.getLocationForCNCId(01.05);
+		Location testloc11 = db.getLocationForCNCId("AMP01.01");
+		Location testloc12 = db.getLocationForCNCId("AMP01.02");
+		Location testloc13 = db.getLocationForCNCId("AMP01.03");
+		Location testloc14 = db.getLocationForCNCId("AMP01.04");
+		Location testloc15 = db.getLocationForCNCId("AMP01.05");
 		
 		Assert.assertEquals(testloc11.getSeqRegionName(), ampLoc11.getSeqRegionName());
 		Assert.assertEquals(testloc11.getStart(), ampLoc11.getStart());
@@ -171,10 +171,10 @@ public class TestDBQuery {
 		
 		DBQuery db = new DBQuery(System.getProperty("user.dir") + "/war/");
 		
-		Location testloc = db.getMaxAmpliconRange("2", 16500000, 18500000);
-		Location testloc2 = db.getMaxAmpliconRange("3", 16500000, 18500000);
-		Location testloc3 = db.getMaxAmpliconRange("2", 16500000, 17400000);
-		Location testloc4 = db.getMaxAmpliconRange("3", 16500000, 16900000);
+		Location testloc = db.getMaxCNCRange("2", 16500000, 18500000, true);
+		Location testloc2 = db.getMaxCNCRange("3", 16500000, 18500000, true);
+		Location testloc3 = db.getMaxCNCRange("2", 16500000, 17400000, true);
+		Location testloc4 = db.getMaxCNCRange("3", 16500000, 16900000, true);
 		
 		Assert.assertEquals(testloc.getSeqRegionName(), maxLoc1.getSeqRegionName());
 		Assert.assertEquals(testloc.getStart(), maxLoc1.getStart());
@@ -367,56 +367,56 @@ public class TestDBQuery {
 		CopyNumberChange[] testamps = null;
 		CopyNumberChange[] testamps2 = null;
 		
-		testamps = db.getCNCData("2", 16500000, 18500000);
+		testamps = db.getCNCData("2", 16500000, 18500000, true);
 		
-		Assert.assertEquals(testamps[0].getAmpliconStableId(), amps[0].getAmpliconStableId());
+		Assert.assertEquals(testamps[0].getCncStableId(), amps[0].getCncStableId());
 		Assert.assertEquals(testamps[0].getChromosome(), amps[0].getChromosome());
 		Assert.assertEquals(testamps[0].getStart(), amps[0].getStart());
 		Assert.assertEquals(testamps[0].getEnd(), amps[0].getEnd());
 		
-		Assert.assertEquals(testamps[1].getAmpliconStableId(), amps[1].getAmpliconStableId());
+		Assert.assertEquals(testamps[1].getCncStableId(), amps[1].getCncStableId());
 		Assert.assertEquals(testamps[1].getChromosome(), amps[1].getChromosome());
 		Assert.assertEquals(testamps[1].getStart(), amps[1].getStart());
 		Assert.assertEquals(testamps[1].getEnd(), amps[1].getEnd());
 		
-		Assert.assertEquals(testamps[2].getAmpliconStableId(), amps[2].getAmpliconStableId());
+		Assert.assertEquals(testamps[2].getCncStableId(), amps[2].getCncStableId());
 		Assert.assertEquals(testamps[2].getChromosome(), amps[2].getChromosome());
 		Assert.assertEquals(testamps[2].getStart(), amps[2].getStart());
 		Assert.assertEquals(testamps[2].getEnd(), amps[2].getEnd());
 	
-		Assert.assertEquals(testamps[3].getAmpliconStableId(), amps[3].getAmpliconStableId());
+		Assert.assertEquals(testamps[3].getCncStableId(), amps[3].getCncStableId());
 		Assert.assertEquals(testamps[3].getChromosome(), amps[3].getChromosome());
 		Assert.assertEquals(testamps[3].getStart(), amps[3].getStart());
 		Assert.assertEquals(testamps[3].getEnd(), amps[3].getEnd());
 		
-		Assert.assertEquals(testamps[4].getAmpliconStableId(), amps[4].getAmpliconStableId());
+		Assert.assertEquals(testamps[4].getCncStableId(), amps[4].getCncStableId());
 		Assert.assertEquals(testamps[4].getChromosome(), amps[4].getChromosome());
 		Assert.assertEquals(testamps[4].getStart(), amps[4].getStart());
 		Assert.assertEquals(testamps[4].getEnd(), amps[4].getEnd());
 		
-		testamps2 = db.getCNCData("3", 16500000, 18500000);
+		testamps2 = db.getCNCData("3", 16500000, 18500000, true);
 		
-		Assert.assertEquals(testamps2[0].getAmpliconStableId(), amps2[0].getAmpliconStableId());
+		Assert.assertEquals(testamps2[0].getCncStableId(), amps2[0].getCncStableId());
 		Assert.assertEquals(testamps2[0].getChromosome(), amps2[0].getChromosome());
 		Assert.assertEquals(testamps2[0].getStart(), amps2[0].getStart());
 		Assert.assertEquals(testamps2[0].getEnd(), amps2[0].getEnd());
 		
-		Assert.assertEquals(testamps2[1].getAmpliconStableId(), amps2[1].getAmpliconStableId());
+		Assert.assertEquals(testamps2[1].getCncStableId(), amps2[1].getCncStableId());
 		Assert.assertEquals(testamps2[1].getChromosome(), amps2[1].getChromosome());
 		Assert.assertEquals(testamps2[1].getStart(), amps2[1].getStart());
 		Assert.assertEquals(testamps2[1].getEnd(), amps2[1].getEnd());
 		
-		Assert.assertEquals(testamps2[2].getAmpliconStableId(), amps2[2].getAmpliconStableId());
+		Assert.assertEquals(testamps2[2].getCncStableId(), amps2[2].getCncStableId());
 		Assert.assertEquals(testamps2[2].getChromosome(), amps2[2].getChromosome());
 		Assert.assertEquals(testamps2[2].getStart(), amps2[2].getStart());
 		Assert.assertEquals(testamps2[2].getEnd(), amps2[2].getEnd());
 	
-		Assert.assertEquals(testamps2[3].getAmpliconStableId(), amps2[3].getAmpliconStableId());
+		Assert.assertEquals(testamps2[3].getCncStableId(), amps2[3].getCncStableId());
 		Assert.assertEquals(testamps2[3].getChromosome(), amps2[3].getChromosome());
 		Assert.assertEquals(testamps2[3].getStart(), amps2[3].getStart());
 		Assert.assertEquals(testamps2[3].getEnd(), amps2[3].getEnd());
 		
-		Assert.assertEquals(testamps2[4].getAmpliconStableId(), amps2[4].getAmpliconStableId());
+		Assert.assertEquals(testamps2[4].getCncStableId(), amps2[4].getCncStableId());
 		Assert.assertEquals(testamps2[4].getChromosome(), amps2[4].getChromosome());
 		Assert.assertEquals(testamps2[4].getStart(), amps2[4].getStart());
 		Assert.assertEquals(testamps2[4].getEnd(), amps2[4].getEnd());	
