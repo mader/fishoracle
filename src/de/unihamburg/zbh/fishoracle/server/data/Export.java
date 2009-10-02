@@ -39,13 +39,16 @@ public class Export {
 		for(i = 0; i < genes.length; i++){
 		
 			Label label = new Label(amps.length, i, genes[i].getGenName(), text);
+			Label startlabel = new Label(amps.length+1, i, Integer.toString(genes[i].getStart()), text);
+			Label endlabel = new Label(amps.length+2, i, Integer.toString(genes[i].getEnd()), text);
 			sheet.setColumnView(amps.length, 15);
 			sheet.addCell(label);
-		
+			sheet.addCell(startlabel);
+			sheet.addCell(endlabel);
 		}
 		
 		for(j = 0; j < amps.length; j++){
-			
+			 
 			WritableCellFormat background = new WritableCellFormat(textwidth);
 		    background.setWrap(true);
 		    background.setBackground(Colour.getInternalColour(j+5*3));
