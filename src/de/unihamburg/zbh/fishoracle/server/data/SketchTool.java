@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
-import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
+import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 
@@ -48,7 +48,7 @@ public class SketchTool {
 	 *          at the client side.
 	 *          @see GWTImageInfo
  	 * */
-	public GWTImageInfo generateImage(Amplicon[] amps, Gen[] genes, Karyoband[] kband, Location loc, int winWidth, String query, String serverPath) {
+	public GWTImageInfo generateImage(CopyNumberChange[] amps, CopyNumberChange[] dels, Gen[] genes, Karyoband[] kband, Location loc, int winWidth, String query, String serverPath) {
 			
 		ArrayList<FeatureNode> features;
 		
@@ -69,37 +69,44 @@ public class SketchTool {
 		
 		features = new ArrayList<FeatureNode>();
 		
-		try {
+		FeatureNode fnode;
 		
-		int all;
+		try {
 			
 		for(int i=0; i < amps.length; i++ ){
 			
-			features.add(new FeatureNode(seqid, "amplicon", amps[i].getStart(), amps[i].getEnd(), "."));
-			features.get(i).add_attribute("ID", Double.toString(amps[i].getAmpliconStableId()));
-			if(Double.toString(amps[i].getAmpliconStableId()).equals(query)){
-				features.get(i).gt_genome_node_mark();
+			fnode = new FeatureNode(seqid, "amplicon", amps[i].getStart(), amps[i].getEnd(), ".");
+			features.add(fnode);
+			fnode.add_attribute("ID", amps[i].getCncStableId());
+			if(amps[i].getCncStableId().equals(query)){
+				fnode.gt_genome_node_mark();
 			}
 		}
 		
-		all = amps.length;
+		for(int i=0; i < dels.length; i++ ){
+			
+			fnode = new FeatureNode(seqid, "delicon", dels[i].getStart(), dels[i].getEnd(), ".");
+			features.add(fnode);
+			fnode.add_attribute("ID", dels[i].getCncStableId());
+			if(dels[i].getCncStableId().equals(query)){
+				fnode.gt_genome_node_mark();
+			}
+		}
 		
 		for(int j=0; j < genes.length; j++ ){
-			
-			features.add(new FeatureNode(seqid, "gene", genes[j].getStart(), genes[j].getEnd(), genes[j].getStrand()));
-			features.get(j + all).add_attribute("ID", genes[j].getGenName());
-			features.get(j + all).add_attribute("NAME", genes[j].getAccessionID());
+			fnode = new FeatureNode(seqid, "gene", genes[j].getStart(), genes[j].getEnd(), genes[j].getStrand());
+			features.add(fnode);
+			fnode.add_attribute("ID", genes[j].getGenName());
+			fnode.add_attribute("NAME", genes[j].getAccessionID());
 			if(genes[j].getGenName().equalsIgnoreCase(query)){
-				features.get(j + all).gt_genome_node_mark();
+				fnode.gt_genome_node_mark();
 			}
 		}
 		
-		all = all + genes.length;
-		
 		for(int k=0; k < kband.length; k++ ){
-			
-			features.add(new FeatureNode(seqid, "chromosome", kband[k].getStart(), kband[k].getEnd(), "."));
-			features.get(k + all).add_attribute("ID", loc.getSeqRegionName() + kband[k].getBand());
+			fnode = new FeatureNode(seqid, "chromosome", kband[k].getStart(), kband[k].getEnd(), ".");
+			features.add(fnode);
+			fnode.add_attribute("ID", loc.getSeqRegionName() + kband[k].getBand());
 			
 		}
 		
@@ -124,6 +131,9 @@ public class SketchTool {
 		    	  }
 		    	  if(b.get_type().equals("amplicon") ){
 		    		  typeNumber = "3:";
+		    	  }
+		    	  if(b.get_type().equals("delicon") ){
+		    		  typeNumber = "4:";
 		    	  }
 		    	  
 		        return typeNumber + b.get_type();
@@ -188,7 +198,8 @@ public class SketchTool {
 				
 				countGenes++;
 			// the same applies to the amplicons but here the caption equals the amplicon stable id	
-			} else if (info.get_rec_map(i).get_genome_feature().get_type().equals("amplicon")){
+			} else if (info.get_rec_map(i).get_genome_feature().get_type().equals("amplicon") ||
+					info.get_rec_map(i).get_genome_feature().get_type().equals("delicon")){
 				
 				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("ID");
 				

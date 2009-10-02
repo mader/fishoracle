@@ -27,7 +27,7 @@ import com.gwtext.client.widgets.layout.BorderLayout;
 import com.gwtext.client.widgets.layout.BorderLayoutData;
 import com.gwtext.client.widgets.layout.FitLayout;
 
-import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
+import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
@@ -375,11 +375,25 @@ public class MainPanel extends Panel{
         return tab;
     }
 	
-	public void loadWindow(Amplicon amp){
+	public void loadWindow(CopyNumberChange cncData){
 		
 		Window window = new Window();
 
-		window.setTitle("Amplicon " + amp.getAmpliconStableId());
+		String titleStr = null;
+		String idStr = null;
+		String levelStr = null;
+		
+		if (cncData.isAmplicon()){
+			titleStr = "Amplicon";
+			idStr = "Amplicon Stable ID";
+			levelStr = "Amplevel";
+		} else {
+			titleStr = "Delicon";
+			idStr = "Delicon Stable ID";
+			levelStr = "Dellevel";
+		}
+		
+		window.setTitle(titleStr + " " + cncData.getCncStableId());
 		 
 		window.setClosable(true);  
 		window.setPlain(true);    
@@ -399,14 +413,14 @@ public class MainPanel extends Panel{
 		grid.setView(view);  
 		   
 		NameValuePair[] source = new NameValuePair[8];  
-		source[0] = new NameValuePair("Amplicon Stable ID", Double.toString(amp.getAmpliconStableId()));  
-		source[1] = new NameValuePair("Chromosome", amp.getChromosome());  
-		source[2] = new NameValuePair("Start", amp.getStart());  
-		source[3] = new NameValuePair("End", amp.getEnd());  
-		source[4] = new NameValuePair("Case Name", amp.getCaseName());  
-		source[5] = new NameValuePair("Tumor Type", amp.getTumorType());  
-		source[6] = new NameValuePair("Continuous", amp.getContinuous());  
-		source[7] = new NameValuePair("Amplevel", amp.getAmplevel());   
+		source[0] = new NameValuePair(idStr, cncData.getCncStableId());  
+		source[1] = new NameValuePair("Chromosome", cncData.getChromosome());  
+		source[2] = new NameValuePair("Start", cncData.getStart());  
+		source[3] = new NameValuePair("End", cncData.getEnd());  
+		source[4] = new NameValuePair("Case Name", cncData.getCaseName());  
+		source[5] = new NameValuePair("Tumor Type", cncData.getTumorType());  
+		source[6] = new NameValuePair("Continuous", cncData.getContinuous());  
+		source[7] = new NameValuePair(levelStr, cncData.getCnclevel());   
 		
 		grid.setSource(source);
 		
@@ -486,9 +500,9 @@ class MyClickHandler implements ClickHandler{
 	@Override
 	public void onClick(ClickEvent event) {
 		
-		if(recInfo.getType().equals("amplicon")){
+		if(recInfo.getType().equals("amplicon") || recInfo.getType().equals("delicon")){
 			
-			ampliconDetails(recInfo.getElementName());
+			cncDetails(recInfo.getElementName());
 			
 		}
 		if(recInfo.getType().equals("gene")){
@@ -504,16 +518,16 @@ class MyClickHandler implements ClickHandler{
 	 * */	
 		 
 		
-	public void ampliconDetails(String query){
+	public void cncDetails(String query){
 			
 		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Amplicon> callback = new AsyncCallback<Amplicon>(){
-			public void onSuccess(Amplicon amp){
+		final AsyncCallback<CopyNumberChange> callback = new AsyncCallback<CopyNumberChange>(){
+			public void onSuccess(CopyNumberChange cncData){
 				
-				main.loadWindow(amp);
+				main.loadWindow(cncData);
 				
 			}
 			public void onFailure(Throwable caught){
@@ -521,7 +535,7 @@ class MyClickHandler implements ClickHandler{
 				MessageBox.alert("Nothing found!");
 			}
 		};
-		req.getAmpliconInfo(query, callback);
+		req.getCNCInfo(query, callback);
 	}
 	
 	

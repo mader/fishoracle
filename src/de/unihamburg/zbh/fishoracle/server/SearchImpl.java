@@ -8,7 +8,7 @@ import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.server.data.*;
-import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
+import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 
@@ -39,7 +39,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			DBQuery db = new DBQuery(servletContext);
 			
-			Amplicon[] amps = null;
+			CopyNumberChange[] amps = null;
+			CopyNumberChange[] dels = null;
 			Location featuresLoc = null;
 			
 			Date dt = new Date();
@@ -48,10 +49,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			System.out.println(dt + " Search type: " + searchType);
 			
 			if(searchType.equals("Amplicon Search")){
-			
-				double ampQuery = new Double(query).doubleValue();
-			
-				featuresLoc = db.getLocationForAmpliconStableId(ampQuery);
+				
+				featuresLoc = db.getLocationForCNCId(query);
 				
 			} else if(searchType.equals("Gene Search")){
 				
@@ -85,61 +84,35 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				
 			} 
 			
-			Location maxAmpRange = db.getMaxAmpliconRange(featuresLoc.getSeqRegionName(), featuresLoc.getStart(), featuresLoc.getEnd());
+			Location maxAmpRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), featuresLoc.getStart(), featuresLoc.getEnd(), true);
 			
-			if(maxAmpRange.getEnd() - maxAmpRange.getStart() == 0){
-				
-				if(searchType.equals("Band Search")){
-				
-					maxAmpRange = featuresLoc;
-				
-				}
-				if(searchType.equals("Gene Search")){
-					
-					int perc = 200;
-					int percRange;
-					int newStart;
-					int newEnd;
-					int start = featuresLoc.getStart();
-					int end = featuresLoc.getEnd();
-					
-					
-					int range = end - start;
-					
-					percRange = range * perc / 100;
-					
-					if((start - percRange/2) < 0){
-						newStart = 0;
-					} else {
-						newStart = start - percRange/2; 
-					}
-					
-					if((start - percRange/2) < 0){
-						newEnd = end + percRange/2 - (start - percRange/2);
-					} else{
-						newEnd = end + percRange/2;
-					}
-					
-						maxAmpRange.setSeqRegionName(featuresLoc.getSeqRegionName());
-						maxAmpRange.setStart(newStart);
-						maxAmpRange.setEnd(newEnd);
-				
-				}
-				
-			}
+			adjustMaxCNCRange(maxAmpRange, featuresLoc, searchType);
 			
-			amps = db.getAmpliconData(maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd());
+			Location maxDelRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), featuresLoc.getStart(), featuresLoc.getEnd(), false);
+			
+			adjustMaxCNCRange(maxDelRange, featuresLoc, searchType);
+			
+			amps = db.getCNCData(maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd(), true);
+			
+			dels = db.getCNCData(maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd(), false);
 			
 			Gen[] genes = null;
 			genes = db.getEnsembleGenes(maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd());
-			
 			
 			Karyoband[] band = null;
 			band = db.getEnsemblKaryotypes(maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd());
 			
 			SketchTool sketch = new SketchTool();
-			
-			imgInfo = sketch.generateImage(amps, genes, band, maxAmpRange, winWidth, query, servletContext);
+			/*
+			if(maxAmpRange.getStart() < maxDelRange.getStart() && maxAmpRange.getEnd() > maxDelRange.getEnd()){
+				
+				
+			}
+			if(maxAmpRange.getStart() > maxDelRange.getStart() && maxAmpRange.getEnd() < maxDelRange.getEnd()){
+				
+			}
+			*/
+			imgInfo = sketch.generateImage(amps, dels, genes, band, maxAmpRange, winWidth, query, servletContext);
 			
 			imgInfo.setChromosome(maxAmpRange.getSeqRegionName());
 			imgInfo.setStart(maxAmpRange.getStart());
@@ -150,6 +123,46 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		return imgInfo;
 	}
 
+	private void adjustMaxCNCRange(Location maxCNCRange, Location featuresLoc, String searchType){
+		
+		if(maxCNCRange.getEnd() - maxCNCRange.getStart() == 0){
+			
+			if(searchType.equals("Band Search")){
+			
+				maxCNCRange = featuresLoc;
+			
+			}
+			if(searchType.equals("Gene Search")){
+				
+				int perc = 200;
+				int percRange;
+				int newStart;
+				int newEnd;
+				int start = featuresLoc.getStart();
+				int end = featuresLoc.getEnd();
+				
+				int range = end - start;
+				
+				percRange = range * perc / 100;
+				
+				if((start - percRange/2) < 0){
+					newStart = 0;
+				} else {
+					newStart = start - percRange/2; 
+				}
+				
+				if((start - percRange/2) < 0){
+					newEnd = end + percRange/2 - (start - percRange/2);
+				} else{
+					newEnd = end + percRange/2;
+				}
+				
+					maxCNCRange.setSeqRegionName(featuresLoc.getSeqRegionName());
+					maxCNCRange.setStart(newStart);
+					maxCNCRange.setEnd(newEnd);			}	
+		}
+	}
+	
 	/**
 	 * Redraws an image for a given image info object. This is necessary 
 	 * when the browser is resized or the user wants to scroll over the chromosome.
@@ -174,7 +187,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBQuery db = new DBQuery(servletContext);
 		
-		Amplicon[] amps = null;
+		CopyNumberChange[] amps = null;
+		
+		CopyNumberChange[] dels = null;
 		
 		Location maxRange = null;
 		
@@ -186,7 +201,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			System.out.println(e.getCause());
 		}
 		
-		amps = db.getAmpliconData(chr, start, end);
+		amps = db.getCNCData(chr, start, end, true);
+		
+		dels = db.getCNCData(chr, start, end, false);
 		
 		Gen[] genes = null;
 		genes = db.getEnsembleGenes(chr, start, end);
@@ -197,7 +214,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		SketchTool sketch = new SketchTool();
 		
-		imgInfo = sketch.generateImage(amps, genes, band, maxRange, imageInfo.getWidth(), imageInfo.getQuery(), servletContext);
+		imgInfo = sketch.generateImage(amps, dels, genes, band, maxRange, imageInfo.getWidth(), imageInfo.getQuery(), servletContext);
 		
 		imgInfo.setChromosome(maxRange.getSeqRegionName());
 		imgInfo.setStart(maxRange.getStart());
@@ -213,9 +230,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * 
 	 * @param query The amplicon stable id
 	 * 
-	 * @return Amplicon
+	 * @rteturn Amplicon
 	 * */
-	public Amplicon getAmpliconInfo(
+	public CopyNumberChange getCNCInfo(
 			String query) {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
@@ -225,10 +242,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBQuery db = new DBQuery(servletContext);
 		
-		Amplicon  amp = db.getAmpliconInfos(query);
+		CopyNumberChange  cncData = db.getCNCInfos(query);
 		
 		
-		return amp;
+		return cncData;
 	}
 
 	/**

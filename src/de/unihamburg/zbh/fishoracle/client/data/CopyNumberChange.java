@@ -2,9 +2,9 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class Amplicon implements IsSerializable{
+public class CopyNumberChange implements IsSerializable{
 
-	private double ampliconStableId;
+	private String cncStableId;
 	private String chromosome;
 	private int start;
 	private int end;
@@ -12,71 +12,66 @@ public class Amplicon implements IsSerializable{
 	private String caseName;
 	private String tumorType;
 	private int continuous;
-	private int amplevel;
+	private int cnclevel;
 	
-	public Amplicon() {
+	private boolean isAmplicon;
+	
+	public CopyNumberChange() {
 		
 	}
-
-	public Amplicon(double ampliconStableId, String newChr, int start, int end) {
 	
-		this.ampliconStableId = ampliconStableId;
-		this.chromosome = newChr;
+	public CopyNumberChange(String cncStableId, String chromosome, int start,
+			int end, boolean isAmplicon) {
+		super();
+		this.cncStableId = cncStableId;
+		this.chromosome = chromosome;
 		this.start = start;
 		this.end = end;
-		
+		this.isAmplicon = isAmplicon;
 	}
-	
-	public Amplicon(double ampliconStableId, String chromosome, int start,
+
+	public CopyNumberChange(String cncStableId, String chromosome, int start,
 			int end, String caseName, String tumorType, int continuous,
-			int amplevel) {
+			int cnclevel, boolean isAmplicon) {
 		super();
-		this.ampliconStableId = ampliconStableId;
+		this.cncStableId = cncStableId;
 		this.chromosome = chromosome;
 		this.start = start;
 		this.end = end;
 		this.caseName = caseName;
 		this.tumorType = tumorType;
 		this.continuous = continuous;
-		this.amplevel = amplevel;
+		this.cnclevel = cnclevel;
+		this.isAmplicon = isAmplicon;
 	}
 
-
-
-	public double getAmpliconStableId() {
-		return ampliconStableId;
+	public String getCncStableId() {
+		return cncStableId;
 	}
 
-
-	public void setAmpliconStableId(double ampliconStableId) {
-		this.ampliconStableId = ampliconStableId;
+	public void setCncStableId(String cncStableId) {
+		this.cncStableId = cncStableId;
 	}
-
 
 	public String getChromosome() {
 		return chromosome;
 	}
 
-
 	public void setChromosome(String chromosome) {
 		this.chromosome = chromosome;
 	}
-
 
 	public int getStart() {
 		return start;
 	}
 
-
 	public void setStart(int start) {
 		this.start = start;
 	}
 
-
 	public int getEnd() {
 		return end;
 	}
-
 
 	public void setEnd(int end) {
 		this.end = end;
@@ -106,12 +101,21 @@ public class Amplicon implements IsSerializable{
 		this.continuous = continuous;
 	}
 
-	public int getAmplevel() {
-		return amplevel;
+	public int getCnclevel() {
+		return cnclevel;
 	}
 
-	public void setAmplevel(int amplevel) {
-		this.amplevel = amplevel;
+	public void setCnclevel(int cnclevel) {
+		this.cnclevel = cnclevel;
 	}
-	
+
+	public boolean isAmplicon() {
+		return isAmplicon;
+	}
+
+	public void setAmplicon(boolean isAmplicon) {
+		this.isAmplicon = isAmplicon;
+	}
+
+
 }

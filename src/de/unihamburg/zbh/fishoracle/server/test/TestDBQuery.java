@@ -6,14 +6,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
+import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.server.data.*;
 
 
 public class TestDBQuery {
 
-	private Amplicon[] amps, amps2;
+	private CopyNumberChange[] amps, amps2;
 	private Gen[] genes, genes2;
 	private Karyoband[] kbands, kbands2;
 	private Location maxLoc1, maxLoc2, maxLoc3, maxLoc4;
@@ -23,21 +23,21 @@ public class TestDBQuery {
 	@Before
 	public void setUp() throws Exception {
 		
-		amps = new Amplicon[5];
+		amps = new CopyNumberChange[5];
 		
-		amps[0] = new Amplicon(00.00, "2", 17000000, 18000000);
-		amps[1] = new Amplicon(00.01, "2", 17300000, 17700000);
-		amps[2] = new Amplicon(00.02, "2", 16500000, 18500000);
-		amps[3] = new Amplicon(00.03, "2", 16500000, 17400000);
-		amps[4] = new Amplicon(00.04, "2", 17500000, 19500000);
+		amps[0] = new CopyNumberChange(00.00, "2", 17000000, 18000000);
+		amps[1] = new CopyNumberChange(00.01, "2", 17300000, 17700000);
+		amps[2] = new CopyNumberChange(00.02, "2", 16500000, 18500000);
+		amps[3] = new CopyNumberChange(00.03, "2", 16500000, 17400000);
+		amps[4] = new CopyNumberChange(00.04, "2", 17500000, 19500000);
 		
-		amps2 = new Amplicon[5];
+		amps2 = new CopyNumberChange[5];
 		
-		amps2[0] = new Amplicon(01.01, "3", 17000000, 18000000);
-		amps2[1] = new Amplicon(01.02, "3", 17300000, 17700000);
-		amps2[2] = new Amplicon(01.03, "3", 16500000, 18500000);
-		amps2[3] = new Amplicon(01.04, "3", 16500000, 17400000);
-		amps2[4] = new Amplicon(01.05, "3", 17500000, 19500000);
+		amps2[0] = new CopyNumberChange(01.01, "3", 17000000, 18000000);
+		amps2[1] = new CopyNumberChange(01.02, "3", 17300000, 17700000);
+		amps2[2] = new CopyNumberChange(01.03, "3", 16500000, 18500000);
+		amps2[3] = new CopyNumberChange(01.04, "3", 16500000, 17400000);
+		amps2[4] = new CopyNumberChange(01.05, "3", 17500000, 19500000);
 		
 		genes = new Gen[21];
 		
@@ -109,11 +109,11 @@ public class TestDBQuery {
 		
 		DBQuery db = new DBQuery(System.getProperty("user.dir") + "/war/");
 		
-		Location testloc1 = db.getLocationForAmpliconStableId(00.01);
-		Location testloc2 = db.getLocationForAmpliconStableId(00.02);
-		Location testloc3 = db.getLocationForAmpliconStableId(00.03);
-		Location testloc4 = db.getLocationForAmpliconStableId(00.04);
-		Location testloc5 = db.getLocationForAmpliconStableId(00.05);
+		Location testloc1 = db.getLocationForCNCId(00.01);
+		Location testloc2 = db.getLocationForCNCId(00.02);
+		Location testloc3 = db.getLocationForCNCId(00.03);
+		Location testloc4 = db.getLocationForCNCId(00.04);
+		Location testloc5 = db.getLocationForCNCId(00.05);
 		
 		Assert.assertEquals(testloc1.getSeqRegionName(), ampLoc1.getSeqRegionName());
 		Assert.assertEquals(testloc1.getStart(), ampLoc1.getStart());
@@ -137,11 +137,11 @@ public class TestDBQuery {
 		
 		
 		
-		Location testloc11 = db.getLocationForAmpliconStableId(01.01);
-		Location testloc12 = db.getLocationForAmpliconStableId(01.02);
-		Location testloc13 = db.getLocationForAmpliconStableId(01.03);
-		Location testloc14 = db.getLocationForAmpliconStableId(01.04);
-		Location testloc15 = db.getLocationForAmpliconStableId(01.05);
+		Location testloc11 = db.getLocationForCNCId(01.01);
+		Location testloc12 = db.getLocationForCNCId(01.02);
+		Location testloc13 = db.getLocationForCNCId(01.03);
+		Location testloc14 = db.getLocationForCNCId(01.04);
+		Location testloc15 = db.getLocationForCNCId(01.05);
 		
 		Assert.assertEquals(testloc11.getSeqRegionName(), ampLoc11.getSeqRegionName());
 		Assert.assertEquals(testloc11.getStart(), ampLoc11.getStart());
@@ -364,10 +364,10 @@ public class TestDBQuery {
 	public void testGetAmpliconData(){
 		
 		DBQuery db = new DBQuery(System.getProperty("user.dir") + "/war/");
-		Amplicon[] testamps = null;
-		Amplicon[] testamps2 = null;
+		CopyNumberChange[] testamps = null;
+		CopyNumberChange[] testamps2 = null;
 		
-		testamps = db.getAmpliconData("2", 16500000, 18500000);
+		testamps = db.getCNCData("2", 16500000, 18500000);
 		
 		Assert.assertEquals(testamps[0].getAmpliconStableId(), amps[0].getAmpliconStableId());
 		Assert.assertEquals(testamps[0].getChromosome(), amps[0].getChromosome());
@@ -394,7 +394,7 @@ public class TestDBQuery {
 		Assert.assertEquals(testamps[4].getStart(), amps[4].getStart());
 		Assert.assertEquals(testamps[4].getEnd(), amps[4].getEnd());
 		
-		testamps2 = db.getAmpliconData("3", 16500000, 18500000);
+		testamps2 = db.getCNCData("3", 16500000, 18500000);
 		
 		Assert.assertEquals(testamps2[0].getAmpliconStableId(), amps2[0].getAmpliconStableId());
 		Assert.assertEquals(testamps2[0].getChromosome(), amps2[0].getChromosome());

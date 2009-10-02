@@ -20,7 +20,7 @@ import org.ensembl.driver.CoreDriver;
 import org.ensembl.driver.CoreDriverFactory;
 import org.ensembl.driver.KaryotypeBandAdaptor;
 
-import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
+import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 
 /**
@@ -156,37 +156,52 @@ public class DBQuery {
 	/**
 	 * Looks location information (chromosome, start, end) for an amplicon stable id up.
 	 * 
-	 * @param ampliconStableId The stable id of an amplicon.
+	 * @param copyNamberChangeId The stable id of an amplicon.
 	 * @return		An ensembl API location object storing chromosome, start and end of an amplicon. 
 	 * 
 	 * */
-	public Location getLocationForAmpliconStableId(double ampliconStableId){
+	public Location getLocationForCNCId(String copyNamberChangeId){
 	
+		String qrystr = null;
+		Pattern pampid = Pattern.compile("AMP");
+		Matcher mampid = pampid.matcher(copyNamberChangeId);
+		
+		if(mampid.find()){
+			qrystr = "SELECT * from amplicon WHERE amplicon_stable_id = " + copyNamberChangeId;
+		}
+		
+		Pattern pdelid = Pattern.compile("DEL");
+		Matcher mdelid = pdelid.matcher(copyNamberChangeId);
+		
+		if(mdelid.find()){
+			qrystr = "SELECT * from delicon WHERE delicon_stable_id = " + copyNamberChangeId;
+		}
+		
 		Connection conn = null;
 		Location loc = null;
 		try{
 			
-			int ampStart = 0;
-			int ampEnd = 0;
-			String ampChr = null;
+			int copyNumberChangeStart = 0;
+			int copyNumberChangeEnd = 0;
+			String copyNumberChangeChr = null;
 			
 			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
 			
 			Statement s = conn.createStatement();
 				
-				s.executeQuery("SELECT * from amplicon WHERE amplicon_stable_id = " + ampliconStableId);
-				ResultSet ampRs = s.getResultSet();
+				s.executeQuery(qrystr);
+				ResultSet copyNumberChangeRs = s.getResultSet();
 				
-				while(ampRs.next()){
-					ampStart = ampRs.getInt(4);
-					ampEnd = ampRs.getInt(5);
-					ampChr = ampRs.getString(3);
+				while(copyNumberChangeRs.next()){
+					copyNumberChangeStart = copyNumberChangeRs.getInt(4);
+					copyNumberChangeEnd = copyNumberChangeRs.getInt(5);
+					copyNumberChangeChr = copyNumberChangeRs.getString(3);
 				
-					String locStr = "chromosome:" + ampChr + ":" + ampStart + "-" + ampEnd;
+					String locStr = "chromosome:" + copyNumberChangeChr + ":" + copyNumberChangeStart + "-" + copyNumberChangeEnd;
 				
 					loc = new Location(locStr);
 				}
-				ampRs.close();
+				copyNumberChangeRs.close();
 				
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
@@ -274,30 +289,42 @@ public class DBQuery {
 	 * @return 		An ensembl API location object storing chromosome, start and end
 	 * 
 	 * */
-	public Location getMaxAmpliconRange(String chr, int start, int end){
+	public Location getMaxCNCRange(String chr, int start, int end, boolean isAmplicon){
 		Location loc = null;
 		Connection conn = null;
-		String ampChr = chr;
-		int ampStart = start;
-		int ampEnd = end;
+		String copyNumberChangeChr = chr;
+		int copyNumberChangeStart = start;
+		int copyNumberChangeEnd = end;
+		String qrystr = null;
+		
+		if(isAmplicon){
+			qrystr = "SELECT MIN(start) as minstart, MAX(end) as maxend FROM amplicon WHERE chromosome = \"" + copyNumberChangeChr + 
+			"\" AND ((start <= " + copyNumberChangeStart + " AND end >= " + copyNumberChangeEnd + ") OR" +
+	        " (start >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + ") OR" +
+	        " (start >= " + copyNumberChangeStart + " AND start <= " + copyNumberChangeEnd + ") OR" +
+	        " (end >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + "))";
+		} else {
+			qrystr = "SELECT MIN(start) as minstart, MAX(end) as maxend FROM delicon WHERE chromosome = \"" + copyNumberChangeChr + 
+			"\" AND ((start <= " + copyNumberChangeStart + " AND end >= " + copyNumberChangeEnd + ") OR" +
+	        " (start >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + ") OR" +
+	        " (start >= " + copyNumberChangeStart + " AND start <= " + copyNumberChangeEnd + ") OR" +
+	        " (end >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + "))";
+		}
+		
 		try{
 			
 			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
 			
 			Statement s = conn.createStatement();
 			
-			s.executeQuery("SELECT MIN(start) as minstart, MAX(end) as maxend FROM amplicon WHERE chromosome = \"" + ampChr + 
-					"\" AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
-				        " (start >= " + ampStart + " AND end <= " + ampEnd + ") OR" +
-				        " (start >= " + ampStart + " AND start <= " + ampEnd + ") OR" +
-				        " (end >= " + ampStart + " AND end <= " + ampEnd + "))");
+			s.executeQuery(qrystr);
 			
 			ResultSet rangeRs = s.getResultSet();
 			rangeRs.next();
 			int qstart = rangeRs.getInt(1);
 			int qend = rangeRs.getInt(2);
 			
-			String locStr = "chromosome:" + ampChr + ":" + qstart + "-" + qend;
+			String locStr = "chromosome:" + copyNumberChangeChr + ":" + qstart + "-" + qend;
 			
 			loc = new Location(locStr);
 			
@@ -330,51 +357,65 @@ public class DBQuery {
 	 * @return		Array containing amplicon objects
 	 * 
 	 * */
-	public Amplicon[] getAmpliconData(String chr, int start, int end){
+	public CopyNumberChange[] getCNCData(String chr, int start, int end, boolean isAmplicon){
+		
+		String qrystrc = null;
+		String qrystr = null;
+		int copyNumberChangeStart = start;
+		int copyNumberChangeEnd = end;
+		String copyNumberChangeChr = chr;
+		String copyNumberChangeType = null;	
+		
+		if(isAmplicon){
+			copyNumberChangeType = "amplicon";
+			
+		} else {
+			copyNumberChangeType = "delicon";
+		}
+		
+		qrystrc = "SELECT count(*) from " + copyNumberChangeType + " WHERE chromosome = \"" + copyNumberChangeChr + "\" " +
+		"AND ((start <= " + copyNumberChangeStart + " AND end >= " + copyNumberChangeEnd + ") OR" +
+        " (start >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + ") OR" +
+        " (start >= " + copyNumberChangeStart + " AND start <= " + copyNumberChangeEnd + ") OR" +
+        " (end >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + "))";
+		
+		qrystr = "SELECT * from " + copyNumberChangeType + " WHERE chromosome = \"" + copyNumberChangeChr + "\" " +
+		"AND ((start <= " + copyNumberChangeStart + " AND end >= " + copyNumberChangeEnd + ") OR" +
+        " (start >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + ") OR" +
+        " (start >= " + copyNumberChangeStart + " AND start <= " + copyNumberChangeEnd + ") OR" +
+        " (end >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + "))";
 		
 		Connection conn = null;
-		Amplicon[] amps = null;
+		CopyNumberChange[] cnc = null;
 		try{
 			
 			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
 			
 			Statement s = conn.createStatement();
-				
-			int ampStart = start;
-			int ampEnd = end;
-			String ampChr = chr;
 			
-			s.executeQuery("SELECT count(*) from amplicon WHERE chromosome = \"" + ampChr + "\" " +
-					"AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
-				        " (start >= " + ampStart + " AND end <= " + ampEnd + ") OR" +
-				        " (start >= " + ampStart + " AND start <= " + ampEnd + ") OR" +
-				        " (end >= " + ampStart + " AND end <= " + ampEnd + "))");
+			s.executeQuery(qrystrc);
 			
 			ResultSet countRegRs = s.getResultSet();
 			countRegRs.next();
-			int ampCount = countRegRs.getInt(1);
+			int cncCount = countRegRs.getInt(1);
 			
 			countRegRs.close();
 			
-			s.executeQuery("SELECT * from amplicon WHERE chromosome = \"" + ampChr + "\" " +
-					"AND ((start <= " + ampStart + " AND end >= " + ampEnd + ") OR" +
-					    " (start >= " + ampStart + " AND end <= " + ampEnd + ") OR" +
-					    " (start >= " + ampStart + " AND start <= " + ampEnd + ") OR" +
-				        " (end >= " + ampStart + " AND end <= " + ampEnd + "))");
+			s.executeQuery(qrystr);
 			
 			ResultSet regRs = s.getResultSet();
 			
 			int count = 0;
 
-			amps = new Amplicon[ampCount];
+			cnc = new CopyNumberChange[cncCount];
 			
 			while(regRs.next()){
-				double newAmpliconStableId = regRs.getDouble(2);
+				String newCNCStableId = regRs.getString(2);
 				String newChr = regRs.getString(3);
 				int newStart = regRs.getInt(4);
 				int newEnd = regRs.getInt(5);
 				
-				amps[count] = new Amplicon(newAmpliconStableId, newChr, newStart, newEnd);
+				cnc[count] = new CopyNumberChange(newCNCStableId, newChr, newStart, newEnd, isAmplicon);
 
 				count++;
 			}
@@ -395,7 +436,7 @@ public class DBQuery {
 				}
 			}
 		}
-		return amps;
+		return cnc;
 	}
 	
 	/**
@@ -405,32 +446,50 @@ public class DBQuery {
 	 * @return		Amplicon object conaiting all amplicon data.
 	 * 
 	 * */
-	public Amplicon getAmpliconInfos(String query){
+	public CopyNumberChange getCNCInfos(String query){
+		
+		String qrystr = null;
+		Pattern pampid = Pattern.compile("AMP");
+		Matcher mampid = pampid.matcher(query);
+		boolean isAmplicon = false;
+		
+		if(mampid.find()){
+			qrystr = "SELECT * from amplicon WHERE amplicon_stable_id = " + "'" + query + "'";
+			isAmplicon = true;
+		}
+		
+		Pattern pdelid = Pattern.compile("DEL");
+		Matcher mdelid = pdelid.matcher(query);
+		
+		if(mdelid.find()){
+			qrystr = "SELECT * from delicon WHERE delicon_stable_id = " + "'" + query + "'";
+			isAmplicon = false;
+		}
 		
 		Connection conn = null;
-		Amplicon amp = null;
+		CopyNumberChange amp = null;
 		try{
 		
 			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
 			
 			Statement s = conn.createStatement();
 			
-			s.executeQuery("select * FROM amplicon WHERE amplicon_stable_id = " + query);
+			s.executeQuery(qrystr);
 			
-			ResultSet ampRs = s.getResultSet();
+			ResultSet cncRs = s.getResultSet();
 			
-			while(ampRs.next()){
+			while(cncRs.next()){
 				
-				double ampliconStableId = ampRs.getDouble(2);
-				String chr = ampRs.getString(3);
-				int start = ampRs.getInt(4);
-				int end = ampRs.getInt(5);
-				String caseName = ampRs.getString(6);
-				String tumorType = ampRs.getString(7);
-				int contin = ampRs.getInt(8);
-				int amplevel = ampRs.getInt(9);
+				String cncStableId = cncRs.getString(2);
+				String chr = cncRs.getString(3);
+				int start = cncRs.getInt(4);
+				int end = cncRs.getInt(5);
+				String caseName = cncRs.getString(6);
+				String tumorType = cncRs.getString(7);
+				int contin = cncRs.getInt(8);
+				int cnclevel = cncRs.getInt(9);
 				
-				amp = new Amplicon(ampliconStableId, chr, start, end, caseName, tumorType, contin, amplevel);
+				amp = new CopyNumberChange(cncStableId, chr, start, end, caseName, tumorType, contin, cnclevel, isAmplicon);
 				
 			}
 		} catch (Exception e){
