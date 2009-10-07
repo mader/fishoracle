@@ -156,25 +156,25 @@ public class DBQuery {
 	/**
 	 * Looks location information (chromosome, start, end) for an amplicon stable id up.
 	 * 
-	 * @param copyNamberChangeId The stable id of an amplicon.
+	 * @param copyNumberChangeId The stable id of an amplicon.
 	 * @return		An ensembl API location object storing chromosome, start and end of an amplicon. 
+	 * @throws Exception 
 	 * 
 	 * */
-	public Location getLocationForCNCId(String copyNamberChangeId){
-	
+	public Location getLocationForCNCId(String copyNumberChangeId) throws Exception{
 		String qrystr = null;
-		Pattern pampid = Pattern.compile("AMP");
-		Matcher mampid = pampid.matcher(copyNamberChangeId);
+		Pattern pampid = Pattern.compile("AMP", Pattern.CASE_INSENSITIVE);
+		Matcher mampid = pampid.matcher(copyNumberChangeId);
+		
+		Pattern pdelid = Pattern.compile("DEL", Pattern.CASE_INSENSITIVE);
+		Matcher mdelid = pdelid.matcher(copyNumberChangeId);
 		
 		if(mampid.find()){
-			qrystr = "SELECT * from amplicon WHERE amplicon_stable_id = " + copyNamberChangeId;
-		}
-		
-		Pattern pdelid = Pattern.compile("DEL");
-		Matcher mdelid = pdelid.matcher(copyNamberChangeId);
-		
-		if(mdelid.find()){
-			qrystr = "SELECT * from delicon WHERE delicon_stable_id = " + copyNamberChangeId;
+			qrystr = "SELECT * from amplicon WHERE amplicon_stable_id = " + "'" + copyNumberChangeId + "'";
+		} else if(mdelid.find()){
+			qrystr = "SELECT * from delicon WHERE delicon_stable_id = " + "'" + copyNumberChangeId + "'";
+		} else {
+			throw new Exception();
 		}
 		
 		Connection conn = null;
@@ -319,13 +319,18 @@ public class DBQuery {
 			
 			s.executeQuery(qrystr);
 			
+			String locStr;
+			
 			ResultSet rangeRs = s.getResultSet();
-			rangeRs.next();
-			int qstart = rangeRs.getInt(1);
-			int qend = rangeRs.getInt(2);
-			
-			String locStr = "chromosome:" + copyNumberChangeChr + ":" + qstart + "-" + qend;
-			
+				rangeRs.next();
+				int qstart = rangeRs.getInt(1);
+				int qend = rangeRs.getInt(2);
+			if(qstart == 0 && qend == 0){
+				locStr = "chromosome:" + copyNumberChangeChr + ":" + copyNumberChangeStart + "-" + copyNumberChangeEnd;	
+			} else {
+				locStr = "chromosome:" + copyNumberChangeChr + ":" + qstart + "-" + qend;
+			}
+				
 			loc = new Location(locStr);
 			
 			rangeRs.close();

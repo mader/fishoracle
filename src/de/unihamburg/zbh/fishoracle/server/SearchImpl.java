@@ -11,6 +11,7 @@ import de.unihamburg.zbh.fishoracle.server.data.*;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
 
@@ -31,13 +32,16 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * @return imgInfo image info object that stores additional information of
 	 *          the generated image that need to be displayed or further processed
 	 *          at the client side.
+	 * @throws Exception 
 	 *          @see GWTImageInfo
 	 * */
-	public GWTImageInfo generateImage(String query, String searchType, int winWidth) {
+	public GWTImageInfo generateImage(QueryInfo query) throws Exception {
 		
 			String servletContext = this.getServletContext().getRealPath("/");
 			
 			DBQuery db = new DBQuery(servletContext);
+			
+			Location maxCNCRange = null;
 			
 			CopyNumberChange[] amps = null;
 			CopyNumberChange[] dels = null;
@@ -46,90 +50,89 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			Date dt = new Date();
 			
 			System.out.println(dt + " Search: " + query);
-			System.out.println(dt + " Search type: " + searchType);
+			System.out.println(dt + " Search type: " + query.getSearchType());
 			
-			if(searchType.equals("Amplicon Search")){
+			if(query.getSearchType().equals("Amplicon/Delicon Search")){
 				
-				featuresLoc = db.getLocationForCNCId(query);
+				featuresLoc = db.getLocationForCNCId(query.getQueryString());
 				
-			} else if(searchType.equals("Gene Search")){
+			} else if(query.getSearchType().equals("Gene Search")){
 				
-				featuresLoc = db.getLocationForGene(query);
+				featuresLoc = db.getLocationForGene(query.getQueryString());
 				
-			} else if(searchType.equals("Band Search")){
+			} else if(query.getSearchType().equals("Band Search")){
 				
 				Pattern pChr = Pattern.compile("^\\d{1,2}");
-				Matcher mChr = pChr.matcher(query);
+				Matcher mChr = pChr.matcher(query.getQueryString());
 				
 				Pattern pBand = Pattern.compile("[p,q]{1}\\d{1,2}\\.?\\d{1,2}?$");
-				Matcher mBand = pBand.matcher(query);
+				Matcher mBand = pBand.matcher(query.getQueryString());
 				
 				String chrStr = null;
 				String bandStr = null;
 				
 				if(mChr.find()){
 					
-					chrStr = (String) query.subSequence(mChr.start(), mChr.end());
+					chrStr = (String) query.getQueryString().subSequence(mChr.start(), mChr.end());
 
 				}
 				
 				if(mBand.find()){
 					
-					bandStr = (String) query.subSequence(mBand.start(), mBand.end());
+					bandStr = (String) query.getQueryString().subSequence(mBand.start(), mBand.end());
 
 				}
 				featuresLoc = db.getLocationForKaryoband(chrStr, bandStr);
 				
-			} else if(searchType.equals("range")){
+			} else if(query.getSearchType().equals("range")){
 				
 			} 
 			
-			Location maxAmpRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), featuresLoc.getStart(), featuresLoc.getEnd(), true);
+			if(query.getCncPrio().equals("Amplicon")){
+				maxCNCRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), featuresLoc.getStart(), featuresLoc.getEnd(), true);
 			
-			adjustMaxCNCRange(maxAmpRange, featuresLoc, searchType);
+				maxCNCRange = adjustMaxCNCRange(maxCNCRange, featuresLoc, query.getSearchType());
+			} else if (query.getCncPrio().equals("Delicon")) {
+				maxCNCRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), featuresLoc.getStart(), featuresLoc.getEnd(), false);
 			
-			Location maxDelRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), featuresLoc.getStart(), featuresLoc.getEnd(), false);
+			    maxCNCRange = adjustMaxCNCRange(maxCNCRange, featuresLoc, query.getSearchType());
 			
-			adjustMaxCNCRange(maxDelRange, featuresLoc, searchType);
+			}
 			
-			amps = db.getCNCData(maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd(), true);
-			
-			dels = db.getCNCData(maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd(), false);
+			if(query.isShowAmps()){
+			amps = db.getCNCData(maxCNCRange.getSeqRegionName(), maxCNCRange.getStart(), maxCNCRange.getEnd(), true);
+			}
+			if(query.isShowDels()){
+			dels = db.getCNCData(maxCNCRange.getSeqRegionName(), maxCNCRange.getStart(), maxCNCRange.getEnd(), false);
+			}
 			
 			Gen[] genes = null;
-			genes = db.getEnsembleGenes(maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd());
+			genes = db.getEnsembleGenes(maxCNCRange.getSeqRegionName(), maxCNCRange.getStart(), maxCNCRange.getEnd());
 			
 			Karyoband[] band = null;
-			band = db.getEnsemblKaryotypes(maxAmpRange.getSeqRegionName(), maxAmpRange.getStart(), maxAmpRange.getEnd());
+			band = db.getEnsemblKaryotypes(maxCNCRange.getSeqRegionName(), maxCNCRange.getStart(), maxCNCRange.getEnd());
 			
 			SketchTool sketch = new SketchTool();
-			/*
-			if(maxAmpRange.getStart() < maxDelRange.getStart() && maxAmpRange.getEnd() > maxDelRange.getEnd()){
-				
-				
-			}
-			if(maxAmpRange.getStart() > maxDelRange.getStart() && maxAmpRange.getEnd() < maxDelRange.getEnd()){
-				
-			}
-			*/
-			imgInfo = sketch.generateImage(amps, dels, genes, band, maxAmpRange, winWidth, query, servletContext);
+
+			imgInfo = sketch.generateImage(amps, dels, genes, band, maxCNCRange, query.getWinWidth(), query.getQueryString(), servletContext);
 			
-			imgInfo.setChromosome(maxAmpRange.getSeqRegionName());
-			imgInfo.setStart(maxAmpRange.getStart());
-			imgInfo.setEnd(maxAmpRange.getEnd());
+			imgInfo.setChromosome(maxCNCRange.getSeqRegionName());
+			imgInfo.setStart(maxCNCRange.getStart());
+			imgInfo.setEnd(maxCNCRange.getEnd());
 			imgInfo.setQuery(query);
-			imgInfo.setSearchType(searchType);
 			
 		return imgInfo;
 	}
 
-	private void adjustMaxCNCRange(Location maxCNCRange, Location featuresLoc, String searchType){
+	private Location adjustMaxCNCRange(Location maxCNCRange, Location featuresLoc, String searchType){
+		
+		Location loc = maxCNCRange; 
 		
 		if(maxCNCRange.getEnd() - maxCNCRange.getStart() == 0){
 			
 			if(searchType.equals("Band Search")){
 			
-				maxCNCRange = featuresLoc;
+				loc = featuresLoc;
 			
 			}
 			if(searchType.equals("Gene Search")){
@@ -157,10 +160,12 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 					newEnd = end + percRange/2;
 				}
 				
-					maxCNCRange.setSeqRegionName(featuresLoc.getSeqRegionName());
-					maxCNCRange.setStart(newStart);
-					maxCNCRange.setEnd(newEnd);			}	
+					loc.setSeqRegionName(featuresLoc.getSeqRegionName());
+					loc.setStart(newStart);
+					loc.setEnd(newEnd);			}	
 		}
+		
+		return loc;
 	}
 	
 	/**
@@ -201,9 +206,13 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			System.out.println(e.getCause());
 		}
 		
+		if(imageInfo.getQuery().isShowAmps()){
 		amps = db.getCNCData(chr, start, end, true);
+		}
 		
+		if(imageInfo.getQuery().isShowDels()){
 		dels = db.getCNCData(chr, start, end, false);
+		}
 		
 		Gen[] genes = null;
 		genes = db.getEnsembleGenes(chr, start, end);
@@ -214,13 +223,12 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		SketchTool sketch = new SketchTool();
 		
-		imgInfo = sketch.generateImage(amps, dels, genes, band, maxRange, imageInfo.getWidth(), imageInfo.getQuery(), servletContext);
+		imgInfo = sketch.generateImage(amps, dels, genes, band, maxRange, imageInfo.getWidth(), imageInfo.getQuery().getQueryString(), servletContext);
 		
 		imgInfo.setChromosome(maxRange.getSeqRegionName());
 		imgInfo.setStart(maxRange.getStart());
 		imgInfo.setEnd(maxRange.getEnd());
 		imgInfo.setQuery(imageInfo.getQuery());
-		imgInfo.setSearchType(imageInfo.getSearchType());
 		
 		return imgInfo;
 	}

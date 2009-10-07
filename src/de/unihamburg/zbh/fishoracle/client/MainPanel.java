@@ -346,7 +346,7 @@ public class MainPanel extends Panel{
 		
         toolbar.addButton(jumpTo);
 		
-		ImgPanel tab = addImgTab(imgInfo.getQuery());
+		ImgPanel tab = addImgTab(imgInfo.getQuery().getQueryString());
 		tab.add(toolbar);
 		
 		tab.setChrBox(chr);

@@ -72,25 +72,29 @@ public class SketchTool {
 		FeatureNode fnode;
 		
 		try {
+		
+		if(amps != null){
+			for(int i=0; i < amps.length; i++ ){
 			
-		for(int i=0; i < amps.length; i++ ){
-			
-			fnode = new FeatureNode(seqid, "amplicon", amps[i].getStart(), amps[i].getEnd(), ".");
-			features.add(fnode);
-			fnode.add_attribute("ID", amps[i].getCncStableId());
-			if(amps[i].getCncStableId().equals(query)){
-				fnode.gt_genome_node_mark();
+				fnode = new FeatureNode(seqid, "amplicon", amps[i].getStart(), amps[i].getEnd(), ".");
+				features.add(fnode);
+				fnode.add_attribute("ID", amps[i].getCncStableId());
+				if(amps[i].getCncStableId().equals(query)){
+					fnode.gt_genome_node_mark();
+				}
 			}
 		}
 		
-		for(int i=0; i < dels.length; i++ ){
-			
-			fnode = new FeatureNode(seqid, "delicon", dels[i].getStart(), dels[i].getEnd(), ".");
-			features.add(fnode);
-			fnode.add_attribute("ID", dels[i].getCncStableId());
-			if(dels[i].getCncStableId().equals(query)){
-				fnode.gt_genome_node_mark();
-			}
+		if(dels != null){
+			for(int l=0; l < dels.length; l++ ){
+				
+				fnode = new FeatureNode(seqid, "delicon", dels[l].getStart(), dels[l].getEnd(), ".");
+				features.add(fnode);
+				fnode.add_attribute("ID", dels[l].getCncStableId());
+				if(dels[l].getCncStableId().equals(query)){
+					fnode.gt_genome_node_mark();
+				}
+		}
 		}
 		
 		for(int j=0; j < genes.length; j++ ){

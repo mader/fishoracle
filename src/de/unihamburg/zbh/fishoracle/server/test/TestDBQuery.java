@@ -109,11 +109,15 @@ public class TestDBQuery {
 		
 		DBQuery db = new DBQuery(System.getProperty("user.dir") + "/war/");
 		
-		Location testloc1 = db.getLocationForCNCId("AMP00.01");
+		Location testloc1;
+		try {
+		testloc1 = db.getLocationForCNCId("AMP00.01");
+		
 		Location testloc2 = db.getLocationForCNCId("AMP00.02");
 		Location testloc3 = db.getLocationForCNCId("AMP00.03");
 		Location testloc4 = db.getLocationForCNCId("AMP00.04");
 		Location testloc5 = db.getLocationForCNCId("AMP00.05");
+		
 		
 		Assert.assertEquals(testloc1.getSeqRegionName(), ampLoc1.getSeqRegionName());
 		Assert.assertEquals(testloc1.getStart(), ampLoc1.getStart());
@@ -162,7 +166,9 @@ public class TestDBQuery {
 		Assert.assertEquals(testloc15.getSeqRegionName(), ampLoc15.getSeqRegionName());
 		Assert.assertEquals(testloc15.getStart(), ampLoc15.getStart());
 		Assert.assertEquals(testloc15.getEnd(), ampLoc15.getEnd());
-		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	

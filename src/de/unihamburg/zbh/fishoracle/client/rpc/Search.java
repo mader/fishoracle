@@ -7,12 +7,13 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 
 @RemoteServiceRelativePath("testbild")
 public interface Search extends RemoteService {
 
 	
-	public GWTImageInfo generateImage(String query, String searchType, int winWidth);
+	public GWTImageInfo generateImage(QueryInfo q) throws Exception;
 	public GWTImageInfo redrawImage(GWTImageInfo imageInfo);
 	public CopyNumberChange getCNCInfo(String query);
 	public Gen getGeneInfo(String query);

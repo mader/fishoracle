@@ -10,20 +10,25 @@ import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.event.KeyListener;
+import com.gwtext.client.widgets.form.Checkbox;
 import com.gwtext.client.widgets.form.FormPanel;
 import com.gwtext.client.widgets.form.Radio;
 import com.gwtext.client.widgets.form.TextField;
-import com.gwtext.client.widgets.layout.AccordionLayout;
-import com.gwtext.client.widgets.layout.FitLayout;
 import com.gwtext.client.core.EventObject;
 
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
+import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 
 public class WestPanel extends TabPanel{
 
+	private Radio ampPrio = null;
+	private Radio delPrio = null;
+	private Checkbox ampCb = null;
+	private Checkbox delCb = null;
+	
 	private TextField searchBox = null;
 	private Radio ampRadio = null;
 	private Radio geneRadio = null;
@@ -54,6 +59,37 @@ public class WestPanel extends TabPanel{
         formPanel.setBorder(false);
         formPanel.setHideLabels(true);
         formPanel.setMargins(10);
+
+        
+        Panel priorityPanel = new Panel();  
+        priorityPanel.setTitle("Search Priority");  
+        priorityPanel.setWidth(200);  
+        priorityPanel.setCollapsible(true);  
+        
+        ampPrio = new Radio();  
+        ampPrio.setName("cncPrio");
+        ampPrio.setBoxLabel("Amplicon");
+        ampPrio.setChecked(true);
+        priorityPanel.add(ampPrio);
+        
+        delPrio = new Radio();  
+        delPrio.setName("cncPrio");
+        delPrio.setBoxLabel("Delicon");  
+        priorityPanel.add(delPrio);
+        
+        
+        Panel filterPanel = new Panel();  
+        filterPanel.setTitle("Filter");  
+        filterPanel.setWidth(200);  
+        filterPanel.setCollapsible(true);
+        
+        ampCb = new Checkbox("show Amplicons");  
+        ampCb.setChecked(true);
+        filterPanel.add(ampCb);
+        
+        delCb = new Checkbox("show Delicons");
+        delCb.setChecked(true);
+        filterPanel.add(delCb);
         
         searchBox = new TextField();
         searchBox.addKeyListener(KeyCodes.KEY_ENTER, searchListener);
@@ -63,7 +99,7 @@ public class WestPanel extends TabPanel{
     
         ampRadio = new Radio();  
         ampRadio.setName("searchtype");
-        ampRadio.setBoxLabel("Amplicon Search");  
+        ampRadio.setBoxLabel("Amplicon/Delicon Search");  
         formPanel.add(ampRadio);
           
         geneRadio = new Radio();  
@@ -79,26 +115,7 @@ public class WestPanel extends TabPanel{
         
         final Button searchButton = new Button("Search", new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
-        		
-        		String typeStr = null;
-				
-        		if(searchBox.getText().equals("")){
-        			MessageBox.alert("You have to type in a search term!");
-        		} else {
-        		
-        			if(ampRadio.getValue()){
-        				typeStr = ampRadio.getBoxLabel();
-        			}
-        			if(geneRadio.getValue()){
-        				typeStr = geneRadio.getBoxLabel();
-        			}	
-        			if(bandRadio.getValue()){
-        				typeStr = bandRadio.getBoxLabel();
-        			}
-        			
-        			MessageBox.wait("Searching for " + searchBox.getText());
-        			search(searchBox.getText() ,typeStr, centerPanel.getInnerWidth() - 20);
-        		}
+        		startSearch();
         	}
 
        });
@@ -106,6 +123,8 @@ public class WestPanel extends TabPanel{
         formPanel.add(searchButton);
        
         searchPanel.add(formPanel);
+        searchPanel.add(priorityPanel);
+        searchPanel.add(filterPanel);
         
         this.add(searchPanel);
         
@@ -118,9 +137,20 @@ public class WestPanel extends TabPanel{
 
 		@Override
 		public void onKey(int key, EventObject e) {
-			
-			String typeStr = null;
-			
+			startSearch();
+		}
+		
+		
+	};
+	
+	public void startSearch(){
+		String typeStr = null;
+		String cncPrio = null;
+		
+		if(searchBox.getText().equals("")){
+			MessageBox.alert("You have to type in a search term!");
+		} else {
+		
 			if(ampRadio.getValue()){
 				typeStr = ampRadio.getBoxLabel();
 			}
@@ -130,12 +160,19 @@ public class WestPanel extends TabPanel{
 			if(bandRadio.getValue()){
 				typeStr = bandRadio.getBoxLabel();
 			}
+			if(ampPrio.getValue()){
+				cncPrio = ampPrio.getBoxLabel();
+			}
+			if(delPrio.getValue()){
+				cncPrio = delPrio.getBoxLabel();
+			}
+			
+			QueryInfo newQuery = new QueryInfo(searchBox.getText() ,typeStr, cncPrio, ampCb.getValue(), delCb.getValue(), centerPanel.getInnerWidth() - 20); 
+			
 			MessageBox.wait("Searching for " + searchBox.getText());
-			search(searchBox.getText() ,typeStr, centerPanel.getInnerWidth() - 20);
+			search(newQuery);
 		}
-		
-		
-	};
+	}
 	
 	/*=============================================================================
 	 *||                              RPC Calls                                  ||
@@ -143,7 +180,7 @@ public class WestPanel extends TabPanel{
 	 * */	
 		
 		
-	public void search(String query, String type, int winWidth){
+	public void search(QueryInfo q){
 			
 			final SearchAsync req = (SearchAsync) GWT.create(Search.class);
 			ServiceDefTarget endpoint = (ServiceDefTarget) req;
@@ -163,7 +200,7 @@ public class WestPanel extends TabPanel{
 					MessageBox.alert("Nothing found!");
 				}
 			};
-			req.generateImage(query, type, winWidth, callback);
+			req.generateImage(q, callback);
 		}	
 }
 	
