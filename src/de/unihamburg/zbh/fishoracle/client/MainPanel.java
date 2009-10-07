@@ -26,6 +26,10 @@ import com.gwtext.client.widgets.grid.PropertyGridPanel;
 import com.gwtext.client.widgets.layout.BorderLayout;
 import com.gwtext.client.widgets.layout.BorderLayoutData;
 import com.gwtext.client.widgets.layout.FitLayout;
+import com.gwtext.client.widgets.menu.BaseItem;
+import com.gwtext.client.widgets.menu.Item;
+import com.gwtext.client.widgets.menu.Menu;
+import com.gwtext.client.widgets.menu.event.BaseItemListenerAdapter;
 
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
@@ -353,6 +357,32 @@ public class MainPanel extends Panel{
 		tab.setStartBox(start);
 		tab.setEndBox(end);
 		
+		toolbar.addSeparator();
+		
+		ToolbarButton exportButton = new ToolbarButton("export");
+		
+		Menu menu = new Menu();
+		
+		Item excelItem = new Item("export image as Excel document");
+		excelItem.addListener(new BaseItemListenerAdapter() {
+            public void onClick(BaseItem item, EventObject e) {
+            	ImgPanel imagePanel = (ImgPanel) centerPanel.getActiveTab();
+    			GWTImageInfo imgInfo = imagePanel.getImageInfo();
+				
+				centerPanel.exportExcel(imgInfo);
+            }
+        });
+
+		
+		
+		menu.addItem(excelItem); 
+		
+		exportButton.setMenu(menu);
+		
+		
+		
+		toolbar.addButton(exportButton);
+		
 		AbsolutePanel absPanel = createImageLayer(imgInfo);
 		
 		tab.add(absPanel);
@@ -558,4 +588,5 @@ class MyClickHandler implements ClickHandler{
 		};
 		req.getGeneInfo(query, callback);
 	}
+	
 }

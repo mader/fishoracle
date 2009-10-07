@@ -1,8 +1,12 @@
 package de.unihamburg.zbh.fishoracle.server;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.regex.*;
 import java.util.*;
+
+import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 
 import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
@@ -275,5 +279,53 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		Gen  gene = db.getGeneInfos(query);
 		return gene;
 	}
-
+	
+	
+	public String exportData(GWTImageInfo imageInfo) {
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		String url = null;
+		String fileName = null;
+		
+		String chr = imageInfo.getChromosome();
+		int start = imageInfo.getStart();
+		int end = imageInfo.getEnd();
+		
+		DBQuery db = new DBQuery(servletContext);
+		
+		Amplicon[] amps = null;
+		
+		Location maxRange = null;
+		
+		try {
+			maxRange = new Location("chromosome:" + chr + ":" + start + "-" + end);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			System.out.println("Error: " + e.getMessage());
+			System.out.println(e.getCause());
+		}
+		
+		amps = db.getAmpliconData(chr, start, end);
+		
+		Gen[] genes = null;
+		genes = db.getEnsembleGenes(chr, start, end);
+		
+		Export exp = new Export();
+		
+		try {
+			fileName = exp.exportImageAsExcelDocument(amps, genes, maxRange, servletContext);
+		} catch (RowsExceededException e) {
+			e.printStackTrace();
+		} catch (WriteException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		url = "tmp/" + fileName;
+		
+		return url;
+	}
+	
 }
