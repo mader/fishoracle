@@ -294,7 +294,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBQuery db = new DBQuery(servletContext);
 		
-		Amplicon[] amps = null;
+		CopyNumberChange[] amps = null;
+		CopyNumberChange[] dels = null;
 		
 		Location maxRange = null;
 		
@@ -306,7 +307,13 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			System.out.println(e.getCause());
 		}
 		
-		amps = db.getAmpliconData(chr, start, end);
+		if(imageInfo.getQuery().isShowAmps()){
+			amps = db.getCNCData(chr, start, end, true);
+		}
+		
+		if(imageInfo.getQuery().isShowDels()){
+			dels = db.getCNCData(chr, start, end, false);
+		}
 		
 		Gen[] genes = null;
 		genes = db.getEnsembleGenes(chr, start, end);
@@ -314,7 +321,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		Export exp = new Export();
 		
 		try {
-			fileName = exp.exportImageAsExcelDocument(amps, genes, maxRange, servletContext);
+			fileName = exp.exportImageAsExcelDocument(amps, dels, genes, maxRange, servletContext);
 		} catch (RowsExceededException e) {
 			e.printStackTrace();
 		} catch (WriteException e) {
