@@ -53,7 +53,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			Date dt = new Date();
 			
-			System.out.println(dt + " Search: " + query);
+			System.out.println(dt + " Search: " + query.getQueryString());
 			System.out.println(dt + " Search type: " + query.getSearchType());
 			
 			if(query.getSearchType().equals("Amplicon/Delicon Search")){

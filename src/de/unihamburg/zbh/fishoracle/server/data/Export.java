@@ -20,6 +20,7 @@ public class Export {
 
 	}
 
+	@SuppressWarnings({"deprecation"})
 	public String exportImageAsExcelDocument(CopyNumberChange[] amps, CopyNumberChange[] dels, Gen[] genes, Location maxAmpRange, String servletPath) throws IOException, RowsExceededException, WriteException{
 		
 		int i, j, k;

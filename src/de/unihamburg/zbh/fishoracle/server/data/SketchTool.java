@@ -79,7 +79,7 @@ public class SketchTool {
 				fnode = new FeatureNode(seqid, "amplicon", amps[i].getStart(), amps[i].getEnd(), ".");
 				features.add(fnode);
 				fnode.add_attribute("ID", amps[i].getCncStableId());
-				if(amps[i].getCncStableId().equals(query)){
+				if(amps[i].getCncStableId().equalsIgnoreCase(query)){
 					fnode.gt_genome_node_mark();
 				}
 			}
@@ -91,7 +91,7 @@ public class SketchTool {
 				fnode = new FeatureNode(seqid, "delicon", dels[l].getStart(), dels[l].getEnd(), ".");
 				features.add(fnode);
 				fnode.add_attribute("ID", dels[l].getCncStableId());
-				if(dels[l].getCncStableId().equals(query)){
+				if(dels[l].getCncStableId().equalsIgnoreCase(query)){
 					fnode.gt_genome_node_mark();
 				}
 		}
