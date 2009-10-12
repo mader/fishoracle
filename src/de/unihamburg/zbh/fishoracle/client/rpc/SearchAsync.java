@@ -13,5 +13,7 @@ public interface SearchAsync {
 	public void redrawImage(GWTImageInfo imageInfo, AsyncCallback<GWTImageInfo> callback);
 	public void getCNCInfo(String query, AsyncCallback<CopyNumberChange> callback);
 	public void getGeneInfo(String query, AsyncCallback<Gen> callback);
+	public void getListOfCncs(boolean isAmplicon, AsyncCallback<CopyNumberChange[]> callback);
 	public void exportData(GWTImageInfo imageInfo, AsyncCallback<String> callback);
+	
 }

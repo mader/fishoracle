@@ -12,6 +12,14 @@ import com.gwtext.client.core.EventObject;
 import com.gwtext.client.core.Margins;
 import com.gwtext.client.core.NameValuePair;
 import com.gwtext.client.core.RegionPosition;
+import com.gwtext.client.data.ArrayReader;
+import com.gwtext.client.data.FieldDef;
+import com.gwtext.client.data.FloatFieldDef;
+import com.gwtext.client.data.IntegerFieldDef;
+import com.gwtext.client.data.MemoryProxy;
+import com.gwtext.client.data.RecordDef;
+import com.gwtext.client.data.Store;
+import com.gwtext.client.data.StringFieldDef;
 import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
@@ -21,8 +29,13 @@ import com.gwtext.client.widgets.Window;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.event.KeyListener;
 import com.gwtext.client.widgets.form.TextField;
+import com.gwtext.client.widgets.grid.BaseColumnConfig;
+import com.gwtext.client.widgets.grid.ColumnConfig;
+import com.gwtext.client.widgets.grid.ColumnModel;
+import com.gwtext.client.widgets.grid.GridPanel;
 import com.gwtext.client.widgets.grid.GridView;
 import com.gwtext.client.widgets.grid.PropertyGridPanel;
+import com.gwtext.client.widgets.grid.RowNumberingColumnConfig;
 import com.gwtext.client.widgets.layout.BorderLayout;
 import com.gwtext.client.widgets.layout.BorderLayoutData;
 import com.gwtext.client.widgets.layout.FitLayout;
@@ -514,6 +527,82 @@ public class MainPanel extends Panel{
 		//window.show(spaceImg.getElement().getId());
 		
 		window.show();
+	}
+
+	public void newDataTab(CopyNumberChange[] cncs, boolean isAmplicon) {
+		
+		String type = null;
+		
+		if(isAmplicon){
+			type = "amplicons";
+		} else {
+			type = "delicons";
+		}
+		
+		Panel tab = new Panel();
+        tab.setAutoScroll(true);
+        tab.setTitle("List of all " + type);
+        tab.setClosable(true);
+        
+        RecordDef recordDef = new RecordDef(  
+        		new FieldDef[]{  
+        				new StringFieldDef("stable id"),  
+        				new StringFieldDef("chromosome"),  
+        				new IntegerFieldDef("start"),  
+        				new IntegerFieldDef("end"),  
+        				new StringFieldDef("case name"),  
+        				new StringFieldDef("tumor type"),  
+        				new IntegerFieldDef("continuous"),
+        				new IntegerFieldDef("level") 
+        		}  
+        );  
+        
+        Object[][] data = new Object[cncs.length][];
+        
+        for(int i=0; i<cncs.length; i++){
+        	data[i] = new Object[]{cncs[i].getCncStableId(), cncs[i].getChromosome(),
+    				cncs[i].getStart(), cncs[i].getEnd(),
+    				cncs[i].getCaseName(), cncs[i].getTumorType(),
+    				cncs[i].getContinuous(), cncs[i].getCnclevel()};
+        }                                    
+                                                  
+        MemoryProxy proxy = new MemoryProxy(data);  
+
+        ArrayReader reader = new ArrayReader(recordDef);  
+        Store store = new Store(proxy, reader);  
+        store.load();
+        
+        BaseColumnConfig[] columns = new BaseColumnConfig[]{  
+        		new RowNumberingColumnConfig(), 
+        		new ColumnConfig("stable id", "stable id", 50, true),  
+        		new ColumnConfig("chromosome", "chromosome", 50, true),  
+        		new ColumnConfig("start", "start", 65, true),  
+        		new ColumnConfig("end", "end", 65, true),  
+        		new ColumnConfig("case name", "case name", 80, true),  
+        		new ColumnConfig("tumor type", "tumor type", 40, true),
+        		new ColumnConfig("continuous", "continuous", 40, true),
+        		new ColumnConfig("level", "level", 40, true)
+        };  
+
+        ColumnModel columnModel = new ColumnModel(columns); 
+        
+        GridPanel grid = new GridPanel();  
+        grid.setStore(store);  
+        grid.setColumnModel(columnModel);  
+
+        //grid.setTitle("Grid with Numbered Rows and Force Fit");  
+        //grid.setHeight(300);  
+        //grid.setWidth(600);  
+        //grid.setIconCls("grid-icon");  
+
+        GridView view = new GridView();  
+        view.setForceFit(true);  
+        grid.setView(view);
+        
+        tab.add(grid);
+        
+        centerPanel.add(tab);
+        centerPanel.activate(tab.getId());
 	}
 }
 

@@ -280,6 +280,19 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		return gene;
 	}
 	
+	public CopyNumberChange[] getListOfCncs(boolean isAmplicon){
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		CopyNumberChange[] cncs = null;
+		
+		DBQuery db = new DBQuery(servletContext);
+		
+		cncs = db.getAllCNCData(isAmplicon);
+		
+		return cncs;
+	}
+	
 	
 	public String exportData(GWTImageInfo imageInfo) {
 		

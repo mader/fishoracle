@@ -15,8 +15,10 @@ import com.gwtext.client.widgets.form.FormPanel;
 import com.gwtext.client.widgets.form.Radio;
 import com.gwtext.client.widgets.form.TextField;
 import com.gwtext.client.core.EventObject;
+import com.gwtext.client.core.Position;
 
 
+import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
@@ -35,6 +37,8 @@ public class WestPanel extends TabPanel{
 	private Radio bandRadio = null;
 	private MainPanel parentObj = null;
 	private CenterPanel centerPanel = null;
+	
+	private boolean isAmplicon;
 	
 	public WestPanel(MainPanel obj, CenterPanel cp) {
 		
@@ -120,15 +124,42 @@ public class WestPanel extends TabPanel{
 
        });
        
+        Panel overviewPanel = new Panel();
+        overviewPanel.setWidth(200);
+        
+        final Button ampButton = new Button("show all amplicons", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {
+				MessageBox.wait("Fetching all amplicon data. This may take a few seconds ...");
+        		fetchCncData(true);
+        	}
+
+        });
+        ampButton.setWidth("198px");
+        
+        final Button delButton = new Button("show all delicons", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {
+				MessageBox.wait("Fetching all delicon data. This may take a few seconds ...");
+				fetchCncData(false);
+        	}
+
+        });
+        
+        delButton.setWidth("198px");
+        
+        overviewPanel.add(ampButton);
+        overviewPanel.add(delButton);
+        
+        
         formPanel.add(searchButton);
        
         searchPanel.add(formPanel);
         searchPanel.add(priorityPanel);
         searchPanel.add(filterPanel);
+        searchPanel.add(overviewPanel);
         
         this.add(searchPanel);
         
-        this.add(userPanel);  
+        this.add(userPanel);
         
                 
 	}
@@ -201,7 +232,30 @@ public class WestPanel extends TabPanel{
 				}
 			};
 			req.generateImage(q, callback);
-		}	
+		}
+	
+	public void fetchCncData(final boolean isAmplicon){
+		
+		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<CopyNumberChange[]> callback = new AsyncCallback<CopyNumberChange[]>(){
+			public void onSuccess(CopyNumberChange[] result){
+				
+				MessageBox.hide();
+				parentObj.newDataTab(result, isAmplicon);
+				
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				MessageBox.hide();
+				MessageBox.alert("Nothing found!");
+			}
+		};
+		req.getListOfCncs(isAmplicon, callback);
+	}
 }
 	
 

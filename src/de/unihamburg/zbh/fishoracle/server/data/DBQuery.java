@@ -444,6 +444,82 @@ public class DBQuery {
 		return cnc;
 	}
 	
+	public CopyNumberChange[] getAllCNCData(boolean isAmplicon){
+		
+		String qrystrc = null;
+		String qrystr = null;
+
+		String copyNumberChangeType = null;		
+		
+		if(isAmplicon){
+			copyNumberChangeType = "amplicon";
+			
+		} else {
+			copyNumberChangeType = "delicon";
+		}
+		
+		qrystrc = "SELECT count(*) from " + copyNumberChangeType;
+		
+		qrystr = "SELECT * from " + copyNumberChangeType;
+		
+		Connection conn = null;
+		CopyNumberChange[] cnc = null;
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			
+			s.executeQuery(qrystrc);
+			
+			ResultSet countRegRs = s.getResultSet();
+			countRegRs.next();
+			int cncCount = countRegRs.getInt(1);
+			
+			countRegRs.close();
+			
+			s.executeQuery(qrystr);
+			
+			ResultSet regRs = s.getResultSet();
+			
+			int count = 0;
+
+			cnc = new CopyNumberChange[cncCount];
+			
+			while(regRs.next()){
+				String newCNCStableId = regRs.getString(2);
+				String newChr = regRs.getString(3);
+				int newStart = regRs.getInt(4);
+				int newEnd = regRs.getInt(5);
+				String caseName = regRs.getString(6);
+				String tumorType = regRs.getString(7);
+				int contin = regRs.getInt(8);
+				int cnclevel = regRs.getInt(9);
+				
+				cnc[count] = new CopyNumberChange(newCNCStableId, newChr, newStart, newEnd, caseName, tumorType, contin, cnclevel, isAmplicon);
+				count++;
+			}
+			
+			regRs.close();
+			s.close();
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.exit(1);
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		
+		return cnc;
+	}
+	
 	/**
 	 * Fetch all data for a given Amplicon stable id
 	 * 
