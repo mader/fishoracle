@@ -516,7 +516,7 @@ class MyClickHandler implements ClickHandler{
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				MessageBox.alert("Nothing found!");
+				MessageBox.alert(caught.getMessage());
 			}
 		};
 		req.getAmpliconInfo(query, callback);
@@ -537,7 +537,7 @@ class MyClickHandler implements ClickHandler{
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				MessageBox.alert("Nothing found!");
+				MessageBox.alert(caught.getMessage());
 			}
 		};
 		req.getGeneInfo(query, callback);

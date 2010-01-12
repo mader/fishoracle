@@ -176,7 +176,7 @@ public class CenterPanel extends TabPanel{
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				MessageBox.alert("Nothing found!");
+				MessageBox.alert(caught.getMessage());
 			}
 		};
 		req.redrawImage(imgInfo, callback);
@@ -210,7 +210,7 @@ public class CenterPanel extends TabPanel{
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				MessageBox.alert("Nothing found!");
+				MessageBox.alert(caught.getMessage());
 			}
 		};
 		req.register(user, callback);

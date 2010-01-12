@@ -180,8 +180,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 *         at the client side.
 	 *         
 	 * @return imgInfo image info object
+	 * @throws Exception 
+	 * @throws Exception 
 	 * */
-	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) {
+	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -201,10 +203,11 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		try {
 			maxRange = new Location("chromosome:" + chr + ":" + start + "-" + end);
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getMessage());
 			System.out.println(e.getCause());
+			throw e;
 		}
 		
 		amps = db.getAmpliconData(chr, start, end);
@@ -235,9 +238,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * @param query The amplicon stable id
 	 * 
 	 * @return Amplicon
+	 * @throws Exception 
 	 * */
 	public Amplicon getAmpliconInfo(
-			String query) {
+			String query) throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -248,7 +252,6 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		Amplicon  amp = db.getAmpliconInfos(query);
 		
-		
 		return amp;
 	}
 
@@ -258,8 +261,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * @param query The ensembl stable id
 	 * 
 	 * @return gene
+	 * @throws Exception 
 	 * */
-	public Gen getGeneInfo(String query) {
+	public Gen getGeneInfo(String query) throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		

@@ -20,7 +20,6 @@ import com.gwtext.client.core.EventObject;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.User;
-import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
@@ -30,6 +29,7 @@ public class WestPanel extends TabPanel{
 	
 	private Panel searchPanel = null;
 	private Button logoutButton = null;
+	private Button registerButton = null;
 	private FormPanel userFormPanel = null;
 	private TextField userName = null;
 	private TextField pw = null;
@@ -65,7 +65,9 @@ public class WestPanel extends TabPanel{
         Button loginButton = new Button("log in", new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {
         			
+				
         			MessageBox.wait("Logging in " + userName.getText());
+
         			userLogin(userName.getText(), pw.getText());
         		
         	}
@@ -84,7 +86,7 @@ public class WestPanel extends TabPanel{
         
         logoutButton.hide();
         
-        Button registerButton = new Button("register", new ButtonListenerAdapter(){
+        registerButton = new Button("register", new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {     
         			
 					Panel tab = centerPanel.openRegisterTab();
@@ -225,23 +227,9 @@ public class WestPanel extends TabPanel{
 					
 				}
 				public void onFailure(Throwable caught){
-					
-					
-					//MessageBox.alert("Nothing found!");
 
 					MessageBox.hide();
 					MessageBox.alert(caught.getMessage());
-/*
-					if (caught instanceof DBQueryException) {
-							DBQueryException DBcaught = (DBQueryException) caught;
-							MessageBox.hide();
-							MessageBox.alert(DBcaught.getMessage());
-					   }else{
-						   MessageBox.hide();
-						   MessageBox.alert("blubb");
-						   
-					   }
-	*/				
 					
 				}
 			};
@@ -259,6 +247,7 @@ public class WestPanel extends TabPanel{
 				
 				searchPanel.setDisabled(false);
 				userFormPanel.hide();
+				registerButton.hide();
 				logoutButton.show();
 				MessageBox.hide();
 				
@@ -284,6 +273,7 @@ public class WestPanel extends TabPanel{
 				userName.reset();
 				pw.reset();
 				logoutButton.hide();
+				registerButton.show();
 				searchPanel.setDisabled(true);
 				userFormPanel.show();
 				
@@ -302,7 +292,7 @@ public class WestPanel extends TabPanel{
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
 				MessageBox.hide();
-				MessageBox.alert("Nothing found!");
+				MessageBox.alert(caught.getMessage());
 			}
 		};
 		req.logout(callback);

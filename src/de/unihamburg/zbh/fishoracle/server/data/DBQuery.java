@@ -428,9 +428,10 @@ public class DBQuery {
 	 * 
 	 * @param query Amplicon Stable ID
 	 * @return		Amplicon object conaiting all amplicon data.
+	 * @throws Exception 
 	 * 
 	 * */
-	public Amplicon getAmpliconInfos(String query){
+	public Amplicon getAmpliconInfos(String query) throws Exception{
 		
 		Connection conn = null;
 		Amplicon amp = null;
@@ -460,7 +461,7 @@ public class DBQuery {
 			}
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
-			System.exit(1);
+			throw e;
 		} finally {
 			if(conn != null){
 				try{
@@ -468,6 +469,7 @@ public class DBQuery {
 				} catch(Exception e) {
 					String err = FishOracleConnection.getErrorMessage(e);
 					System.out.println(err);
+					throw e;
 				}
 			}
 		}
@@ -479,9 +481,10 @@ public class DBQuery {
 	 * 
 	 * @param query Ensembl Stable ID
 	 * @return		Gen object conaiting all gene data.
+	 * @throws Exception 
 	 * 
 	 * */
-	public Gen getGeneInfos(String query) {
+	public Gen getGeneInfos(String query) throws Exception {
 		
 		Gen gene = null;
 		
@@ -515,6 +518,7 @@ public class DBQuery {
 			e.printStackTrace();			
 			System.out.println("Error: " + e.getMessage());
 			System.out.println(e.getCause());
+			throw e;
 		}
 
 		
@@ -626,7 +630,7 @@ public class DBQuery {
 	
 	/* USER DATA */
 	
-	public User getUserData(String userName, String pw){
+	public User getUserData(String userName, String pw) throws Exception{
 		Connection conn = null;
 		User user = null;
 		
@@ -636,7 +640,7 @@ public class DBQuery {
 			
 			Statement s = conn.createStatement();
 			
-			s.executeQuery("SELECT * FROM user WHERE username = '" + userName + "' AND password = '" + pw + "'");
+			s.executeQuery("SELECT * FROM user WHERE username = '" + userName + "' AND password = '" + SimpleSHA.SHA1(pw) + "'");
 			
 			ResultSet userRs = s.getResultSet();
 			
@@ -650,7 +654,6 @@ public class DBQuery {
 			while(userRs.next()){
 				
 				id = userRs.getInt(1);
-				System.out.println("blubb");
 				fistName = userRs.getString(2);
 				lastName = userRs.getString(3);
 				dbUserName = userRs.getString(4);
@@ -658,11 +661,17 @@ public class DBQuery {
 				isAdmin = userRs.getBoolean(7);
 			}
 			
+			if(id == 0){
+				
+				throw new DBQueryException("User name or password incorrect!");
+				
+			}
+			
 			user = new User(id, fistName, lastName, dbUserName, email, isAdmin);
 			
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
-			System.exit(1);
+			throw e;
 		} finally {
 			if(conn != null){
 				try{
@@ -676,7 +685,7 @@ public class DBQuery {
 		return user;	
 	}
 	
-	public void insertUserData(User user){
+	public void insertUserData(User user) throws Exception{
 		Connection conn = null;
 		
 		try{
@@ -689,22 +698,23 @@ public class DBQuery {
 			
 			ResultSet countRs = s.getResultSet();
 			countRs.next();
-			int ampCount = countRs.getInt(1);
+			int userCount = countRs.getInt(1);
 			
-			if(ampCount == 0){
+			if(userCount == 0){
 			
 			s.executeUpdate("INSERT INTO user (first_name, last_name, username, email, password, isadmin) VALUES" +
 							" ('" + user.getFirstName() + "', '" + user.getLastName() + "', '" + user.getUserName() +
-							"', '" + user.getEmail() + "', '" + user.getPw() + "', '" + user.getIsAdmin() + "')");
+							"', '" + user.getEmail() + "', '" + SimpleSHA.SHA1(user.getPw()) + "', '" + user.getIsAdmin() + "')");
 			} else {
 				
-				 System.out.println("benutzter schon vorhanden");
+				
+				 throw new DBQueryException("User name is already taken! Choose another one.");
 				
 			}
 			
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
-			System.exit(1);
+			throw e;
 		} finally {
 			if(conn != null){
 				try{

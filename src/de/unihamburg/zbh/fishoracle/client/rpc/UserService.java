@@ -9,8 +9,8 @@ import de.unihamburg.zbh.fishoracle.client.data.User;
 @RemoteServiceRelativePath("user")
 public interface UserService extends RemoteService {
 	
-	public User register(User user);
-	public User login(String email, String password);
+	public User register(User user) throws Exception;
+	public User login(String email, String password) throws Exception;
 	public void logout();
 	
 	public static class Util {

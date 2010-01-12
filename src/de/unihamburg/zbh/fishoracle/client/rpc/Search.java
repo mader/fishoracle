@@ -7,17 +7,15 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import de.unihamburg.zbh.fishoracle.client.data.Amplicon;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
-import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
-import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
 
-@RemoteServiceRelativePath("testbild")
+@RemoteServiceRelativePath("search")
 public interface Search extends RemoteService {
 
 	
 	public GWTImageInfo generateImage(String query, String searchType, int winWidth) throws Exception;
-	public GWTImageInfo redrawImage(GWTImageInfo imageInfo);
-	public Amplicon getAmpliconInfo(String query);
-	public Gen getGeneInfo(String query);
+	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) throws Exception;
+	public Amplicon getAmpliconInfo(String query) throws Exception;
+	public Gen getGeneInfo(String query) throws Exception;
 	
 	public static class Util {
 

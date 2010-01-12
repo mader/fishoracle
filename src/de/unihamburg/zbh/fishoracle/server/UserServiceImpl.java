@@ -8,12 +8,13 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.server.data.DBQuery;
+import de.unihamburg.zbh.fishoracle.server.data.SimpleSHA;
 
 public class UserServiceImpl extends RemoteServiceServlet implements UserService {
 
 	private static final long serialVersionUID = 1929980857354870885L;
 
-	public User register(User user){
+	public User register(User user) throws Exception{
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -24,7 +25,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		return user;
 	}
 	
-	public User login(String userName, String password){
+	public User login(String userName, String password) throws Exception{
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
