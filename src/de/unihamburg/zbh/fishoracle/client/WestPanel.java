@@ -4,7 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Anchor;
 import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.Component;
 import com.gwtext.client.widgets.MessageBox;
@@ -17,7 +17,6 @@ import com.gwtext.client.widgets.form.Label;
 import com.gwtext.client.widgets.form.Radio;
 import com.gwtext.client.widgets.form.TextField;
 import com.gwtext.client.core.EventObject;
-
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.User;
@@ -194,23 +193,33 @@ public class WestPanel extends TabPanel{
         userAdmin.setBorder(false);
         userAdmin.setMargins(5);
         
-        Hyperlink users = new Hyperlink("show users", "");
-        users.setStylePrimaryName("menulinks");
-        Hyperlink activateUser = new Hyperlink("activate user", "");
-        activateUser.setStylePrimaryName("menulinks");
+        Panel usersAnchor = new Panel();
+        Anchor users = new Anchor("show users");
+        usersAnchor.setCtCls("menulinks");
+        usersAnchor.setBorder(false);
+        usersAnchor.add(users);
         
-        userAdmin.add(users);
-        userAdmin.add(activateUser);
+        Panel activateUserAnchor = new Panel();
+        Anchor activateUser = new Anchor("activate user");
+        activateUserAnchor.setCtCls("menulinks");
+        activateUserAnchor.setBorder(false);
+        activateUserAnchor.add(activateUser);
+        
+        userAdmin.add(usersAnchor);
+        userAdmin.add(activateUserAnchor);
         
         Panel dataAdmin = new Panel();
         dataAdmin.setTitle("Data Administration");
         dataAdmin.setBorder(false);
         dataAdmin.setMargins(5);
         
-        Hyperlink addData = new Hyperlink("add data", "");
-        addData.setStylePrimaryName("menulinks");
+        Panel addDataAnchor = new Panel();
+        Anchor addData = new Anchor("add data");
+        addDataAnchor.setBorder(false);
+        addDataAnchor.setCtCls("menulinks");
+        addDataAnchor.add(addData);
         
-        dataAdmin.add(addData);
+        dataAdmin.add(addDataAnchor);
         
         adminPanel.add(dataAdmin);
         
