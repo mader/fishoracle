@@ -8,7 +8,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.server.data.DBQuery;
-import de.unihamburg.zbh.fishoracle.server.data.SimpleSHA;
 
 public class UserServiceImpl extends RemoteServiceServlet implements UserService {
 
@@ -35,7 +34,6 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		
 		HttpServletRequest request=this.getThreadLocalRequest();
 		HttpSession session=request.getSession();
-		System.out.println("Session ID: " + session.getId());
 		
 		session.setAttribute("user", user);
 		

@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.gwtext.client.widgets.Button;
 import com.gwtext.client.widgets.Component;
 import com.gwtext.client.widgets.MessageBox;
@@ -27,19 +28,24 @@ import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
 public class WestPanel extends TabPanel{
 	
-	private Panel searchPanel = null;
-	private Button logoutButton = null;
-	private Button registerButton = null;
+	private Panel userPanel = null;
 	private FormPanel userFormPanel = null;
 	private TextField userName = null;
 	private TextField pw = null;
-	private Panel userPanel = null;
+	private Button logoutButton = null;
+	private Button registerButton = null;
+	
+	private Panel searchPanel = null;
 	private TextField searchBox = null;
 	private Radio ampRadio = null;
 	private Radio geneRadio = null;
 	private Radio bandRadio = null;
 	private MainPanel parentObj = null;
 	private CenterPanel centerPanel = null;
+	
+	private Panel adminPanel = null;
+	
+	private WestPanel wp = this;
 	
 	public WestPanel(MainPanel obj, CenterPanel cp) {
 		
@@ -50,6 +56,7 @@ public class WestPanel extends TabPanel{
         this.setCollapsible(true);
         this.setWidth(200);
         
+        /* User Panel for user specific information and actions */
         userPanel = new Panel();  
         userPanel.setTitle("User");  
         userPanel.setBorder(false);
@@ -114,6 +121,8 @@ public class WestPanel extends TabPanel{
         
         userPanel.add(registerButton);
         
+        
+        /* search Panel for gene, ID and karyoband search*/
         searchPanel = new Panel();
         searchPanel.setTitle("Search");  
         searchPanel.setBorder(false);
@@ -176,11 +185,41 @@ public class WestPanel extends TabPanel{
        
         searchPanel.add(formPanel);
         
+        adminPanel = new Panel();  
+        adminPanel.setTitle("Admin");  
+        adminPanel.setBorder(false);
+        
+        Panel userAdmin = new Panel();
+        userAdmin.setTitle("User Administration");
+        userAdmin.setBorder(false);
+        userAdmin.setMargins(5);
+        
+        Hyperlink users = new Hyperlink("show users", "");
+        users.setStylePrimaryName("menulinks");
+        Hyperlink activateUser = new Hyperlink("activate user", "");
+        activateUser.setStylePrimaryName("menulinks");
+        
+        userAdmin.add(users);
+        userAdmin.add(activateUser);
+        
+        Panel dataAdmin = new Panel();
+        dataAdmin.setTitle("Data Administration");
+        dataAdmin.setBorder(false);
+        dataAdmin.setMargins(5);
+        
+        Hyperlink addData = new Hyperlink("add data", "");
+        addData.setStylePrimaryName("menulinks");
+        
+        dataAdmin.add(addData);
+        
+        adminPanel.add(dataAdmin);
+        
+        adminPanel.add(userAdmin);
+        
         this.add(searchPanel);
         
         this.add(userPanel);  
-        
-                
+               
 	}
 
 	KeyListener searchListener = new KeyListener(){
@@ -246,6 +285,9 @@ public class WestPanel extends TabPanel{
 			public void onSuccess(User result){
 				
 				searchPanel.setDisabled(false);
+				if(result.getIsAdmin()){
+					wp.add(adminPanel);
+				}
 				userFormPanel.hide();
 				registerButton.hide();
 				logoutButton.show();
@@ -275,8 +317,12 @@ public class WestPanel extends TabPanel{
 				logoutButton.hide();
 				registerButton.show();
 				searchPanel.setDisabled(true);
+				adminPanel.setVisible(false);
 				userFormPanel.show();
 				
+				wp.remove(adminPanel);
+				
+				/* remove all center panel tabs except for the welcome tab*/
 				Component[] items = centerPanel.getItems();  
 					for (int i = 0; i < items.length; i++) {  
 						Component component = items[i];  

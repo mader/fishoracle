@@ -1,6 +1,5 @@
 package de.unihamburg.zbh.fishoracle.server;
 
-import java.text.ParseException;
 import java.util.regex.*;
 import java.util.*;
 
