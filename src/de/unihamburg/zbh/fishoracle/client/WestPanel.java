@@ -1,6 +1,8 @@
 package de.unihamburg.zbh.fishoracle.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -20,6 +22,8 @@ import com.gwtext.client.core.EventObject;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
+import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
@@ -195,6 +199,14 @@ public class WestPanel extends TabPanel{
         
         Panel usersAnchor = new Panel();
         Anchor users = new Anchor("show users");
+        users.addClickHandler(new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {
+				showAllUsers();
+				
+			}
+        });
+        
         usersAnchor.setCtCls("menulinks");
         usersAnchor.setBorder(false);
         usersAnchor.add(users);
@@ -352,6 +364,32 @@ public class WestPanel extends TabPanel{
 		};
 		req.logout(callback);
 	}	
+	
+	public void showAllUsers(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<User[]> callback = new AsyncCallback<User[]>(){
+			
+			public void onSuccess(User[] result){
+				
+			Panel tab = centerPanel.openUserAdminTab(result);
+			centerPanel.add(tab);
+			centerPanel.activate(tab.getId());
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				MessageBox.hide();
+				MessageBox.alert(caught.getMessage());
+			}
+
+		};
+		req.getAllUsers(callback);
+	}	
+	
 }
 	
 

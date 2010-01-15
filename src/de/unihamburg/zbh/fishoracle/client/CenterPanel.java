@@ -15,7 +15,16 @@ import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.event.PanelListenerAdapter;
 import com.gwtext.client.widgets.form.FormPanel;
 import com.gwtext.client.widgets.form.TextField;
+import com.gwtext.client.widgets.grid.ColumnConfig;
+import com.gwtext.client.widgets.grid.ColumnModel;
+import com.gwtext.client.widgets.grid.GridPanel;
 import com.gwtext.client.core.EventObject;
+import com.gwtext.client.data.ArrayReader;
+import com.gwtext.client.data.FieldDef;
+import com.gwtext.client.data.MemoryProxy;
+import com.gwtext.client.data.RecordDef;
+import com.gwtext.client.data.Store;
+import com.gwtext.client.data.StringFieldDef;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.User;
@@ -134,6 +143,67 @@ public class CenterPanel extends TabPanel{
 		return tab;
 		
 		
+	}
+	
+	public Panel openUserAdminTab(User[] users){
+		
+		Panel tab = addTab("Show all users");
+		
+			RecordDef recordDef = new RecordDef(  
+					new FieldDef[]{  
+							new StringFieldDef("id"),  
+							new StringFieldDef("firstname"),  
+							new StringFieldDef("lastname"),  
+							new StringFieldDef("username"),  
+							new StringFieldDef("email"),  
+							new StringFieldDef("isadmin"),   
+					}  
+			);  
+		
+		final GridPanel grid = new GridPanel();  
+		
+		Object[][] userData = new Object[users.length][];
+		int i = 0;
+		
+		for(i = 0; i < users.length; i++){
+			
+			userData[i] = new Object[]{users[i].getId(),
+										users[i].getFirstName(),
+										users[i].getLastName(),
+										users[i].getUserName(),
+										users[i].getEmail(),
+										users[i].getIsAdmin()};
+		}
+			
+		MemoryProxy proxy = new MemoryProxy(userData);  
+		
+		ArrayReader reader = new ArrayReader(recordDef);  
+		Store store = new Store(proxy, reader);  
+		store.load();
+		grid.setStore(store);  
+		
+		
+		ColumnConfig[] columns = new ColumnConfig[]{  
+				new ColumnConfig("id", "id", 30, true, null, "id"),  
+				new ColumnConfig("first name", "firstname", 100, true, null, "firstname"),  
+				new ColumnConfig("last name", "lastname", 100, true, null, "lastname"),  
+				new ColumnConfig("user name", "username", 100, true, null, "username"),  
+				new ColumnConfig("e-mail", "email", 100, true, null, "email"),  
+				new ColumnConfig("is admin", "isadmin", 60, true)  
+		};  
+		
+		ColumnModel columnModel = new ColumnModel(columns);  
+		grid.setColumnModel(columnModel);  
+		
+		grid.setFrame(true);  
+		grid.setStripeRows(true);  
+		grid.setAutoExpandColumn("email");  
+
+		grid.setTitle("All users");  
+		
+		tab.add(grid);
+		
+		return tab;
 	}
 	
 	/*=============================================================================

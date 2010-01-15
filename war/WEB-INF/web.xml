@@ -30,5 +30,15 @@
     <servlet-name>userservice</servlet-name>
     <url-pattern>/fishoracle/UserService</url-pattern>
   </servlet-mapping>
-
+  
+  <servlet>
+    <servlet-name>adminservice</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.AdminServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>adminservice</servlet-name>
+    <url-pattern>/fishoracle/AdminService</url-pattern>
+  </servlet-mapping>
+  
 </web-app>

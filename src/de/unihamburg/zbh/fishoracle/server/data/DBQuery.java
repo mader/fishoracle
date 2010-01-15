@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -726,4 +727,64 @@ public class DBQuery {
 			}
 		}
 	}
+	
+	public ArrayList<User> fetchAllUsers() throws Exception{
+		
+		Connection conn = null;
+		ArrayList<User> users = new ArrayList<User>();
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			
+			s.executeQuery("SELECT user_id, first_name, last_name, username, email, isadmin  FROM user");
+			
+			ResultSet userRs = s.getResultSet();
+			
+			int id = 0;
+			String fistName = null;
+			String lastName = null;
+			String dbUserName = null;
+			String email = null;
+			Boolean isAdmin = null;
+			
+			while(userRs.next()){
+				
+				id = userRs.getInt(1);
+				fistName = userRs.getString(2);
+				lastName = userRs.getString(3);
+				dbUserName = userRs.getString(4);
+				email = userRs.getString(5);
+				isAdmin = userRs.getBoolean(6);
+				
+				//System.out.println(id + " " + fistName + " " + lastName + " " + dbUserName + " " + email + " " + isAdmin + "\n"); 
+				
+				User user = new User(id, fistName, lastName, dbUserName, email, isAdmin);
+				
+				//System.out.println(user.getId() + " " + user.getFirstName() + " " + user.getLastName() + " " + user.getUserName() + " " + user.getEmail() + " " + user.getIsAdmin() + "\n");
+				
+				users.add(user);
+			}
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		
+		return users;
+	}
+	
 }
