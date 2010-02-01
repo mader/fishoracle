@@ -124,7 +124,7 @@ public class CenterPanel extends TabPanel{
 		Button submit = new Button("submit", new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {     
     			
-				User user = new User(firstName.getText(), lastName.getText(), userName.getText(), email.getText(), pw.getText(), false);
+				User user = new User(firstName.getText(), lastName.getText(), userName.getText(), email.getText(), pw.getText(), false, false);
 				
 				registerUser(user);
 				
@@ -156,6 +156,7 @@ public class CenterPanel extends TabPanel{
 							new StringFieldDef("lastname"),  
 							new StringFieldDef("username"),  
 							new StringFieldDef("email"),  
+							new StringFieldDef("isactive"),
 							new StringFieldDef("isadmin"),   
 					}  
 			);  
@@ -172,6 +173,7 @@ public class CenterPanel extends TabPanel{
 										users[i].getLastName(),
 										users[i].getUserName(),
 										users[i].getEmail(),
+										users[i].getIsActive(),
 										users[i].getIsAdmin()};
 		}
 			
@@ -189,6 +191,7 @@ public class CenterPanel extends TabPanel{
 				new ColumnConfig("last name", "lastname", 100, true, null, "lastname"),  
 				new ColumnConfig("user name", "username", 100, true, null, "username"),  
 				new ColumnConfig("e-mail", "email", 100, true, null, "email"),  
+				new ColumnConfig("is active", "isactive", 60, true),
 				new ColumnConfig("is admin", "isadmin", 60, true)  
 		};  
 		
@@ -271,7 +274,8 @@ public class CenterPanel extends TabPanel{
 					}
 				}
 			
-				String msg = "Registered! You can now login with your User Name " + result.getUserName();
+				String msg = "Registered! Before you can login with your user name " + result.getUserName() + "your account has to be verified." +
+							" We will try to do that as fast as possible.";
 				
 				System.out.println(msg);
 				

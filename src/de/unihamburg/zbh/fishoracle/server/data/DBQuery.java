@@ -650,6 +650,7 @@ public class DBQuery {
 			String lastName = null;
 			String dbUserName = null;
 			String email = null;
+			Boolean isActive = null;
 			Boolean isAdmin = null;
 			
 			while(userRs.next()){
@@ -659,7 +660,8 @@ public class DBQuery {
 				lastName = userRs.getString(3);
 				dbUserName = userRs.getString(4);
 				email = userRs.getString(5);
-				isAdmin = userRs.getBoolean(7);
+				isActive = userRs.getBoolean(7);
+				isAdmin = userRs.getBoolean(8);
 			}
 			
 			if(id == 0){
@@ -667,8 +669,16 @@ public class DBQuery {
 				throw new DBQueryException("User name or password incorrect!");
 				
 			}
+			if(isActive == false){
+				
+				throw new DBQueryException("Your account has not been activated. If you registered recently" +
+						                    " this means that your acount has not been verified yet. Just try to log in later." +
+						                    " If your account has been deactivated or your registration was more than 3 days ago" +
+						                    " then contact the webmaster.");
+				
+			}
 			
-			user = new User(id, fistName, lastName, dbUserName, email, isAdmin);
+			user = new User(id, fistName, lastName, dbUserName, email, isActive, isAdmin);
 			
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
@@ -703,9 +713,10 @@ public class DBQuery {
 			
 			if(userCount == 0){
 			
-			s.executeUpdate("INSERT INTO user (first_name, last_name, username, email, password, isadmin) VALUES" +
+			s.executeUpdate("INSERT INTO user (first_name, last_name, username, email, password, isactive, isadmin) VALUES" +
 							" ('" + user.getFirstName() + "', '" + user.getLastName() + "', '" + user.getUserName() +
-							"', '" + user.getEmail() + "', '" + SimpleSHA.SHA1(user.getPw()) + "', '" + user.getIsAdmin() + "')");
+							"', '" + user.getEmail() + "', '" + SimpleSHA.SHA1(user.getPw()) + "', '" + user.getIsActive() + 
+							"', '"+ user.getIsAdmin() + "')");
 			} else {
 				
 				
@@ -739,7 +750,7 @@ public class DBQuery {
 			
 			Statement s = conn.createStatement();
 			
-			s.executeQuery("SELECT user_id, first_name, last_name, username, email, isadmin  FROM user");
+			s.executeQuery("SELECT user_id, first_name, last_name, username, email, isActive, isadmin  FROM user");
 			
 			ResultSet userRs = s.getResultSet();
 			
@@ -748,6 +759,7 @@ public class DBQuery {
 			String lastName = null;
 			String dbUserName = null;
 			String email = null;
+			Boolean isActive = null;
 			Boolean isAdmin = null;
 			
 			while(userRs.next()){
@@ -757,11 +769,12 @@ public class DBQuery {
 				lastName = userRs.getString(3);
 				dbUserName = userRs.getString(4);
 				email = userRs.getString(5);
-				isAdmin = userRs.getBoolean(6);
+				isActive = userRs.getBoolean(6);
+				isAdmin = userRs.getBoolean(7);
 				
 				//System.out.println(id + " " + fistName + " " + lastName + " " + dbUserName + " " + email + " " + isAdmin + "\n"); 
 				
-				User user = new User(id, fistName, lastName, dbUserName, email, isAdmin);
+				User user = new User(id, fistName, lastName, dbUserName, email, isActive, isAdmin);
 				
 				//System.out.println(user.getId() + " " + user.getFirstName() + " " + user.getLastName() + " " + user.getUserName() + " " + user.getEmail() + " " + user.getIsAdmin() + "\n");
 				

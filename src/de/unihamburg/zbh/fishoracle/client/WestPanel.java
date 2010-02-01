@@ -87,7 +87,7 @@ public class WestPanel extends TabPanel{
         logoutButton = new Button("log out", new ButtonListenerAdapter(){
 			public void onClick(Button button, EventObject e) {     
         			
-        			MessageBox.wait("Logging in " + userName.getText());
+        			MessageBox.wait("Logging out " + userName.getText());
         			userLogout();
         		
         	}
