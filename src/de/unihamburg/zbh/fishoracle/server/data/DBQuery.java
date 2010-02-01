@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -739,16 +738,21 @@ public class DBQuery {
 		}
 	}
 	
-	public ArrayList<User> fetchAllUsers() throws Exception{
+	public User[] fetchAllUsers() throws Exception{
 		
 		Connection conn = null;
-		ArrayList<User> users = new ArrayList<User>();
+		User[] users = null;
 		
 		try{
 			
 			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
 			
 			Statement s = conn.createStatement();
+			s.executeQuery("SELECT count(*) FROM user");
+			
+			ResultSet countRs = s.getResultSet();
+			countRs.next();
+			int userCount = countRs.getInt(1);
 			
 			s.executeQuery("SELECT user_id, first_name, last_name, username, email, isActive, isadmin  FROM user");
 			
@@ -762,6 +766,9 @@ public class DBQuery {
 			Boolean isActive = null;
 			Boolean isAdmin = null;
 			
+			users = new User[userCount];
+			int i = 0;
+			
 			while(userRs.next()){
 				
 				id = userRs.getInt(1);
@@ -772,13 +779,11 @@ public class DBQuery {
 				isActive = userRs.getBoolean(6);
 				isAdmin = userRs.getBoolean(7);
 				
-				//System.out.println(id + " " + fistName + " " + lastName + " " + dbUserName + " " + email + " " + isAdmin + "\n"); 
-				
 				User user = new User(id, fistName, lastName, dbUserName, email, isActive, isAdmin);
 				
-				//System.out.println(user.getId() + " " + user.getFirstName() + " " + user.getLastName() + " " + user.getUserName() + " " + user.getEmail() + " " + user.getIsAdmin() + "\n");
+				users[i] = user;
 				
-				users.add(user);
+				i++;
 			}
 			
 		} catch (Exception e){

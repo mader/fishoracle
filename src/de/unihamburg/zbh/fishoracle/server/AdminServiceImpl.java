@@ -1,7 +1,5 @@
 package de.unihamburg.zbh.fishoracle.server;
 
-import java.util.ArrayList;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -33,21 +31,9 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		DBQuery db = new DBQuery(servletContext);
 		
-		ArrayList<User> users = db.fetchAllUsers();
+		User[] users = db.fetchAllUsers();
 		
-		User[] alluser = new User[users.size()];
-		
-		int i = 0;
-		
-		while(users.size() > i){
-			
-			alluser[i] = users.get(i);
-			
-			i++;
-			
-		}
-		
-		return alluser;
+		return users;
 		
 	}
 	
