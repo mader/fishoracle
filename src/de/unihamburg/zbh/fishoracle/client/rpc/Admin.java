@@ -10,6 +10,8 @@ import de.unihamburg.zbh.fishoracle.client.data.User;
 public interface Admin extends RemoteService  {
 
 	public User[] getAllUsers() throws Exception;
+	public int[] toggleFlag(int id, String flag, int rowIndex, int colIndex) throws Exception;
+	
 	
 	public static class Util {
 
@@ -18,5 +20,4 @@ public interface Admin extends RemoteService  {
 			return GWT.create(Admin.class);
 		}
 	}
-	
 }

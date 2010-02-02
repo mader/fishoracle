@@ -9,4 +9,6 @@ public interface AdminAsync {
 
 	void getAllUsers(AsyncCallback<User[]> callback);
 
+	void toggleFlag(int id, String flag, int rowIndex, int colIndex, AsyncCallback<int[]> callback);
+
 }

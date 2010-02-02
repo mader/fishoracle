@@ -330,8 +330,8 @@ public class WestPanel extends TabPanel{
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<User> callback = new AsyncCallback<User>(){
-			public void onSuccess(User result){
+		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
+			public void onSuccess(Void result){
 				
 				userName.reset();
 				pw.reset();

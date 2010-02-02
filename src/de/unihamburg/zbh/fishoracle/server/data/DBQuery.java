@@ -805,4 +805,59 @@ public class DBQuery {
 		return users;
 	}
 	
+	public int setIsActive(int id, String isActiveOrIsAdmin, String activeOrAdmin) throws Exception{
+		
+		Connection conn = null;
+		String queryStr = null;
+		int activate = 0;
+		
+		try{
+		
+			if(isActiveOrIsAdmin.equals("true")){
+				
+				activate = 0;
+				
+			} 
+			if(isActiveOrIsAdmin.equals("false")){
+				
+				activate = 1;
+				
+			}
+			
+			if(activeOrAdmin.equalsIgnoreCase("isactive")){
+				
+				queryStr = "update user SET isactive = '" + activate + "' where user_id = '" + id + "'";
+				
+			} else if(activeOrAdmin.equalsIgnoreCase("isadmin")){
+				
+				queryStr = "update user SET isadmin = '" + activate + "' where user_id = '" + id + "'";
+				
+			}
+
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			
+			s.executeUpdate(queryStr);
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		
+		return activate;
+	}
+	
+	
 }

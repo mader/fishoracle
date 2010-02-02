@@ -37,4 +37,43 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 	}
 	
+	public int[] toggleFlag(int id, String flag, int rowIndex, int colIndex) throws Exception {
+	
+		HttpServletRequest request=this.getThreadLocalRequest();
+		HttpSession session=request.getSession();
+		
+		User user = (User) session.getAttribute("user");
+		
+		if(!user.getIsAdmin()){
+			
+			throw new UserException("Permission denied!");
+			
+		}
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBQuery db = new DBQuery(servletContext);
+		
+		String activeOrAdmin = null;
+		
+		if(colIndex == 5){
+			
+			activeOrAdmin = "isactive";
+			
+		}
+		
+		if(colIndex == 6){
+			
+			activeOrAdmin = "isadmin";
+		}
+		
+		int isActivated = db.setIsActive(id, flag, activeOrAdmin);
+		
+		int isActiveRonIndex[] = {rowIndex, colIndex, isActivated};
+		
+		return isActiveRonIndex;
+		
+	}
+	
+	
 }

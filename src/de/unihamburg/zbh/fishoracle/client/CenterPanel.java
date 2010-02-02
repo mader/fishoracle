@@ -18,10 +18,12 @@ import com.gwtext.client.widgets.form.TextField;
 import com.gwtext.client.widgets.grid.ColumnConfig;
 import com.gwtext.client.widgets.grid.ColumnModel;
 import com.gwtext.client.widgets.grid.GridPanel;
+import com.gwtext.client.widgets.grid.event.GridCellListener;
 import com.gwtext.client.core.EventObject;
 import com.gwtext.client.data.ArrayReader;
 import com.gwtext.client.data.FieldDef;
 import com.gwtext.client.data.MemoryProxy;
+import com.gwtext.client.data.Record;
 import com.gwtext.client.data.RecordDef;
 import com.gwtext.client.data.Store;
 import com.gwtext.client.data.StringFieldDef;
@@ -29,6 +31,8 @@ import com.gwtext.client.data.StringFieldDef;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.ImgPanel;
+import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
+import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
@@ -45,6 +49,8 @@ public class CenterPanel extends TabPanel{
 	private TextField firstName = null;
 	private TextField lastName = null;
 	private TextField pw = null;
+	
+	private GridPanel grid = null;
 	
 	public CenterPanel(MainPanel mainPanel) {
 		
@@ -145,7 +151,7 @@ public class CenterPanel extends TabPanel{
 		
 	}
 	
-	public Panel openUserAdminTab(User[] users){
+	public Panel openUserAdminTab(final User[] users){
 		
 		Panel tab = addTab("Show all users");
 		
@@ -161,7 +167,7 @@ public class CenterPanel extends TabPanel{
 					}  
 			);  
 		
-		final GridPanel grid = new GridPanel();  
+		grid = new GridPanel();  
 		
 		Object[][] userData = new Object[users.length][];
 		int i = 0;
@@ -175,8 +181,13 @@ public class CenterPanel extends TabPanel{
 										users[i].getEmail(),
 										users[i].getIsActive(),
 										users[i].getIsAdmin()};
-		}
 			
+		
+			
+		}
+		
+		grid.addGridCellListener(new MyGridCellListener(this));
+		
 		MemoryProxy proxy = new MemoryProxy(userData);  
 		
 		ArrayReader reader = new ArrayReader(recordDef);  
@@ -289,6 +300,90 @@ public class CenterPanel extends TabPanel{
 		};
 		req.register(user, callback);
 	}
+	
+	public void toggleIsActiveOrIsAdmin(int id, String flag, int rowIndex, int colIndex){
+	
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<int[]> callback = new AsyncCallback<int[]>(){
+			@Override
+			public void onSuccess(int[] result){
+				
+				Record record = grid.getStore().getRecordAt(result[0]);
+				
+				if(result[1] == 5){
+				
+					record.set("isactive", (result[2] == 1));
+				
+				}
+				
+				if(result[1] == 6){
+					
+					record.set("isadmin", (result[2] == 1));
+					
+				}
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				MessageBox.alert(caught.getMessage());
+			}
+		};
+		req.toggleFlag(id, flag, rowIndex, colIndex, callback);
+	}	
+}
+
+class MyGridCellListener implements GridCellListener{
+
+	private CenterPanel cp = null;
+	
+	public MyGridCellListener(CenterPanel centerPanel){
+		
+		cp = centerPanel;
+		
+	}
+	
+	@Override
+	public void onCellClick(GridPanel grid, int rowIndex, int colIndex,
+			EventObject e) {
+		
+		Record record =  grid.getStore().getAt(rowIndex);
+		
+		if(colIndex == 5){
+			
+			int id = record.getAsInteger("id");
+		
+			String isActive = record.getAsString("isactive");
+		
+			cp.toggleIsActiveOrIsAdmin(id, isActive, rowIndex, colIndex);
+		
+		}
+		
+		if(colIndex == 6){
+			
+			int id = record.getAsInteger("id");
+			
+			String isAdmin = record.getAsString("isadmin");
+			
+			cp.toggleIsActiveOrIsAdmin(id, isAdmin, rowIndex, colIndex);
+			
+		}
+		
+	}
+
+	@Override
+	public void onCellContextMenu(GridPanel grid, int rowIndex, int cellIndex,
+			EventObject e) {
+		
+	}
+
+	@Override
+	public void onCellDblClick(GridPanel grid, int rowIndex, int colIndex,
+			EventObject e) {
+		
+	}	
+	
 }
 
 class MyPanelListenerAdapter extends PanelListenerAdapter {
