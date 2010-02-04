@@ -119,7 +119,6 @@ public class SketchTool {
 		style.load_file(serverPath + "config/default.style");
 		
 		range = new Range(loc.getStart(), loc.getEnd());
-		System.out.println(range.get_start() + " " + range.get_end());
 		
 		TrackSelector ts = new TrackSelector() {
 		      @Override

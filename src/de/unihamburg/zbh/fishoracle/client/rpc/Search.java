@@ -9,14 +9,14 @@ import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 
-@RemoteServiceRelativePath("testbild")
+@RemoteServiceRelativePath("search")
 public interface Search extends RemoteService {
 
 	
 	public GWTImageInfo generateImage(QueryInfo q) throws Exception;
-	public GWTImageInfo redrawImage(GWTImageInfo imageInfo);
+	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) throws Exception;
 	public CopyNumberChange getCNCInfo(String query);
-	public Gen getGeneInfo(String query);
+	public Gen getGeneInfo(String query) throws Exception;
 	public CopyNumberChange[] getListOfCncs(boolean isAmplicon);
 	public String exportData(GWTImageInfo imageInfo);
 	

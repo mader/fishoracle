@@ -408,8 +408,6 @@ public class MainPanel extends Panel{
 		centerPanel.scrollToTab(tab, true);
 	}
 	
-
-	
 	private ImgPanel addImgTab(String name) {
         ImgPanel tab = new ImgPanel();
         tab.setAutoScroll(true);
@@ -625,7 +623,7 @@ class MyClickHandler implements ClickHandler{
 			
 		}
 		if(recInfo.getType().equals("gene")){
-			System.out.println("blubb");
+
 			geneDetails(recInfo.getElementName());
 			
 		}
@@ -651,7 +649,7 @@ class MyClickHandler implements ClickHandler{
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				MessageBox.alert("Nothing found!");
+				MessageBox.alert(caught.getMessage());
 			}
 		};
 		req.getCNCInfo(query, callback);
@@ -672,7 +670,7 @@ class MyClickHandler implements ClickHandler{
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				MessageBox.alert("Nothing found!");
+				MessageBox.alert(caught.getMessage());
 			}
 		};
 		req.getGeneInfo(query, callback);

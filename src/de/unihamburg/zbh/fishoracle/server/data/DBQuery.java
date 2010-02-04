@@ -22,6 +22,8 @@ import org.ensembl.driver.KaryotypeBandAdaptor;
 
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
 /**
  * Fetches various information from the fish oracle database an gene
@@ -176,7 +178,7 @@ public class DBQuery {
 		} else {
 			throw new Exception();
 		}
-		
+
 		Connection conn = null;
 		Location loc = null;
 		try{
@@ -203,9 +205,19 @@ public class DBQuery {
 				}
 				copyNumberChangeRs.close();
 				
-		} catch (Exception e){
+				if(loc == null){
+					
+					DBQueryException e = new DBQueryException("Couldn't find the amplicon with the stable ID " + ampliconStableId);
+					throw e;
+				}
+				
+		} catch (DBQueryException e){
+			System.out.println(e.getMessage());
+			throw e;
+		} catch (Exception e) {
 			FishOracleConnection.printErrorMessage(e);
-			System.exit(1);
+			throw e;
+			//System.exit(1);
 		} finally {
 			if(conn != null){
 				try{
@@ -225,9 +237,10 @@ public class DBQuery {
 	 * 
 	 * @param symbol The gene symbol, that was specified in the search query.
 	 * @return		An ensembl API location object storing chromosome, start and end of a gene. 
+	 * @throws DBQueryException 
 	 * 
 	 * */
-	public Location getLocationForGene(String symbol){
+	public Location getLocationForGene(String symbol) throws DBQueryException{
 		Gene gene = null;
 		CoreDriver coreDriver;
 		try {
@@ -242,7 +255,12 @@ public class DBQuery {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getMessage());
 			System.out.println(e.getCause());
-		}	
+		} catch (Exception e) {
+			
+			if(e instanceof IndexOutOfBoundsException){
+				throw new DBQueryException("Couldn't find gene with gene symbol " + symbol, e.getCause());
+			}
+		}
 		return gene.getLocation();
 	}
 	
@@ -252,9 +270,10 @@ public class DBQuery {
 	 * @param chr The chromosome number
 	 * @param band The karyoband
 	 * @return		An ensembl API location object storing chromosome, start and end of a chromosome and  karyoband. 
+	 * @throws DBQueryException 
 	 * 
 	 * */
-	public Location getLocationForKaryoband(String chr, String band){
+	public Location getLocationForKaryoband(String chr, String band) throws DBQueryException{
 		CoordinateSystem coordSys = null;
 		KaryotypeBand k = null;
 		CoreDriver coreDriver;
@@ -274,7 +293,12 @@ public class DBQuery {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getMessage());
 			System.out.println(e.getCause());
-		}	
+		} catch (Exception e) {
+			
+			if(e instanceof IndexOutOfBoundsException){
+				throw new DBQueryException("Couldn't find karyoband " + chr + band, e.getCause());
+			}
+		}
 		return k.getLocation();
 	}
 	
@@ -525,6 +549,7 @@ public class DBQuery {
 	 * 
 	 * @param query Amplicon Stable ID
 	 * @return		Amplicon object conaiting all amplicon data.
+	 * @throws Exception 
 	 * 
 	 * */
 	public CopyNumberChange getCNCInfos(String query){
@@ -575,7 +600,7 @@ public class DBQuery {
 			}
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
-			System.exit(1);
+			throw e;
 		} finally {
 			if(conn != null){
 				try{
@@ -583,6 +608,7 @@ public class DBQuery {
 				} catch(Exception e) {
 					String err = FishOracleConnection.getErrorMessage(e);
 					System.out.println(err);
+					throw e;
 				}
 			}
 		}
@@ -594,9 +620,10 @@ public class DBQuery {
 	 * 
 	 * @param query Ensembl Stable ID
 	 * @return		Gen object conaiting all gene data.
+	 * @throws Exception 
 	 * 
 	 * */
-	public Gen getGeneInfos(String query) {
+	public Gen getGeneInfos(String query) throws Exception {
 		
 		Gen gene = null;
 		
@@ -632,6 +659,7 @@ public class DBQuery {
 			e.printStackTrace();			
 			System.out.println("Error: " + e.getMessage());
 			System.out.println(e.getCause());
+			throw e;
 		}
 
 		
@@ -740,4 +768,237 @@ public class DBQuery {
 			}			
 			return karyoband;
 	}
+	
+	/* USER DATA */
+	
+	public User getUserData(String userName, String pw) throws Exception{
+		Connection conn = null;
+		User user = null;
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			
+			s.executeQuery("SELECT * FROM user WHERE username = '" + userName + "' AND password = '" + SimpleSHA.SHA1(pw) + "'");
+			
+			ResultSet userRs = s.getResultSet();
+			
+			int id = 0;
+			String fistName = null;
+			String lastName = null;
+			String dbUserName = null;
+			String email = null;
+			Boolean isActive = null;
+			Boolean isAdmin = null;
+			
+			while(userRs.next()){
+				
+				id = userRs.getInt(1);
+				fistName = userRs.getString(2);
+				lastName = userRs.getString(3);
+				dbUserName = userRs.getString(4);
+				email = userRs.getString(5);
+				isActive = userRs.getBoolean(7);
+				isAdmin = userRs.getBoolean(8);
+			}
+			
+			if(id == 0){
+				
+				throw new DBQueryException("User name or password incorrect!");
+				
+			}
+			if(isActive == false){
+				
+				throw new DBQueryException("Your account has not been activated. If you registered recently" +
+						                    " this means that your acount has not been verified yet. Just try to log in later." +
+						                    " If your account has been deactivated or your registration was more than 3 days ago" +
+						                    " then contact the webmaster.");
+				
+			}
+			
+			user = new User(id, fistName, lastName, dbUserName, email, isActive, isAdmin);
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		return user;	
+	}
+	
+	public void insertUserData(User user) throws Exception{
+		Connection conn = null;
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			
+			s.executeQuery("SELECT count(*) FROM user where username = '" + user.getUserName() + "'");
+			
+			ResultSet countRs = s.getResultSet();
+			countRs.next();
+			int userCount = countRs.getInt(1);
+			
+			if(userCount == 0){
+			
+			s.executeUpdate("INSERT INTO user (first_name, last_name, username, email, password, isactive, isadmin) VALUES" +
+							" ('" + user.getFirstName() + "', '" + user.getLastName() + "', '" + user.getUserName() +
+							"', '" + user.getEmail() + "', '" + SimpleSHA.SHA1(user.getPw()) + "', '" + user.getIsActive() + 
+							"', '"+ user.getIsAdmin() + "')");
+			} else {
+				
+				
+				 throw new DBQueryException("User name is already taken! Choose another one.");
+				
+			}
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+	}
+	
+	public User[] fetchAllUsers() throws Exception{
+		
+		Connection conn = null;
+		User[] users = null;
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			s.executeQuery("SELECT count(*) FROM user");
+			
+			ResultSet countRs = s.getResultSet();
+			countRs.next();
+			int userCount = countRs.getInt(1);
+			
+			s.executeQuery("SELECT user_id, first_name, last_name, username, email, isActive, isadmin  FROM user");
+			
+			ResultSet userRs = s.getResultSet();
+			
+			int id = 0;
+			String fistName = null;
+			String lastName = null;
+			String dbUserName = null;
+			String email = null;
+			Boolean isActive = null;
+			Boolean isAdmin = null;
+			
+			users = new User[userCount];
+			int i = 0;
+			
+			while(userRs.next()){
+				
+				id = userRs.getInt(1);
+				fistName = userRs.getString(2);
+				lastName = userRs.getString(3);
+				dbUserName = userRs.getString(4);
+				email = userRs.getString(5);
+				isActive = userRs.getBoolean(6);
+				isAdmin = userRs.getBoolean(7);
+				
+				User user = new User(id, fistName, lastName, dbUserName, email, isActive, isAdmin);
+				
+				users[i] = user;
+				
+				i++;
+			}
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		
+		return users;
+	}
+	
+	public int setIsActive(int id, String isActiveOrIsAdmin, String activeOrAdmin) throws Exception{
+		
+		Connection conn = null;
+		String queryStr = null;
+		int activate = 0;
+		
+		try{
+		
+			if(isActiveOrIsAdmin.equals("true")){
+				
+				activate = 0;
+				
+			} 
+			if(isActiveOrIsAdmin.equals("false")){
+				
+				activate = 1;
+				
+			}
+			
+			if(activeOrAdmin.equalsIgnoreCase("isactive")){
+				
+				queryStr = "update user SET isactive = '" + activate + "' where user_id = '" + id + "'";
+				
+			} else if(activeOrAdmin.equalsIgnoreCase("isadmin")){
+				
+				queryStr = "update user SET isadmin = '" + activate + "' where user_id = '" + id + "'";
+				
+			}
+
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			
+			s.executeUpdate(queryStr);
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		
+		return activate;
+	}
+	
+	
 }

@@ -5,23 +5,53 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.gwtext.client.widgets.BoxComponent;
+import com.gwtext.client.widgets.Button;
+import com.gwtext.client.widgets.Component;
 import com.gwtext.client.widgets.HTMLPanel;
 import com.gwtext.client.widgets.MessageBox;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.Window;
+import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.event.PanelListenerAdapter;
+import com.gwtext.client.widgets.form.FormPanel;
+import com.gwtext.client.widgets.form.TextField;
+import com.gwtext.client.widgets.grid.ColumnConfig;
+import com.gwtext.client.widgets.grid.ColumnModel;
+import com.gwtext.client.widgets.grid.GridPanel;
+import com.gwtext.client.widgets.grid.event.GridCellListener;
+import com.gwtext.client.core.EventObject;
+import com.gwtext.client.data.ArrayReader;
+import com.gwtext.client.data.FieldDef;
+import com.gwtext.client.data.MemoryProxy;
+import com.gwtext.client.data.Record;
+import com.gwtext.client.data.RecordDef;
+import com.gwtext.client.data.Store;
+import com.gwtext.client.data.StringFieldDef;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
+import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.ImgPanel;
+import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
+import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
+import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
+import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
 public class CenterPanel extends TabPanel{
 
 	private TabPanel centerPanel = null;
 	private MainPanel mp = null;;
 	private CenterPanel cp = null;
+	
+	private TextField userName = null;
+	private TextField email = null;
+	private TextField firstName = null;
+	private TextField lastName = null;
+	private TextField pw = null;
+	
+	private GridPanel grid = null;
 	
 	public CenterPanel(MainPanel mainPanel) {
 		
@@ -69,6 +99,128 @@ public class CenterPanel extends TabPanel{
 		this.centerPanel = centerPanel;
 	}	
 	
+	private Panel addTab(String name) {
+        Panel tab = new Panel();
+        tab.setAutoScroll(true);
+        tab.setTitle(name);
+        tab.setClosable(true);
+        return tab;
+    }
+	
+	public Panel openRegisterTab(){
+		
+		Panel tab = addTab("register");
+		
+		FormPanel reg = new FormPanel();
+		
+		reg.setBorder(false);
+		reg.setVisible(true);
+		
+		userName = new TextField();
+		userName.setLabel("user name");
+		email = new TextField();
+		email.setLabel("e-mail");
+		firstName = new TextField();
+		firstName.setLabel("first name");
+		lastName = new TextField();
+		lastName.setLabel("lastName");
+		pw = new TextField();
+		pw.setInputType("password");
+		pw.setLabel("password");
+		
+		Button submit = new Button("submit", new ButtonListenerAdapter(){
+			public void onClick(Button button, EventObject e) {     
+    			
+				User user = new User(firstName.getText(), lastName.getText(), userName.getText(), email.getText(), pw.getText(), false, false);
+				
+				registerUser(user);
+				
+    		}
+		});
+		
+		reg.add(userName);
+		reg.add(email);
+		reg.add(firstName);
+		reg.add(lastName);
+		reg.add(pw);
+		reg.add(submit);
+		
+		tab.add(reg);
+		
+		return tab;
+		
+		
+	}
+	
+	public Panel openUserAdminTab(final User[] users){
+		
+		Panel tab = addTab("Show all users");
+		
+			RecordDef recordDef = new RecordDef(  
+					new FieldDef[]{  
+							new StringFieldDef("id"),  
+							new StringFieldDef("firstname"),  
+							new StringFieldDef("lastname"),  
+							new StringFieldDef("username"),  
+							new StringFieldDef("email"),  
+							new StringFieldDef("isactive"),
+							new StringFieldDef("isadmin"),   
+					}  
+			);  
+		
+		grid = new GridPanel();  
+		
+		Object[][] userData = new Object[users.length][];
+		int i = 0;
+		
+		for(i = 0; i < users.length; i++){
+			
+			userData[i] = new Object[]{users[i].getId(),
+										users[i].getFirstName(),
+										users[i].getLastName(),
+										users[i].getUserName(),
+										users[i].getEmail(),
+										users[i].getIsActive(),
+										users[i].getIsAdmin()};
+			
+		
+			
+		}
+		
+		grid.addGridCellListener(new MyGridCellListener(this));
+		
+		MemoryProxy proxy = new MemoryProxy(userData);  
+		
+		ArrayReader reader = new ArrayReader(recordDef);  
+		Store store = new Store(proxy, reader);  
+		store.load();
+		grid.setStore(store);  
+		
+		
+		ColumnConfig[] columns = new ColumnConfig[]{  
+				new ColumnConfig("id", "id", 30, true, null, "id"),  
+				new ColumnConfig("first name", "firstname", 100, true, null, "firstname"),  
+				new ColumnConfig("last name", "lastname", 100, true, null, "lastname"),  
+				new ColumnConfig("user name", "username", 100, true, null, "username"),  
+				new ColumnConfig("e-mail", "email", 100, true, null, "email"),  
+				new ColumnConfig("is active", "isactive", 60, true),
+				new ColumnConfig("is admin", "isadmin", 60, true)  
+		};  
+		
+		ColumnModel columnModel = new ColumnModel(columns);  
+		grid.setColumnModel(columnModel);  
+		
+		grid.setFrame(true);  
+		grid.setStripeRows(true);  
+		grid.setAutoExpandColumn("email");  
+
+		grid.setTitle("All users");  
+		
+		tab.add(grid);
+		
+		return tab;
+	}
+	
 	/*=============================================================================
 	 *||                              RPC Calls                                  ||
 	 *=============================================================================
@@ -109,7 +261,7 @@ public class CenterPanel extends TabPanel{
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				MessageBox.alert("Nothing found!");
+				MessageBox.alert(caught.getMessage());
 			}
 		};
 		req.redrawImage(imgInfo, callback);
@@ -148,6 +300,124 @@ public class CenterPanel extends TabPanel{
 		};
 		req.exportData(imgInfo, callback);
 	}
+
+	public void registerUser(User user){
+		
+		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<User> callback = new AsyncCallback<User>(){
+			public void onSuccess(User result){
+				
+				
+				
+				Component[] items = cp.getItems();
+				for (int i = 0; i < items.length; i++) {  
+					Component component = items[i];  
+					if (component.getTitle().equals("register")) {  
+						cp.remove(component);  
+					}
+				}
+			
+				String msg = "Registered! Before you can login with your user name " + result.getUserName() + "your account has to be verified." +
+							" We will try to do that as fast as possible.";
+				
+				System.out.println(msg);
+				
+				MessageBox.alert(msg);
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				MessageBox.alert(caught.getMessage());
+			}
+		};
+		req.register(user, callback);
+	}
+	
+	public void toggleIsActiveOrIsAdmin(int id, String flag, int rowIndex, int colIndex){
+	
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<int[]> callback = new AsyncCallback<int[]>(){
+			@Override
+			public void onSuccess(int[] result){
+				
+				Record record = grid.getStore().getRecordAt(result[0]);
+				
+				if(result[1] == 5){
+				
+					record.set("isactive", (result[2] == 1));
+				
+				}
+				
+				if(result[1] == 6){
+					
+					record.set("isadmin", (result[2] == 1));
+					
+				}
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				MessageBox.alert(caught.getMessage());
+			}
+		};
+		req.toggleFlag(id, flag, rowIndex, colIndex, callback);
+	}	
+}
+
+class MyGridCellListener implements GridCellListener{
+
+	private CenterPanel cp = null;
+	
+	public MyGridCellListener(CenterPanel centerPanel){
+		
+		cp = centerPanel;
+		
+	}
+	
+	@Override
+	public void onCellClick(GridPanel grid, int rowIndex, int colIndex,
+			EventObject e) {
+		
+		Record record =  grid.getStore().getAt(rowIndex);
+		
+		if(colIndex == 5){
+			
+			int id = record.getAsInteger("id");
+		
+			String isActive = record.getAsString("isactive");
+		
+			cp.toggleIsActiveOrIsAdmin(id, isActive, rowIndex, colIndex);
+		
+		}
+		
+		if(colIndex == 6){
+			
+			int id = record.getAsInteger("id");
+			
+			String isAdmin = record.getAsString("isadmin");
+			
+			cp.toggleIsActiveOrIsAdmin(id, isAdmin, rowIndex, colIndex);
+			
+		}
+		
+	}
+
+	@Override
+	public void onCellContextMenu(GridPanel grid, int rowIndex, int cellIndex,
+			EventObject e) {
+		
+	}
+
+	@Override
+	public void onCellDblClick(GridPanel grid, int rowIndex, int colIndex,
+			EventObject e) {
+		
+	}	
 	
 }
 
@@ -170,7 +440,5 @@ class MyPanelListenerAdapter extends PanelListenerAdapter {
 			}
 		}
 	}
-
-
 
 }
