@@ -15,7 +15,7 @@ public interface Search extends RemoteService {
 	
 	public GWTImageInfo generateImage(QueryInfo q) throws Exception;
 	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) throws Exception;
-	public CopyNumberChange getCNCInfo(String query);
+	public CopyNumberChange getCNCInfo(String query) throws Exception;
 	public Gen getGeneInfo(String query) throws Exception;
 	public CopyNumberChange[] getListOfCncs(boolean isAmplicon);
 	public String exportData(GWTImageInfo imageInfo);

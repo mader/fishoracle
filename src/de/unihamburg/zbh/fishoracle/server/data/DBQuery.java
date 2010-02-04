@@ -165,6 +165,7 @@ public class DBQuery {
 	 * */
 	public Location getLocationForCNCId(String copyNumberChangeId) throws Exception{
 		String qrystr = null;
+		String cncType = null;
 		Pattern pampid = Pattern.compile("AMP", Pattern.CASE_INSENSITIVE);
 		Matcher mampid = pampid.matcher(copyNumberChangeId);
 		
@@ -173,8 +174,10 @@ public class DBQuery {
 		
 		if(mampid.find()){
 			qrystr = "SELECT * from amplicon WHERE amplicon_stable_id = " + "'" + copyNumberChangeId + "'";
+			cncType = "amplicon";
 		} else if(mdelid.find()){
 			qrystr = "SELECT * from delicon WHERE delicon_stable_id = " + "'" + copyNumberChangeId + "'";
+			cncType = "delicon";
 		} else {
 			throw new Exception();
 		}
@@ -207,7 +210,7 @@ public class DBQuery {
 				
 				if(loc == null){
 					
-					DBQueryException e = new DBQueryException("Couldn't find the amplicon with the stable ID " + ampliconStableId);
+					DBQueryException e = new DBQueryException("Couldn't find the " + cncType + " with the stable ID " + copyNumberChangeId);
 					throw e;
 				}
 				
@@ -550,9 +553,10 @@ public class DBQuery {
 	 * @param query Amplicon Stable ID
 	 * @return		Amplicon object conaiting all amplicon data.
 	 * @throws Exception 
+	 * @throws Exception 
 	 * 
 	 * */
-	public CopyNumberChange getCNCInfos(String query){
+	public CopyNumberChange getCNCInfos(String query) throws Exception{
 		
 		String qrystr = null;
 		Pattern pampid = Pattern.compile("AMP");

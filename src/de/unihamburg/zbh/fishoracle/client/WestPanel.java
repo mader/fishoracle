@@ -20,7 +20,6 @@ import com.gwtext.client.widgets.form.Label;
 import com.gwtext.client.widgets.form.Radio;
 import com.gwtext.client.widgets.form.TextField;
 import com.gwtext.client.core.EventObject;
-import com.gwtext.client.core.Position;
 
 
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
@@ -55,8 +54,6 @@ public class WestPanel extends TabPanel{
 	private Radio bandRadio = null;
 	private MainPanel parentObj = null;
 	private CenterPanel centerPanel = null;
-	
-	private boolean isAmplicon;
 
 	private Panel adminPanel = null;
 	
@@ -365,7 +362,7 @@ public class WestPanel extends TabPanel{
 					
 				}
 			};
-			req.generateImage(query, type, winWidth, callback);
+			req.generateImage(q, callback);
 		}
 	
 	public void fetchCncData(final boolean isAmplicon){

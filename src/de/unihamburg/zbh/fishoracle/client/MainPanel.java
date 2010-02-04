@@ -14,7 +14,6 @@ import com.gwtext.client.core.NameValuePair;
 import com.gwtext.client.core.RegionPosition;
 import com.gwtext.client.data.ArrayReader;
 import com.gwtext.client.data.FieldDef;
-import com.gwtext.client.data.FloatFieldDef;
 import com.gwtext.client.data.IntegerFieldDef;
 import com.gwtext.client.data.MemoryProxy;
 import com.gwtext.client.data.RecordDef;

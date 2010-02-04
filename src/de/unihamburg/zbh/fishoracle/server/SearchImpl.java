@@ -16,7 +16,6 @@ import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
-import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
@@ -60,7 +59,17 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			if(query.getSearchType().equals("Amplicon/Delicon Search")){
 
-				featuresLoc = db.getLocationForCNCId(query.getQueryString());
+				Pattern pid = Pattern.compile("^(AMP|DEL)[0-9]+\\.[0-9]+$", Pattern.CASE_INSENSITIVE);
+				Matcher mid = pid.matcher(query.getQueryString());
+				
+				if(mid.find()){
+					featuresLoc = db.getLocationForCNCId(query.getQueryString());
+				} else {
+					
+					throw new SearchException("The stable id has to begin with \"AMP\" or \"DEL\" followed by a number like 60.01" +
+							"e.g.: AMP60.01 or DEL60.01");
+					
+				}
 				
 			} else if(query.getSearchType().equals("Gene Search")){
 				
@@ -89,7 +98,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 
 				}
 				if(chrStr == null || bandStr == null){
-					throw new SearchException("The input for a karyoband has to follow the rule ^\\d{1,2}[p,q]{1}\\d{1,2}\\.?\\d{1,2}?$");
+					throw new SearchException("The input for a karyoband has to look like 4q13.3?");
 				} else {
 					featuresLoc = db.getLocationForKaryoband(chrStr, bandStr);
 				}
@@ -130,7 +139,6 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			imgInfo.setStart(maxCNCRange.getStart());
 			imgInfo.setEnd(maxCNCRange.getEnd());
 			imgInfo.setQuery(query);
-			imgInfo.setSearchType(searchType);
 			
 		return imgInfo;
 	}
@@ -243,7 +251,6 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		imgInfo.setStart(maxRange.getStart());
 		imgInfo.setEnd(maxRange.getEnd());
 		imgInfo.setQuery(imageInfo.getQuery());
-		imgInfo.setSearchType(imageInfo.getSearchType());
 		
 		return imgInfo;
 	}
@@ -254,10 +261,11 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * @param query The amplicon stable id
 	 * 
 	 * @return Amplicon
+	 * @throws Exception 
 	 * @throws Exception
 	 * */
 	public CopyNumberChange getCNCInfo(
-			String query) {
+			String query) throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		

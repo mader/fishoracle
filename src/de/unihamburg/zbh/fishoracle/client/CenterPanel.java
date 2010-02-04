@@ -320,7 +320,7 @@ public class CenterPanel extends TabPanel{
 					}
 				}
 			
-				String msg = "Registered! Before you can login with your user name " + result.getUserName() + "your account has to be verified." +
+				String msg = "Registered! Before you can login with your user name " + result.getUserName() + " your account has to be verified." +
 							" We will try to do that as fast as possible.";
 				
 				System.out.println(msg);
