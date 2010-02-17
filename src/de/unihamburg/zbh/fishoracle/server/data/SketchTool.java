@@ -80,7 +80,7 @@ public class SketchTool {
 				features.add(fnode);
 				fnode.add_attribute("ID", amps[i].getCncStableId());
 				if(amps[i].getCncStableId().equalsIgnoreCase(query)){
-					fnode.gt_genome_node_mark();
+					fnode.mark();
 				}
 			}
 		}
@@ -92,7 +92,7 @@ public class SketchTool {
 				features.add(fnode);
 				fnode.add_attribute("ID", dels[l].getCncStableId());
 				if(dels[l].getCncStableId().equalsIgnoreCase(query)){
-					fnode.gt_genome_node_mark();
+					fnode.mark();
 				}
 		}
 		}
@@ -103,7 +103,7 @@ public class SketchTool {
 			fnode.add_attribute("ID", genes[j].getGenName());
 			fnode.add_attribute("NAME", genes[j].getAccessionID());
 			if(genes[j].getGenName().equalsIgnoreCase(query)){
-				fnode.gt_genome_node_mark();
+				fnode.mark();
 			}
 		}
 		
