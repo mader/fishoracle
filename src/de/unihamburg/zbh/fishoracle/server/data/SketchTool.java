@@ -172,6 +172,16 @@ public class SketchTool {
 	    
 	    imgInfo = new GWTImageInfo(imgUrl, info.get_height(), winWidth, recmapinfoArr);
 		
+	    for(int i = 0; i < features.size(); i++){
+	    	features.get(i).dispose();
+	    }
+	    
+	    style.dispose();
+	    diagram.dispose();
+	    layout.dispose();
+	    canvas.dispose();
+	    info.dispose();
+	    
 		} catch (GTerrorJava e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getMessage());
