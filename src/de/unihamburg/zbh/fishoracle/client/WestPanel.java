@@ -1,26 +1,24 @@
 package de.unihamburg.zbh.fishoracle.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.Anchor;
-import com.gwtext.client.widgets.Button;
-import com.gwtext.client.widgets.Component;
-import com.gwtext.client.widgets.MessageBox;
-import com.gwtext.client.widgets.Panel;
-import com.gwtext.client.widgets.TabPanel;
-import com.gwtext.client.widgets.event.ButtonListenerAdapter;
-import com.gwtext.client.widgets.event.KeyListener;
-import com.gwtext.client.widgets.form.Checkbox;
-import com.gwtext.client.widgets.form.FormPanel;
-import com.gwtext.client.widgets.form.Label;
-import com.gwtext.client.widgets.form.Radio;
-import com.gwtext.client.widgets.form.TextField;
-import com.gwtext.client.core.EventObject;
 
+import com.smartgwt.client.types.Alignment;
+import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.ButtonItem;
+import com.smartgwt.client.widgets.form.fields.CheckboxItem;
+import com.smartgwt.client.widgets.form.fields.LinkItem;
+import com.smartgwt.client.widgets.form.fields.PasswordItem;
+import com.smartgwt.client.widgets.form.fields.RadioGroupItem;
+import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
+import com.smartgwt.client.widgets.layout.SectionStack;
+import com.smartgwt.client.widgets.layout.SectionStackSection;
+import com.smartgwt.client.widgets.layout.VLayout;
 
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
@@ -33,304 +31,192 @@ import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
-public class WestPanel extends TabPanel{
+public class WestPanel extends SectionStack{
 
-	private Radio ampPrio = null;
-	private Radio delPrio = null;
-	private Checkbox ampCb = null;
-	private Checkbox delCb = null;
-	
-	private Panel userPanel = null;
-	private FormPanel userFormPanel = null;
-	private TextField userName = null;
-	private TextField pw = null;
-	private Button logoutButton = null;
-	private Button registerButton = null;
-	
-	private Panel searchPanel = null;
-	private TextField searchBox = null;
-	private Radio ampRadio = null;
-	private Radio geneRadio = null;
-	private Radio bandRadio = null;
-	private MainPanel parentObj = null;
-	private CenterPanel centerPanel = null;
 
-	private Panel adminPanel = null;
-	
+	private MainPanel mp = null;
 	private WestPanel wp = this;
 
-	public WestPanel(MainPanel obj, CenterPanel cp) {
+	private TextItem searchTextItem;
+	private RadioGroupItem SearchRadioGroupItem;
+	private RadioGroupItem SearchPriorityRadioGroupItem;
+	private CheckboxItem AmpliconFilterCheckboxItem;
+	private CheckboxItem DeliconFilterCheckboxItem;
+	
+	public WestPanel(MainPanel mainPanel) {
 		
-		parentObj = obj;
-		centerPanel = cp;
+		mp = mainPanel;
+
+		SectionStackSection searchSection = new SectionStackSection();  
+		searchSection.setTitle("Search");  
+		searchSection.setExpanded(true);
 		
-        this.setTitle("Menu");
-        this.setCollapsible(true);
-        this.setWidth(200);
-        
-        /* User Panel for user specific information and actions */
-        userPanel = new Panel();  
-        userPanel.setTitle("User");  
-        userPanel.setBorder(false);
-        
-        userFormPanel = new FormPanel();
-        userFormPanel.setBorder(false);
-        userFormPanel.setVisible(true);
-        userFormPanel.setHideLabels(true);
-        
-        userName = new TextField();
-        pw = new TextField();
-        pw.setInputType("password");
-        Button loginButton = new Button("log in", new ButtonListenerAdapter(){
-			public void onClick(Button button, EventObject e) {
-        			
-				
-        			MessageBox.wait("Logging in " + userName.getText());
+		VLayout searchContent = new VLayout();
+		
+		/*basic search options*/
+		DynamicForm searchForm = new DynamicForm();
+		
+		searchTextItem = new TextItem();  
+		searchTextItem.setTitle("Search");
+		
+		SearchRadioGroupItem = new RadioGroupItem();  
+		SearchRadioGroupItem.setTitle("Type");  
+		SearchRadioGroupItem.setValueMap("Amplicon/Delicon Stable ID", "Gene", "Karyoband"); 
+		SearchRadioGroupItem.setDefaultValue("Gene");
+		
+		ButtonItem searchButton = new ButtonItem("Search");
+		searchButton.setAlign(Alignment.CENTER);
+		searchButton.addClickHandler(new ClickHandler(){
 
-        			userLogin(userName.getText(), pw.getText());
-        		
-        	}
-
-        });
-        
-        logoutButton = new Button("log out", new ButtonListenerAdapter(){
-			public void onClick(Button button, EventObject e) {     
-        			
-        			MessageBox.wait("Logging out " + userName.getText());
-        			userLogout();
-        		
-        	}
-
-        });
-        
-        logoutButton.hide();
-        
-        registerButton = new Button("register", new ButtonListenerAdapter(){
-			public void onClick(Button button, EventObject e) {     
-        			
-					Panel tab = centerPanel.openRegisterTab();
-				
-        			centerPanel.add(tab);
-        			centerPanel.activate(tab.getId());
-        			centerPanel.scrollToTab(tab, true);
-        	}
-
-        });
-        
-        Label emailLbl = new Label("user name: ");
-        Label passwordLbl = new Label("password: ");
-        
-        userFormPanel.add(emailLbl);
-        userFormPanel.add(userName);
-        userFormPanel.add(passwordLbl);
-        userFormPanel.add(pw);
-        userFormPanel.add(loginButton);
-        
-        
-        userPanel.add(userFormPanel);
-        
-        userPanel.add(logoutButton);
-        
-        userPanel.add(registerButton);
-        
-        
-        /* search Panel for gene, ID and karyoband search*/
-        searchPanel = new Panel();
-        searchPanel.setTitle("Search");  
-        searchPanel.setBorder(false);
-        searchPanel.setVisible(true); 
-        searchPanel.setDisabled(true);
-        
-        FormPanel formPanel = new FormPanel();  
-        formPanel.setBorder(false);
-        formPanel.setHideLabels(true);
-        formPanel.setMargins(10);
-
-        
-        Panel priorityPanel = new Panel();  
-        priorityPanel.setTitle("Search Priority");  
-        priorityPanel.setWidth(200);  
-        priorityPanel.setCollapsible(true);  
-        
-        ampPrio = new Radio();  
-        ampPrio.setName("cncPrio");
-        ampPrio.setBoxLabel("Amplicon");
-        ampPrio.setChecked(true);
-        priorityPanel.add(ampPrio);
-        
-        delPrio = new Radio();  
-        delPrio.setName("cncPrio");
-        delPrio.setBoxLabel("Delicon");  
-        priorityPanel.add(delPrio);
-        
-        
-        Panel filterPanel = new Panel();  
-        filterPanel.setTitle("Filter");  
-        filterPanel.setWidth(200);  
-        filterPanel.setCollapsible(true);
-        
-        ampCb = new Checkbox("show Amplicons");  
-        ampCb.setChecked(true);
-        filterPanel.add(ampCb);
-        
-        delCb = new Checkbox("show Delicons");
-        delCb.setChecked(true);
-        filterPanel.add(delCb);
-        
-        searchBox = new TextField();
-        searchBox.addKeyListener(KeyCodes.KEY_ENTER, searchListener);
-        
-        formPanel.add(searchBox);
-        
-    
-        ampRadio = new Radio();  
-        ampRadio.setName("searchtype");
-        ampRadio.setBoxLabel("Amplicon/Delicon Search");  
-        formPanel.add(ampRadio);
-          
-        geneRadio = new Radio();  
-        geneRadio.setName("searchtype");  
-        geneRadio.setBoxLabel("Gene Search");
-        geneRadio.setChecked(true);
-        formPanel.add(geneRadio);  
-               
-        bandRadio = new Radio();  
-        bandRadio.setName("searchtype");  
-        bandRadio.setBoxLabel("Band Search");  
-        formPanel.add(bandRadio);       
-        
-        final Button searchButton = new Button("Search", new ButtonListenerAdapter(){
-			public void onClick(Button button, EventObject e) {
-        		startSearch();
-        	}
-
-       });
-       
-        Panel overviewPanel = new Panel();
-        overviewPanel.setWidth(200);
-        
-        final Button ampButton = new Button("show all amplicons", new ButtonListenerAdapter(){
-			public void onClick(Button button, EventObject e) {
-				MessageBox.wait("Fetching all amplicon data. This may take a few seconds ...");
-        		fetchCncData(true);
-        	}
-
-        });
-        ampButton.setWidth("198px");
-        
-        final Button delButton = new Button("show all delicons", new ButtonListenerAdapter(){
-			public void onClick(Button button, EventObject e) {
-				MessageBox.wait("Fetching all delicon data. This may take a few seconds ...");
-				fetchCncData(false);
-        	}
-
-        });
-        
-        delButton.setWidth("198px");
-        
-        overviewPanel.add(ampButton);
-        overviewPanel.add(delButton);
-        
-        
-        formPanel.add(searchButton);
-       
-        searchPanel.add(formPanel);
-        searchPanel.add(priorityPanel);
-        searchPanel.add(filterPanel);
-        searchPanel.add(overviewPanel);
-        
-        adminPanel = new Panel();  
-        adminPanel.setTitle("Admin");  
-        adminPanel.setBorder(false);
-        
-        Panel userAdmin = new Panel();
-        userAdmin.setTitle("User Administration");
-        userAdmin.setBorder(false);
-        userAdmin.setMargins(5);
-        
-        Panel usersAnchor = new Panel();
-        Anchor users = new Anchor("show users");
-        users.addClickHandler(new ClickHandler(){
 			@Override
-			public void onClick(ClickEvent event) {
-				showAllUsers();
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				startSearch();
 				
 			}
-        });
-        
-        usersAnchor.setCtCls("menulinks");
-        usersAnchor.setBorder(false);
-        usersAnchor.add(users);
-        
-        Panel activateUserAnchor = new Panel();
-        Anchor activateUser = new Anchor("activate user");
-        activateUserAnchor.setCtCls("menulinks");
-        activateUserAnchor.setBorder(false);
-        activateUserAnchor.add(activateUser);
-        
-        userAdmin.add(usersAnchor);
-        userAdmin.add(activateUserAnchor);
-        
-        Panel dataAdmin = new Panel();
-        dataAdmin.setTitle("Data Administration");
-        dataAdmin.setBorder(false);
-        dataAdmin.setMargins(5);
-        
-        Panel addDataAnchor = new Panel();
-        Anchor addData = new Anchor("add data");
-        addDataAnchor.setBorder(false);
-        addDataAnchor.setCtCls("menulinks");
-        addDataAnchor.add(addData);
-        
-        dataAdmin.add(addDataAnchor);
-        
-        adminPanel.add(dataAdmin);
-        
-        adminPanel.add(userAdmin);
-        
-        this.add(searchPanel);
-
-	 this.add(userPanel);
-
+		});
+		
+		searchTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
+		
+		
+		/*search priority*/
+		SearchPriorityRadioGroupItem = new RadioGroupItem();  
+		SearchPriorityRadioGroupItem.setTitle("Search Priority");  
+		SearchPriorityRadioGroupItem.setValueMap("Amplicon", "Delicon"); 
+		SearchPriorityRadioGroupItem.setDefaultValue("Amplicon");
+		
+		/*display filter*/
+		AmpliconFilterCheckboxItem = new CheckboxItem();  
+		AmpliconFilterCheckboxItem.setTitle("Show Amplicons");
+		AmpliconFilterCheckboxItem.setDefaultValue(true);
+		
+		DeliconFilterCheckboxItem = new CheckboxItem();  
+		DeliconFilterCheckboxItem.setTitle("Show Delicons");
+		DeliconFilterCheckboxItem.setDefaultValue(true);
+		
+		/*show more information*/
+		LinkItem AmpliconLinkItem = new LinkItem();   
+		AmpliconLinkItem.setLinkTitle("show all amplicons");
+		AmpliconLinkItem.addClickHandler(new ClickHandler(){
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				wp.fetchCncData(true);
+			}
+		});
+		AmpliconLinkItem.setShowTitle(false);
+		
+		LinkItem DeliconLinkItem = new LinkItem();   
+		DeliconLinkItem.setLinkTitle("show all delicons");
+		DeliconLinkItem.addClickHandler(new ClickHandler(){
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				wp.fetchCncData(false);
+			}
+		});
+		DeliconLinkItem.setShowTitle(false);
+		
+		/*add content to search stack section*/
+		searchForm.setItems(searchTextItem, SearchRadioGroupItem, searchButton, SearchPriorityRadioGroupItem, AmpliconFilterCheckboxItem,
+							DeliconFilterCheckboxItem, AmpliconLinkItem, AmpliconLinkItem);
+		searchContent.addMember(searchForm);
+		
+		searchSection.setItems(searchContent);
+		
+		SectionStackSection settingsSection = new SectionStackSection();  
+		settingsSection.setTitle("Settings");  
+		
+		VLayout settingsContent = new VLayout();
+		
+		/*user login*/
+		DynamicForm userForm = new DynamicForm();
+		
+		TextItem userTextItem = new TextItem();  
+		userTextItem.setTitle("Username");
+		userTextItem.setRequired(true);
+		
+		PasswordItem passwordItem = new PasswordItem();  
+		passwordItem.setTitle("Password");  
+		passwordItem.setRequired(true);  
+		
+		ButtonItem logInButton = new ButtonItem("login"); 
+		
+		ButtonItem logOutButton = new ButtonItem("logout");
+		
+		ButtonItem registerButton = new ButtonItem("register");
+		
+		userForm.setItems(userTextItem, passwordItem, logInButton, logOutButton, registerButton);
+		
+		settingsContent.addMember(userForm);
+		
+		settingsSection.addItem(settingsContent);
+		
+		SectionStackSection adminSection = new SectionStackSection();  
+		adminSection.setTitle("Admin");  
+		
+		VLayout adminContent = new VLayout();
+		
+		/*administration settings*/
+		DynamicForm adminForm = new DynamicForm();
+		
+		LinkItem usersLinkItem = new LinkItem();   
+		usersLinkItem.setLinkTitle("Show users");
+		usersLinkItem.setShowTitle(false);
+		
+		LinkItem dataLinkItem = new LinkItem();  
+		dataLinkItem.setLinkTitle("Add data");
+		dataLinkItem.setShowTitle(false);
+		
+		adminForm.setItems(usersLinkItem, dataLinkItem);
+		
+		adminContent.addMember(adminForm);
+		
+		adminSection.addItem(adminContent);
+		
+		this.setSections(searchSection, settingsSection, adminSection);
+			
 	}
-
-	KeyListener searchListener = new KeyListener(){
-
-		@Override
-		public void onKey(int key, EventObject e) {
-			startSearch();
-		}
-		
-		
-	};
 	
 	public void startSearch(){
 		String typeStr = null;
 		String cncPrio = null;
 		
-		if(searchBox.getText().equals("")){
-			MessageBox.alert("You have to type in a search term!");
+		if(searchTextItem.getDisplayValue().equals("")){
+			SC.say("You have to type in a search term!");
 		} else {
 		
-			if(ampRadio.getValue()){
-				typeStr = ampRadio.getBoxLabel();
+			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Amplicon/Delicon Stable ID")){
+				typeStr = "Amplicon/Delicon Search";
 			}
-			if(geneRadio.getValue()){
-				typeStr = geneRadio.getBoxLabel();
-			}	
-			if(bandRadio.getValue()){
-				typeStr = bandRadio.getBoxLabel();
+			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Gene")){
+				typeStr = "Gene Search";
 			}
-			if(ampPrio.getValue()){
-				cncPrio = ampPrio.getBoxLabel();
+			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Karyoband")){
+				typeStr = "Band Search";
 			}
-			if(delPrio.getValue()){
-				cncPrio = delPrio.getBoxLabel();
+			if(SearchPriorityRadioGroupItem.getDisplayValue().equalsIgnoreCase("Amplicon")){
+				cncPrio = "Amplicon";
 			}
+			if(SearchPriorityRadioGroupItem.getDisplayValue().equalsIgnoreCase("Delicon")){
+				cncPrio = "Delicon";
+			}
+						
+			QueryInfo newQuery = new QueryInfo(searchTextItem.getDisplayValue(),
+												typeStr, cncPrio,
+												AmpliconFilterCheckboxItem.getValueAsBoolean(),
+												DeliconFilterCheckboxItem.getValueAsBoolean(),
+												mp.getCenterPanel().getWidth() - 30); 
 			
-			QueryInfo newQuery = new QueryInfo(searchBox.getText() ,typeStr, cncPrio, ampCb.getValue(), delCb.getValue(), centerPanel.getInnerWidth() - 20); 
-			
-			MessageBox.wait("Searching for " + searchBox.getText());
+			//MessageBox.wait("Searching for " + searchBox.getText());
 			search(newQuery);
 		}
 	}
@@ -350,15 +236,14 @@ public class WestPanel extends TabPanel{
 			final AsyncCallback<GWTImageInfo> callback = new AsyncCallback<GWTImageInfo>(){
 				public void onSuccess(GWTImageInfo result){
 					
-					MessageBox.hide();
-					parentObj.newImageTab(result);
-					
+					//MessageBox.hide();
+					mp.getCenterPanel().newImageTab(result);				
 					
 				}
 				public void onFailure(Throwable caught){
 
-					MessageBox.hide();
-					MessageBox.alert(caught.getMessage());
+					//MessageBox.hide();
+					SC.say(caught.getMessage());
 					
 				}
 			};
@@ -374,14 +259,14 @@ public class WestPanel extends TabPanel{
 		final AsyncCallback<CopyNumberChange[]> callback = new AsyncCallback<CopyNumberChange[]>(){
 			public void onSuccess(CopyNumberChange[] result){
 				
-				MessageBox.hide();
-				parentObj.newDataTab(result, isAmplicon);
+				//MessageBox.hide();
+				mp.getCenterPanel().newDataTab(result, isAmplicon);
 
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				MessageBox.hide();
-				MessageBox.alert(caught.getMessage());
+				//MessageBox.hide();
+				SC.say(caught.getMessage());
 			}
 		};
 		req.getListOfCncs(isAmplicon, callback);
@@ -396,20 +281,20 @@ public class WestPanel extends TabPanel{
 		final AsyncCallback<User> callback = new AsyncCallback<User>(){
 			public void onSuccess(User result){
 				
-				searchPanel.setDisabled(false);
+				//searchPanel.setDisabled(false);
 				if(result.getIsAdmin()){
-					wp.add(adminPanel);
+					//wp.add(adminPanel);
 				}
-				userFormPanel.hide();
-				registerButton.hide();
-				logoutButton.show();
-				MessageBox.hide();
+				//userFormPanel.hide();
+				//registerButton.hide();
+				//logoutButton.show();
+				//MessageBox.hide();
 				
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				MessageBox.hide();
-				MessageBox.alert(caught.getMessage());
+				//MessageBox.hide();
+				//MessageBox.alert(caught.getMessage());
 			}
 		};
 		req.login(userName, password, callback);
@@ -424,33 +309,33 @@ public class WestPanel extends TabPanel{
 		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
 			public void onSuccess(Void result){
 				
-				userName.reset();
-				pw.reset();
-				logoutButton.hide();
-				registerButton.show();
-				searchPanel.setDisabled(true);
-				adminPanel.setVisible(false);
-				userFormPanel.show();
+				//userName.reset();
+				//pw.reset();
+				//logoutButton.hide();
+				//registerButton.show();
+				//searchPanel.setDisabled(true);
+				//adminPanel.setVisible(false);
+				//userFormPanel.show();
 				
-				wp.remove(adminPanel);
+				//wp.remove(adminPanel);
 				
 				/* remove all center panel tabs except for the welcome tab*/
-				Component[] items = centerPanel.getItems();  
+				/*Component[] items = centerPanel.getItems();  
 					for (int i = 0; i < items.length; i++) {  
 						Component component = items[i];  
 						if (!component.getTitle().equals("Welcome")) {  
 							centerPanel.remove(component);  
 						}
 					}
+				*/
 				
-				
-				MessageBox.hide();
+				//MessageBox.hide();
 				
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				MessageBox.hide();
-				MessageBox.alert(caught.getMessage());
+				//MessageBox.hide();
+				//MessageBox.alert(caught.getMessage());
 			}
 		};
 		req.logout(callback);
@@ -466,15 +351,15 @@ public class WestPanel extends TabPanel{
 			
 			public void onSuccess(User[] result){
 				
-			Panel tab = centerPanel.openUserAdminTab(result);
-			centerPanel.add(tab);
-			centerPanel.activate(tab.getId());
+			//Panel tab = centerPanel.openUserAdminTab(result);
+			//centerPanel.add(tab);
+			//centerPanel.activate(tab.getId());
 				
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				MessageBox.hide();
-				MessageBox.alert(caught.getMessage());
+				//MessageBox.hide();
+				//MessageBox.alert(caught.getMessage());
 			}
 
 		};

@@ -56,7 +56,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			System.out.println(dt + " Search: " + query.getQueryString());
 			System.out.println(dt + " Search type: " + query.getSearchType());
-			
+
 			if(query.getSearchType().equals("Amplicon/Delicon Search")){
 
 				Pattern pid = Pattern.compile("^(AMP|DEL)[0-9]+\\.[0-9]+$", Pattern.CASE_INSENSITIVE);
@@ -72,7 +72,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				}
 				
 			} else if(query.getSearchType().equals("Gene Search")){
-				
+
 				featuresLoc = db.getLocationForGene(query.getQueryString());
 				
 			} else if(query.getSearchType().equals("Band Search")){
@@ -106,7 +106,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			} else if(query.getSearchType().equals("range")){
 				
 			} 
-			
+
 			if(query.getCncPrio().equals("Amplicon")){
 				maxCNCRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), featuresLoc.getStart(), featuresLoc.getEnd(), true);
 			
@@ -117,24 +117,24 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			    maxCNCRange = adjustMaxCNCRange(maxCNCRange, featuresLoc, query.getSearchType());
 			
 			}
-			
+
 			if(query.isShowAmps()){
 			amps = db.getCNCData(maxCNCRange.getSeqRegionName(), maxCNCRange.getStart(), maxCNCRange.getEnd(), true);
 			}
 			if(query.isShowDels()){
 			dels = db.getCNCData(maxCNCRange.getSeqRegionName(), maxCNCRange.getStart(), maxCNCRange.getEnd(), false);
 			}
-			
+
 			Gen[] genes = null;
 			genes = db.getEnsembleGenes(maxCNCRange.getSeqRegionName(), maxCNCRange.getStart(), maxCNCRange.getEnd());
-			
+
 			Karyoband[] band = null;
 			band = db.getEnsemblKaryotypes(maxCNCRange.getSeqRegionName(), maxCNCRange.getStart(), maxCNCRange.getEnd());
-			
+
 			SketchTool sketch = new SketchTool();
 
 			imgInfo = sketch.generateImage(amps, dels, genes, band, maxCNCRange, query.getWinWidth(), query.getQueryString(), servletContext);
-			
+
 			imgInfo.setChromosome(maxCNCRange.getSeqRegionName());
 			imgInfo.setStart(maxCNCRange.getStart());
 			imgInfo.setEnd(maxCNCRange.getEnd());

@@ -3,7 +3,7 @@
 <module rename-to='fishoracle'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
-  <inherits name='com.gwtext.GwtExt' />
+  <inherits name='com.smartgwt.SmartGwt'/>
 
   <!-- Inherit the default GWT style sheet.  You can change       -->
   <!-- the theme of your GWT application by uncommenting          -->
@@ -16,7 +16,4 @@
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='de.unihamburg.zbh.fishoracle.client.FishOracle'/>
-  <stylesheet src="../js/ext-2.0.2/resources/css/ext-all.css" />
-  <script src="../js/ext-2.0.2/adapter/ext/ext-base.js" />
-  <script src="../js/ext-2.0.2/ext-all.js" />
 </module>

@@ -64,7 +64,7 @@ public class SketchTool {
 		String imgUrl = null;
 
 		GWTImageInfo imgInfo = null;
-		
+				
 		seqid = loc.getSeqRegionName();
 		
 		features = new ArrayList<FeatureNode>();
