@@ -37,7 +37,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 	}
 	
-	public int[] toggleFlag(int id, String flag, int rowIndex, int colIndex) throws Exception {
+	public String[] toggleFlag(int id, String flag, String type, int rowNum, int colNum) throws Exception {
 	
 		HttpServletRequest request=this.getThreadLocalRequest();
 		HttpSession session=request.getSession();
@@ -54,26 +54,21 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		DBQuery db = new DBQuery(servletContext);
 		
-		String activeOrAdmin = null;
+		int isActivated = db.setIsActive(id, flag, type);
 		
-		if(colIndex == 5){
-			
-			activeOrAdmin = "isactive";
-			
+		String isActivatedStr;
+		
+		if(isActivated == 0){
+			isActivatedStr = "false";
+		} else {
+			isActivatedStr = "true";
 		}
 		
-		if(colIndex == 6){
-			
-			activeOrAdmin = "isadmin";
-		}
+		String rowNumStr = new Integer(rowNum).toString();
 		
-		int isActivated = db.setIsActive(id, flag, activeOrAdmin);
+		String[] toggeledUser = {type, isActivatedStr, rowNumStr};
 		
-		int isActiveRonIndex[] = {rowIndex, colIndex, isActivated};
-		
-		return isActiveRonIndex;
+		return toggeledUser;
 		
 	}
-	
-	
 }

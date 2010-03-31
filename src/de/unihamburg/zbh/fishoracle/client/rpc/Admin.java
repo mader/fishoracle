@@ -10,7 +10,7 @@ import de.unihamburg.zbh.fishoracle.client.data.User;
 public interface Admin extends RemoteService  {
 
 	public User[] getAllUsers() throws Exception;
-	public int[] toggleFlag(int id, String flag, int rowIndex, int colIndex) throws Exception;
+	public String[] toggleFlag(int id, String flag, String type, int rowNum, int colNum) throws Exception;
 	
 	
 	public static class Util {

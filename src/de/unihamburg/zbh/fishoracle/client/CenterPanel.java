@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.HTML;
 
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.types.ImageStyle;
@@ -27,6 +28,8 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.CellClickEvent;
+import com.smartgwt.client.widgets.grid.events.CellClickHandler;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
@@ -47,16 +50,17 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
-import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
-import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
 public class CenterPanel extends VLayout{
 
+	private ListGrid userGrid;
+	
 	private TabSet centerTabSet = null;
 	private TextItem chrTextItem;
 	private TextItem startTextItem;
 	private TextItem endTextItem;
 	
+	@SuppressWarnings("unused")
 	private MainPanel mp = null;
 	private CenterPanel cp = null;
 	
@@ -651,6 +655,76 @@ public class CenterPanel extends VLayout{
 		centerTabSet.selectTab(tab);
 	}
 	
+	public void openUserAdminTab(final User[] users){
+	
+		Tab usersAdminTab = new Tab("Users");
+		usersAdminTab.setCanClose(true);
+		
+		userGrid = new ListGrid();
+		userGrid.setWidth100();
+		userGrid.setHeight100();
+		userGrid.setShowAllRecords(true);  
+		userGrid.setAlternateRecordStyles(true);
+		userGrid.setWrapCells(true);
+		userGrid.setFixedRecordHeights(false);
+		userGrid.markForRedraw();
+		userGrid.addCellClickHandler(new CellClickHandler() {  
+			
+			@Override
+			public void onCellClick(CellClickEvent event) {  
+			 
+				ListGridRecord record =  event.getRecord();
+				int id = Integer.parseInt(record.getAttribute("id"));
+				
+				int colNum = event.getColNum();  
+				String fieldName = userGrid.getFieldName(colNum);  
+				
+				
+				
+				if(fieldName.equals("isAdmin")){
+					String flag = record.getAttributeAsString("isAdmin");
+					toggleIsActiveOrIsAdmin(id, flag, "isAdmin", event.getRowNum(), event.getRowNum());
+				} else if (fieldName.equals("isActive")){
+					String flag = record.getAttributeAsString("isActive");
+					toggleIsActiveOrIsAdmin(id, flag, "isActive", event.getRowNum(), event.getRowNum());
+				}
+			}
+		}); 
+		
+		
+		ListGridField lgfId = new ListGridField("id", "user ID");
+		ListGridField lgfFirstName = new ListGridField("firstName", "First Name");
+		ListGridField lgfLastName = new ListGridField("lastName", "Last Name");
+		ListGridField lgfUserName = new ListGridField("userName", "Username");
+		ListGridField lgfEmail = new ListGridField("email", "E-Mail");
+		ListGridField lgfIsActive = new ListGridField("isActive", "Activated");
+		ListGridField lgfisAdmin = new ListGridField("isAdmin", "Administator");
+		
+		userGrid.setFields(lgfId, lgfFirstName, lgfLastName, lgfUserName, lgfEmail, lgfIsActive, lgfisAdmin);
+		
+		ListGridRecord[] lgr = new ListGridRecord[users.length];
+		
+		for(int i=0; i < users.length; i++){
+			lgr[i] = new ListGridRecord();
+			lgr[i].setAttribute("id", users[i].getId());
+			lgr[i].setAttribute("firstName", users[i].getFirstName());
+			lgr[i].setAttribute("lastName", users[i].getLastName());
+			lgr[i].setAttribute("userName", users[i].getUserName());
+			lgr[i].setAttribute("email", users[i].getEmail());
+			lgr[i].setAttribute("isActive", users[i].getIsActive());
+			lgr[i].setAttribute("isAdmin", users[i].getIsAdmin());
+		}
+		
+		userGrid.setData(lgr);
+		
+		usersAdminTab.setPane(userGrid);
+		
+		centerTabSet.addTab(usersAdminTab);
+		
+		centerTabSet.selectTab(usersAdminTab);
+		
+	}
+	
 	/*=============================================================================
 	 *||                              RPC Calls                                  ||
 	 *=============================================================================
@@ -738,72 +812,30 @@ public class CenterPanel extends VLayout{
 		};
 		req.exportData(imgInfo, callback);
 	}
-
-	public void registerUser(User user){
-		
-		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
+	
+	public void toggleIsActiveOrIsAdmin(int id, String flag, String type, int rowNum, int colNum){
+	
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<User> callback = new AsyncCallback<User>(){
-			public void onSuccess(User result){
+		final AsyncCallback<String[]> callback = new AsyncCallback<String[]>(){
+			@Override
+			public void onSuccess(String[] result){
 				
+				Record userRecord = userGrid.getRecord(Integer.parseInt(result[2]));				
 				
-				/*
-				Component[] items = cp.getItems();
-				for (int i = 0; i < items.length; i++) {  
-					Component component = items[i];  
-					if (component.getTitle().equals("register")) {  
-						cp.remove(component);  
-					}
-				}
-			
-				String msg = "Registered! Before you can login with your user name " + result.getUserName() + " your account has to be verified." +
-							" We will try to do that as fast as possible.";
+				userRecord.setAttribute(result[0], result[1]);
 				
-				System.out.println(msg);
+				userGrid.redraw();
 				
-				MessageBox.alert(msg);
-				*/
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
 				SC.say(caught.getMessage());
 			}
 		};
-		req.register(user, callback);
-	}
-	
-	public void toggleIsActiveOrIsAdmin(int id, String flag, int rowIndex, int colIndex){
-	
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<int[]> callback = new AsyncCallback<int[]>(){
-			@Override
-			public void onSuccess(int[] result){
-				/*
-				Record record = grid.getStore().getRecordAt(result[0]);
-				
-				if(result[1] == 5){
-				
-					record.set("isactive", (result[2] == 1));
-				
-				}
-				
-				if(result[1] == 6){
-					
-					record.set("isadmin", (result[2] == 1));
-					
-				}*/
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				//MessageBox.alert(caught.getMessage());
-			}
-		};
-		req.toggleFlag(id, flag, rowIndex, colIndex, callback);
+		req.toggleFlag(id, flag, type, rowNum, colNum, callback);
 	}
 }
 	
@@ -892,58 +924,3 @@ class ImageFrameResizedHandler implements ResizedHandler{
 		}
 	}
 }
-
-/*
-class MyGridCellListener implements GridCellListener{
-
-	private CenterPanel cp = null;
-	
-	public MyGridCellListener(CenterPanel centerPanel){
-		
-		cp = centerPanel;
-		
-	}
-	
-	@Override
-	public void onCellClick(GridPanel grid, int rowIndex, int colIndex,
-			EventObject e) {
-		
-		Record record =  grid.getStore().getAt(rowIndex);
-		
-		if(colIndex == 5){
-			
-			int id = record.getAsInteger("id");
-		
-			String isActive = record.getAsString("isactive");
-		
-			cp.toggleIsActiveOrIsAdmin(id, isActive, rowIndex, colIndex);
-		
-		}
-		
-		if(colIndex == 6){
-			
-			int id = record.getAsInteger("id");
-			
-			String isAdmin = record.getAsString("isadmin");
-			
-			cp.toggleIsActiveOrIsAdmin(id, isAdmin, rowIndex, colIndex);
-			
-		}
-		
-	}
-
-	@Override
-	public void onCellContextMenu(GridPanel grid, int rowIndex, int cellIndex,
-			EventObject e) {
-		
-	}
-
-	@Override
-	public void onCellDblClick(GridPanel grid, int rowIndex, int colIndex,
-			EventObject e) {
-		
-	}	
-	
-}
-
-}*/

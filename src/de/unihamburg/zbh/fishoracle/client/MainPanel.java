@@ -1,11 +1,5 @@
 package de.unihamburg.zbh.fishoracle.client;
 
-import com.smartgwt.client.types.Alignment;
-import com.smartgwt.client.types.VerticalAlignment;
-import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.ButtonItem;
-import com.smartgwt.client.widgets.form.fields.PasswordItem;
-import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.Layout;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -14,7 +8,7 @@ public class MainPanel extends Layout {
 	
 	private VLayout mainPage = null;
 	private HLayout mainFrame = null;
-	private VLayout welcomePanel = new VLayout(); 
+	private LoginScreen loginScreen  = null; 
 	private NorthPanel northPanel = null;
 	private WestPanel westPanel = null;
 	private CenterPanel centerPanel = null;
@@ -25,8 +19,8 @@ public class MainPanel extends Layout {
 		mainPage = new VLayout();
 		
 		/*Create the north panel and add it to the main page*/
-		NorthPanel northPanel = new NorthPanel(this);
-		northPanel.setHeight("3%");
+		northPanel = new NorthPanel(this);
+		northPanel.setHeight("2%");
 		northPanel.setWidth100();
 		mainPage.addMember(northPanel);
 	
@@ -44,38 +38,22 @@ public class MainPanel extends Layout {
 	
 		mainPage.addMember(mainFrame);
 		
-		welcomePanel.setWidth100();
-		welcomePanel.setHeight100();
-		welcomePanel.bringToFront();
-		welcomePanel.setBackgroundColor("white");
-		welcomePanel.setAlign(Alignment.CENTER);
-		
-		/*user login*/
-		DynamicForm loginForm = new DynamicForm();
-		loginForm.setAlign(Alignment.CENTER);
-		
-		TextItem userTextItem = new TextItem();  
-		userTextItem.setTitle("Username");
-		userTextItem.setRequired(true);
-		
-		PasswordItem passwordItem = new PasswordItem();  
-		passwordItem.setTitle("Password");  
-		passwordItem.setRequired(true);  
-		
-		ButtonItem logInButton = new ButtonItem("login"); 
-		
-		ButtonItem registerButton = new ButtonItem("register");
-		
-		loginForm.setItems(userTextItem, passwordItem, logInButton, registerButton);
-		
-		welcomePanel.addMember(loginForm);
-		
 		this.addMember(mainPage);
-	
-		this.addChild(welcomePanel);
+		
+		loginScreen = new LoginScreen(this);
+		loginScreen.setWidth100();
+		loginScreen.setHeight100();
+		loginScreen.bringToFront();
+		loginScreen.setBackgroundColor("white");
+		
+		this.addChild(loginScreen);
     
 	}
 	
+	public LoginScreen getLoginScreen() {
+		return loginScreen;
+	}
+
 	public NorthPanel getNorthPanel() {
 		return northPanel;
 	}

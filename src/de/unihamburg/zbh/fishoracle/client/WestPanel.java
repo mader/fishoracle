@@ -6,13 +6,14 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.CheckboxItem;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
-import com.smartgwt.client.widgets.form.fields.PasswordItem;
 import com.smartgwt.client.widgets.form.fields.RadioGroupItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
@@ -28,8 +29,6 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
-import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
-import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
 public class WestPanel extends SectionStack{
 
@@ -38,16 +37,19 @@ public class WestPanel extends SectionStack{
 	private WestPanel wp = this;
 
 	private TextItem searchTextItem;
+
 	private RadioGroupItem SearchRadioGroupItem;
 	private RadioGroupItem SearchPriorityRadioGroupItem;
 	private CheckboxItem AmpliconFilterCheckboxItem;
 	private CheckboxItem DeliconFilterCheckboxItem;
 	
+	private SectionStackSection adminSection;
+	
 	public WestPanel(MainPanel mainPanel) {
 		
 		mp = mainPanel;
-
-		SectionStackSection searchSection = new SectionStackSection();  
+		
+		SectionStackSection searchSection = new SectionStackSection();
 		searchSection.setTitle("Search");  
 		searchSection.setExpanded(true);
 		
@@ -137,31 +139,22 @@ public class WestPanel extends SectionStack{
 		
 		VLayout settingsContent = new VLayout();
 		
-		/*user login*/
+		/*user settings*/
 		DynamicForm userForm = new DynamicForm();
 		
-		TextItem userTextItem = new TextItem();  
-		userTextItem.setTitle("Username");
-		userTextItem.setRequired(true);
+		Label info = new Label("user settings here");
 		
-		PasswordItem passwordItem = new PasswordItem();  
-		passwordItem.setTitle("Password");  
-		passwordItem.setRequired(true);  
+		//serForm.setItems();
 		
-		ButtonItem logInButton = new ButtonItem("login"); 
-		
-		ButtonItem logOutButton = new ButtonItem("logout");
-		
-		ButtonItem registerButton = new ButtonItem("register");
-		
-		userForm.setItems(userTextItem, passwordItem, logInButton, logOutButton, registerButton);
+		settingsContent.addMember(info);
 		
 		settingsContent.addMember(userForm);
 		
 		settingsSection.addItem(settingsContent);
 		
-		SectionStackSection adminSection = new SectionStackSection();  
-		adminSection.setTitle("Admin");  
+		adminSection = new SectionStackSection();  
+		adminSection.setTitle("Admin");
+		adminSection.setID("admin1");
 		
 		VLayout adminContent = new VLayout();
 		
@@ -171,6 +164,13 @@ public class WestPanel extends SectionStack{
 		LinkItem usersLinkItem = new LinkItem();   
 		usersLinkItem.setLinkTitle("Show users");
 		usersLinkItem.setShowTitle(false);
+		usersLinkItem.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				showAllUsers();
+			}
+		});
 		
 		LinkItem dataLinkItem = new LinkItem();  
 		dataLinkItem.setLinkTitle("Add data");
@@ -182,10 +182,18 @@ public class WestPanel extends SectionStack{
 		
 		adminSection.addItem(adminContent);
 		
-		this.setSections(searchSection, settingsSection, adminSection);
+		this.setSections(searchSection, settingsSection);
 			
 	}
 	
+	public TextItem getSearchTextItem() {
+		return searchTextItem;
+	}
+	
+	public SectionStackSection getAdminSection() {
+		return adminSection;
+	}
+
 	public void startSearch(){
 		String typeStr = null;
 		String cncPrio = null;
@@ -271,75 +279,6 @@ public class WestPanel extends SectionStack{
 		};
 		req.getListOfCncs(isAmplicon, callback);
 	}
-
-	public void userLogin(String userName, String password){
-		
-		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<User> callback = new AsyncCallback<User>(){
-			public void onSuccess(User result){
-				
-				//searchPanel.setDisabled(false);
-				if(result.getIsAdmin()){
-					//wp.add(adminPanel);
-				}
-				//userFormPanel.hide();
-				//registerButton.hide();
-				//logoutButton.show();
-				//MessageBox.hide();
-				
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				//MessageBox.hide();
-				//MessageBox.alert(caught.getMessage());
-			}
-		};
-		req.login(userName, password, callback);
-	}	
-	
-	public void userLogout(){
-		
-		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
-			public void onSuccess(Void result){
-				
-				//userName.reset();
-				//pw.reset();
-				//logoutButton.hide();
-				//registerButton.show();
-				//searchPanel.setDisabled(true);
-				//adminPanel.setVisible(false);
-				//userFormPanel.show();
-				
-				//wp.remove(adminPanel);
-				
-				/* remove all center panel tabs except for the welcome tab*/
-				/*Component[] items = centerPanel.getItems();  
-					for (int i = 0; i < items.length; i++) {  
-						Component component = items[i];  
-						if (!component.getTitle().equals("Welcome")) {  
-							centerPanel.remove(component);  
-						}
-					}
-				*/
-				
-				//MessageBox.hide();
-				
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				//MessageBox.hide();
-				//MessageBox.alert(caught.getMessage());
-			}
-		};
-		req.logout(callback);
-	}	
 	
 	public void showAllUsers(){
 		
@@ -351,15 +290,13 @@ public class WestPanel extends SectionStack{
 			
 			public void onSuccess(User[] result){
 				
-			//Panel tab = centerPanel.openUserAdminTab(result);
-			//centerPanel.add(tab);
-			//centerPanel.activate(tab.getId());
+				mp.getCenterPanel().openUserAdminTab(result);
 				
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
 				//MessageBox.hide();
-				//MessageBox.alert(caught.getMessage());
+				SC.say(caught.getMessage());
 			}
 
 		};
@@ -367,5 +304,3 @@ public class WestPanel extends SectionStack{
 	}	
 	
 }
-	
-
