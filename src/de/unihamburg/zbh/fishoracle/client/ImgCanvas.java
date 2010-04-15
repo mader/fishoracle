@@ -20,7 +20,7 @@ public class ImgCanvas extends Img {
 	
 	public ImgCanvas(GWTImageInfo imageInfo) {
 		this.imageInfo = imageInfo;
-		this.setSrc(imageInfo.getImgUrl());
+		this.setSrc("[APP]/" + imageInfo.getImgUrl());
 	}
 
 	public GWTImageInfo getImageInfo() {

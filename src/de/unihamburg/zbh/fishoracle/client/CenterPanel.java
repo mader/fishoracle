@@ -148,8 +148,7 @@ public class CenterPanel extends VLayout{
 		
 		for(rmc=0; rmc < imgInfo.getRecmapinfo().size(); rmc++){
 			
-			final Img spaceImg = new Img("images/1pximg.gif");
-			spaceImg.setAppImgDir("/");
+			final Img spaceImg = new Img("1pximg.gif");
 			
 			spaceImg.addClickHandler(new RecMapClickHandler(imgInfo.getRecmapinfo().get(rmc), this));
 			
