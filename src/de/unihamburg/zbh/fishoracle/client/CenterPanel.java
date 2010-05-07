@@ -1,9 +1,15 @@
 package de.unihamburg.zbh.fishoracle.client;
 
+import java.util.LinkedHashMap;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Alignment;
@@ -11,6 +17,7 @@ import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.types.ImageStyle;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Img;
 import com.smartgwt.client.widgets.Label;
@@ -21,7 +28,10 @@ import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
+import com.smartgwt.client.widgets.form.fields.SelectItem;
+import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
@@ -30,6 +40,8 @@ import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.CellClickEvent;
 import com.smartgwt.client.widgets.grid.events.CellClickHandler;
+import com.smartgwt.client.widgets.layout.HLayout;
+import com.smartgwt.client.widgets.layout.LayoutSpacer;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
@@ -43,6 +55,7 @@ import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.ImgCanvas;
@@ -59,6 +72,16 @@ public class CenterPanel extends VLayout{
 	private TextItem chrTextItem;
 	private TextItem startTextItem;
 	private TextItem endTextItem;
+	
+	private FileUpload fu;
+	private Label fileNameLbl;
+	private TextItem studyName;
+	private SelectItem chip;
+	private SelectItem tissue;
+	private SelectItem pstage;
+	private SelectItem pgrade;
+	private SelectItem metaStatus;
+	private TextAreaItem descriptionItem;
 	
 	@SuppressWarnings("unused")
 	private MainPanel mp = null;
@@ -725,6 +748,149 @@ public class CenterPanel extends VLayout{
 		
 	}
 	
+	public void openDataAdminTab(){
+		Tab dataAdminTab = new Tab("Data Administration");
+		dataAdminTab.setCanClose(true);
+		
+		VLayout pane = new VLayout();
+		pane.setWidth100();
+		pane.setHeight100();
+		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		HLayout header = new HLayout();
+		header.setAutoWidth();
+		header.setAutoHeight();
+		
+		Label headerLbl = new Label("<h2>Data Import</h2>");
+		header.addMember(headerLbl);
+		
+		pane.addMember(header);
+		
+		Label step1Lbl =  new Label("<h3>Step1: upload data</h3>");
+		step1Lbl.setAutoHeight();
+		pane.addMember(step1Lbl);
+		
+		HLayout uploadPanel = new HLayout();
+	    uploadPanel.setWidth100();
+	    uploadPanel.setAutoHeight();
+		final FormPanel uploadForm = new FormPanel();
+		uploadForm.setWidth("100");
+		uploadForm.setHeight("25");
+		uploadForm.setEncoding(FormPanel.ENCODING_MULTIPART);
+		uploadForm.setMethod(FormPanel.METHOD_POST);
+		uploadForm.setAction(GWT.getModuleBaseURL() + "FileUpload");
+		
+		fu = new FileUpload();
+		fu.setName("file");
+		uploadForm.add(fu);
+		
+		Button b = new Button("upload");
+		b.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				uploadForm.submit();
+			}
+		});
+		
+		uploadForm.addSubmitCompleteHandler(new SubmitCompleteHandler(){
+
+			@Override
+			public void onSubmitComplete(SubmitCompleteEvent event) {
+				SC.say(event.getResults());
+				fileNameLbl.setTitle("meta data for uploaded file: " + fu.getFilename());
+				fileNameLbl.redraw();
+				studyName.setValue(fu.getFilename());
+			}
+			
+		});	
+		
+		
+		VLayout container = new VLayout();
+		container.setDefaultLayoutAlign(Alignment.CENTER);
+		container.setAutoHeight();
+		
+		container.addMember(uploadForm);
+		container.addMember(b);
+		
+		uploadPanel.addMember(container);
+		
+		pane.addMember(uploadPanel);
+		
+		Label step2Lbl = new Label("<h3>Step2: enter meta information</h3>");
+		step2Lbl.setAutoHeight();
+		pane.addMember(step2Lbl);
+		
+		/* 
+		 * normalized with
+		 * sample id
+		 * */
+		
+		HLayout metaData = new HLayout();
+		metaData.setWidth100();
+		metaData.setAutoHeight();
+		metaData.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		metaData.addMember(new LayoutSpacer());
+		
+		fileNameLbl = new Label("meta data for uploaded file: ");
+		fileNameLbl.setWidth(350);
+		
+		metaData.addMember(fileNameLbl);
+		
+		DynamicForm metaDataForm = new DynamicForm();
+		
+		studyName = new TextItem();
+		studyName.setTitle("study name");
+		
+		chip = new SelectItem();
+		chip.setTitle("chip type");  
+		
+		tissue = new SelectItem();
+		tissue.setTitle("tissue");
+		
+		pstage = new SelectItem();
+		pstage.setTitle("pathological stage");
+		
+		pgrade = new SelectItem();
+		pgrade.setTitle("pathological grade");
+		
+		metaStatus = new SelectItem();
+		metaStatus.setTitle("meta status");
+		
+		descriptionItem = new TextAreaItem();
+		descriptionItem.setTitle("description");  
+		
+		ButtonItem submitButton = new ButtonItem("submit");
+		submitButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				importData(fu.getFilename(), studyName.getDisplayValue(), chip.getDisplayValue(), tissue.getDisplayValue(), 
+						pstage.getDisplayValue(), pgrade.getDisplayValue(), metaStatus.getDisplayValue(), descriptionItem.getDisplayValue());
+			}
+			
+			
+		});
+		
+		metaDataForm.setItems(studyName, chip, tissue, pstage, pgrade, metaStatus, descriptionItem, submitButton);
+		
+		metaData.addMember(metaDataForm);
+
+		metaData.addMember(new LayoutSpacer());
+		
+		pane.addMember(metaData);
+		
+		getMicroarrayOptions();
+		
+		dataAdminTab.setPane(pane);
+		
+		centerTabSet.addTab(dataAdminTab);
+		
+		centerTabSet.selectTab(dataAdminTab);
+	}
+	
 	/*=============================================================================
 	 *||                              RPC Calls                                  ||
 	 *=============================================================================
@@ -837,6 +1003,104 @@ public class CenterPanel extends VLayout{
 		};
 		req.toggleFlag(id, flag, type, rowNum, colNum, callback);
 	}
+	
+	public void getMicroarrayOptions(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<MicroarrayOptions> callback = new AsyncCallback<MicroarrayOptions>(){
+			@Override
+			public void onSuccess(MicroarrayOptions result){
+				
+				
+				
+				LinkedHashMap<String, String> chipValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.getChipName().length; i++){
+					chipValueMap.put(new Integer(i).toString(),result.getChipName()[i]);
+				}
+				
+				chip.setValueMap(chipValueMap);
+				
+				LinkedHashMap<String, String> tissueValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.getTissue().length; i++){
+					tissueValueMap.put(new Integer(i).toString(),result.getTissue()[i]);
+				}
+				
+				tissue.setValueMap(tissueValueMap);
+				
+				LinkedHashMap<String, String> pstageValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.getPStage().length; i++){
+					pstageValueMap.put(new Integer(i).toString(),result.getPStage()[i]);
+				}
+				
+				pstage.setValueMap(pstageValueMap);
+				
+				LinkedHashMap<String, String> pgradeValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.getPGrade().length; i++){
+					pgradeValueMap.put(new Integer(i).toString(),result.getPGrade()[i]);
+				}
+				
+				pgrade.setValueMap(pgradeValueMap);
+				
+				LinkedHashMap<String, String> mstatusValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.getMetaStatus().length; i++){
+					mstatusValueMap.put(new Integer(i).toString(),result.getMetaStatus()[i]);
+				}
+				
+				metaStatus.setValueMap(mstatusValueMap);
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());
+			}
+		};
+		req.getMicroarrayOptions(callback);
+	}
+	
+	public void importData(String fileName,
+							String studyName,
+							String chipType,
+							String tissue,
+							String pstage,
+							String pgrade,
+							String metaStatus,
+							String description){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+			@Override
+			public void onSuccess(Boolean result){
+				
+				SC.say("Data import successful!");
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());
+			}
+		};
+		req.importData(fileName,
+						studyName,
+						chipType,
+						tissue,
+						pstage,
+						pgrade,
+						metaStatus,
+						description,
+						callback);
+	}	
+	
 }
 	
 class RecMapClickHandler implements ClickHandler{

@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,8 +22,15 @@ import org.ensembl.driver.CoreDriver;
 import org.ensembl.driver.CoreDriverFactory;
 import org.ensembl.driver.KaryotypeBandAdaptor;
 
+import com.csvreader.CsvReader;
+
+import de.unihamburg.zbh.fishoracle.client.data.Chip;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.MetaStatus;
+import de.unihamburg.zbh.fishoracle.client.data.Organ;
+import de.unihamburg.zbh.fishoracle.client.data.PathologicalGrade;
+import de.unihamburg.zbh.fishoracle.client.data.PathologicalStage;
 import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
@@ -365,7 +374,7 @@ public class DBQuery {
 			
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
-			System.exit(1);
+			//System.exit(1);
 		} finally {
 			if(conn != null){
 				try{
@@ -457,7 +466,7 @@ public class DBQuery {
 			
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
-			System.exit(1);
+			//System.exit(1);
 		} finally {
 			if(conn != null){
 				try{
@@ -532,7 +541,7 @@ public class DBQuery {
 			
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
-			System.exit(1);
+			//System.exit(1);
 		} finally {
 			if(conn != null){
 				try{
@@ -1004,5 +1013,445 @@ public class DBQuery {
 		return activate;
 	}
 	
+	public Chip[] fetchAllChipData() throws Exception{
+		Connection conn = null;
+		Chip[] chips = null;
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			s.executeQuery("SELECT count(*) FROM chip");
+			
+			ResultSet countRs = s.getResultSet();
+			countRs.next();
+			int chipCount = countRs.getInt(1);
+			
+			s.executeQuery("SELECT *  FROM chip");
+			
+			ResultSet chipRs = s.getResultSet();
+			
+			String ChipName = null;
+			String type = null;
+			String cdfFileName = null;
+			
+			chips = new Chip[chipCount];
+			int i = 0;
+			
+			while(chipRs.next()){
+				ChipName = chipRs.getString(1);
+				type = chipRs.getString(2);
+				cdfFileName = chipRs.getString(3);
+				
+				chips[i] = new Chip(ChipName, type, cdfFileName);
+				i++;
+			}
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		return chips;
+	}
 	
+	public Organ[] fetchAllEnabledOrganData() throws Exception{
+		Connection conn = null;
+		Organ[] organs = null;
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			s.executeQuery("SELECT count(*) FROM organ WHERE organ_activity = 'enabled'");
+			
+			ResultSet countRs = s.getResultSet();
+			countRs.next();
+			int organCount = countRs.getInt(1);
+			
+			s.executeQuery("SELECT *  FROM organ WHERE organ_activity = 'enabled'");
+			
+			ResultSet organRs = s.getResultSet();
+			
+			int id;
+			String label = null;
+			String activity = null;
+			
+			organs = new Organ[organCount];
+			int i = 0;
+			
+			while(organRs.next()){
+				id = organRs.getInt(1);
+				label = organRs.getString(2);
+				activity = organRs.getString(3);
+				
+				organs[i] = new Organ(id, label, activity);
+				i++;
+			}
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		return organs;
+	}
+	
+	public PathologicalStage[] fetchAllEnabledPathologicalStageData() throws Exception{
+		Connection conn = null;
+		PathologicalStage[] pstages = null;
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			s.executeQuery("SELECT count(*) FROM patho_stage WHERE patho_stage_activity = 'enabled'");
+			
+			ResultSet countRs = s.getResultSet();
+			countRs.next();
+			int pstageCount = countRs.getInt(1);
+			
+			s.executeQuery("SELECT *  FROM patho_stage WHERE patho_stage_activity = 'enabled'");
+			
+			ResultSet pstageRs = s.getResultSet();
+			
+			int id;
+			String label = null;
+			String activity = null;
+			
+			pstages = new PathologicalStage[pstageCount];
+			int i = 0;
+			
+			while(pstageRs.next()){
+				id = pstageRs.getInt(1);
+				label = pstageRs.getString(2);
+				activity = pstageRs.getString(3);
+				
+				pstages[i] = new PathologicalStage(id, label, activity);
+				i++;
+			}
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		return pstages;
+	}
+	
+	public PathologicalGrade[] fetchAllEnabledPathologicalGradeData() throws Exception{
+		Connection conn = null;
+		PathologicalGrade[] pgrades = null;
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			s.executeQuery("SELECT count(*) FROM patho_grade WHERE patho_grade_activity = 'enabled'");
+			
+			ResultSet countRs = s.getResultSet();
+			countRs.next();
+			int pgradeCount = countRs.getInt(1);
+			
+			s.executeQuery("SELECT *  FROM patho_grade WHERE patho_grade_activity = 'enabled'");
+			
+			ResultSet pgradeRs = s.getResultSet();
+			
+			int id;
+			String label = null;
+			String activity = null;
+			
+			pgrades = new PathologicalGrade[pgradeCount];
+			int i = 0;
+			
+			while(pgradeRs.next()){
+				id = pgradeRs.getInt(1);
+				label = pgradeRs.getString(2);
+				activity = pgradeRs.getString(3);
+				
+				pgrades[i] = new PathologicalGrade(id, label, activity);
+				i++;
+			}
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		return pgrades;
+	}
+	
+	public MetaStatus[] fetchAllEnabledMetaStatusData() throws Exception{
+		Connection conn = null;
+		MetaStatus[] mstati = null;
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement s = conn.createStatement();
+			s.executeQuery("SELECT count(*) FROM meta_status WHERE meta_status_activity = 'enabled'");
+			
+			ResultSet countRs = s.getResultSet();
+			countRs.next();
+			int mstatusCount = countRs.getInt(1);
+			
+			s.executeQuery("SELECT *  FROM meta_status WHERE meta_status_activity = 'enabled'");
+			
+			ResultSet mstatusRs = s.getResultSet();
+			
+			int id;
+			String label = null;
+			String activity = null;
+			
+			mstati = new MetaStatus[mstatusCount];
+			int i = 0;
+			
+			while(mstatusRs.next()){
+				id = mstatusRs.getInt(1);
+				label = mstatusRs.getString(2);
+				activity = mstatusRs.getString(3);
+				
+				mstati[i] = new MetaStatus(id, label, activity);
+				i++;
+			}
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		return mstati;
+	}
+	
+	public int createNewStudy(String studyName,
+								String chipType,
+								String tissue,	
+								String pstage,	
+								String pgrade,
+								String metaStatus,
+								String description,
+								int userId) throws Exception{
+		
+		Connection conn = null;
+		
+		int mstudyId;
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement idStatement = conn.createStatement();
+			idStatement.executeQuery("SELECT organ_id FROM organ WHERE organ_label = '" + tissue + "'");
+			
+			ResultSet idRs = idStatement.getResultSet();
+			idRs.next();
+			int organId = idRs.getInt(1);
+
+			idStatement.executeQuery("SELECT patho_stage_id FROM patho_stage WHERE patho_stage_label = '" + pstage + "'");
+			
+			idRs = idStatement.getResultSet();
+			idRs.next();
+			int pstageId = idRs.getInt(1);
+			
+			idStatement.executeQuery("SELECT patho_grade_id FROM patho_grade WHERE patho_grade_label = '" + pgrade + "'");
+			
+			idRs = idStatement.getResultSet();
+			idRs.next();
+			int pgradeId = idRs.getInt(1);
+			
+			idStatement.executeQuery("SELECT meta_status_id FROM meta_status WHERE meta_status_label = '" + metaStatus + "'");
+			
+			idRs = idStatement.getResultSet();
+			idRs.next();
+			int mstatusId = idRs.getInt(1);
+			
+			idStatement.close();
+			
+			Statement tissueStatement = conn.createStatement();
+			tissueStatement.executeUpdate("INSERT INTO tissue_sample (tissue_sample_patient," +
+										" tissue_sample_organ_id, tissue_sample_patho_stage_id," +
+										" tissue_sample_patho_grade_id, tissue_sample_meta_status_id) VALUES " +
+										"( 'unknown', " + organId + ", " + pstageId + ", " + pgradeId + ", " + mstatusId + ")");
+			
+			ResultSet tissueRs = tissueStatement.getGeneratedKeys();
+			tissueRs.next();
+			int tissueId = tissueRs.getInt(1);
+			
+			tissueStatement.close();
+
+			Calendar calendar = Calendar.getInstance();
+	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	        
+	        Statement mstudyStatement = conn.createStatement();
+			mstudyStatement.executeUpdate("INSERT INTO microarraystudy (microarraystudy_date_inserted," +
+										" microarraystudy_labelling, microarraystudy_description," +
+										" microarraystudy_link_preprocessed_data, microarraystudy_user_id," +
+										" microarraystudy_normalized_with, microarraystudy_sample_on_chip_id) VALUES " +
+										"('" + dateFormat.format(calendar.getTime()) + "', '" + studyName + "', '" + description + 
+										"', 'null', '" + userId + "', 'cna', -1)");
+			
+			ResultSet mstudyRs = mstudyStatement.getGeneratedKeys();
+			mstudyRs.next();
+			mstudyId = mstudyRs.getInt(1);
+			
+			Statement sampleOnChipStatement = conn.createStatement();
+			sampleOnChipStatement.executeUpdate("INSERT INTO sample_on_chip (sample_on_chip_chip_name, " +
+												"sample_on_chip_tissue_sample_id, sample_on_chip_user_id, " +
+												"sample_on_chip_date_inserted, sample_on_chip_celfile_name, " +
+												"sample_on_chip_preprocessed, sample_on_chip_microarray_study_id) VALUES " +
+												"('"+ chipType +"', '" + tissueId + "', '" + userId + "', '" + dateFormat.format(calendar.getTime()) + 
+												"', 'null', 'cna', '" + mstudyId + "')");
+			
+			ResultSet sampleOnChipRs = sampleOnChipStatement.getGeneratedKeys();
+			sampleOnChipRs.next();
+			int sampleOnChipId = sampleOnChipRs.getInt(1);
+			
+			sampleOnChipStatement.close();
+			
+			Statement mstudyUpdateStatement = conn.createStatement();
+			mstudyStatement.executeUpdate("UPDATE microarraystudy SET microarraystudy_sample_on_chip_id = '" + sampleOnChipId + 
+										"' WHERE microarraystudy_id = '" + mstudyId + "'");
+			mstudyUpdateStatement.close();
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		return mstudyId;
+	}
+	
+	public void insertCNCs(String fileName, String path,  int studyId) throws Exception{
+		Connection conn = null;
+		
+		try{
+			
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement cncidStatement = conn.createStatement();
+			cncidStatement.executeQuery("SELECT cnc_segment_stable_id, MID(cnc_segment_stable_id, 4) + 0 as id FROM cnc_segment " +
+										"ORDER BY id DESC LIMIT 1");
+			
+			ResultSet cncRs = cncidStatement.getResultSet();
+			
+			int sid;
+			
+			if(cncRs.next()){
+				sid = Integer.parseInt(cncRs.getString(1).substring(3));
+			} else {
+				sid = 0;
+			}
+			Statement cncStatement = conn.createStatement();
+			
+			Calendar calendar = Calendar.getInstance();
+	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	        
+			CsvReader reader = new CsvReader(path + fileName);
+			reader.setDelimiter('\t');
+			reader.readHeaders();
+
+			while (reader.readRecord())
+			{
+				//String ID = reader.get("ID");
+				String chr = reader.get("chr");
+				String start = reader.get("start");
+				String end = reader.get("end loc");
+				String markers = reader.get("markers");
+				String segmentMean = reader.get("segment mean");
+				
+				sid++;
+				
+				cncStatement.executeUpdate("INSERT INTO cnc_segment (cnc_segment_stable_id, cnc_segment_chromosome, cnc_segment_start, " +
+											"cnc_segment_end, cnc_segment_mean, cnc_segment_markers, " +
+											"cnc_segment_import_date, cnc_segment_microarraystudy_id) VALUES " +
+											"('CNC" + sid + "', '" + chr + "', '" + start + "', '" + end + "', '" + segmentMean + "', " +
+											"'" + markers + "', '" + dateFormat.format(calendar.getTime()) + "', '" + studyId + "')");
+			
+			}
+
+			reader.close();
+			
+			cncStatement.close();
+			
+		} catch (Exception e){
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+	}
 }
