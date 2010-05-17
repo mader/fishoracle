@@ -21,11 +21,10 @@ public class Export {
 	}
 
 	@SuppressWarnings({"deprecation"})
-	public String exportImageAsExcelDocument(CopyNumberChange[] amps, CopyNumberChange[] dels, Gen[] genes, Location maxAmpRange, String servletPath) throws IOException, RowsExceededException, WriteException{
+	public String exportImageAsExcelDocument(CopyNumberChange[] cncs, Gen[] genes, Location maxAmpRange, String servletPath) throws IOException, RowsExceededException, WriteException{
 		
 		int i, j, k;
 		int geneCol;
-		int delBeginCol = 0;
 		String fileName = null;
 		
 		Random generator = new Random();
@@ -38,15 +37,9 @@ public class Export {
 		
 		WritableFont textwidth = new WritableFont(WritableFont.ARIAL, 8);
 		WritableCellFormat text = new WritableCellFormat(textwidth);
-		
-		if(amps == null && dels != null){
-			geneCol = dels.length;
-			delBeginCol = 0;
-		} else if (amps != null && dels == null){
-			geneCol = amps.length;
-		} else if (amps != null && dels != null){
-			geneCol = amps.length + dels.length;
-			delBeginCol = amps.length;
+
+		if (cncs != null){
+			geneCol = cncs.length;
 		} else {
 			geneCol = 0;
 		}
@@ -62,8 +55,8 @@ public class Export {
 			sheet.addCell(endlabel);
 		}
 
-		if (amps!=null){
-			for(j = 0; j < amps.length; j++){
+		if (cncs!=null){
+			for(j = 0; j < cncs.length; j++){
 
 				WritableCellFormat background = new WritableCellFormat(textwidth);
 				background.setWrap(true);
@@ -71,34 +64,11 @@ public class Export {
 
 				for(k = 0; k < genes.length; k++){
 
-					if((amps[j].getStart() < genes[k].getEnd() && amps[j].getEnd() > genes[k].getStart() ||
-							(amps[j].getEnd() > genes[k].getStart() && amps[j].getStart() < genes[k].getEnd())) ||
-							(amps[j].getStart() > genes[k].getStart() && amps[j].getEnd() < genes[k].getEnd()))
+					if((cncs[j].getStart() < genes[k].getEnd() && cncs[j].getEnd() > genes[k].getStart() ||
+							(cncs[j].getEnd() > genes[k].getStart() && cncs[j].getStart() < genes[k].getEnd())) ||
+							(cncs[j].getStart() > genes[k].getStart() && cncs[j].getEnd() < genes[k].getEnd()))
 					{
-						Label label = new Label(j, k, amps[j].getCncStableId(), background);
-						sheet.setColumnView(j, 10);
-						sheet.addCell(label);
-					}
-
-				}
-
-			}
-		}
-		
-		if(dels!=null){
-			for(j = 0; j < dels.length; j++){
-
-				WritableCellFormat background = new WritableCellFormat(textwidth);
-				background.setWrap(true);
-				background.setBackground(Colour.getInternalColour(j+5*3));
-
-				for(k = 0; k < genes.length; k++){
-
-					if((dels[j].getStart() < genes[k].getEnd() && dels[j].getEnd() > genes[k].getStart() ||
-							(dels[j].getEnd() > genes[k].getStart() && dels[j].getStart() < genes[k].getEnd())) ||
-							(dels[j].getStart() > genes[k].getStart() && dels[j].getEnd() < genes[k].getEnd()))
-					{
-						Label label = new Label(j + delBeginCol, k, dels[j].getCncStableId(), background);
+						Label label = new Label(j, k, cncs[j].getCncStableId(), background);
 						sheet.setColumnView(j, 10);
 						sheet.addCell(label);
 					}

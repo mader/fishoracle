@@ -6,23 +6,28 @@ public class QueryInfo  implements IsSerializable {
 
 	private String queryString;
 	private String searchType;
-	private String cncPrio;
-	private boolean showAmps;
-	private boolean showDels;
+	private Double lowerTh;
+	private Double upperTh;
 	private int winWidth;
 	
 	public QueryInfo() {
 		
 	}
 
-	public QueryInfo(String queryString, String searchType, String cncPrio,
-			boolean showAmps, boolean showDels, int winWidth) {
+	public QueryInfo(String queryString, String searchType, String lowerTh, String upperTh, int winWidth) {
 		super();
 		this.queryString = queryString;
 		this.searchType = searchType;
-		this.cncPrio = cncPrio;
-		this.showAmps = showAmps;
-		this.showDels = showDels;
+		if(lowerTh.equals("")){
+			this.lowerTh = null;
+		} else {
+			this.lowerTh = Double.parseDouble(lowerTh);
+		}
+		if(upperTh.equals("")){
+			this.upperTh = null;
+		} else {
+			this.upperTh = Double.parseDouble(upperTh);
+		}
 		this.winWidth = winWidth;
 	}
 
@@ -42,28 +47,21 @@ public class QueryInfo  implements IsSerializable {
 		this.searchType = searchType;
 	}
 
-	public String getCncPrio() {
-		return cncPrio;
+	
+	public Double getLowerTh() {
+		return lowerTh;
 	}
 
-	public void setCncPrio(String cncPrio) {
-		this.cncPrio = cncPrio;
+	public void setLowerTh(Double lowerTh) {
+		this.lowerTh = lowerTh;
 	}
 
-	public boolean isShowAmps() {
-		return showAmps;
+	public Double getUpperTh() {
+		return upperTh;
 	}
 
-	public void setShowAmps(boolean showAmps) {
-		this.showAmps = showAmps;
-	}
-
-	public boolean isShowDels() {
-		return showDels;
-	}
-
-	public void setShowDels(boolean showDels) {
-		this.showDels = showDels;
+	public void setUpperTh(Double upperTh) {
+		this.upperTh = upperTh;
 	}
 
 	public int getWinWidth() {

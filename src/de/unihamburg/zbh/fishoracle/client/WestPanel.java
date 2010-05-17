@@ -42,10 +42,10 @@ public class WestPanel extends SectionStack{
 	private TextItem searchTextItem;
 
 	private RadioGroupItem SearchRadioGroupItem;
-	private RadioGroupItem SearchPriorityRadioGroupItem;
-	private CheckboxItem ampliconFilterCheckboxItem;
-	private CheckboxItem deliconFilterCheckboxItem;
-	private CheckboxItem cncFilterCheckboxItem;
+	//private RadioGroupItem SearchPriorityRadioGroupItem;
+	//private CheckboxItem ampliconFilterCheckboxItem;
+	//private CheckboxItem deliconFilterCheckboxItem;
+	//private CheckboxItem cncFilterCheckboxItem;
 	
 	private TextItem greaterTextItem;
 	private TextItem lessTextItem;
@@ -70,7 +70,7 @@ public class WestPanel extends SectionStack{
 		
 		SearchRadioGroupItem = new RadioGroupItem();  
 		SearchRadioGroupItem.setTitle("Type");  
-		SearchRadioGroupItem.setValueMap("Amplicon/Delicon Stable ID", "Gene", "Karyoband"); 
+		SearchRadioGroupItem.setValueMap("CNC Stable ID", "Gene", "Karyoband"); 
 		SearchRadioGroupItem.setDefaultValue("Gene");
 		
 		ButtonItem searchButton = new ButtonItem("Search");
@@ -97,12 +97,15 @@ public class WestPanel extends SectionStack{
 		
 		
 		/*search priority*/
+		/*
 		SearchPriorityRadioGroupItem = new RadioGroupItem();  
 		SearchPriorityRadioGroupItem.setTitle("Search Priority");  
 		SearchPriorityRadioGroupItem.setValueMap("Amplicon", "Delicon"); 
 		SearchPriorityRadioGroupItem.setDefaultValue("Amplicon");
+		*/
 		
 		/*display filter*/
+		/*
 		ampliconFilterCheckboxItem = new CheckboxItem();  
 		ampliconFilterCheckboxItem.setTitle("Show Amplicons");
 		ampliconFilterCheckboxItem.setDefaultValue(true);
@@ -114,12 +117,13 @@ public class WestPanel extends SectionStack{
 		cncFilterCheckboxItem = new CheckboxItem();  
 		cncFilterCheckboxItem.setTitle("Show Segments");
 		cncFilterCheckboxItem.setDefaultValue(true);
+		*/
 		
 		SelectItem cncDataSelectItem = new SelectItem();
 		//cncDataSelectItem.setShowTitle(false);
 		cncDataSelectItem.setType("Select"); 
 		cncDataSelectItem.setValueMap("greater than", "less than", "between");
-		cncDataSelectItem.setDefaultValue("greater than");
+		cncDataSelectItem.setDefaultValue("between");
 		cncDataSelectItem.addChangeHandler(new ChangeHandler(){
 
 			@Override
@@ -146,7 +150,9 @@ public class WestPanel extends SectionStack{
 		lessTextItem.setTitle("less than");
 		//lessTextItem.disable();
 		
+		
 		/*show more information*/
+		/*
 		LinkItem AmpliconLinkItem = new LinkItem();   
 		AmpliconLinkItem.setLinkTitle("show all amplicons");
 		AmpliconLinkItem.addClickHandler(new ClickHandler(){
@@ -168,11 +174,13 @@ public class WestPanel extends SectionStack{
 			}
 		});
 		DeliconLinkItem.setShowTitle(false);
+		*/
 		
 		/*add content to search stack section*/
-		searchForm.setItems(searchTextItem, SearchRadioGroupItem, searchButton, SearchPriorityRadioGroupItem, ampliconFilterCheckboxItem,
-							deliconFilterCheckboxItem, cncFilterCheckboxItem, cncDataSelectItem, greaterTextItem, lessTextItem, AmpliconLinkItem, AmpliconLinkItem);
+		//searchForm.setItems(searchTextItem, SearchRadioGroupItem, searchButton, SearchPriorityRadioGroupItem, ampliconFilterCheckboxItem,
+		//					deliconFilterCheckboxItem, cncFilterCheckboxItem, cncDataSelectItem, greaterTextItem, lessTextItem, AmpliconLinkItem, AmpliconLinkItem);
 		
+		searchForm.setItems(searchTextItem, SearchRadioGroupItem, cncDataSelectItem, greaterTextItem, lessTextItem, searchButton);
 		searchContent.addMember(searchForm);
 		
 		searchSection.setItems(searchContent);
@@ -246,14 +254,13 @@ public class WestPanel extends SectionStack{
 
 	public void startSearch(){
 		String typeStr = null;
-		String cncPrio = null;
 		
 		if(searchTextItem.getDisplayValue().equals("")){
 			SC.say("You have to type in a search term!");
 		} else {
 		
-			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Amplicon/Delicon Stable ID")){
-				typeStr = "Amplicon/Delicon Search";
+			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("CNC Stable ID")){
+				typeStr = "CNC Search";
 			}
 			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Gene")){
 				typeStr = "Gene Search";
@@ -261,17 +268,11 @@ public class WestPanel extends SectionStack{
 			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Karyoband")){
 				typeStr = "Band Search";
 			}
-			if(SearchPriorityRadioGroupItem.getDisplayValue().equalsIgnoreCase("Amplicon")){
-				cncPrio = "Amplicon";
-			}
-			if(SearchPriorityRadioGroupItem.getDisplayValue().equalsIgnoreCase("Delicon")){
-				cncPrio = "Delicon";
-			}
 						
 			QueryInfo newQuery = new QueryInfo(searchTextItem.getDisplayValue(),
-												typeStr, cncPrio,
-												ampliconFilterCheckboxItem.getValueAsBoolean(),
-												deliconFilterCheckboxItem.getValueAsBoolean(),
+												typeStr,
+												lessTextItem.getDisplayValue(),
+												greaterTextItem.getDisplayValue(),
 												mp.getCenterPanel().getWidth() - 30); 
 			
 			//MessageBox.wait("Searching for " + searchBox.getText());

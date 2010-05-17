@@ -38,13 +38,7 @@ style =
     -- max_num_lines      = 10,
   },
 --------------------------------------
-   amplicon = {
-    -- Color definitions
-    stroke_marked      = {red=1.0, green=0.0, blue=0.0},
-    style              = "box",
-  }, 
---------------------------------------
-   delicon = {
+   cnc = {
     -- Color definitions
     stroke_marked      = {red=1.0, green=0.0, blue=0.0},
     style              = "box",

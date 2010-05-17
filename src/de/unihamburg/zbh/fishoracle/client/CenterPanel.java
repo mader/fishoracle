@@ -489,6 +489,7 @@ public class CenterPanel extends VLayout{
 		String idStr = null;
 		String levelStr = null;
 		
+		/*
 		if (cncData.isAmplicon()){
 			titleStr = "Amplicon";
 			idStr = "Amplicon Stable ID";
@@ -498,7 +499,7 @@ public class CenterPanel extends VLayout{
 			idStr = "Delicon Stable ID";
 			levelStr = "Dellevel";
 		}
-		
+		*/
 		window.setTitle(titleStr + " " + cncData.getCncStableId());
 		window.setAutoSize(true);
 		window.setAutoCenter(true);

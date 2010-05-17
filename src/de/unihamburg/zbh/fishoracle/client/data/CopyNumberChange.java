@@ -14,20 +14,17 @@ public class CopyNumberChange implements IsSerializable{
 	private int continuous;
 	private int cnclevel;
 	
-	private boolean isAmplicon;
-	
 	public CopyNumberChange() {
 		
 	}
 	
 	public CopyNumberChange(String cncStableId, String chromosome, int start,
-			int end, boolean isAmplicon) {
+			int end) {
 		super();
 		this.cncStableId = cncStableId;
 		this.chromosome = chromosome;
 		this.start = start;
 		this.end = end;
-		this.isAmplicon = isAmplicon;
 	}
 
 	public CopyNumberChange(String cncStableId, String chromosome, int start,
@@ -42,7 +39,6 @@ public class CopyNumberChange implements IsSerializable{
 		this.tumorType = tumorType;
 		this.continuous = continuous;
 		this.cnclevel = cnclevel;
-		this.isAmplicon = isAmplicon;
 	}
 
 	public String getCncStableId() {
@@ -108,14 +104,4 @@ public class CopyNumberChange implements IsSerializable{
 	public void setCnclevel(int cnclevel) {
 		this.cnclevel = cnclevel;
 	}
-
-	public boolean isAmplicon() {
-		return isAmplicon;
-	}
-
-	public void setAmplicon(boolean isAmplicon) {
-		this.isAmplicon = isAmplicon;
-	}
-
-
 }

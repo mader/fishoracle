@@ -173,24 +173,7 @@ public class DBQuery {
 	 * 
 	 * */
 	public Location getLocationForCNCId(String copyNumberChangeId) throws Exception{
-		String qrystr = null;
-		String cncType = null;
-		Pattern pampid = Pattern.compile("AMP", Pattern.CASE_INSENSITIVE);
-		Matcher mampid = pampid.matcher(copyNumberChangeId);
 		
-		Pattern pdelid = Pattern.compile("DEL", Pattern.CASE_INSENSITIVE);
-		Matcher mdelid = pdelid.matcher(copyNumberChangeId);
-		
-		if(mampid.find()){
-			qrystr = "SELECT * from amplicon WHERE amplicon_stable_id = " + "'" + copyNumberChangeId + "'";
-			cncType = "amplicon";
-		} else if(mdelid.find()){
-			qrystr = "SELECT * from delicon WHERE delicon_stable_id = " + "'" + copyNumberChangeId + "'";
-			cncType = "delicon";
-		} else {
-			throw new Exception();
-		}
-
 		Connection conn = null;
 		Location loc = null;
 		try{
@@ -203,13 +186,15 @@ public class DBQuery {
 			
 			Statement s = conn.createStatement();
 				
-				s.executeQuery(qrystr);
+				s.executeQuery("SELECT cnc_segment_chromosome, cnc_segment_start, cnc_segment_end FROM " +
+								"cnc_segment WHERE cnc_segment_stable_id = '" + copyNumberChangeId + "'");
 				ResultSet copyNumberChangeRs = s.getResultSet();
 				
 				while(copyNumberChangeRs.next()){
-					copyNumberChangeStart = copyNumberChangeRs.getInt(4);
-					copyNumberChangeEnd = copyNumberChangeRs.getInt(5);
-					copyNumberChangeChr = copyNumberChangeRs.getString(3);
+					copyNumberChangeChr = copyNumberChangeRs.getString(1);
+					copyNumberChangeStart = copyNumberChangeRs.getInt(2);
+					copyNumberChangeEnd = copyNumberChangeRs.getInt(3);
+					;
 				
 					String locStr = "chromosome:" + copyNumberChangeChr + ":" + copyNumberChangeStart + "-" + copyNumberChangeEnd;
 				
@@ -219,7 +204,7 @@ public class DBQuery {
 				
 				if(loc == null){
 					
-					DBQueryException e = new DBQueryException("Couldn't find the " + cncType + " with the stable ID " + copyNumberChangeId);
+					DBQueryException e = new DBQueryException("Couldn't find the CNC segment with the stable ID " + copyNumberChangeId);
 					throw e;
 				}
 				
@@ -229,7 +214,6 @@ public class DBQuery {
 		} catch (Exception e) {
 			FishOracleConnection.printErrorMessage(e);
 			throw e;
-			//System.exit(1);
 		} finally {
 			if(conn != null){
 				try{
@@ -325,7 +309,7 @@ public class DBQuery {
 	 * @return 		An ensembl API location object storing chromosome, start and end
 	 * 
 	 * */
-	public Location getMaxCNCRange(String chr, int start, int end, boolean isAmplicon){
+	public Location getMaxCNCRange(String chr, int start, int end){
 		Location loc = null;
 		Connection conn = null;
 		String copyNumberChangeChr = chr;
@@ -333,19 +317,11 @@ public class DBQuery {
 		int copyNumberChangeEnd = end;
 		String qrystr = null;
 		
-		if(isAmplicon){
-			qrystr = "SELECT MIN(start) as minstart, MAX(end) as maxend FROM amplicon WHERE chromosome = \"" + copyNumberChangeChr + 
-			"\" AND ((start <= " + copyNumberChangeStart + " AND end >= " + copyNumberChangeEnd + ") OR" +
-	        " (start >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + ") OR" +
-	        " (start >= " + copyNumberChangeStart + " AND start <= " + copyNumberChangeEnd + ") OR" +
-	        " (end >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + "))";
-		} else {
-			qrystr = "SELECT MIN(start) as minstart, MAX(end) as maxend FROM delicon WHERE chromosome = \"" + copyNumberChangeChr + 
-			"\" AND ((start <= " + copyNumberChangeStart + " AND end >= " + copyNumberChangeEnd + ") OR" +
-	        " (start >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + ") OR" +
-	        " (start >= " + copyNumberChangeStart + " AND start <= " + copyNumberChangeEnd + ") OR" +
-	        " (end >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + "))";
-		}
+			qrystr = "SELECT MIN(cnc_segment_start) as minstart, MAX(cnc_segment_end) as maxend FROM cnc_segment WHERE cnc_segment_chromosome = \"" + copyNumberChangeChr + 
+			"\" AND ((cnc_segment_start <= " + copyNumberChangeStart + " AND cnc_segment_end >= " + copyNumberChangeEnd + ") OR" +
+	        " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + ") OR" +
+	        " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_start <= " + copyNumberChangeEnd + ") OR" +
+	        " (cnc_segment_end >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + "))";
 		
 		try{
 			
@@ -374,7 +350,6 @@ public class DBQuery {
 			
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
-			//System.exit(1);
 		} finally {
 			if(conn != null){
 				try{
@@ -398,33 +373,42 @@ public class DBQuery {
 	 * @return		Array containing amplicon objects
 	 * 
 	 * */
-	public CopyNumberChange[] getCNCData(String chr, int start, int end, boolean isAmplicon){
+	public CopyNumberChange[] getCNCData(String chr, int start, int end, Double lowerTh, Double upperTh){
 		
 		String qrystrc = null;
 		String qrystr = null;
 		int copyNumberChangeStart = start;
 		int copyNumberChangeEnd = end;
 		String copyNumberChangeChr = chr;
-		String copyNumberChangeType = null;	
 		
-		if(isAmplicon){
-			copyNumberChangeType = "amplicon";
-			
-		} else {
-			copyNumberChangeType = "delicon";
+		qrystrc = "SELECT count(*) FROM cnc_segment WHERE cnc_segment_chromosome = \"" + copyNumberChangeChr + "\" " +
+		"AND ((cnc_segment_start <= " + copyNumberChangeStart + " AND cnc_segment_end >= " + copyNumberChangeEnd + ") OR" +
+        " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + ") OR" +
+        " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_start <= " + copyNumberChangeEnd + ") OR" +
+        " (cnc_segment_end >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + "))";
+		
+		qrystr = "SELECT cnc_segment_stable_id, cnc_segment_chromosome, cnc_segment_start, cnc_segment_end FROM " +
+		"cnc_segment WHERE cnc_segment_chromosome = \"" + copyNumberChangeChr + "\" " +
+		"AND ((cnc_segment_start <= " + copyNumberChangeStart + " AND cnc_segment_end >= " + copyNumberChangeEnd + ") OR" +
+        " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + ") OR" +
+        " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_start <= " + copyNumberChangeEnd + ") OR" +
+        " (cnc_segment_end >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + "))";
+		
+		
+		if(lowerTh == null && upperTh != null){
+			qrystrc = qrystrc + " AND cnc_segment_mean > '" + upperTh + "'"; 
+			qrystr = qrystr + " AND cnc_segment_mean > '" + upperTh + "'"; 
+		} 
+		if (lowerTh != null && upperTh == null){
+			qrystrc = qrystrc + " AND cnc_segment_mean < '" + lowerTh + "'";
+			qrystr = qrystr + " AND cnc_segment_mean < '" + lowerTh + "'";
+		} 
+		if (lowerTh != null && upperTh != null){
+			qrystrc = qrystrc + " AND (cnc_segment_mean < '" + lowerTh + "' AND " +
+								"cnc_segment_mean > '" + upperTh + "')";
+			qrystr = qrystr + " AND (cnc_segment_mean < '" + lowerTh + "' AND " +
+			"cnc_segment_mean > '" + upperTh + "')";
 		}
-		
-		qrystrc = "SELECT count(*) from " + copyNumberChangeType + " WHERE chromosome = \"" + copyNumberChangeChr + "\" " +
-		"AND ((start <= " + copyNumberChangeStart + " AND end >= " + copyNumberChangeEnd + ") OR" +
-        " (start >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + ") OR" +
-        " (start >= " + copyNumberChangeStart + " AND start <= " + copyNumberChangeEnd + ") OR" +
-        " (end >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + "))";
-		
-		qrystr = "SELECT * from " + copyNumberChangeType + " WHERE chromosome = \"" + copyNumberChangeChr + "\" " +
-		"AND ((start <= " + copyNumberChangeStart + " AND end >= " + copyNumberChangeEnd + ") OR" +
-        " (start >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + ") OR" +
-        " (start >= " + copyNumberChangeStart + " AND start <= " + copyNumberChangeEnd + ") OR" +
-        " (end >= " + copyNumberChangeStart + " AND end <= " + copyNumberChangeEnd + "))";
 		
 		Connection conn = null;
 		CopyNumberChange[] cnc = null;
@@ -451,12 +435,12 @@ public class DBQuery {
 			cnc = new CopyNumberChange[cncCount];
 			
 			while(regRs.next()){
-				String newCNCStableId = regRs.getString(2);
-				String newChr = regRs.getString(3);
-				int newStart = regRs.getInt(4);
-				int newEnd = regRs.getInt(5);
+				String newCNCStableId = regRs.getString(1);
+				String newChr = regRs.getString(2);
+				int newStart = regRs.getInt(3);
+				int newEnd = regRs.getInt(4);
 				
-				cnc[count] = new CopyNumberChange(newCNCStableId, newChr, newStart, newEnd, isAmplicon);
+				cnc[count] = new CopyNumberChange(newCNCStableId, newChr, newStart, newEnd);
 
 				count++;
 			}
@@ -466,7 +450,6 @@ public class DBQuery {
 			
 		} catch (Exception e){
 			FishOracleConnection.printErrorMessage(e);
-			//System.exit(1);
 		} finally {
 			if(conn != null){
 				try{
