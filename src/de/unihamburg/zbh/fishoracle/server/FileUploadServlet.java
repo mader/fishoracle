@@ -34,6 +34,8 @@ public class FileUploadServlet extends HttpServlet{
 	      protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 	              throws ServletException, IOException {
 	          
+	    	  String servletContext = this.getServletContext().getRealPath("/");
+	    	  
 	          // process only multipart requests
 	          if (ServletFileUpload.isMultipartContent(req)) {
 	  
@@ -56,7 +58,7 @@ public class FileUploadServlet extends HttpServlet{
 	                          fileName = FilenameUtils. getName(fileName);
 	                      }
 	  
-	                      File uploadedFile = new File(UPLOAD_DIRECTORY, fileName);
+	                      File uploadedFile = new File(servletContext + UPLOAD_DIRECTORY, fileName);
 	                      if (uploadedFile.createNewFile()) {
 	                          item.write(uploadedFile);
 	                          resp.setStatus(HttpServletResponse.SC_CREATED);
