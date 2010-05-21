@@ -275,7 +275,7 @@ public class WestPanel extends SectionStack{
 			public void onSuccess(CopyNumberChange[] result){
 				
 				//MessageBox.hide();
-				mp.getCenterPanel().newDataTab(result, isAmplicon);
+				//mp.getCenterPanel().newDataTab(result, isAmplicon);
 
 			}
 			public void onFailure(Throwable caught){

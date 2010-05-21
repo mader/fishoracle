@@ -1,5 +1,7 @@
 package de.unihamburg.zbh.fishoracle.client.data;
 
+import java.util.Date;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class CopyNumberChange implements IsSerializable{
@@ -9,10 +11,17 @@ public class CopyNumberChange implements IsSerializable{
 	private int start;
 	private int end;
 	
-	private String caseName;
-	private String tumorType;
-	private int continuous;
-	private int cnclevel;
+	private String microarrayStudy;
+	private String organ;
+	private double segmentMean;
+	private int numberOfMarkers;
+	
+	private Date insertionDate;
+	private String chip;
+	private String pstage;
+	private String pgrade;
+	private String metaStatus;
+	private String sampleId;
 	
 	public CopyNumberChange() {
 		
@@ -27,18 +36,34 @@ public class CopyNumberChange implements IsSerializable{
 		this.end = end;
 	}
 
-	public CopyNumberChange(String cncStableId, String chromosome, int start,
-			int end, String caseName, String tumorType, int continuous,
-			int cnclevel, boolean isAmplicon) {
-		super();
+	public CopyNumberChange(String cncStableId,
+			String chromosome,
+			int start,
+			int end,
+			double segmentMean,
+			int numberOfMarkers,
+			String microarrayStudy,
+			Date insertionDate,
+			String chip,
+			String organ,
+			String pstage,
+			String pgrade,
+			String metaStatus,
+			String sampleId) {
 		this.cncStableId = cncStableId;
 		this.chromosome = chromosome;
 		this.start = start;
 		this.end = end;
-		this.caseName = caseName;
-		this.tumorType = tumorType;
-		this.continuous = continuous;
-		this.cnclevel = cnclevel;
+		this.microarrayStudy = microarrayStudy;
+		this.organ = organ;
+		this.segmentMean = segmentMean;
+		this.numberOfMarkers = numberOfMarkers;
+		this.insertionDate = insertionDate;
+		this.chip = chip;
+		this.pstage = pstage;
+		this.pgrade = pgrade;
+		this.metaStatus = metaStatus;
+		this.sampleId = sampleId;
 	}
 
 	public String getCncStableId() {
@@ -73,35 +98,83 @@ public class CopyNumberChange implements IsSerializable{
 		this.end = end;
 	}
 
-	public String getCaseName() {
-		return caseName;
+	public String getMicroarrayStudy() {
+		return microarrayStudy;
 	}
 
-	public void setCaseName(String caseName) {
-		this.caseName = caseName;
+	public void setMicroarrayStudy(String microarrayStudy) {
+		this.microarrayStudy = microarrayStudy;
 	}
 
-	public String getTumorType() {
-		return tumorType;
+	public String getOrgan() {
+		return organ;
 	}
 
-	public void setTumorType(String tumorType) {
-		this.tumorType = tumorType;
+	public void setOrgan(String organ) {
+		this.organ = organ;
 	}
 
-	public int getContinuous() {
-		return continuous;
+	public double getSegmentMean() {
+		return segmentMean;
 	}
 
-	public void setContinuous(int continuous) {
-		this.continuous = continuous;
+	public void setSegmentMean(double segmentMean) {
+		this.segmentMean = segmentMean;
 	}
 
-	public int getCnclevel() {
-		return cnclevel;
+	public int getNumberOfMarkers() {
+		return numberOfMarkers;
 	}
 
-	public void setCnclevel(int cnclevel) {
-		this.cnclevel = cnclevel;
+	public void setNumberOfMarkers(int numberOfMarkers) {
+		this.numberOfMarkers = numberOfMarkers;
+	}
+
+	public Date getInsertionDate() {
+		return insertionDate;
+	}
+
+	public void setInsertionDate(Date insertionDate) {
+		this.insertionDate = insertionDate;
+	}
+
+	public String getChip() {
+		return chip;
+	}
+
+	public void setChip(String chip) {
+		this.chip = chip;
+	}
+
+	public String getPstage() {
+		return pstage;
+	}
+
+	public void setPstage(String pstage) {
+		this.pstage = pstage;
+	}
+
+	public String getPgrade() {
+		return pgrade;
+	}
+
+	public void setPgrade(String pgrade) {
+		this.pgrade = pgrade;
+	}
+
+	public String getMetaStatus() {
+		return metaStatus;
+	}
+
+	public void setMetaStatus(String metaStatus) {
+		this.metaStatus = metaStatus;
+	}
+
+	public String getSampleId() {
+		return sampleId;
+	}
+
+	public void setSampleId(String sampleId) {
+		this.sampleId = sampleId;
 	}
 }

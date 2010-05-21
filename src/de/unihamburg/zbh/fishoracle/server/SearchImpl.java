@@ -272,7 +272,6 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		CopyNumberChange  cncData = db.getCNCInfos(query);
 		
-		
 		return cncData;
 	}
 
@@ -305,7 +304,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBQuery db = new DBQuery(servletContext);
 		
-		cncs = db.getAllCNCData(isAmplicon);
+		//cncs = db.getAllCNCData();
 		
 		return cncs;
 	}

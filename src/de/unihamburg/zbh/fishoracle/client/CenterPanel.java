@@ -484,29 +484,14 @@ public class CenterPanel extends VLayout{
 	public void loadWindow(CopyNumberChange cncData){
 		
 		Window window = new Window();
-
-		String titleStr = null;
-		String idStr = null;
-		String levelStr = null;
 		
-		/*
-		if (cncData.isAmplicon()){
-			titleStr = "Amplicon";
-			idStr = "Amplicon Stable ID";
-			levelStr = "Amplevel";
-		} else {
-			titleStr = "Delicon";
-			idStr = "Delicon Stable ID";
-			levelStr = "Dellevel";
-		}
-		*/
-		window.setTitle(titleStr + " " + cncData.getCncStableId());
+		window.setTitle("Segment " + cncData.getCncStableId());
 		window.setAutoSize(true);
 		window.setAutoCenter(true);
 		
 		final ListGrid cncGrid = new ListGrid();
-		cncGrid.setWidth(450);
-		cncGrid.setHeight(200);  
+		cncGrid.setWidth(500);
+		cncGrid.setHeight(330);  
 		cncGrid.setShowAllRecords(true);  
 		cncGrid.setAlternateRecordStyles(true);
 		cncGrid.setShowHeader(false);
@@ -516,10 +501,10 @@ public class CenterPanel extends VLayout{
 		
 		cncGrid.setFields(key, val);
 		
-		ListGridRecord[] lgr = new ListGridRecord[8];
+		ListGridRecord[] lgr = new ListGridRecord[14];
 		
 		lgr[0] = new ListGridRecord();
-		lgr[0].setAttribute("key", idStr);
+		lgr[0].setAttribute("key", "CNC Stable ID ");
 		lgr[0].setAttribute("val", cncData.getCncStableId());
 		
 		lgr[1] = new ListGridRecord();
@@ -535,20 +520,44 @@ public class CenterPanel extends VLayout{
 		lgr[3].setAttribute("val", cncData.getEnd());
 		
 		lgr[4] = new ListGridRecord();
-		lgr[4].setAttribute("key", "Case Name");
-		lgr[4].setAttribute("val", cncData.getCaseName());
+		lgr[4].setAttribute("key", "Segment Mean");
+		lgr[4].setAttribute("val", cncData.getSegmentMean());
 		
 		lgr[5] = new ListGridRecord();
-		lgr[5].setAttribute("key", "Tumor Type");
-		lgr[5].setAttribute("val", cncData.getTumorType());
+		lgr[5].setAttribute("key", "Markers");
+		lgr[5].setAttribute("val", cncData.getNumberOfMarkers());
 		
 		lgr[6] = new ListGridRecord();
-		lgr[6].setAttribute("key", "Continuous");
-		lgr[6].setAttribute("val", cncData.getContinuous());
+		lgr[6].setAttribute("key", "Study");
+		lgr[6].setAttribute("val", cncData.getMicroarrayStudy());
 		
 		lgr[7] = new ListGridRecord();
-		lgr[7].setAttribute("key", levelStr);
-		lgr[7].setAttribute("val", cncData.getCnclevel());
+		lgr[7].setAttribute("key", "Import Date");
+		lgr[7].setAttribute("val", cncData.getInsertionDate());
+		
+		lgr[8] = new ListGridRecord();
+		lgr[8].setAttribute("key", "Chip");
+		lgr[8].setAttribute("val", cncData.getChip());
+		
+		lgr[9] = new ListGridRecord();
+		lgr[9].setAttribute("key", "Organ");
+		lgr[9].setAttribute("val", cncData.getOrgan());
+		
+		lgr[10] = new ListGridRecord();
+		lgr[10].setAttribute("key", "Pathological stage");
+		lgr[10].setAttribute("val", cncData.getPstage());
+		
+		lgr[11] = new ListGridRecord();
+		lgr[11].setAttribute("key", "Pathological Grade");
+		lgr[11].setAttribute("val", cncData.getPgrade());
+		
+		lgr[12] = new ListGridRecord();
+		lgr[12].setAttribute("key", "Meat Status");
+		lgr[12].setAttribute("val", cncData.getMetaStatus());
+		
+		lgr[13] = new ListGridRecord();
+		lgr[13].setAttribute("key", "Sample ID");
+		lgr[13].setAttribute("val", cncData.getSampleId());
 		
 		cncGrid.setData(lgr);
 		
@@ -624,6 +633,7 @@ public class CenterPanel extends VLayout{
 		window.show();
 	}
 	
+	/*
 	public void newDataTab(CopyNumberChange[] cncs, boolean isAmplicon) {
 		
 		String type = null;
@@ -678,7 +688,7 @@ public class CenterPanel extends VLayout{
 		
 		centerTabSet.selectTab(tab);
 	}
-	
+	*/
 	public void openUserAdminTab(final User[] users){
 	
 		Tab usersAdminTab = new Tab("Users");
@@ -1116,7 +1126,7 @@ class RecMapClickHandler implements ClickHandler{
 	
 	public void onClick(ClickEvent event) {
 		
-		if(recInfo.getType().equals("amplicon") || recInfo.getType().equals("delicon")){
+		if(recInfo.getType().equals("cnc")){
 			
 			cncDetails(recInfo.getElementName());
 			

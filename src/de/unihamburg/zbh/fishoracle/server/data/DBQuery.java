@@ -463,6 +463,8 @@ public class DBQuery {
 		return cnc;
 	}
 	
+	/*
+	 *TODO apply to new database schema
 	public CopyNumberChange[] getAllCNCData(boolean isAmplicon){
 		
 		String qrystrc = null;
@@ -538,6 +540,7 @@ public class DBQuery {
 		
 		return cnc;
 	}
+	*/
 	
 	/**
 	 * Fetch all data for a given Amplicon stable id
@@ -550,26 +553,35 @@ public class DBQuery {
 	 * */
 	public CopyNumberChange getCNCInfos(String query) throws Exception{
 		
-		String qrystr = null;
-		Pattern pampid = Pattern.compile("AMP");
-		Matcher mampid = pampid.matcher(query);
-		boolean isAmplicon = false;
+		String qrystr;
 		
-		if(mampid.find()){
-			qrystr = "SELECT * from amplicon WHERE amplicon_stable_id = " + "'" + query + "'";
-			isAmplicon = true;
-		}
-		
-		Pattern pdelid = Pattern.compile("DEL");
-		Matcher mdelid = pdelid.matcher(query);
-		
-		if(mdelid.find()){
-			qrystr = "SELECT * from delicon WHERE delicon_stable_id = " + "'" + query + "'";
-			isAmplicon = false;
-		}
+		qrystr = "SELECT cnc_segment_id," +
+				" cnc_segment_stable_id," +
+				" cnc_segment_chromosome," +
+				" cnc_segment_start," +
+				" cnc_segment_end," +
+				" cnc_segment_mean," +
+				" cnc_segment_markers," +
+				" microarraystudy_labelling," +
+				" microarraystudy_date_inserted," +
+				" sample_on_chip_chip_name," +
+				" organ_label, " +
+				" patho_stage_label," +
+				" patho_grade_label," +
+				" meta_status_label," +
+				" tissue_sample_patient" +
+				" FROM cnc_segment" +
+				" LEFT JOIN microarraystudy ON cnc_segment.cnc_segment_microarraystudy_id = microarraystudy.microarraystudy_id" +
+				" LEFT JOIN sample_on_chip ON microarraystudy.microarraystudy_sample_on_chip_id = sample_on_chip.sample_on_chip_id" +
+				" LEFT JOIN tissue_sample ON sample_on_chip.sample_on_chip_tissue_sample_id = tissue_sample.tissue_sample_id" +
+				" LEFT JOIN organ ON tissue_sample.tissue_sample_organ_id = organ.organ_id" +
+				" LEFT JOIN patho_stage ON tissue_sample.tissue_sample_patho_stage_id = patho_stage.patho_stage_id" +
+				" LEFT JOIN patho_grade ON tissue_sample.tissue_sample_patho_grade_id = patho_grade.patho_grade_id" +
+				" LEFT JOIN meta_status ON tissue_sample.tissue_sample_meta_status_id = meta_status.meta_status_id" +
+				" WHERE cnc_segment_stable_id = '"  + query + "'";
 		
 		Connection conn = null;
-		CopyNumberChange amp = null;
+		CopyNumberChange cnc = null;
 		try{
 		
 			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
@@ -586,12 +598,31 @@ public class DBQuery {
 				String chr = cncRs.getString(3);
 				int start = cncRs.getInt(4);
 				int end = cncRs.getInt(5);
-				String caseName = cncRs.getString(6);
-				String tumorType = cncRs.getString(7);
-				int contin = cncRs.getInt(8);
-				int cnclevel = cncRs.getInt(9);
+				double segmentMean = cncRs.getDouble(6);
+				int markers = cncRs.getInt(7);
+				String microarrayStudy = cncRs.getString(8);
+				Date importDate = cncRs.getDate(9);
+				String chipName = cncRs.getString(10);
+				String organ = cncRs.getString(11);
+				String pstage = cncRs.getString(12);
+				String pgrade = cncRs.getString(13);
+				String mstatus = cncRs.getString(14);
+				String sampleId = cncRs.getString(15);
 				
-				amp = new CopyNumberChange(cncStableId, chr, start, end, caseName, tumorType, contin, cnclevel, isAmplicon);
+				cnc = new CopyNumberChange(cncStableId,
+											chr,
+											start,
+											end,
+											segmentMean,
+											markers,
+											microarrayStudy,
+											importDate,
+											chipName,
+											organ,
+											pstage,
+											pgrade,
+											mstatus,
+											sampleId);
 				
 			}
 		} catch (Exception e){
@@ -608,7 +639,7 @@ public class DBQuery {
 				}
 			}
 		}
-		return amp;
+		return cnc;
 	}
 	
 	/**
