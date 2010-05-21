@@ -9,7 +9,6 @@ import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
-import com.smartgwt.client.widgets.form.fields.CheckboxItem;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.RadioGroupItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
@@ -37,15 +36,10 @@ public class WestPanel extends SectionStack{
 
 
 	private MainPanel mp = null;
-	private WestPanel wp = this;
 	
 	private TextItem searchTextItem;
 
 	private RadioGroupItem SearchRadioGroupItem;
-	//private RadioGroupItem SearchPriorityRadioGroupItem;
-	//private CheckboxItem ampliconFilterCheckboxItem;
-	//private CheckboxItem deliconFilterCheckboxItem;
-	//private CheckboxItem cncFilterCheckboxItem;
 	
 	private TextItem greaterTextItem;
 	private TextItem lessTextItem;
@@ -95,30 +89,6 @@ public class WestPanel extends SectionStack{
 			}
 		});
 		
-		
-		/*search priority*/
-		/*
-		SearchPriorityRadioGroupItem = new RadioGroupItem();  
-		SearchPriorityRadioGroupItem.setTitle("Search Priority");  
-		SearchPriorityRadioGroupItem.setValueMap("Amplicon", "Delicon"); 
-		SearchPriorityRadioGroupItem.setDefaultValue("Amplicon");
-		*/
-		
-		/*display filter*/
-		/*
-		ampliconFilterCheckboxItem = new CheckboxItem();  
-		ampliconFilterCheckboxItem.setTitle("Show Amplicons");
-		ampliconFilterCheckboxItem.setDefaultValue(true);
-		
-		deliconFilterCheckboxItem = new CheckboxItem();  
-		deliconFilterCheckboxItem.setTitle("Show Delicons");
-		deliconFilterCheckboxItem.setDefaultValue(true);
-		
-		cncFilterCheckboxItem = new CheckboxItem();  
-		cncFilterCheckboxItem.setTitle("Show Segments");
-		cncFilterCheckboxItem.setDefaultValue(true);
-		*/
-		
 		SelectItem cncDataSelectItem = new SelectItem();
 		//cncDataSelectItem.setShowTitle(false);
 		cncDataSelectItem.setType("Select"); 
@@ -131,9 +101,11 @@ public class WestPanel extends SectionStack{
 				if(event.getValue().equals("greater than")){
 					greaterTextItem.enable();
 					lessTextItem.disable();
+					lessTextItem.setValue("");
 				}
 				if(event.getValue().equals("less than")){
 					greaterTextItem.disable();
+					greaterTextItem.setValue("");
 					lessTextItem.enable();
 				}
 				if(event.getValue().equals("between")){
@@ -153,32 +125,16 @@ public class WestPanel extends SectionStack{
 		
 		/*show more information*/
 		/*
-		LinkItem AmpliconLinkItem = new LinkItem();   
-		AmpliconLinkItem.setLinkTitle("show all amplicons");
-		AmpliconLinkItem.addClickHandler(new ClickHandler(){
+		LinkItem AllDataLinkItem = new LinkItem();   
+		AllDataLinkItem.setLinkTitle("show all CNCs");
+		AllDataLinkItem.addClickHandler(new ClickHandler(){
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
 				wp.fetchCncData(true);
 			}
 		});
-		AmpliconLinkItem.setShowTitle(false);
-		
-		LinkItem DeliconLinkItem = new LinkItem();
-		DeliconLinkItem.setLinkTitle("show all delicons");
-		DeliconLinkItem.addClickHandler(new ClickHandler(){
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				wp.fetchCncData(false);
-			}
-		});
-		DeliconLinkItem.setShowTitle(false);
 		*/
-		
-		/*add content to search stack section*/
-		//searchForm.setItems(searchTextItem, SearchRadioGroupItem, searchButton, SearchPriorityRadioGroupItem, ampliconFilterCheckboxItem,
-		//					deliconFilterCheckboxItem, cncFilterCheckboxItem, cncDataSelectItem, greaterTextItem, lessTextItem, AmpliconLinkItem, AmpliconLinkItem);
 		
 		searchForm.setItems(searchTextItem, SearchRadioGroupItem, cncDataSelectItem, greaterTextItem, lessTextItem, searchButton);
 		searchContent.addMember(searchForm);
