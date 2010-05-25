@@ -309,7 +309,7 @@ public class DBQuery {
 	 * @return 		An ensembl API location object storing chromosome, start and end
 	 * 
 	 * */
-	public Location getMaxCNCRange(String chr, int start, int end){
+	public Location getMaxCNCRange(String chr, int start, int end, Double lowerTh, Double upperTh){
 		Location loc = null;
 		Connection conn = null;
 		String copyNumberChangeChr = chr;
@@ -317,12 +317,23 @@ public class DBQuery {
 		int copyNumberChangeEnd = end;
 		String qrystr = null;
 		
-			qrystr = "SELECT MIN(cnc_segment_start) as minstart, MAX(cnc_segment_end) as maxend FROM cnc_segment WHERE cnc_segment_chromosome = \"" + copyNumberChangeChr + 
-			"\" AND ((cnc_segment_start <= " + copyNumberChangeStart + " AND cnc_segment_end >= " + copyNumberChangeEnd + ") OR" +
-	        " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + ") OR" +
-	        " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_start <= " + copyNumberChangeEnd + ") OR" +
-	        " (cnc_segment_end >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + "))";
+		qrystr = "SELECT MIN(cnc_segment_start) as minstart, MAX(cnc_segment_end) as maxend FROM cnc_segment WHERE cnc_segment_chromosome = \"" + copyNumberChangeChr + 
+		"\" AND ((cnc_segment_start <= " + copyNumberChangeStart + " AND cnc_segment_end >= " + copyNumberChangeEnd + ") OR" +
+		" (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + ") OR" +
+	    " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_start <= " + copyNumberChangeEnd + ") OR" +
+	    " (cnc_segment_end >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + "))";
 		
+		if(lowerTh == null && upperTh != null){
+			qrystr = qrystr + " AND cnc_segment_mean > '" + upperTh + "'"; 
+		} 
+		if (lowerTh != null && upperTh == null){
+			qrystr = qrystr + " AND cnc_segment_mean < '" + lowerTh + "'";
+		} 
+		if (lowerTh != null && upperTh != null){
+			qrystr = qrystr + " AND (cnc_segment_mean < '" + lowerTh + "' AND " +
+			"cnc_segment_mean > '" + upperTh + "')";
+		}
+			
 		try{
 			
 			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
