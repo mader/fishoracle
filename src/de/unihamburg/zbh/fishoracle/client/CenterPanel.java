@@ -72,6 +72,8 @@ public class CenterPanel extends VLayout{
 	private TextItem chrTextItem;
 	private TextItem startTextItem;
 	private TextItem endTextItem;
+	private TextItem lowerThTextItem;
+	private TextItem upperThTextItem;
 	
 	private FileUpload fu;
 	private Label fileNameLbl;
@@ -137,12 +139,18 @@ public class CenterPanel extends VLayout{
 		String newChr;
 	    int newStart;
 	    int newEnd;
-		
+	    String newLowerTh;
+	    String newUpperTh;
+	    
 		newChr = chrTextItem.getDisplayValue();
 	    
 	    newStart = Integer.parseInt(startTextItem.getDisplayValue());
 	    
 	    newEnd = Integer.parseInt(endTextItem.getDisplayValue());
+	    
+	    newLowerTh = lowerThTextItem.getDisplayValue();
+	    
+	    newUpperTh = upperThTextItem.getDisplayValue();
 	    
 	    if(newStart >= newEnd || newEnd - newStart <= 10){
 	    	
@@ -156,6 +164,13 @@ public class CenterPanel extends VLayout{
 	    
 	    	imgInfo.setEnd(newEnd);
 
+	    	try {
+				imgInfo.getQuery().setLowerTh(newLowerTh);
+				imgInfo.getQuery().setUpperTh(newUpperTh);
+			} catch (Exception e) {
+				SC.say(e.getMessage());
+			}
+	    	
 	    	cp.imageRedraw(imgInfo);
 	    }
 	}
@@ -420,6 +435,7 @@ public class CenterPanel extends VLayout{
 		endTextItem.setTitle("End");
 		endTextItem.setWidth(80);
 		endTextItem.setValue(imgInfo.getEnd());
+		
 		endTextItem.addKeyPressHandler(new KeyPressHandler(){
 
 			@Override
@@ -430,6 +446,38 @@ public class CenterPanel extends VLayout{
 			}
 		});
 		presentationToolStrip.addFormItem(endTextItem);
+		
+		lowerThTextItem = new TextItem();
+		lowerThTextItem.setTitle("Less Than");
+		lowerThTextItem.setWrapTitle(false);
+		lowerThTextItem.setWidth(40);
+		lowerThTextItem.setValue(imgInfo.getQuery().getLowerThAsString());
+		lowerThTextItem.addKeyPressHandler(new KeyPressHandler(){
+
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					refreshRange();
+				}
+			}
+		});
+		presentationToolStrip.addFormItem(lowerThTextItem);
+		
+		upperThTextItem = new TextItem();
+		upperThTextItem.setTitle("Greater Than");
+		upperThTextItem.setWrapTitle(false);
+		upperThTextItem.setWidth(40);
+		upperThTextItem.setValue(imgInfo.getQuery().getUpperThAsString());
+		upperThTextItem.addKeyPressHandler(new KeyPressHandler(){
+
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					refreshRange();
+				}
+			}
+		});
+		presentationToolStrip.addFormItem(upperThTextItem);
 		
 		ToolStripButton refreshButton = new ToolStripButton();
 		refreshButton.addClickHandler(new ClickHandler(){

@@ -53,22 +53,59 @@ public class QueryInfo  implements IsSerializable {
 	public void setSearchType(String searchType) {
 		this.searchType = searchType;
 	}
-
 	
 	public Double getLowerTh() {
 		return lowerTh;
 	}
-
-	public void setLowerTh(Double lowerTh) {
-		this.lowerTh = lowerTh;
+	
+	public String getLowerThAsString() {
+		if(lowerTh != null){
+			return Double.toString(lowerTh);
+		} else {
+			return "";
+		}
+	}
+	
+	public void setLowerTh(String lowerTh) throws Exception {
+		
+		try {
+			if(lowerTh.equals("")){
+				this.lowerTh = null;
+			} else 	{
+				this.lowerTh = Double.parseDouble(lowerTh);
+			}
+		} catch (Exception e){
+			e.getMessage();
+			e.printStackTrace();
+			throw new Exception("The segment threshold has to be a real number e.g. 0.5!");
+		}
+		
 	}
 
 	public Double getUpperTh() {
 		return upperTh;
 	}
-
-	public void setUpperTh(Double upperTh) {
-		this.upperTh = upperTh;
+	
+	public String getUpperThAsString() {
+		if(upperTh != null){
+			return Double.toString(upperTh);
+		} else {
+			return "";
+		}
+	}
+	
+	public void setUpperTh(String upperTh) throws Exception {		
+		try {
+			if(upperTh.equals("")){
+				this.upperTh = null;
+			} else {
+				this.upperTh = Double.parseDouble(upperTh);
+			}
+		} catch (Exception e){
+			e.getMessage();
+			e.printStackTrace();
+			throw new Exception("The segment threshold has to be a real number e.g. 0.5!");
+		}
 	}
 
 	public int getWinWidth() {
