@@ -93,13 +93,14 @@ public class WestPanel extends SectionStack{
 		//cncDataSelectItem.setShowTitle(false);
 		cncDataSelectItem.setType("Select"); 
 		cncDataSelectItem.setValueMap("greater than", "less than", "between");
-		cncDataSelectItem.setDefaultValue("between");
+		cncDataSelectItem.setDefaultValue("less than");
 		cncDataSelectItem.addChangeHandler(new ChangeHandler(){
 
 			@Override
 			public void onChange(ChangeEvent event) {
 				if(event.getValue().equals("greater than")){
 					greaterTextItem.enable();
+					greaterTextItem.setValue("0.5");
 					lessTextItem.disable();
 					lessTextItem.setValue("");
 				}
@@ -107,19 +108,24 @@ public class WestPanel extends SectionStack{
 					greaterTextItem.disable();
 					greaterTextItem.setValue("");
 					lessTextItem.enable();
+					lessTextItem.setValue("-0.5");
 				}
 				if(event.getValue().equals("between")){
 					greaterTextItem.enable();
+					greaterTextItem.setValue("0.5");
 					lessTextItem.enable();
+					lessTextItem.setValue("-0.5");
 				}
 			}
 		});
 		
 		greaterTextItem = new TextItem();
 		greaterTextItem.setTitle("greater than");
+		greaterTextItem.setDisabled(true);
 		
 		lessTextItem = new TextItem();
 		lessTextItem.setTitle("less than");
+		lessTextItem.setValue("-0.5");
 		//lessTextItem.disable();
 		
 		
