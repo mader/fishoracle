@@ -20,6 +20,7 @@ public interface Admin extends RemoteService  {
 						String pstage,
 						String pgrade,
 						String metaStatus,
+						String sampleId,
 						String description) throws Exception;
 	
 	public static class Util {

@@ -21,6 +21,7 @@ public interface AdminAsync {
 					String pstage,
 					String pgrade,
 					String metaStatus,
+					String sampleId,
 					String description, AsyncCallback<Boolean> callback);
 
 }

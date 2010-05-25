@@ -580,7 +580,7 @@ public class DBQuery {
 				" patho_stage_label," +
 				" patho_grade_label," +
 				" meta_status_label," +
-				" tissue_sample_patient" +
+				" tissue_sample_sample_id" +
 				" FROM cnc_segment" +
 				" LEFT JOIN microarraystudy ON cnc_segment.cnc_segment_microarraystudy_id = microarraystudy.microarraystudy_id" +
 				" LEFT JOIN sample_on_chip ON microarraystudy.microarraystudy_sample_on_chip_id = sample_on_chip.sample_on_chip_id" +
@@ -1310,6 +1310,7 @@ public class DBQuery {
 								String pgrade,
 								String metaStatus,
 								String description,
+								String sampleId,
 								int userId) throws Exception{
 		
 		Connection conn = null;
@@ -1348,10 +1349,10 @@ public class DBQuery {
 			idStatement.close();
 			
 			Statement tissueStatement = conn.createStatement();
-			tissueStatement.executeUpdate("INSERT INTO tissue_sample (tissue_sample_patient," +
+			tissueStatement.executeUpdate("INSERT INTO tissue_sample (tissue_sample_sample_id," +
 										" tissue_sample_organ_id, tissue_sample_patho_stage_id," +
 										" tissue_sample_patho_grade_id, tissue_sample_meta_status_id) VALUES " +
-										"( 'unknown', " + organId + ", " + pstageId + ", " + pgradeId + ", " + mstatusId + ")");
+										"( '" + sampleId + "', " + organId + ", " + pstageId + ", " + pgradeId + ", " + mstatusId + ")");
 			
 			ResultSet tissueRs = tissueStatement.getGeneratedKeys();
 			tissueRs.next();

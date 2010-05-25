@@ -162,6 +162,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 								String pstage,
 								String pgrade,
 								String metaStatus,
+								String sampleId,
 								String description) throws Exception {
 		
 		HttpServletRequest request=this.getThreadLocalRequest();
@@ -186,6 +187,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 										pgrade,
 										metaStatus,
 										description,
+										sampleId,
 										user.getId());
 		
 		

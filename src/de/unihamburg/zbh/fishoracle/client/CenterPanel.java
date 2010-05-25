@@ -76,13 +76,13 @@ public class CenterPanel extends VLayout{
 	private TextItem upperThTextItem;
 	
 	private FileUpload fu;
-	private Label fileNameLbl;
 	private TextItem studyName;
 	private SelectItem chip;
 	private SelectItem tissue;
 	private SelectItem pstage;
 	private SelectItem pgrade;
 	private SelectItem metaStatus;
+	private TextItem sampleId;
 	private TextAreaItem descriptionItem;
 	
 	@SuppressWarnings("unused")
@@ -857,8 +857,6 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onSubmitComplete(SubmitCompleteEvent event) {
 				SC.say(event.getResults());
-				fileNameLbl.setTitle("meta data for uploaded file: " + fu.getFilename());
-				fileNameLbl.redraw();
 				studyName.setValue(fu.getFilename());
 			}
 			
@@ -892,11 +890,6 @@ public class CenterPanel extends VLayout{
 		
 		metaData.addMember(new LayoutSpacer());
 		
-		fileNameLbl = new Label("meta data for uploaded file: ");
-		fileNameLbl.setWidth(350);
-		
-		metaData.addMember(fileNameLbl);
-		
 		DynamicForm metaDataForm = new DynamicForm();
 		
 		studyName = new TextItem();
@@ -917,6 +910,9 @@ public class CenterPanel extends VLayout{
 		metaStatus = new SelectItem();
 		metaStatus.setTitle("meta status");
 		
+		sampleId = new TextItem();
+		sampleId.setTitle("sample Id");
+		
 		descriptionItem = new TextAreaItem();
 		descriptionItem.setTitle("description");  
 		
@@ -927,13 +923,13 @@ public class CenterPanel extends VLayout{
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
 				importData(fu.getFilename(), studyName.getDisplayValue(), chip.getDisplayValue(), tissue.getDisplayValue(), 
-						pstage.getDisplayValue(), pgrade.getDisplayValue(), metaStatus.getDisplayValue(), descriptionItem.getDisplayValue());
+						pstage.getDisplayValue(), pgrade.getDisplayValue(), metaStatus.getDisplayValue(), sampleId.getDisplayValue(), descriptionItem.getDisplayValue());
 			}
 			
 			
 		});
 		
-		metaDataForm.setItems(studyName, chip, tissue, pstage, pgrade, metaStatus, descriptionItem, submitButton);
+		metaDataForm.setItems(studyName, chip, tissue, pstage, pgrade, metaStatus, sampleId, descriptionItem, submitButton);
 		
 		metaData.addMember(metaDataForm);
 
@@ -1131,6 +1127,7 @@ public class CenterPanel extends VLayout{
 							String pstage,
 							String pgrade,
 							String metaStatus,
+							String sampleId,
 							String description){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -1157,6 +1154,7 @@ public class CenterPanel extends VLayout{
 						pgrade,
 						metaStatus,
 						description,
+						sampleId,
 						callback);
 	}	
 	
