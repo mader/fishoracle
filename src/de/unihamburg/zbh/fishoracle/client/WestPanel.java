@@ -123,11 +123,30 @@ public class WestPanel extends SectionStack{
 		greaterTextItem.setTitle("greater than");
 		greaterTextItem.setDisabled(true);
 		
+		greaterTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
+		
 		lessTextItem = new TextItem();
 		lessTextItem.setTitle("less than");
 		lessTextItem.setValue("-0.5");
 		//lessTextItem.disable();
 		
+		lessTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
 		
 		/*show more information*/
 		/*
