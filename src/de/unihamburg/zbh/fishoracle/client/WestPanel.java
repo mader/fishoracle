@@ -250,11 +250,16 @@ public class WestPanel extends SectionStack{
 				typeStr = "Band Search";
 			}
 						
-			QueryInfo newQuery = new QueryInfo(searchTextItem.getDisplayValue(),
-												typeStr,
-												lessTextItem.getDisplayValue(),
-												greaterTextItem.getDisplayValue(),
-												mp.getCenterPanel().getWidth() - 30); 
+			QueryInfo newQuery = null;
+			try {
+				newQuery = new QueryInfo(searchTextItem.getDisplayValue(),
+													typeStr,
+													lessTextItem.getDisplayValue(),
+													greaterTextItem.getDisplayValue(),
+													mp.getCenterPanel().getWidth() - 30);
+			} catch (Exception e) {
+				SC.say(e.getMessage());
+			} 
 			
 			//MessageBox.wait("Searching for " + searchBox.getText());
 			search(newQuery);

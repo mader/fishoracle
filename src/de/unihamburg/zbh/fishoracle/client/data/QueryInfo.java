@@ -14,7 +14,7 @@ public class QueryInfo  implements IsSerializable {
 		
 	}
 
-	public QueryInfo(String queryString, String searchType, String lowerTh, String upperTh, int winWidth) {
+	public QueryInfo(String queryString, String searchType, String lowerTh, String upperTh, int winWidth) throws Exception {
 		super();
 		this.queryString = queryString;
 		this.searchType = searchType;
@@ -32,6 +32,7 @@ public class QueryInfo  implements IsSerializable {
 		} catch (Exception e){
 			e.getMessage();
 			e.printStackTrace();
+			throw new Exception("The segment threshold has to be a real number e.g. 0.5!");
 		}
 		
 		this.winWidth = winWidth;

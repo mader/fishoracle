@@ -57,13 +57,6 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			System.out.println(dt + " Search: " + query.getQueryString());
 			System.out.println(dt + " Search type: " + query.getSearchType());
 			
-			Pattern thpid = Pattern.compile("^[0-9]+\\.[0-9]+$", Pattern.CASE_INSENSITIVE);
-			Matcher thmid = thpid.matcher(query.getQueryString());
-			
-			if(!thmid.find()){
-				throw new Exception("The segment threshold has to be a real number e.g. 0.5!");				
-			}
-			
 			if(query.getSearchType().equals("CNC Search")){
 
 				Pattern pid = Pattern.compile("^(CNC)[0-9]+$", Pattern.CASE_INSENSITIVE);
