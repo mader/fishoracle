@@ -18,16 +18,22 @@ public class QueryInfo  implements IsSerializable {
 		super();
 		this.queryString = queryString;
 		this.searchType = searchType;
-		if(lowerTh.equals("")){
-			this.lowerTh = null;
-		} else {
-			this.lowerTh = Double.parseDouble(lowerTh);
+		try {
+			if(lowerTh.equals("")){
+				this.lowerTh = null;
+			} else 	{
+				this.lowerTh = Double.parseDouble(lowerTh);
+			}
+			if(upperTh.equals("")){
+				this.upperTh = null;
+			} else {
+				this.upperTh = Double.parseDouble(upperTh);
+			}
+		} catch (Exception e){
+			e.getMessage();
+			e.printStackTrace();
 		}
-		if(upperTh.equals("")){
-			this.upperTh = null;
-		} else {
-			this.upperTh = Double.parseDouble(upperTh);
-		}
+		
 		this.winWidth = winWidth;
 	}
 
