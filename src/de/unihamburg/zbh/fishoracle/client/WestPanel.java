@@ -22,6 +22,8 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
+import com.smartgwt.client.widgets.tab.Tab;
+import com.smartgwt.client.widgets.tab.TabSet;
 
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
@@ -200,7 +202,23 @@ public class WestPanel extends SectionStack{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				showAllUsers();
+				boolean exists = false;
+				int index = 0;
+				
+				TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+				Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+				for(int i=0; i < tabs.length; i++){
+					if(tabs[i].getTitle().equals("Users")){
+						exists = true;
+						index = i;
+					}
+				}
+				
+				if(exists){
+					centerTabSet.selectTab(index);
+				} else {
+					showAllUsers();
+				}
 			}
 		});
 		
@@ -211,7 +229,22 @@ public class WestPanel extends SectionStack{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				mp.getCenterPanel().openDataAdminTab();
+				boolean exists = false;
+				int index = 0;
+				
+				TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+				Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+				for(int i=0; i < tabs.length; i++){
+					if(tabs[i].getTitle().equals("Data Import") || tabs[i].getTitle().equals("Data Import (occupied)")){
+						exists = true;
+						index = i;
+					}
+				}
+				if(exists){
+					centerTabSet.selectTab(index);
+				} else {
+					checkImportData();
+				}
 			}
 		});
 		
@@ -340,4 +373,23 @@ public class WestPanel extends SectionStack{
 		req.getAllUsers(callback);
 	}	
 	
+	public void checkImportData(){
+
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+			@Override
+			public void onSuccess(Boolean result){
+
+				mp.getCenterPanel().openDataAdminTab(result);
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());				
+			}
+		};
+		req.canAccessDataImport(callback);
+	}
 }

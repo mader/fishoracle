@@ -24,4 +24,8 @@ public interface AdminAsync {
 					String sampleId,
 					String description, AsyncCallback<Boolean> callback);
 
+	void canAccessDataImport(AsyncCallback<Boolean> callback);
+
+	void unlockDataImport(AsyncCallback<Void> callback);
+
 }

@@ -60,6 +60,12 @@ public class NorthPanel extends HLayout{
 			
 			@Override
 			public void onClick(ClickEvent event) {
+				Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+				for(int i=0; i < tabs.length; i++){
+					if(tabs[i].getTitle().equals("Data Import")){
+						mp.getCenterPanel().freePage();
+					}
+				}
 				userLogout();
 			}
 		});

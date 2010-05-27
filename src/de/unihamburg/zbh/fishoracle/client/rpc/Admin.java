@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
 @RemoteServiceRelativePath("admin")
 public interface Admin extends RemoteService  {
@@ -22,6 +23,8 @@ public interface Admin extends RemoteService  {
 						String metaStatus,
 						String sampleId,
 						String description) throws Exception;
+	boolean canAccessDataImport() throws UserException;
+	void unlockDataImport() throws UserException;
 	
 	public static class Util {
 
@@ -30,9 +33,4 @@ public interface Admin extends RemoteService  {
 			return GWT.create(Admin.class);
 		}
 	}
-
-	
-
-
-	
 }

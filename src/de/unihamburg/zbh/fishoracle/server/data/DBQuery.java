@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Date;
 
 import org.ensembl.datamodel.CoordinateSystem;
 import org.ensembl.datamodel.Gene;
@@ -1469,6 +1470,88 @@ public class DBQuery {
 			System.out.println(e.getMessage());
 			System.out.println(e.getStackTrace());
 			throw e;
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+	}
+	
+	public boolean isAccessable(String page, User user){
+		Connection conn = null;
+		
+		boolean access = false;
+		
+		try {
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement pageAccessStatement = conn.createStatement();
+			pageAccessStatement.executeQuery("SELECT area_access_user_id, (NOW() - area_access_table_time) / 60 AS timeleft FROM area_access WHERE area_access_area_name = '" + page + "'");
+		
+			ResultSet pageAccessRs = pageAccessStatement.getResultSet();
+			//do we get a result? if yes, the page is occupied, else we can use it.
+			if(pageAccessRs.next()){
+				int paUserId = pageAccessRs.getInt(1);
+				
+				double minutesLeft = pageAccessRs.getDouble(2);
+				
+				// check if the timestamp is still valid. if not, delete the lock and use the page
+				if(minutesLeft > 1){
+					access = true;
+					pageAccessStatement.executeUpdate("DELETE FROM area_access WHERE area_access_area_name = '" + page + "' AND " +
+							"'" + user.getId() + "'");
+					
+					pageAccessStatement.executeUpdate("INSERT INTO area_access (area_access_area_name, area_access_user_id) " +
+							"VALUES ('" + page + "', '" + user.getId() + "')");
+				}
+				// check if the user has permission
+				if(user.getId() == paUserId){
+					access = true;
+				}
+				
+			} else {
+				access = true;
+				pageAccessStatement.executeUpdate("INSERT INTO area_access (area_access_area_name, area_access_user_id) " +
+												"VALUES ('" + page + "', '" + user.getId() + "')");
+			}
+			
+		} catch (Exception e) {
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			if(conn != null){
+				try{
+					conn.close();
+				} catch(Exception e) {
+					String err = FishOracleConnection.getErrorMessage(e);
+					System.out.println(err);
+				}
+			}
+		}
+		
+		return access;
+	}
+	
+	public void unlockPage(String page, User user){
+		Connection conn = null;
+		
+		try {
+			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			
+			Statement pageAccessStatement = conn.createStatement();
+			pageAccessStatement.executeUpdate("DELETE FROM area_access WHERE area_access_area_name = '" + page + "' AND " +
+											"area_access_user_id = '" + user.getId() + "'");
+			
+		} catch (Exception e) {
+			FishOracleConnection.printErrorMessage(e);
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		} finally {
 			if(conn != null){
 				try{

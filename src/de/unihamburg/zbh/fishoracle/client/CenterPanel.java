@@ -48,6 +48,8 @@ import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
+import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
+import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
 import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
@@ -75,6 +77,7 @@ public class CenterPanel extends VLayout{
 	private TextItem lowerThTextItem;
 	private TextItem upperThTextItem;
 	
+	private FormPanel uploadForm;
 	private FileUpload fu;
 	private TextItem studyName;
 	private SelectItem chip;
@@ -807,8 +810,13 @@ public class CenterPanel extends VLayout{
 		
 	}
 	
-	public void openDataAdminTab(){
-		Tab dataAdminTab = new Tab("Data Administration");
+	public void openDataAdminTab(boolean unlock){
+		Tab dataAdminTab;
+		if(unlock){
+			dataAdminTab = new Tab("Data Import");
+		} else {
+			dataAdminTab = new Tab("Data Import (occupied)");
+		}
 		dataAdminTab.setCanClose(true);
 		
 		VLayout pane = new VLayout();
@@ -832,7 +840,7 @@ public class CenterPanel extends VLayout{
 		HLayout uploadPanel = new HLayout();
 	    uploadPanel.setWidth100();
 	    uploadPanel.setAutoHeight();
-		final FormPanel uploadForm = new FormPanel();
+		uploadForm = new FormPanel();
 		uploadForm.setWidth("100");
 		uploadForm.setHeight("25");
 		uploadForm.setEncoding(FormPanel.ENCODING_MULTIPART);
@@ -848,7 +856,7 @@ public class CenterPanel extends VLayout{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				uploadForm.submit();
+				checkUploadData();
 			}
 		});
 		
@@ -922,8 +930,7 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				importData(fu.getFilename(), studyName.getDisplayValue(), chip.getDisplayValue(), tissue.getDisplayValue(), 
-						pstage.getDisplayValue(), pgrade.getDisplayValue(), metaStatus.getDisplayValue(), sampleId.getDisplayValue(), descriptionItem.getDisplayValue());
+				checkImportData();
 			}
 			
 			
@@ -939,11 +946,43 @@ public class CenterPanel extends VLayout{
 		
 		getMicroarrayOptions();
 		
-		dataAdminTab.setPane(pane);
+		//dataAdminTab.setPane(pane);
 		
+		VLayout lockPane = new VLayout();
+		lockPane.setWidth100();
+		lockPane.setHeight100();
+		lockPane.setDefaultLayoutAlign(Alignment.CENTER);
+
+		HLayout content = new HLayout();
+		content.setHeight(50);
+		content.setWidth(550);
+		
+		content.setContents("<h2>Page is locked due to usage of another user. Please try again later!</h2>");
+		
+		lockPane.addMember(content);
+		
+		if(unlock){
+			dataAdminTab.setPane(pane);
+		} else {
+			dataAdminTab.setPane(lockPane);
+		}
+				
 		centerTabSet.addTab(dataAdminTab);
 		
 		centerTabSet.selectTab(dataAdminTab);
+		
+		centerTabSet.addCloseClickHandler(new CloseClickHandler(){
+			@Override
+			public void onCloseClick(TabCloseClickEvent event) {
+				Tab[] tabs = centerTabSet.getTabs();
+				for(int i = 0; i < tabs.length; i++){
+					if(tabs[i].getTitle().equals("Data Import")){
+						freePage();
+					}
+				}
+			}
+		});
+		
 	}
 	
 	/*=============================================================================
@@ -1156,10 +1195,80 @@ public class CenterPanel extends VLayout{
 						description,
 						sampleId,
 						callback);
-	}	
+	}
+	
+	public void freePage(){
+
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
+			@Override
+			public void onSuccess(Void result){
+
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.unlockDataImport(callback);
+	}
+
+	public void checkUploadData(){
+
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+			@Override
+			public void onSuccess(Boolean result){
+
+				if(result){
+					uploadForm.submit();
+				} else {
+					SC.say("Page currently locked by another user.");
+				}
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());				
+			}
+		};
+		req.canAccessDataImport(callback);
+	}
+	
+	public void checkImportData(){
+
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+			@Override
+			public void onSuccess(Boolean result){
+
+				if(result){
+					importData(fu.getFilename(), studyName.getDisplayValue(), chip.getDisplayValue(), tissue.getDisplayValue(), 
+							pstage.getDisplayValue(), pgrade.getDisplayValue(), metaStatus.getDisplayValue(),
+							sampleId.getDisplayValue(), descriptionItem.getDisplayValue());
+				} else {
+					SC.say("Page currently locked by another user.");
+				}
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());				
+			}
+		};
+		req.canAccessDataImport(callback);
+	}
 	
 }
-	
+
 class RecMapClickHandler implements ClickHandler{
 	
 	private RecMapInfo recInfo;

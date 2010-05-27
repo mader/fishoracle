@@ -211,4 +211,46 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		return true;
 	}
+	
+	public boolean canAccessDataImport() throws UserException{
+		
+		HttpServletRequest request=this.getThreadLocalRequest();
+		HttpSession session=request.getSession();
+		
+		User user = (User) session.getAttribute("user");
+		
+		if(!user.getIsAdmin()){
+			
+			throw new UserException("Permission denied!");
+			
+		}
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBQuery db = new DBQuery(servletContext);
+		
+		boolean access = db.isAccessable("DataImport", user);
+		
+		return access;
+	}
+	
+	public void unlockDataImport() throws UserException{
+
+		HttpServletRequest request=this.getThreadLocalRequest();
+		HttpSession session=request.getSession();
+		
+		User user = (User) session.getAttribute("user");
+		
+		if(!user.getIsAdmin()){
+			
+			throw new UserException("Permission denied!");
+			
+		}
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBQuery db = new DBQuery(servletContext);
+		
+		db.unlockPage("DataImport", user);
+	}
 }
