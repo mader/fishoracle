@@ -12,6 +12,7 @@ public class CopyNumberChange implements IsSerializable{
 	private int end;
 	
 	private String microarrayStudy;
+	private String microarrayStudyDescr;
 	private String organ;
 	private double segmentMean;
 	private int numberOfMarkers;
@@ -43,6 +44,7 @@ public class CopyNumberChange implements IsSerializable{
 			double segmentMean,
 			int numberOfMarkers,
 			String microarrayStudy,
+			String microarrayStudyDescr,
 			Date insertionDate,
 			String chip,
 			String organ,
@@ -55,6 +57,7 @@ public class CopyNumberChange implements IsSerializable{
 		this.start = start;
 		this.end = end;
 		this.microarrayStudy = microarrayStudy;
+		this.microarrayStudyDescr = microarrayStudyDescr;
 		this.organ = organ;
 		this.segmentMean = segmentMean;
 		this.numberOfMarkers = numberOfMarkers;
@@ -104,6 +107,14 @@ public class CopyNumberChange implements IsSerializable{
 
 	public void setMicroarrayStudy(String microarrayStudy) {
 		this.microarrayStudy = microarrayStudy;
+	}
+	
+	public String getMicroarrayStudyDescr() {
+		return microarrayStudyDescr;
+	}
+
+	public void setMicroarrayStudyDescr(String microarrayStudyDescr) {
+		this.microarrayStudyDescr = microarrayStudyDescr;
 	}
 
 	public String getOrgan() {

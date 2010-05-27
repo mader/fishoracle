@@ -546,13 +546,14 @@ public class CenterPanel extends VLayout{
 		cncGrid.setShowAllRecords(true);  
 		cncGrid.setAlternateRecordStyles(true);
 		cncGrid.setShowHeader(false);
+		cncGrid.setWrapCells(true);
 		
 		ListGridField key = new ListGridField("key", "key");
 		ListGridField val = new ListGridField("val", "val");
 		
 		cncGrid.setFields(key, val);
 		
-		ListGridRecord[] lgr = new ListGridRecord[14];
+		ListGridRecord[] lgr = new ListGridRecord[15];
 		
 		lgr[0] = new ListGridRecord();
 		lgr[0].setAttribute("key", "CNC Stable ID ");
@@ -603,12 +604,16 @@ public class CenterPanel extends VLayout{
 		lgr[11].setAttribute("val", cncData.getPgrade());
 		
 		lgr[12] = new ListGridRecord();
-		lgr[12].setAttribute("key", "Meat Status");
+		lgr[12].setAttribute("key", "Meta Status");
 		lgr[12].setAttribute("val", cncData.getMetaStatus());
 		
 		lgr[13] = new ListGridRecord();
 		lgr[13].setAttribute("key", "Sample ID");
 		lgr[13].setAttribute("val", cncData.getSampleId());
+		
+		lgr[14] = new ListGridRecord();
+		lgr[14].setAttribute("key", "Description");
+		lgr[14].setAttribute("val", cncData.getMicroarrayStudyDescr());
 		
 		cncGrid.setData(lgr);
 		

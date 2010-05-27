@@ -575,6 +575,7 @@ public class DBQuery {
 				" cnc_segment_mean," +
 				" cnc_segment_markers," +
 				" microarraystudy_labelling," +
+				" microarraystudy_description, " +
 				" microarraystudy_date_inserted," +
 				" sample_on_chip_chip_name," +
 				" organ_label, " +
@@ -613,13 +614,14 @@ public class DBQuery {
 				double segmentMean = cncRs.getDouble(6);
 				int markers = cncRs.getInt(7);
 				String microarrayStudy = cncRs.getString(8);
-				Date importDate = cncRs.getDate(9);
-				String chipName = cncRs.getString(10);
-				String organ = cncRs.getString(11);
-				String pstage = cncRs.getString(12);
-				String pgrade = cncRs.getString(13);
-				String mstatus = cncRs.getString(14);
-				String sampleId = cncRs.getString(15);
+				String microarrayDescr = cncRs.getString(9);
+				Date importDate = cncRs.getDate(10);
+				String chipName = cncRs.getString(11);
+				String organ = cncRs.getString(12);
+				String pstage = cncRs.getString(13);
+				String pgrade = cncRs.getString(14);
+				String mstatus = cncRs.getString(15);
+				String sampleId = cncRs.getString(16);
 				
 				cnc = new CopyNumberChange(cncStableId,
 											chr,
@@ -628,6 +630,7 @@ public class DBQuery {
 											segmentMean,
 											markers,
 											microarrayStudy,
+											microarrayDescr,
 											importDate,
 											chipName,
 											organ,
