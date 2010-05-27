@@ -5,6 +5,9 @@ import java.text.ParseException;
 import java.util.regex.*;
 import java.util.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
@@ -16,13 +19,28 @@ import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
+import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
+import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
 
 	private static final long serialVersionUID = -6555234092930978494L;
 	
 	private GWTImageInfo imgInfo;
+	
+	public void isActiveUser() throws UserException{
+		HttpServletRequest request=this.getThreadLocalRequest();
+		HttpSession session=request.getSession();
+		
+		User user = (User) session.getAttribute("user");
+		
+		if(!user.getIsActive()){
+			
+			throw new UserException("Permission denied!");
+			
+		}
+	}
 	
 	/**
 	 * Searching for genomic data,
@@ -41,6 +59,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 *          @see GWTImageInfo
 	 * */
 	public GWTImageInfo generateImage(QueryInfo query) throws Exception {
+		
+			isActiveUser();
 		
 			String servletContext = this.getServletContext().getRealPath("/");
 			
@@ -207,6 +227,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * */
 	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) throws Exception {
 		
+		isActiveUser();
+		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		String chr = imageInfo.getChromosome();
@@ -265,6 +287,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	public CopyNumberChange getCNCInfo(
 			String query) throws Exception {
 		
+		isActiveUser();
+		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		Date dt = new Date();
@@ -287,6 +311,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * */
 	public Gen getGeneInfo(String query) throws Exception {
 		
+		isActiveUser();
+		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		Date dt = new Date();
@@ -298,7 +324,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		return gene;
 	}
 	
-	public CopyNumberChange[] getListOfCncs(boolean isAmplicon){
+	public CopyNumberChange[] getListOfCncs(boolean isAmplicon) throws Exception{
+		
+		isActiveUser();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -312,7 +340,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	}
 	
 	
-	public String exportData(GWTImageInfo imageInfo) {
+	public String exportData(GWTImageInfo imageInfo) throws Exception {
+		
+		isActiveUser();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
