@@ -22,8 +22,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 
 	private static final long serialVersionUID = 4434993420272783276L;
 
-	public User[] getAllUsers() throws Exception {
-		
+	public User isAdmin() throws UserException{
 		HttpServletRequest request=this.getThreadLocalRequest();
 		HttpSession session=request.getSession();
 		
@@ -34,6 +33,12 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 			throw new UserException("Permission denied!");
 			
 		}
+		return user;
+	}
+	
+	public User[] getAllUsers() throws Exception {
+		
+		isAdmin();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -47,16 +52,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	
 	public String[] toggleFlag(int id, String flag, String type, int rowNum, int colNum) throws Exception {
 	
-		HttpServletRequest request=this.getThreadLocalRequest();
-		HttpSession session=request.getSession();
-		
-		User user = (User) session.getAttribute("user");
-		
-		if(!user.getIsAdmin()){
-			
-			throw new UserException("Permission denied!");
-			
-		}
+		isAdmin();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -82,16 +78,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	
 	public MicroarrayOptions getMicroarrayOptions() throws Exception{
 		
-		HttpServletRequest request=this.getThreadLocalRequest();
-		HttpSession session=request.getSession();
-		
-		User user = (User) session.getAttribute("user");
-		
-		if(!user.getIsAdmin()){
-			
-			throw new UserException("Permission denied!");
-			
-		}
+		isAdmin();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -165,16 +152,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 								String sampleId,
 								String description) throws Exception {
 		
-		HttpServletRequest request=this.getThreadLocalRequest();
-		HttpSession session=request.getSession();
-		
-		User user = (User) session.getAttribute("user");
-		
-		if(!user.getIsAdmin()){
-			
-			throw new UserException("Permission denied!");
-			
-		}
+		User user = isAdmin();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -214,16 +192,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	
 	public boolean canAccessDataImport() throws UserException{
 		
-		HttpServletRequest request=this.getThreadLocalRequest();
-		HttpSession session=request.getSession();
-		
-		User user = (User) session.getAttribute("user");
-		
-		if(!user.getIsAdmin()){
-			
-			throw new UserException("Permission denied!");
-			
-		}
+		User user = isAdmin();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -235,17 +204,8 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	public void unlockDataImport() throws UserException{
-
-		HttpServletRequest request=this.getThreadLocalRequest();
-		HttpSession session=request.getSession();
 		
-		User user = (User) session.getAttribute("user");
-		
-		if(!user.getIsAdmin()){
-			
-			throw new UserException("Permission denied!");
-			
-		}
+		User user = isAdmin();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
