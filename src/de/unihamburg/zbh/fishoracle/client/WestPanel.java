@@ -9,10 +9,12 @@ import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
-import com.smartgwt.client.widgets.form.fields.CheckboxItem;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.RadioGroupItem;
+import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
@@ -20,6 +22,8 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
+import com.smartgwt.client.widgets.tab.Tab;
+import com.smartgwt.client.widgets.tab.TabSet;
 
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
@@ -34,14 +38,13 @@ public class WestPanel extends SectionStack{
 
 
 	private MainPanel mp = null;
-	private WestPanel wp = this;
-
+	
 	private TextItem searchTextItem;
 
 	private RadioGroupItem SearchRadioGroupItem;
-	private RadioGroupItem SearchPriorityRadioGroupItem;
-	private CheckboxItem AmpliconFilterCheckboxItem;
-	private CheckboxItem DeliconFilterCheckboxItem;
+	
+	private TextItem greaterTextItem;
+	private TextItem lessTextItem;
 	
 	private SectionStackSection adminSection;
 	
@@ -63,7 +66,7 @@ public class WestPanel extends SectionStack{
 		
 		SearchRadioGroupItem = new RadioGroupItem();  
 		SearchRadioGroupItem.setTitle("Type");  
-		SearchRadioGroupItem.setValueMap("Amplicon/Delicon Stable ID", "Gene", "Karyoband"); 
+		SearchRadioGroupItem.setValueMap("CNC Stable ID", "Gene", "Karyoband"); 
 		SearchRadioGroupItem.setDefaultValue("Gene");
 		
 		ButtonItem searchButton = new ButtonItem("Search");
@@ -88,54 +91,85 @@ public class WestPanel extends SectionStack{
 			}
 		});
 		
+		SelectItem cncDataSelectItem = new SelectItem();
+		//cncDataSelectItem.setShowTitle(false);
+		cncDataSelectItem.setType("Select"); 
+		cncDataSelectItem.setValueMap("greater than", "less than", "between");
+		cncDataSelectItem.setDefaultValue("less than");
+		cncDataSelectItem.addChangeHandler(new ChangeHandler(){
+
+			@Override
+			public void onChange(ChangeEvent event) {
+				if(event.getValue().equals("greater than")){
+					greaterTextItem.enable();
+					greaterTextItem.setValue("0.5");
+					lessTextItem.disable();
+					lessTextItem.setValue("");
+				}
+				if(event.getValue().equals("less than")){
+					greaterTextItem.disable();
+					greaterTextItem.setValue("");
+					lessTextItem.enable();
+					lessTextItem.setValue("-0.5");
+				}
+				if(event.getValue().equals("between")){
+					greaterTextItem.enable();
+					greaterTextItem.setValue("0.5");
+					lessTextItem.enable();
+					lessTextItem.setValue("-0.5");
+				}
+			}
+		});
 		
-		/*search priority*/
-		SearchPriorityRadioGroupItem = new RadioGroupItem();  
-		SearchPriorityRadioGroupItem.setTitle("Search Priority");  
-		SearchPriorityRadioGroupItem.setValueMap("Amplicon", "Delicon"); 
-		SearchPriorityRadioGroupItem.setDefaultValue("Amplicon");
+		greaterTextItem = new TextItem();
+		greaterTextItem.setTitle("greater than");
+		greaterTextItem.setDisabled(true);
 		
-		/*display filter*/
-		AmpliconFilterCheckboxItem = new CheckboxItem();  
-		AmpliconFilterCheckboxItem.setTitle("Show Amplicons");
-		AmpliconFilterCheckboxItem.setDefaultValue(true);
+		greaterTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
 		
-		DeliconFilterCheckboxItem = new CheckboxItem();  
-		DeliconFilterCheckboxItem.setTitle("Show Delicons");
-		DeliconFilterCheckboxItem.setDefaultValue(true);
+		lessTextItem = new TextItem();
+		lessTextItem.setTitle("less than");
+		lessTextItem.setValue("-0.5");
+		//lessTextItem.disable();
+		
+		lessTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
 		
 		/*show more information*/
-		LinkItem AmpliconLinkItem = new LinkItem();   
-		AmpliconLinkItem.setLinkTitle("show all amplicons");
-		AmpliconLinkItem.addClickHandler(new ClickHandler(){
+		/*
+		LinkItem AllDataLinkItem = new LinkItem();   
+		AllDataLinkItem.setLinkTitle("show all CNCs");
+		AllDataLinkItem.addClickHandler(new ClickHandler(){
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
 				wp.fetchCncData(true);
 			}
 		});
-		AmpliconLinkItem.setShowTitle(false);
+		*/
 		
-		LinkItem DeliconLinkItem = new LinkItem();   
-		DeliconLinkItem.setLinkTitle("show all delicons");
-		DeliconLinkItem.addClickHandler(new ClickHandler(){
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				wp.fetchCncData(false);
-			}
-		});
-		DeliconLinkItem.setShowTitle(false);
-		
-		/*add content to search stack section*/
-		searchForm.setItems(searchTextItem, SearchRadioGroupItem, searchButton, SearchPriorityRadioGroupItem, AmpliconFilterCheckboxItem,
-							DeliconFilterCheckboxItem, AmpliconLinkItem, AmpliconLinkItem);
+		searchForm.setItems(searchTextItem, SearchRadioGroupItem, cncDataSelectItem, greaterTextItem, lessTextItem, searchButton);
 		searchContent.addMember(searchForm);
 		
 		searchSection.setItems(searchContent);
 		
 		SectionStackSection settingsSection = new SectionStackSection();  
-		settingsSection.setTitle("Settings");  
+		settingsSection.setTitle("Settings");
 		
 		VLayout settingsContent = new VLayout();
 		
@@ -168,13 +202,51 @@ public class WestPanel extends SectionStack{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				showAllUsers();
+				boolean exists = false;
+				int index = 0;
+				
+				TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+				Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+				for(int i=0; i < tabs.length; i++){
+					if(tabs[i].getTitle().equals("Users")){
+						exists = true;
+						index = i;
+					}
+				}
+				
+				if(exists){
+					centerTabSet.selectTab(index);
+				} else {
+					showAllUsers();
+				}
 			}
 		});
 		
 		LinkItem dataLinkItem = new LinkItem();  
 		dataLinkItem.setLinkTitle("Add data");
 		dataLinkItem.setShowTitle(false);
+		dataLinkItem.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				boolean exists = false;
+				int index = 0;
+				
+				TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+				Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+				for(int i=0; i < tabs.length; i++){
+					if(tabs[i].getTitle().equals("Data Import") || tabs[i].getTitle().equals("Data Import (occupied)")){
+						exists = true;
+						index = i;
+					}
+				}
+				if(exists){
+					centerTabSet.selectTab(index);
+				} else {
+					checkImportData();
+				}
+			}
+		});
 		
 		adminForm.setItems(usersLinkItem, dataLinkItem);
 		
@@ -196,14 +268,13 @@ public class WestPanel extends SectionStack{
 
 	public void startSearch(){
 		String typeStr = null;
-		String cncPrio = null;
 		
 		if(searchTextItem.getDisplayValue().equals("")){
 			SC.say("You have to type in a search term!");
 		} else {
 		
-			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Amplicon/Delicon Stable ID")){
-				typeStr = "Amplicon/Delicon Search";
+			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("CNC Stable ID")){
+				typeStr = "CNC Search";
 			}
 			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Gene")){
 				typeStr = "Gene Search";
@@ -211,18 +282,17 @@ public class WestPanel extends SectionStack{
 			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Karyoband")){
 				typeStr = "Band Search";
 			}
-			if(SearchPriorityRadioGroupItem.getDisplayValue().equalsIgnoreCase("Amplicon")){
-				cncPrio = "Amplicon";
-			}
-			if(SearchPriorityRadioGroupItem.getDisplayValue().equalsIgnoreCase("Delicon")){
-				cncPrio = "Delicon";
-			}
 						
-			QueryInfo newQuery = new QueryInfo(searchTextItem.getDisplayValue(),
-												typeStr, cncPrio,
-												AmpliconFilterCheckboxItem.getValueAsBoolean(),
-												DeliconFilterCheckboxItem.getValueAsBoolean(),
-												mp.getCenterPanel().getWidth() - 30); 
+			QueryInfo newQuery = null;
+			try {
+				newQuery = new QueryInfo(searchTextItem.getDisplayValue(),
+													typeStr,
+													lessTextItem.getDisplayValue(),
+													greaterTextItem.getDisplayValue(),
+													mp.getCenterPanel().getWidth() - 30);
+			} catch (Exception e) {
+				SC.say(e.getMessage());
+			} 
 			
 			//MessageBox.wait("Searching for " + searchBox.getText());
 			search(newQuery);
@@ -268,7 +338,7 @@ public class WestPanel extends SectionStack{
 			public void onSuccess(CopyNumberChange[] result){
 				
 				//MessageBox.hide();
-				mp.getCenterPanel().newDataTab(result, isAmplicon);
+				//mp.getCenterPanel().newDataTab(result, isAmplicon);
 
 			}
 			public void onFailure(Throwable caught){
@@ -303,4 +373,23 @@ public class WestPanel extends SectionStack{
 		req.getAllUsers(callback);
 	}	
 	
+	public void checkImportData(){
+
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+			@Override
+			public void onSuccess(Boolean result){
+
+				mp.getCenterPanel().openDataAdminTab(result);
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());				
+			}
+		};
+		req.canAccessDataImport(callback);
+	}
 }

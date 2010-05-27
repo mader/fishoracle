@@ -6,23 +6,35 @@ public class QueryInfo  implements IsSerializable {
 
 	private String queryString;
 	private String searchType;
-	private String cncPrio;
-	private boolean showAmps;
-	private boolean showDels;
+	private Double lowerTh;
+	private Double upperTh;
 	private int winWidth;
 	
 	public QueryInfo() {
 		
 	}
 
-	public QueryInfo(String queryString, String searchType, String cncPrio,
-			boolean showAmps, boolean showDels, int winWidth) {
+	public QueryInfo(String queryString, String searchType, String lowerTh, String upperTh, int winWidth) throws Exception {
 		super();
 		this.queryString = queryString;
 		this.searchType = searchType;
-		this.cncPrio = cncPrio;
-		this.showAmps = showAmps;
-		this.showDels = showDels;
+		try {
+			if(lowerTh.equals("")){
+				this.lowerTh = null;
+			} else 	{
+				this.lowerTh = Double.parseDouble(lowerTh);
+			}
+			if(upperTh.equals("")){
+				this.upperTh = null;
+			} else {
+				this.upperTh = Double.parseDouble(upperTh);
+			}
+		} catch (Exception e){
+			e.getMessage();
+			e.printStackTrace();
+			throw new Exception("The segment threshold has to be a real number e.g. 0.5!");
+		}
+		
 		this.winWidth = winWidth;
 	}
 
@@ -41,29 +53,59 @@ public class QueryInfo  implements IsSerializable {
 	public void setSearchType(String searchType) {
 		this.searchType = searchType;
 	}
-
-	public String getCncPrio() {
-		return cncPrio;
+	
+	public Double getLowerTh() {
+		return lowerTh;
+	}
+	
+	public String getLowerThAsString() {
+		if(lowerTh != null){
+			return Double.toString(lowerTh);
+		} else {
+			return "";
+		}
+	}
+	
+	public void setLowerTh(String lowerTh) throws Exception {
+		
+		try {
+			if(lowerTh.equals("")){
+				this.lowerTh = null;
+			} else 	{
+				this.lowerTh = Double.parseDouble(lowerTh);
+			}
+		} catch (Exception e){
+			e.getMessage();
+			e.printStackTrace();
+			throw new Exception("The segment threshold has to be a real number e.g. 0.5!");
+		}
+		
 	}
 
-	public void setCncPrio(String cncPrio) {
-		this.cncPrio = cncPrio;
+	public Double getUpperTh() {
+		return upperTh;
 	}
-
-	public boolean isShowAmps() {
-		return showAmps;
+	
+	public String getUpperThAsString() {
+		if(upperTh != null){
+			return Double.toString(upperTh);
+		} else {
+			return "";
+		}
 	}
-
-	public void setShowAmps(boolean showAmps) {
-		this.showAmps = showAmps;
-	}
-
-	public boolean isShowDels() {
-		return showDels;
-	}
-
-	public void setShowDels(boolean showDels) {
-		this.showDels = showDels;
+	
+	public void setUpperTh(String upperTh) throws Exception {		
+		try {
+			if(upperTh.equals("")){
+				this.upperTh = null;
+			} else {
+				this.upperTh = Double.parseDouble(upperTh);
+			}
+		} catch (Exception e){
+			e.getMessage();
+			e.printStackTrace();
+			throw new Exception("The segment threshold has to be a real number e.g. 0.5!");
+		}
 	}
 
 	public int getWinWidth() {

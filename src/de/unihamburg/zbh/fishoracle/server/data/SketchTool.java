@@ -48,7 +48,7 @@ public class SketchTool {
 	 *          at the client side.
 	 *          @see GWTImageInfo
  	 * */
-	public GWTImageInfo generateImage(CopyNumberChange[] amps, CopyNumberChange[] dels, Gen[] genes, Karyoband[] kband, Location loc, int winWidth, String query, String serverPath) {
+	public GWTImageInfo generateImage(CopyNumberChange[] cncs, Gen[] genes, Karyoband[] kband, Location loc, int winWidth, String query, String serverPath) {
 			
 		ArrayList<FeatureNode> features;
 		
@@ -73,25 +73,13 @@ public class SketchTool {
 		
 		try {
 		
-		if(amps != null){
-			for(int i=0; i < amps.length; i++ ){
-			
-				fnode = new FeatureNode(seqid, "amplicon", amps[i].getStart(), amps[i].getEnd(), ".");
-				features.add(fnode);
-				fnode.add_attribute("ID", amps[i].getCncStableId());
-				if(amps[i].getCncStableId().equalsIgnoreCase(query)){
-					fnode.mark();
-				}
-			}
-		}
-		
-		if(dels != null){
-			for(int l=0; l < dels.length; l++ ){
+		if(cncs != null){
+			for(int l=0; l < cncs.length; l++ ){
 				
-				fnode = new FeatureNode(seqid, "delicon", dels[l].getStart(), dels[l].getEnd(), ".");
+				fnode = new FeatureNode(seqid, "cnc", cncs[l].getStart(), cncs[l].getEnd(), ".");
 				features.add(fnode);
-				fnode.add_attribute("ID", dels[l].getCncStableId());
-				if(dels[l].getCncStableId().equalsIgnoreCase(query)){
+				fnode.add_attribute("ID", cncs[l].getCncStableId());
+				if(cncs[l].getCncStableId().equalsIgnoreCase(query)){
 					fnode.mark();
 				}
 		}
@@ -132,11 +120,8 @@ public class SketchTool {
 		    	  if(b.get_type().equals("gene") ){
 		    		  typeNumber = "2:";
 		    	  }
-		    	  if(b.get_type().equals("amplicon") ){
+		    	  if(b.get_type().equals("cnc") ){
 		    		  typeNumber = "3:";
-		    	  }
-		    	  if(b.get_type().equals("delicon") ){
-		    		  typeNumber = "4:";
 		    	  }
 		    	  
 		        return typeNumber + b.get_type();
@@ -211,8 +196,7 @@ public class SketchTool {
 				
 				countGenes++;
 			// the same applies to the amplicons but here the caption equals the amplicon stable id	
-			} else if (info.get_rec_map(i).get_genome_feature().get_type().equals("amplicon") ||
-					info.get_rec_map(i).get_genome_feature().get_type().equals("delicon")){
+			} else if (info.get_rec_map(i).get_genome_feature().get_type().equals("cnc")){
 				
 				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("ID");
 				

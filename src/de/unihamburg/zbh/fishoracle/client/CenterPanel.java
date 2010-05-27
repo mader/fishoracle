@@ -1,9 +1,15 @@
 package de.unihamburg.zbh.fishoracle.client;
 
+import java.util.LinkedHashMap;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Alignment;
@@ -11,6 +17,7 @@ import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.types.ImageStyle;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Img;
 import com.smartgwt.client.widgets.Label;
@@ -21,7 +28,10 @@ import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
+import com.smartgwt.client.widgets.form.fields.SelectItem;
+import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
@@ -30,12 +40,16 @@ import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.CellClickEvent;
 import com.smartgwt.client.widgets.grid.events.CellClickHandler;
+import com.smartgwt.client.widgets.layout.HLayout;
+import com.smartgwt.client.widgets.layout.LayoutSpacer;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
+import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
+import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
 import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
@@ -43,6 +57,7 @@ import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.ImgCanvas;
@@ -59,6 +74,19 @@ public class CenterPanel extends VLayout{
 	private TextItem chrTextItem;
 	private TextItem startTextItem;
 	private TextItem endTextItem;
+	private TextItem lowerThTextItem;
+	private TextItem upperThTextItem;
+	
+	private FormPanel uploadForm;
+	private FileUpload fu;
+	private TextItem studyName;
+	private SelectItem chip;
+	private SelectItem tissue;
+	private SelectItem pstage;
+	private SelectItem pgrade;
+	private SelectItem metaStatus;
+	private TextItem sampleId;
+	private TextAreaItem descriptionItem;
 	
 	@SuppressWarnings("unused")
 	private MainPanel mp = null;
@@ -114,12 +142,18 @@ public class CenterPanel extends VLayout{
 		String newChr;
 	    int newStart;
 	    int newEnd;
-		
+	    String newLowerTh;
+	    String newUpperTh;
+	    
 		newChr = chrTextItem.getDisplayValue();
 	    
 	    newStart = Integer.parseInt(startTextItem.getDisplayValue());
 	    
 	    newEnd = Integer.parseInt(endTextItem.getDisplayValue());
+	    
+	    newLowerTh = lowerThTextItem.getDisplayValue();
+	    
+	    newUpperTh = upperThTextItem.getDisplayValue();
 	    
 	    if(newStart >= newEnd || newEnd - newStart <= 10){
 	    	
@@ -133,6 +167,13 @@ public class CenterPanel extends VLayout{
 	    
 	    	imgInfo.setEnd(newEnd);
 
+	    	try {
+				imgInfo.getQuery().setLowerTh(newLowerTh);
+				imgInfo.getQuery().setUpperTh(newUpperTh);
+			} catch (Exception e) {
+				SC.say(e.getMessage());
+			}
+	    	
 	    	cp.imageRedraw(imgInfo);
 	    }
 	}
@@ -396,6 +437,7 @@ public class CenterPanel extends VLayout{
 		endTextItem.setTitle("End");
 		endTextItem.setWidth(80);
 		endTextItem.setValue(imgInfo.getEnd());
+		
 		endTextItem.addKeyPressHandler(new KeyPressHandler(){
 
 			@Override
@@ -406,6 +448,38 @@ public class CenterPanel extends VLayout{
 			}
 		});
 		presentationToolStrip.addFormItem(endTextItem);
+		
+		lowerThTextItem = new TextItem();
+		lowerThTextItem.setTitle("Less Than");
+		lowerThTextItem.setWrapTitle(false);
+		lowerThTextItem.setWidth(40);
+		lowerThTextItem.setValue(imgInfo.getQuery().getLowerThAsString());
+		lowerThTextItem.addKeyPressHandler(new KeyPressHandler(){
+
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					refreshRange();
+				}
+			}
+		});
+		presentationToolStrip.addFormItem(lowerThTextItem);
+		
+		upperThTextItem = new TextItem();
+		upperThTextItem.setTitle("Greater Than");
+		upperThTextItem.setWrapTitle(false);
+		upperThTextItem.setWidth(40);
+		upperThTextItem.setValue(imgInfo.getQuery().getUpperThAsString());
+		upperThTextItem.addKeyPressHandler(new KeyPressHandler(){
+
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					refreshRange();
+				}
+			}
+		});
+		presentationToolStrip.addFormItem(upperThTextItem);
 		
 		ToolStripButton refreshButton = new ToolStripButton();
 		refreshButton.addClickHandler(new ClickHandler(){
@@ -460,41 +534,28 @@ public class CenterPanel extends VLayout{
 	public void loadWindow(CopyNumberChange cncData){
 		
 		Window window = new Window();
-
-		String titleStr = null;
-		String idStr = null;
-		String levelStr = null;
 		
-		if (cncData.isAmplicon()){
-			titleStr = "Amplicon";
-			idStr = "Amplicon Stable ID";
-			levelStr = "Amplevel";
-		} else {
-			titleStr = "Delicon";
-			idStr = "Delicon Stable ID";
-			levelStr = "Dellevel";
-		}
-		
-		window.setTitle(titleStr + " " + cncData.getCncStableId());
+		window.setTitle("Segment " + cncData.getCncStableId());
 		window.setAutoSize(true);
 		window.setAutoCenter(true);
 		
 		final ListGrid cncGrid = new ListGrid();
-		cncGrid.setWidth(450);
-		cncGrid.setHeight(200);  
+		cncGrid.setWidth(500);
+		cncGrid.setHeight(330);  
 		cncGrid.setShowAllRecords(true);  
 		cncGrid.setAlternateRecordStyles(true);
 		cncGrid.setShowHeader(false);
+		cncGrid.setWrapCells(true);
 		
 		ListGridField key = new ListGridField("key", "key");
 		ListGridField val = new ListGridField("val", "val");
 		
 		cncGrid.setFields(key, val);
 		
-		ListGridRecord[] lgr = new ListGridRecord[8];
+		ListGridRecord[] lgr = new ListGridRecord[15];
 		
 		lgr[0] = new ListGridRecord();
-		lgr[0].setAttribute("key", idStr);
+		lgr[0].setAttribute("key", "CNC Stable ID ");
 		lgr[0].setAttribute("val", cncData.getCncStableId());
 		
 		lgr[1] = new ListGridRecord();
@@ -510,20 +571,48 @@ public class CenterPanel extends VLayout{
 		lgr[3].setAttribute("val", cncData.getEnd());
 		
 		lgr[4] = new ListGridRecord();
-		lgr[4].setAttribute("key", "Case Name");
-		lgr[4].setAttribute("val", cncData.getCaseName());
+		lgr[4].setAttribute("key", "Segment Mean");
+		lgr[4].setAttribute("val", cncData.getSegmentMean());
 		
 		lgr[5] = new ListGridRecord();
-		lgr[5].setAttribute("key", "Tumor Type");
-		lgr[5].setAttribute("val", cncData.getTumorType());
+		lgr[5].setAttribute("key", "Markers");
+		lgr[5].setAttribute("val", cncData.getNumberOfMarkers());
 		
 		lgr[6] = new ListGridRecord();
-		lgr[6].setAttribute("key", "Continuous");
-		lgr[6].setAttribute("val", cncData.getContinuous());
+		lgr[6].setAttribute("key", "Study");
+		lgr[6].setAttribute("val", cncData.getMicroarrayStudy());
 		
 		lgr[7] = new ListGridRecord();
-		lgr[7].setAttribute("key", levelStr);
-		lgr[7].setAttribute("val", cncData.getCnclevel());
+		lgr[7].setAttribute("key", "Import Date");
+		lgr[7].setAttribute("val", cncData.getInsertionDate());
+		
+		lgr[8] = new ListGridRecord();
+		lgr[8].setAttribute("key", "Chip");
+		lgr[8].setAttribute("val", cncData.getChip());
+		
+		lgr[9] = new ListGridRecord();
+		lgr[9].setAttribute("key", "Organ");
+		lgr[9].setAttribute("val", cncData.getOrgan());
+		
+		lgr[10] = new ListGridRecord();
+		lgr[10].setAttribute("key", "Pathological stage");
+		lgr[10].setAttribute("val", cncData.getPstage());
+		
+		lgr[11] = new ListGridRecord();
+		lgr[11].setAttribute("key", "Pathological Grade");
+		lgr[11].setAttribute("val", cncData.getPgrade());
+		
+		lgr[12] = new ListGridRecord();
+		lgr[12].setAttribute("key", "Meta Status");
+		lgr[12].setAttribute("val", cncData.getMetaStatus());
+		
+		lgr[13] = new ListGridRecord();
+		lgr[13].setAttribute("key", "Sample ID");
+		lgr[13].setAttribute("val", cncData.getSampleId());
+		
+		lgr[14] = new ListGridRecord();
+		lgr[14].setAttribute("key", "Description");
+		lgr[14].setAttribute("val", cncData.getMicroarrayStudyDescr());
 		
 		cncGrid.setData(lgr);
 		
@@ -599,6 +688,7 @@ public class CenterPanel extends VLayout{
 		window.show();
 	}
 	
+	/*
 	public void newDataTab(CopyNumberChange[] cncs, boolean isAmplicon) {
 		
 		String type = null;
@@ -653,7 +743,7 @@ public class CenterPanel extends VLayout{
 		
 		centerTabSet.selectTab(tab);
 	}
-	
+	*/
 	public void openUserAdminTab(final User[] users){
 	
 		Tab usersAdminTab = new Tab("Users");
@@ -721,6 +811,181 @@ public class CenterPanel extends VLayout{
 		centerTabSet.addTab(usersAdminTab);
 		
 		centerTabSet.selectTab(usersAdminTab);
+		
+	}
+	
+	public void openDataAdminTab(boolean unlock){
+		Tab dataAdminTab;
+		if(unlock){
+			dataAdminTab = new Tab("Data Import");
+		} else {
+			dataAdminTab = new Tab("Data Import (occupied)");
+		}
+		dataAdminTab.setCanClose(true);
+		
+		VLayout pane = new VLayout();
+		pane.setWidth100();
+		pane.setHeight100();
+		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		HLayout header = new HLayout();
+		header.setAutoWidth();
+		header.setAutoHeight();
+		
+		Label headerLbl = new Label("<h2>Data Import</h2>");
+		header.addMember(headerLbl);
+		
+		pane.addMember(header);
+		
+		Label step1Lbl =  new Label("<h3>Step1: upload data</h3>");
+		step1Lbl.setAutoHeight();
+		pane.addMember(step1Lbl);
+		
+		HLayout uploadPanel = new HLayout();
+	    uploadPanel.setWidth100();
+	    uploadPanel.setAutoHeight();
+		uploadForm = new FormPanel();
+		uploadForm.setWidth("100");
+		uploadForm.setHeight("25");
+		uploadForm.setEncoding(FormPanel.ENCODING_MULTIPART);
+		uploadForm.setMethod(FormPanel.METHOD_POST);
+		uploadForm.setAction(GWT.getModuleBaseURL() + "FileUpload");
+		
+		fu = new FileUpload();
+		fu.setName("file");
+		uploadForm.add(fu);
+		
+		Button b = new Button("upload");
+		b.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				checkUploadData();
+			}
+		});
+		
+		uploadForm.addSubmitCompleteHandler(new SubmitCompleteHandler(){
+
+			@Override
+			public void onSubmitComplete(SubmitCompleteEvent event) {
+				SC.say(event.getResults());
+				studyName.setValue(fu.getFilename());
+			}
+			
+		});	
+		
+		
+		VLayout container = new VLayout();
+		container.setDefaultLayoutAlign(Alignment.CENTER);
+		container.setAutoHeight();
+		
+		container.addMember(uploadForm);
+		container.addMember(b);
+		
+		uploadPanel.addMember(container);
+		
+		pane.addMember(uploadPanel);
+		
+		Label step2Lbl = new Label("<h3>Step2: enter meta information</h3>");
+		step2Lbl.setAutoHeight();
+		pane.addMember(step2Lbl);
+		
+		/* 
+		 * normalized with
+		 * sample id
+		 * */
+		
+		HLayout metaData = new HLayout();
+		metaData.setWidth100();
+		metaData.setAutoHeight();
+		metaData.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		metaData.addMember(new LayoutSpacer());
+		
+		DynamicForm metaDataForm = new DynamicForm();
+		
+		studyName = new TextItem();
+		studyName.setTitle("study name");
+		
+		chip = new SelectItem();
+		chip.setTitle("chip type");  
+		
+		tissue = new SelectItem();
+		tissue.setTitle("tissue");
+		
+		pstage = new SelectItem();
+		pstage.setTitle("pathological stage");
+		
+		pgrade = new SelectItem();
+		pgrade.setTitle("pathological grade");
+		
+		metaStatus = new SelectItem();
+		metaStatus.setTitle("meta status");
+		
+		sampleId = new TextItem();
+		sampleId.setTitle("sample Id");
+		
+		descriptionItem = new TextAreaItem();
+		descriptionItem.setTitle("description");  
+		
+		ButtonItem submitButton = new ButtonItem("submit");
+		submitButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				checkImportData();
+			}
+			
+			
+		});
+		
+		metaDataForm.setItems(studyName, chip, tissue, pstage, pgrade, metaStatus, sampleId, descriptionItem, submitButton);
+		
+		metaData.addMember(metaDataForm);
+
+		metaData.addMember(new LayoutSpacer());
+		
+		pane.addMember(metaData);
+		
+		getMicroarrayOptions();
+		
+		//dataAdminTab.setPane(pane);
+		
+		VLayout lockPane = new VLayout();
+		lockPane.setWidth100();
+		lockPane.setHeight100();
+		lockPane.setDefaultLayoutAlign(Alignment.CENTER);
+
+		HLayout content = new HLayout();
+		content.setHeight(50);
+		content.setWidth(550);
+		
+		content.setContents("<h2>Page is locked due to usage of another user. Please try again later!</h2>");
+		
+		lockPane.addMember(content);
+		
+		if(unlock){
+			dataAdminTab.setPane(pane);
+		} else {
+			dataAdminTab.setPane(lockPane);
+		}
+				
+		centerTabSet.addTab(dataAdminTab);
+		
+		centerTabSet.selectTab(dataAdminTab);
+		
+		centerTabSet.addCloseClickHandler(new CloseClickHandler(){
+			@Override
+			public void onCloseClick(TabCloseClickEvent event) {
+				Tab[] tabs = centerTabSet.getTabs();
+				for(int i = 0; i < tabs.length; i++){
+					if(tabs[i].getTitle().equals("Data Import")){
+						freePage();
+					}
+				}
+			}
+		});
 		
 	}
 	
@@ -836,8 +1101,178 @@ public class CenterPanel extends VLayout{
 		};
 		req.toggleFlag(id, flag, type, rowNum, colNum, callback);
 	}
-}
 	
+	public void getMicroarrayOptions(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<MicroarrayOptions> callback = new AsyncCallback<MicroarrayOptions>(){
+			@Override
+			public void onSuccess(MicroarrayOptions result){
+				
+				
+				
+				LinkedHashMap<String, String> chipValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.getChipName().length; i++){
+					chipValueMap.put(new Integer(i).toString(),result.getChipName()[i]);
+				}
+				
+				chip.setValueMap(chipValueMap);
+				
+				LinkedHashMap<String, String> tissueValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.getTissue().length; i++){
+					tissueValueMap.put(new Integer(i).toString(),result.getTissue()[i]);
+				}
+				
+				tissue.setValueMap(tissueValueMap);
+				
+				LinkedHashMap<String, String> pstageValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.getPStage().length; i++){
+					pstageValueMap.put(new Integer(i).toString(),result.getPStage()[i]);
+				}
+				
+				pstage.setValueMap(pstageValueMap);
+				
+				LinkedHashMap<String, String> pgradeValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.getPGrade().length; i++){
+					pgradeValueMap.put(new Integer(i).toString(),result.getPGrade()[i]);
+				}
+				
+				pgrade.setValueMap(pgradeValueMap);
+				
+				LinkedHashMap<String, String> mstatusValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.getMetaStatus().length; i++){
+					mstatusValueMap.put(new Integer(i).toString(),result.getMetaStatus()[i]);
+				}
+				
+				metaStatus.setValueMap(mstatusValueMap);
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());
+			}
+		};
+		req.getMicroarrayOptions(callback);
+	}
+	
+	public void importData(String fileName,
+							String studyName,
+							String chipType,
+							String tissue,
+							String pstage,
+							String pgrade,
+							String metaStatus,
+							String sampleId,
+							String description){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+			@Override
+			public void onSuccess(Boolean result){
+				
+				SC.say("Data import successful!");
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());
+			}
+		};
+		req.importData(fileName,
+						studyName,
+						chipType,
+						tissue,
+						pstage,
+						pgrade,
+						metaStatus,
+						description,
+						sampleId,
+						callback);
+	}
+	
+	public void freePage(){
+
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
+			@Override
+			public void onSuccess(Void result){
+
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.unlockDataImport(callback);
+	}
+
+	public void checkUploadData(){
+
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+			@Override
+			public void onSuccess(Boolean result){
+
+				if(result){
+					uploadForm.submit();
+				} else {
+					SC.say("Page currently locked by another user.");
+				}
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());				
+			}
+		};
+		req.canAccessDataImport(callback);
+	}
+	
+	public void checkImportData(){
+
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+			@Override
+			public void onSuccess(Boolean result){
+
+				if(result){
+					importData(fu.getFilename(), studyName.getDisplayValue(), chip.getDisplayValue(), tissue.getDisplayValue(), 
+							pstage.getDisplayValue(), pgrade.getDisplayValue(), metaStatus.getDisplayValue(),
+							sampleId.getDisplayValue(), descriptionItem.getDisplayValue());
+				} else {
+					SC.say("Page currently locked by another user.");
+				}
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());				
+			}
+		};
+		req.canAccessDataImport(callback);
+	}
+	
+}
+
 class RecMapClickHandler implements ClickHandler{
 	
 	private RecMapInfo recInfo;
@@ -850,7 +1285,7 @@ class RecMapClickHandler implements ClickHandler{
 	
 	public void onClick(ClickEvent event) {
 		
-		if(recInfo.getType().equals("amplicon") || recInfo.getType().equals("delicon")){
+		if(recInfo.getType().equals("cnc")){
 			
 			cncDetails(recInfo.getElementName());
 			
