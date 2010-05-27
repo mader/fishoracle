@@ -194,8 +194,9 @@ public class LoginScreen extends VLayout{
 				passwordItem.setValue("");
 				
 				if(result.getIsAdmin()){
-					mp.getWestPanel().addSection(mp.getWestPanel().getAdminSection());
+					mp.getWestPanel().addSection(mp.getWestPanel().newAdminSection());
 				}
+				mp.getWestPanel().expandSection(0);
 				mp.getNorthPanel().getLogout().setTitle(result.getUserName());
 				mp.getNorthPanel().getLogout().redraw();
 				ls.animateFade(0, new AnimationCallback(){

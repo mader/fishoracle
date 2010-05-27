@@ -186,6 +186,14 @@ public class WestPanel extends SectionStack{
 		
 		settingsSection.addItem(settingsContent);
 		
+		
+		
+		this.setSections(searchSection, settingsSection);
+			
+	}
+	
+	public SectionStackSection newAdminSection() {
+		
 		adminSection = new SectionStackSection();  
 		adminSection.setTitle("Admin");
 		adminSection.setID("admin1");
@@ -254,16 +262,11 @@ public class WestPanel extends SectionStack{
 		
 		adminSection.addItem(adminContent);
 		
-		this.setSections(searchSection, settingsSection);
-			
+		return adminSection;
 	}
 	
 	public TextItem getSearchTextItem() {
 		return searchTextItem;
-	}
-	
-	public SectionStackSection getAdminSection() {
-		return adminSection;
 	}
 
 	public void startSearch(){
