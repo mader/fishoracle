@@ -92,7 +92,7 @@ public class WestPanel extends SectionStack{
 		});
 		
 		SelectItem cncDataSelectItem = new SelectItem();
-		//cncDataSelectItem.setShowTitle(false);
+		cncDataSelectItem.setTitle("");
 		cncDataSelectItem.setType("Select"); 
 		cncDataSelectItem.setValueMap("greater than", "less than", "between");
 		cncDataSelectItem.setDefaultValue("less than");
