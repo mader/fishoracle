@@ -7,7 +7,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
@@ -103,24 +102,22 @@ public class CenterPanel extends VLayout{
 		
 		Tab welcomeTab = new Tab("Welcome"); 
 		VLayout welcomeLayout = new VLayout();
-		HTML welcomeTextHTML = new HTML("" +
-        		"<br><center><h1>FISH Oracle</h1> <i>alpha</i></center><br>" +
-        		"You can search for amplicons by giving an amplicon or delicon stable ID" +
-        		" e.g. 'AMP60.01' or 'DEL60.01' or for a gene specified by a gene name e.g. 'kras'" +
+		welcomeLayout.setContents("" +
+        		"<center><h1>FISH Oracle</h1></center>" +
+        		"<p id=\"welcome\">You can search for copy number segments by giving a CNC (copy number change) stable ID" +
+        		" e.g. 'CNC100' or for a gene specified by a gene name e.g. 'kras'" +
         		" or a karyoband giving the exact karyoband identifier e.g. '8q21.3'." +
         		" By clicking on an element a window opens that shows additional information." +
-        		" As the amplicon data is incompatible to the Ensembl version 55 the currently" +
+        		" As the CNC data is incompatible to the Ensembl version 57 the currently" +
         		" used Ensembl version is 54. If you want to search for a gene in the Ensembl " +
         		" browser you better also use version 54 " +
         		"<a href=\"http://may2009.archive.ensembl.org\" target=_blank>http://may09.archive.ensembl.org</a>" +
-        		"<br><br>" +
-        		"FISH Oracle uses:<br><br> " +
+        		"</p><p id=\"welcome\"><br>FISH Oracle uses:<br> " +
+        		"<ul id=\"welcome\">" +
         		"<li> the Google Web Toolkit <a href=\"http://code.google.com/webtoolkit/\" target=_blank>http://code.google.com/webtoolkit/</a></li>" +
         		"<li> the Ensembl human core database <a href=\"http://www.ensembl.org\" target=_blank>http://www.ensembl.org</a></li>" +
         		"<li> AnnotationSketch of the GenomeTools <a href=\"http://www.genometools.org\" target=_blank>http://www.genometools.org</a></li>" +
-        		"</ul>");
-		
-		welcomeLayout.addMember(welcomeTextHTML);
+        		"</ul></p>");
 		
 		welcomeTab.setPane(welcomeLayout);
 		
