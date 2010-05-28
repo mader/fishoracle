@@ -167,7 +167,7 @@ public class SketchTool {
 		
 		String fileName = Integer.toString(number);
 		
-		imgUrl = "as_output" + System.getProperty("file.separator") + fileName + ".png";
+		imgUrl = "as_output" + System.getProperty("file.separator") + fileName + "." + imageType;
 		
 		file = new File(serverPath + imgUrl);
 

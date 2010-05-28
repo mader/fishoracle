@@ -2,7 +2,7 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class QueryInfo  implements IsSerializable {
+public class QueryInfo  implements IsSerializable, Cloneable {
 
 	private String queryString;
 	private String searchType;
@@ -41,6 +41,27 @@ public class QueryInfo  implements IsSerializable {
 		this.winWidth = winWidth;
 	}
 
+	public QueryInfo clone(){
+		
+		QueryInfo query = new QueryInfo();
+		query.setImageType(this.imageType);
+		try {
+			query.setLowerTh(this.lowerTh.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		query.setQueryString(this.queryString);
+		query.setSearchType(this.searchType);
+		try {
+			query.setUpperTh(this.upperTh.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		query.setWinWidth(this.winWidth);
+		
+		return query;
+	}
+	
 	public String getQueryString() {
 		return queryString;
 	}

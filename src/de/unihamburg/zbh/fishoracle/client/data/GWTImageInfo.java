@@ -1,10 +1,11 @@
 package de.unihamburg.zbh.fishoracle.client.data;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class GWTImageInfo implements IsSerializable{
+public class GWTImageInfo implements IsSerializable, Cloneable{
 
 	private String imgUrl;
 	private int height;
@@ -41,6 +42,32 @@ public class GWTImageInfo implements IsSerializable{
 		this.recmapinfo = recmapinfo;
 	}
 
+	public GWTImageInfo clone(){
+		
+		GWTImageInfo imgInfo = new GWTImageInfo();
+		
+		imgInfo.setChromosome(this.chromosome);
+		imgInfo.setEnd(this.end);
+		imgInfo.setHeight(this.height);
+		imgInfo.setImgUrl(this.imgUrl);
+		imgInfo.setQuery(this.query.clone());
+		
+		ArrayList<RecMapInfo> arrList = new ArrayList<RecMapInfo>();
+		Iterator<RecMapInfo> iter = this.recmapinfo.iterator();
+		
+		while(iter.hasNext()){
+			
+			arrList.add(((RecMapInfo) iter.next()).clone());
+			
+		}
+		
+		imgInfo.setRecmapinfo(arrList);
+		imgInfo.setStart(this.start);
+		imgInfo.setWidth(this.width);
+		
+		return imgInfo;
+	}
+	
 	public String getImgUrl() {
 		return imgUrl;
 	}

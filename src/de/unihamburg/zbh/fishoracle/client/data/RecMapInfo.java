@@ -2,7 +2,7 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class RecMapInfo implements IsSerializable {
+public class RecMapInfo implements IsSerializable,Cloneable {
 
 	private double northwestX;
 	private double northwestY;
@@ -26,6 +26,20 @@ public class RecMapInfo implements IsSerializable {
 		this.elementName = elementName;
 	}
 
+	public RecMapInfo clone(){
+		
+		RecMapInfo rmi = new RecMapInfo();
+		
+		rmi.setElementName(this.elementName);
+		rmi.setNorthwestX(this.northwestX);
+		rmi.setNorthwestY(this.northwestY);
+		rmi.setSoutheastX(this.southeastX);
+		rmi.setSoutheastY(this.southeastY);
+		rmi.setType(this.type);
+		
+		return rmi;
+	}
+	
 	public double getNorthwestX() {
 		return northwestX;
 	}
