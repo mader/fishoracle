@@ -31,8 +31,10 @@ public class Export {
 		int number = generator.nextInt( Integer.MAX_VALUE );
 		
 		fileName = number + ".xls";
-
-		WritableWorkbook workbook = Workbook.createWorkbook(new File(servletPath + "tmp/" + fileName)); 
+		
+		String url = "excel_output" + System.getProperty("file.separator") + fileName;
+		
+		WritableWorkbook workbook = Workbook.createWorkbook(new File(servletPath + url));
 		WritableSheet sheet = workbook.createSheet(maxAmpRange.getSeqRegionName() + "," + maxAmpRange.getStart() + "-" + maxAmpRange.getEnd(), 0); 
 		
 		WritableFont textwidth = new WritableFont(WritableFont.ARIAL, 8);
@@ -81,7 +83,7 @@ public class Export {
 		workbook.write();
 		workbook.close();
 		
-		return fileName;
+		return url;
 		
 	}
 	

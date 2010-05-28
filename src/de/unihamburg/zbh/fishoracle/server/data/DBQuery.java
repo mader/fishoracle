@@ -71,7 +71,7 @@ public class DBQuery {
 		
 		try{
 
-	    FileInputStream fStream = new FileInputStream(serverPath + "config/database.conf");
+	    FileInputStream fStream = new FileInputStream(serverPath + "config" + System.getProperty("file.separator") + "database.conf");
 	    DataInputStream inStream = new DataInputStream(fStream);
 	    BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
 	    

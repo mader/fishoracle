@@ -104,7 +104,7 @@ public class SketchTool {
 		
 		style = new Style();
 		
-		style.load_file(serverPath + "config/default.style");
+		style.load_file(serverPath + "config" + System.getProperty("file.separator") + "default.style");
 		
 		range = new Range(loc.getStart(), loc.getEnd());
 		
@@ -149,7 +149,7 @@ public class SketchTool {
 		
 		String fileName = Integer.toString(number);
 		
-		imgUrl = "tmp/" + fileName + ".png";
+		imgUrl = "as_output" + System.getProperty("file.separator") + fileName + ".png";
 		
 		file = new File(serverPath + imgUrl);
 

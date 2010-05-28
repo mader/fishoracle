@@ -22,7 +22,7 @@ public class FileUploadServlet extends HttpServlet{
 	public FileUploadServlet() {
 		// TODO Auto-generated constructor stub
 	}
-	 private static final String UPLOAD_DIRECTORY = "tmp/";
+	 private static final String UPLOAD_DIRECTORY = "tmp" + System.getProperty("file.separator");
 	  
 	      @Override
 	      protected void doGet(HttpServletRequest req, HttpServletResponse resp)

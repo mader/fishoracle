@@ -375,7 +375,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		Export exp = new Export();
 		
 		try {
-			fileName = exp.exportImageAsExcelDocument(cncs, genes, maxRange, servletContext);
+			url = exp.exportImageAsExcelDocument(cncs, genes, maxRange, servletContext);
 		} catch (RowsExceededException e) {
 			e.printStackTrace();
 		} catch (WriteException e) {
@@ -383,8 +383,6 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		url = "tmp/" + fileName;
 		
 		return url;
 	}
