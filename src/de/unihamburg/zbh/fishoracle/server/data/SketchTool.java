@@ -61,7 +61,7 @@ public class SketchTool {
 		CanvasCairoFile canvas;
 		long height;
 		
-		String imgUrl = null;
+		String imgUrl = "";
 
 		GWTImageInfo imgInfo = null;
 				
@@ -112,7 +112,7 @@ public class SketchTool {
 		      @Override
 		      public String getTrackId(Block b)
 		      {
-		    	  String typeNumber = null;
+		    	  String typeNumber = "";
 
 		    	  if(b.get_type().equals("chromosome") ){
 		    		  typeNumber = "1:";
