@@ -292,6 +292,7 @@ public class WestPanel extends SectionStack{
 													typeStr,
 													lessTextItem.getDisplayValue(),
 													greaterTextItem.getDisplayValue(),
+													"png",
 													mp.getCenterPanel().getWidth() - 30);
 			} catch (Exception e) {
 				SC.say(e.getMessage());

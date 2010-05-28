@@ -8,13 +8,14 @@ public class QueryInfo  implements IsSerializable {
 	private String searchType;
 	private Double lowerTh;
 	private Double upperTh;
+	private String imageType;
 	private int winWidth;
 	
 	public QueryInfo() {
 		
 	}
 
-	public QueryInfo(String queryString, String searchType, String lowerTh, String upperTh, int winWidth) throws Exception {
+	public QueryInfo(String queryString, String searchType, String lowerTh, String upperTh, String imageType, int winWidth) throws Exception {
 		super();
 		this.queryString = queryString;
 		this.searchType = searchType;
@@ -34,6 +35,8 @@ public class QueryInfo  implements IsSerializable {
 			e.printStackTrace();
 			throw new Exception("The segment threshold has to be a real number e.g. 0.5!");
 		}
+		
+		this.imageType = imageType;
 		
 		this.winWidth = winWidth;
 	}
@@ -106,6 +109,14 @@ public class QueryInfo  implements IsSerializable {
 			e.printStackTrace();
 			throw new Exception("The segment threshold has to be a real number e.g. 0.5!");
 		}
+	}
+	
+	public String getImageType() {
+		return imageType;
+	}
+
+	public void setImageType(String imageType) {
+		this.imageType = imageType;
 	}
 
 	public int getWinWidth() {

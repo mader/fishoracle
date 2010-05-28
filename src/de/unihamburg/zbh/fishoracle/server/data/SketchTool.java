@@ -48,7 +48,14 @@ public class SketchTool {
 	 *          at the client side.
 	 *          @see GWTImageInfo
  	 * */
-	public GWTImageInfo generateImage(CopyNumberChange[] cncs, Gen[] genes, Karyoband[] kband, Location loc, int winWidth, String query, String serverPath) {
+	public GWTImageInfo generateImage(CopyNumberChange[] cncs,
+									Gen[] genes,
+									Karyoband[] kband,
+									Location loc,
+									int winWidth,
+									String query,
+									String imageType,
+									String serverPath) {
 			
 		ArrayList<FeatureNode> features;
 		
@@ -58,7 +65,7 @@ public class SketchTool {
 		Style style;
 		Diagram diagram;
 		Layout layout;
-		CanvasCairoFile canvas;
+		CanvasCairoBase canvas = null;
 		long height;
 		
 		String imgUrl = "";
@@ -136,8 +143,19 @@ public class SketchTool {
 
 		ImageInfo info = new ImageInfo();
 		
-		canvas = new CanvasCairoFile(style, winWidth, (int) height, info);
-				
+		if(imageType.equals("png")){	
+			canvas = (CanvasCairoBase) new CanvasCairoFilePNG(style, winWidth, (int) height, info);
+		}	
+		if(imageType.equals("pdf")){	
+			canvas = new CanvasCairoFilePDF(style, winWidth, (int) height, info);
+		}	
+		if(imageType.equals("ps")){	
+			canvas = new CanvasCairoFilePS(style, winWidth, (int) height, info);
+		}	
+		if(imageType.equals("svg")){	
+			canvas = new CanvasCairoFileSVG(style, winWidth, (int) height, info);
+		}
+		
 		layout.sketch(canvas);
 		
 		ArrayList<RecMapInfo> recmapinfoArr = getRecMapElements(info);

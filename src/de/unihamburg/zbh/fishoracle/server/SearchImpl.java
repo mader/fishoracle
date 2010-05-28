@@ -125,9 +125,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				
 			} else if(query.getSearchType().equals("range")){
 				
-			} 
-
-			
+			}
 			
 			maxCNCRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), featuresLoc.getStart(), featuresLoc.getEnd(), query.getLowerTh(), query.getUpperTh());
 			
@@ -143,7 +141,14 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			SketchTool sketch = new SketchTool();
 			
-			imgInfo = sketch.generateImage(cncs, genes, band, maxCNCRange, query.getWinWidth(), query.getQueryString(), servletContext);
+			imgInfo = sketch.generateImage(cncs,
+										genes,
+										band,
+										maxCNCRange,
+										query.getWinWidth(),
+										query.getQueryString(),
+										query.getImageType(),
+										servletContext);
 			
 			imgInfo.setChromosome(maxCNCRange.getSeqRegionName());
 			imgInfo.setStart(maxCNCRange.getStart());
@@ -265,7 +270,14 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		SketchTool sketch = new SketchTool();
 		
-		imgInfo = sketch.generateImage(cncs, genes, band, maxRange, imageInfo.getWidth(), imageInfo.getQuery().getQueryString(), servletContext);
+		imgInfo = sketch.generateImage(cncs,
+									genes,
+									band,
+									maxRange,
+									imageInfo.getWidth(),
+									imageInfo.getQuery().getQueryString(),
+									imageInfo.getQuery().getImageType(),
+									servletContext);
 		
 		imgInfo.setChromosome(maxRange.getSeqRegionName());
 		imgInfo.setStart(maxRange.getStart());
@@ -347,7 +359,6 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		String url = null;
-		String fileName = null;
 		
 		String chr = imageInfo.getChromosome();
 		int start = imageInfo.getStart();
