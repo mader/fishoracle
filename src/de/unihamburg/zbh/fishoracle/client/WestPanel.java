@@ -53,7 +53,8 @@ public class WestPanel extends SectionStack{
 		mp = mainPanel;
 		
 		SectionStackSection searchSection = new SectionStackSection();
-		searchSection.setTitle("Search");  
+		searchSection.setTitle("Search");
+		searchSection.setID("search1");
 		searchSection.setExpanded(true);
 		
 		VLayout searchContent = new VLayout();
@@ -170,6 +171,7 @@ public class WestPanel extends SectionStack{
 		
 		SectionStackSection settingsSection = new SectionStackSection();  
 		settingsSection.setTitle("Settings");
+		settingsSection.setID("settings1");
 		
 		VLayout settingsContent = new VLayout();
 		

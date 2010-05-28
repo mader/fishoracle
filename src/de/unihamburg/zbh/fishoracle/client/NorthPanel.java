@@ -125,6 +125,7 @@ public class NorthPanel extends HLayout{
 				SectionStackSection[] ss = mp.getWestPanel().getSections();
 				
 				for(int i = 0; i < ss.length; i++){
+					
 					if(ss[i].getTitle().equals("Admin")){
 						mp.getWestPanel().removeSection(ss[i].getID());
 					}
