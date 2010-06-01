@@ -15,6 +15,7 @@ import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.types.ImageStyle;
 import com.smartgwt.client.types.Side;
+import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
@@ -225,7 +226,8 @@ public class CenterPanel extends VLayout{
 		imgTab.setCanClose(true);
 		
 		VLayout presentationLayer = new VLayout();
-
+		presentationLayer.setDefaultLayoutAlign(VerticalAlignment.TOP);
+		
 		/*Toolbar*/
 		ToolStrip presentationToolStrip = new ToolStrip();
 		
