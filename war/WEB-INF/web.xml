@@ -41,7 +41,7 @@
     <url-pattern>/fishoracle/AdminService</url-pattern>
   </servlet-mapping>
   
-    <servlet>
+  <servlet>
     <servlet-name>FileUpload</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.FileUploadServlet</servlet-class>
   </servlet>

@@ -179,7 +179,7 @@ public class CenterPanel extends VLayout{
 	public ImgCanvas createImageLayer(GWTImageInfo imgInfo){
 		
 		ImgCanvas image = new ImgCanvas(imgInfo);
-        image.setImageType(ImageStyle.NORMAL);
+        image.setWidth(imgInfo.getWidth());
         image.setHeight(imgInfo.getHeight());
         image.setAppImgDir("/");
 		

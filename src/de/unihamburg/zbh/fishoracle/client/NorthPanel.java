@@ -91,7 +91,7 @@ public class NorthPanel extends HLayout{
 							"Copyright (c) 2009-2010 Center for Bioinformatics, University of Hamburg <br>" +
 							"Copyright (c) 2009-2010 Department of Pathology University Medical Center Hamburg-Eppendorf");
 		
-		Img ukeImg = new Img("uke.png");
+		Img ukeImg = new Img("uke.jpg");
 		ukeImg.setImageType(ImageStyle.NORMAL);
 		
 		Img zbhImg = new Img("zbh.jpg");
