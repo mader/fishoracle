@@ -590,18 +590,20 @@ public class CenterPanel extends VLayout{
 	public void loadWindow(CopyNumberChange cncData){
 		
 		Window window = new Window();
-		
 		window.setTitle("Segment " + cncData.getCncStableId());
-		window.setAutoSize(true);
+		window.setWidth(500);
+		window.setHeight(330);
 		window.setAutoCenter(true);
+		window.setCanDragResize(true);
 		
 		final ListGrid cncGrid = new ListGrid();
-		cncGrid.setWidth(500);
-		cncGrid.setHeight(330);  
-		cncGrid.setShowAllRecords(true);  
+		cncGrid.setWidth100();
+		cncGrid.setHeight100();
+		cncGrid.setShowAllRecords(true);
 		cncGrid.setAlternateRecordStyles(true);
 		cncGrid.setShowHeader(false);
 		cncGrid.setWrapCells(true);
+		cncGrid.setCellHeight(40);
 		
 		ListGridField key = new ListGridField("key", "key");
 		ListGridField val = new ListGridField("val", "val");
