@@ -18,6 +18,7 @@ import de.unihamburg.zbh.fishoracle.server.data.*;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.Organ;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
@@ -127,11 +128,20 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				
 			}
 			
-			maxCNCRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), featuresLoc.getStart(), featuresLoc.getEnd(), query.getLowerTh(), query.getUpperTh());
+			maxCNCRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), 
+											featuresLoc.getStart(), 
+											featuresLoc.getEnd(), 
+											query.getLowerTh(), 
+											query.getUpperTh());
 			
 			maxCNCRange = adjustMaxCNCRange(maxCNCRange, featuresLoc, query.getSearchType());
 			
-			cncs = db.getCNCData(maxCNCRange.getSeqRegionName(), maxCNCRange.getStart(), maxCNCRange.getEnd(), query.getLowerTh(), query.getUpperTh());
+			cncs = db.getCNCData(maxCNCRange.getSeqRegionName(), 
+									maxCNCRange.getStart(), 
+									maxCNCRange.getEnd(), 
+									query.getLowerTh(), 
+									query.getUpperTh(),
+									query.getOrganFilter());
 			
 			Gen[] genes = null;
 			genes = db.getEnsembleGenes(maxCNCRange.getSeqRegionName(), maxCNCRange.getStart(), maxCNCRange.getEnd());
@@ -259,7 +269,12 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			throw e;
 		}
 		
-		cncs = db.getCNCData(chr, start, end, imageInfo.getQuery().getLowerTh(), imageInfo.getQuery().getUpperTh());
+		cncs = db.getCNCData(chr, 
+							start, 
+							end, 
+							imageInfo.getQuery().getLowerTh(), 
+							imageInfo.getQuery().getUpperTh(), 
+							imageInfo.getQuery().getOrganFilter());
 		
 		Gen[] genes = null;
 		genes = db.getEnsembleGenes(chr, start, end);
@@ -378,7 +393,12 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			System.out.println(e.getCause());
 		}
 		
-		cncs = db.getCNCData(chr, start, end, imageInfo.getQuery().getLowerTh(), imageInfo.getQuery().getUpperTh());
+		cncs = db.getCNCData(chr, 
+							start, 
+							end, 
+							imageInfo.getQuery().getLowerTh(), 
+							imageInfo.getQuery().getUpperTh(), 
+							imageInfo.getQuery().getOrganFilter());
 		
 		Gen[] genes = null;
 		genes = db.getEnsembleGenes(chr, start, end);
@@ -398,4 +418,14 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		return url;
 	}
 	
+	public Organ[] getOrganData() throws Exception{
+				
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBQuery db = new DBQuery(servletContext);
+		
+		Organ[] organs = db.fetchAllEnabledOrganData();
+		
+		return organs;
+	}	
 }

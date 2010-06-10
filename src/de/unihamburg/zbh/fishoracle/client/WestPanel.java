@@ -1,10 +1,13 @@
 package de.unihamburg.zbh.fishoracle.client;
 
+import java.util.LinkedHashMap;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 import com.smartgwt.client.types.Alignment;
+import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.form.DynamicForm;
@@ -27,6 +30,7 @@ import com.smartgwt.client.widgets.tab.TabSet;
 
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
+import de.unihamburg.zbh.fishoracle.client.data.Organ;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
@@ -45,6 +49,8 @@ public class WestPanel extends SectionStack{
 	
 	private TextItem greaterTextItem;
 	private TextItem lessTextItem;
+	
+	private SelectItem selectItemTissues;
 	
 	private SectionStackSection adminSection;
 	
@@ -164,7 +170,21 @@ public class WestPanel extends SectionStack{
 		});
 		*/
 		
-		searchForm.setItems(searchTextItem, SearchRadioGroupItem, cncDataSelectItem, greaterTextItem, lessTextItem, searchButton);
+		selectItemTissues = new SelectItem();
+		selectItemTissues.setTitle("Tissue Filter");
+		selectItemTissues.setMultiple(true);
+		selectItemTissues.setMultipleAppearance(MultipleAppearance.PICKLIST);
+		loadTissueFilterData();
+		selectItemTissues.setDefaultToFirstOption(true);
+		
+		searchForm.setItems(searchTextItem,
+							SearchRadioGroupItem, 
+							cncDataSelectItem, 
+							greaterTextItem, 
+							lessTextItem, 
+							selectItemTissues, 
+							searchButton);
+		
 		searchContent.addMember(searchForm);
 		
 		searchSection.setItems(searchContent);
@@ -187,8 +207,6 @@ public class WestPanel extends SectionStack{
 		settingsContent.addMember(userForm);
 		
 		settingsSection.addItem(settingsContent);
-		
-		
 		
 		this.setSections(searchSection, settingsSection);
 			
@@ -290,15 +308,17 @@ public class WestPanel extends SectionStack{
 						
 			QueryInfo newQuery = null;
 			try {
+				
 				newQuery = new QueryInfo(searchTextItem.getDisplayValue(),
-													typeStr,
-													lessTextItem.getDisplayValue(),
-													greaterTextItem.getDisplayValue(),
-													"png",
-													mp.getCenterPanel().getWidth() - 30);
+											typeStr,
+											lessTextItem.getDisplayValue(),
+											greaterTextItem.getDisplayValue(),
+											"png",
+											selectItemTissues.getValues(),
+											mp.getCenterPanel().getWidth() - 30);
 			} catch (Exception e) {
 				SC.say(e.getMessage());
-			} 
+			}
 			
 			//MessageBox.wait("Searching for " + searchBox.getText());
 			search(newQuery);
@@ -398,4 +418,31 @@ public class WestPanel extends SectionStack{
 		};
 		req.canAccessDataImport(callback);
 	}
+	
+	public void loadTissueFilterData(){
+
+		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Organ[]> callback = new AsyncCallback<Organ[]>(){
+			@Override
+			public void onSuccess(Organ[] result){
+
+				LinkedHashMap<String, String> organValueMap = new LinkedHashMap<String, String>();
+				for(int i=0; i < result.length; i++){
+					organValueMap.put(new Integer(i).toString(),result[i].getLabel());
+
+				}
+				
+				selectItemTissues.setValueMap(organValueMap);
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());
+			}
+		};
+		req.getOrganData(callback);
+	}
+	
 }

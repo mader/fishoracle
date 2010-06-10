@@ -385,7 +385,12 @@ public class DBQuery {
 	 * @return		Array containing amplicon objects
 	 * 
 	 * */
-	public CopyNumberChange[] getCNCData(String chr, int start, int end, Double lowerTh, Double upperTh){
+	public CopyNumberChange[] getCNCData(String chr,
+											int start, 
+											int end, 
+											Double lowerTh, 
+											Double upperTh,
+											String[] organFilter){
 		
 		String qrystrc = null;
 		String qrystr = null;
@@ -393,14 +398,23 @@ public class DBQuery {
 		int copyNumberChangeEnd = end;
 		String copyNumberChangeChr = chr;
 		
-		qrystrc = "SELECT count(*) FROM cnc_segment WHERE cnc_segment_chromosome = \"" + copyNumberChangeChr + "\" " +
+		qrystrc = "SELECT count(*) FROM cnc_segment " +
+		"LEFT JOIN microarraystudy ON microarraystudy_id = cnc_segment_microarraystudy_id " +
+		"LEFT JOIN sample_on_chip ON sample_on_chip_id = microarraystudy_sample_on_chip_id " +
+		"LEFT JOIN tissue_sample ON tissue_sample_id = sample_on_chip_tissue_sample_id " +
+		"LEFT JOIN organ ON organ_id = tissue_sample_organ_id " +
+		"WHERE cnc_segment_chromosome = \"" + copyNumberChangeChr + "\" " +
 		"AND ((cnc_segment_start <= " + copyNumberChangeStart + " AND cnc_segment_end >= " + copyNumberChangeEnd + ") OR" +
         " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + ") OR" +
         " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_start <= " + copyNumberChangeEnd + ") OR" +
         " (cnc_segment_end >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + "))";
 		
 		qrystr = "SELECT cnc_segment_stable_id, cnc_segment_chromosome, cnc_segment_start, cnc_segment_end FROM " +
-		"cnc_segment WHERE cnc_segment_chromosome = \"" + copyNumberChangeChr + "\" " +
+		"cnc_segment LEFT JOIN microarraystudy ON microarraystudy_id = cnc_segment_microarraystudy_id " +
+		"LEFT JOIN sample_on_chip ON sample_on_chip_id = microarraystudy_sample_on_chip_id " +
+		"LEFT JOIN tissue_sample ON tissue_sample_id = sample_on_chip_tissue_sample_id " +
+		"LEFT JOIN organ ON organ_id = tissue_sample_organ_id " +
+		"WHERE cnc_segment_chromosome = \"" + copyNumberChangeChr + "\" " +
 		"AND ((cnc_segment_start <= " + copyNumberChangeStart + " AND cnc_segment_end >= " + copyNumberChangeEnd + ") OR" +
         " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + ") OR" +
         " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_start <= " + copyNumberChangeEnd + ") OR" +
@@ -420,6 +434,24 @@ public class DBQuery {
 								"cnc_segment_mean > '" + upperTh + "')";
 			qrystr = qrystr + " AND (cnc_segment_mean < '" + lowerTh + "' AND " +
 			"cnc_segment_mean > '" + upperTh + "')";
+		}
+		
+		if(organFilter.length > 0){
+			String organFilterStr = "";
+			for(int i = 0; i < organFilter.length; i++){
+				if(i == 0){
+					organFilterStr = " organ_id = '" + (Integer.parseInt(organFilter[i]) + 1) + "'";
+				} else {
+					organFilterStr = organFilterStr + " OR organ_id = '" + (Integer.parseInt(organFilter[i]) + 1) + "'";
+				}
+			}
+		
+			organFilterStr = " AND (" + organFilterStr + ")";
+			
+			qrystrc = qrystrc + organFilterStr;
+			
+			qrystr = qrystr + organFilterStr;
+
 		}
 		
 		Connection conn = null;

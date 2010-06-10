@@ -9,13 +9,15 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 	private Double lowerTh;
 	private Double upperTh;
 	private String imageType;
+	private String[] organFilter;
 	private int winWidth;
+	
 	
 	public QueryInfo() {
 		
 	}
 
-	public QueryInfo(String queryString, String searchType, String lowerTh, String upperTh, String imageType, int winWidth) throws Exception {
+	public QueryInfo(String queryString, String searchType, String lowerTh, String upperTh, String imageType, String[] organFilter, int winWidth) throws Exception {
 		super();
 		this.queryString = queryString;
 		this.searchType = searchType;
@@ -37,7 +39,7 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		}
 		
 		this.imageType = imageType;
-		
+		this.organFilter = organFilter;
 		this.winWidth = winWidth;
 	}
 
@@ -65,6 +67,7 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		query.setOrganFilter(this.organFilter);
 		query.setWinWidth(this.winWidth);
 		
 		return query;
@@ -146,6 +149,14 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 
 	public void setImageType(String imageType) {
 		this.imageType = imageType;
+	}
+
+	public String[] getOrganFilter() {
+		return organFilter;
+	}
+
+	public void setOrganFilter(String[] organFilter) {
+		this.organFilter = organFilter;
 	}
 
 	public int getWinWidth() {
