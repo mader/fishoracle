@@ -85,7 +85,8 @@ public class SketchTool {
 				
 				fnode = new FeatureNode(seqid, "cnc", cncs[l].getStart(), cncs[l].getEnd(), ".");
 				features.add(fnode);
-				fnode.add_attribute("ID", cncs[l].getCncStableId());
+				fnode.add_attribute("ID", cncs[l].getMicroarrayStudy());
+				fnode.add_attribute("NAME", cncs[l].getCncStableId());
 				if(cncs[l].getCncStableId().equalsIgnoreCase(query)){
 					fnode.mark();
 				}
@@ -216,7 +217,7 @@ public class SketchTool {
 			// the same applies to the amplicons but here the caption equals the amplicon stable id	
 			} else if (info.get_rec_map(i).get_genome_feature().get_type().equals("cnc")){
 				
-				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("ID");
+				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("NAME");
 				
 			}
 			

@@ -483,9 +483,12 @@ public class DBQuery {
 				String newChr = regRs.getString(2);
 				int newStart = regRs.getInt(3);
 				int newEnd = regRs.getInt(4);
+				String newStudyName = regRs.getString(5);
 				
 				cnc[count] = new CopyNumberChange(newCNCStableId, newChr, newStart, newEnd);
 
+				cnc[count].setMicroarrayStudy(newStudyName);
+				
 				count++;
 			}
 			
