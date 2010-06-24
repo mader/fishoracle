@@ -409,7 +409,7 @@ public class DBQuery {
         " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_start <= " + copyNumberChangeEnd + ") OR" +
         " (cnc_segment_end >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + "))";
 		
-		qrystr = "SELECT cnc_segment_stable_id, cnc_segment_chromosome, cnc_segment_start, cnc_segment_end FROM " +
+		qrystr = "SELECT cnc_segment_stable_id, cnc_segment_chromosome, cnc_segment_start, cnc_segment_end, microarraystudy_labelling FROM " +
 		"cnc_segment LEFT JOIN microarraystudy ON microarraystudy_id = cnc_segment_microarraystudy_id " +
 		"LEFT JOIN sample_on_chip ON sample_on_chip_id = microarraystudy_sample_on_chip_id " +
 		"LEFT JOIN tissue_sample ON tissue_sample_id = sample_on_chip_tissue_sample_id " +
