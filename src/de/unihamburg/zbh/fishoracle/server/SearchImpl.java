@@ -217,8 +217,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			} else {
 				loc.setStart(featuresLoc.getStart() - 10000000);
 			}
-			if(featuresLoc.getStart() - 10000000 < 0){
-				loc.setEnd(featuresLoc.getEnd() + 10000000 - (featuresLoc.getEnd() + 10000000));
+			if(featuresLoc.getEnd() - 10000000 < 0){
+				loc.setEnd(20000000);
 			} else {
 				loc.setEnd(featuresLoc.getEnd() + 10000000);
 			}
