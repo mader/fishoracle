@@ -1291,8 +1291,8 @@ public class CenterPanel extends VLayout{
 						pstage,
 						pgrade,
 						metaStatus,
-						description,
 						sampleId,
+						description,
 						callback);
 	}
 	
