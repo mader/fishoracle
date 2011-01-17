@@ -35,6 +35,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		HttpServletRequest request=this.getThreadLocalRequest();
 		HttpSession session=request.getSession();
 		
+		session.setMaxInactiveInterval(-1);
 		session.setAttribute("user", user);
 		
 		return user;
