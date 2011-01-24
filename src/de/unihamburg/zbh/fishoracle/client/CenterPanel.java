@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
+import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.SC;
@@ -603,6 +604,9 @@ public class CenterPanel extends VLayout{
 		cncGrid.setShowHeader(false);
 		cncGrid.setWrapCells(true);
 		cncGrid.setCellHeight(40);
+		cncGrid.setCanEdit(true);
+		cncGrid.setEditEvent(ListGridEditEvent.CLICK);
+		
 		
 		ListGridField key = new ListGridField("key", "key");
 		ListGridField val = new ListGridField("val", "val");
@@ -694,6 +698,8 @@ public class CenterPanel extends VLayout{
 		geneGrid.setShowHeader(false);
 		geneGrid.setWrapCells(true);
 		geneGrid.setFixedRecordHeights(false);
+		geneGrid.setCanEdit(true);
+		geneGrid.setEditEvent(ListGridEditEvent.CLICK);
 		
 		ListGridField key = new ListGridField("key", "key");
 		ListGridField val = new ListGridField("val", "val");
