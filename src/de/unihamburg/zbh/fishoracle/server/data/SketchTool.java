@@ -1,8 +1,11 @@
 package de.unihamburg.zbh.fishoracle.server.data;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Calendar;
 
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
@@ -46,6 +49,8 @@ public class SketchTool {
 	 * @return imgInfo image info object that stores additional information of
 	 *          the generated image that need to be displayed or further processed
 	 *          at the client side.
+	 * @throws UnsupportedEncodingException 
+	 * @throws NoSuchAlgorithmException 
 	 *          @see GWTImageInfo
  	 * */
 	public GWTImageInfo generateImage(CopyNumberChange[] cncs,
@@ -55,7 +60,7 @@ public class SketchTool {
 									int winWidth,
 									String query,
 									String imageType,
-									String serverPath) {
+									String serverPath) throws NoSuchAlgorithmException, UnsupportedEncodingException {
 			
 		ArrayList<FeatureNode> features;
 		
@@ -161,12 +166,19 @@ public class SketchTool {
 		
 		ArrayList<RecMapInfo> recmapinfoArr = getRecMapElements(info);
 		
+		String dateStr;
+		Calendar cal = Calendar.getInstance();
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    dateStr = sdf.format(cal.getTime());
+		
+	    String shaStr;
+	    
+	    shaStr = SimpleSHA.SHA1(dateStr);
+	    
 		@SuppressWarnings("unused")
 		File file;
-		Random generator = new Random();
-		int number = generator.nextInt( Integer.MAX_VALUE );
-		
-		String fileName = Integer.toString(number);
+
+		String fileName = shaStr + "_" + loc.getSeqRegionName() + ":" + loc.getStart() + "-" + loc.getEnd() + "_" + query;
 		
 		imgUrl = "as_output" + System.getProperty("file.separator") + fileName + "." + imageType;
 		

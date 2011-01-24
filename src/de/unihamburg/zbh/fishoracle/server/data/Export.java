@@ -2,7 +2,9 @@ package de.unihamburg.zbh.fishoracle.server.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import org.ensembl.datamodel.Location;
 
@@ -21,21 +23,33 @@ public class Export {
 	}
 
 	@SuppressWarnings({"deprecation"})
-	public String exportImageAsExcelDocument(CopyNumberChange[] cncs, Gen[] genes, Location maxAmpRange, String servletPath) throws IOException, RowsExceededException, WriteException{
+	public String exportImageAsExcelDocument(CopyNumberChange[] cncs, 
+			                                  Gen[] genes, 
+			                                  Location maxRange, 
+			                                  String servletPath) throws IOException, 
+			                                                              RowsExceededException, 
+			                                                              WriteException, 
+			                                                              NoSuchAlgorithmException{
 		
 		int i, j, k;
 		int geneCol;
 		String fileName = null;
 		
-		Random generator = new Random();
-		int number = generator.nextInt( Integer.MAX_VALUE );
+		String dateStr;
+		Calendar cal = Calendar.getInstance();
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    dateStr = sdf.format(cal.getTime());
 		
-		fileName = number + ".xls";
+	    String shaStr;
+	    
+	    shaStr = SimpleSHA.SHA1(dateStr);
+		
+		fileName = shaStr + "_" + maxRange.getSeqRegionName() + ":" + maxRange.getStart() + "-" + maxRange.getEnd() + ".xls";
 		
 		String url = "excel_output" + System.getProperty("file.separator") + fileName;
 		
 		WritableWorkbook workbook = Workbook.createWorkbook(new File(servletPath + url));
-		WritableSheet sheet = workbook.createSheet(maxAmpRange.getSeqRegionName() + "," + maxAmpRange.getStart() + "-" + maxAmpRange.getEnd(), 0); 
+		WritableSheet sheet = workbook.createSheet(maxRange.getSeqRegionName() + "," + maxRange.getStart() + "-" + maxRange.getEnd(), 0); 
 		
 		WritableFont textwidth = new WritableFont(WritableFont.ARIAL, 8);
 		WritableCellFormat text = new WritableCellFormat(textwidth);
