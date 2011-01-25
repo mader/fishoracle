@@ -49,6 +49,7 @@ public class LoginScreen extends VLayout{
 		
 		/*user login*/
 		DynamicForm loginForm = new DynamicForm();
+		loginForm.setAutoFocus(true);
 		loginForm.setGroupTitle("FISH Oracle");
 		loginForm.setIsGroup(true);
 		loginForm.setWidth(300);
