@@ -14,6 +14,7 @@ import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.types.ListGridEditEvent;
+import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.SC;
@@ -179,6 +180,7 @@ public class CenterPanel extends VLayout{
 	public ImgCanvas createImageLayer(GWTImageInfo imgInfo){
 		
 		ImgCanvas image = new ImgCanvas(imgInfo);
+		image.setOverflow(Overflow.HIDDEN);
         image.setWidth(imgInfo.getWidth());
         image.setHeight(imgInfo.getHeight());
         image.setAppImgDir("/");
