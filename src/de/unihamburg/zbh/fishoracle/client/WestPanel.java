@@ -8,6 +8,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.MultipleAppearance;
+import com.smartgwt.client.types.TreeModelType;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.form.DynamicForm;
@@ -27,6 +28,11 @@ import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
+import com.smartgwt.client.widgets.tree.Tree;
+import com.smartgwt.client.widgets.tree.TreeGrid;
+import com.smartgwt.client.widgets.tree.TreeNode;
+import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
+import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
@@ -221,64 +227,66 @@ public class WestPanel extends SectionStack{
 		VLayout adminContent = new VLayout();
 		
 		/*administration settings*/
-		DynamicForm adminForm = new DynamicForm();
-		
-		LinkItem usersLinkItem = new LinkItem();   
-		usersLinkItem.setLinkTitle("Show users");
-		usersLinkItem.setShowTitle(false);
-		usersLinkItem.addClickHandler(new ClickHandler(){
+		TreeGrid adminTreeGrid = new TreeGrid();
+		adminTreeGrid.setShowConnectors(true);
+		adminTreeGrid.setShowHeader(false);
+		adminTreeGrid.addNodeClickHandler(new NodeClickHandler(){
 
 			@Override
-			public void onClick(ClickEvent event) {
-				boolean exists = false;
-				int index = 0;
+			public void onNodeClick(NodeClickEvent event) {
 				
-				TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
-				Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
-				for(int i=0; i < tabs.length; i++){
-					if(tabs[i].getTitle().equals("Users")){
-						exists = true;
-						index = i;
+				if(event.getNode().getName().equals("Show Users")){
+					boolean exists = false;
+					int index = 0;
+					
+					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+					for(int i=0; i < tabs.length; i++){
+						if(tabs[i].getTitle().equals("Users")){
+							exists = true;
+							index = i;
+						}
+					}
+					
+					if(exists){
+						centerTabSet.selectTab(index);
+					} else {
+						showAllUsers();
 					}
 				}
-				
-				if(exists){
-					centerTabSet.selectTab(index);
-				} else {
-					showAllUsers();
-				}
-			}
-		});
-		
-		LinkItem dataLinkItem = new LinkItem();  
-		dataLinkItem.setLinkTitle("Add data");
-		dataLinkItem.setShowTitle(false);
-		dataLinkItem.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				boolean exists = false;
-				int index = 0;
-				
-				TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
-				Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
-				for(int i=0; i < tabs.length; i++){
-					if(tabs[i].getTitle().equals("Data Import") || tabs[i].getTitle().equals("Data Import (occupied)")){
-						exists = true;
-						index = i;
+				if(event.getNode().getName().equals("Add Data")){
+					boolean exists = false;
+					int index = 0;
+					
+					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+					for(int i=0; i < tabs.length; i++){
+						if(tabs[i].getTitle().equals("Data Import") || tabs[i].getTitle().equals("Data Import (occupied)")){
+							exists = true;
+							index = i;
+						}
+					}
+					if(exists){
+						centerTabSet.selectTab(index);
+					} else {
+						checkImportData();
 					}
 				}
-				if(exists){
-					centerTabSet.selectTab(index);
-				} else {
-					checkImportData();
-				}
 			}
+			
 		});
 		
-		adminForm.setItems(usersLinkItem, dataLinkItem);
 		
-		adminContent.addMember(adminForm);
+		Tree adminTree = new Tree();  
+		adminTree.setModelType(TreeModelType.CHILDREN);  
+		adminTree.setRoot(new TreeNode("root",  
+							new TreeNode("Show Users"),  
+							new TreeNode("Add Data")
+							));  
+		
+		adminTreeGrid.setData(adminTree);
+		
+		adminContent.addMember(adminTreeGrid);
 		
 		adminSection.addItem(adminContent);
 		
