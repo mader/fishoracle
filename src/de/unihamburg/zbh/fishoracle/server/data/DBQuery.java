@@ -36,7 +36,7 @@ import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
 /**
- * Fetches various information from the fish oracle database an gene
+ * Fetches various information from the fish oracle database and gene
  * information from the ensembl database using the ensembl Java API.
  * 
  * */
@@ -58,8 +58,6 @@ public class DBQuery {
 	/**
 	 * Initializes the database object by fetching the database connection 
 	 * parameters from the database.conf file.
-	 * 
-	 * 
 	 * 
 	 * @param serverPath should contain the realPath of a servlet context to the 
 	 *         database.conf file. e.g.:
@@ -166,10 +164,10 @@ public class DBQuery {
 	}
 	
 	/**
-	 * Looks location information (chromosome, start, end) for an amplicon stable id up.
+	 * Looks location information (chromosome, start, end) for an Copy Number Change (CNC) stable id up.
 	 * 
-	 * @param copyNumberChangeId The stable id of an amplicon.
-	 * @return		An ensembl API location object storing chromosome, start and end of an amplicon. 
+	 * @param copyNumberChangeId The stable id of a segment.
+	 * @return		An ensembl API location object storing chromosome, start and end of a CNC. 
 	 * @throws Exception 
 	 * 
 	 * */
@@ -230,7 +228,7 @@ public class DBQuery {
 	}
 	
 	/**
-	 * Looks location information (chromosome, start, end) for a gene symbol up.
+	 * Looks up location information (chromosome, start, end) for a gene symbol.
 	 * 
 	 * @param symbol The gene symbol, that was specified in the search query.
 	 * @return		An ensembl API location object storing chromosome, start and end of a gene. 
@@ -262,11 +260,11 @@ public class DBQuery {
 	}
 	
 	/** 
-	 * Looks location information (chromosome, start, end) for a karyoband up.
+	 * Looks up location information (chromosome, start, end) for a karyoband.
 	 * 
 	 * @param chr The chromosome number
 	 * @param band The karyoband
-	 * @return		An ensembl API location object storing chromosome, start and end of a chromosome and  karyoband. 
+	 * @return		An ensembl API location object storing chromosome, start and end of a chromosome and karyoband. 
 	 * @throws DBQueryException 
 	 * 
 	 * */
@@ -301,13 +299,15 @@ public class DBQuery {
 	
 	
 	/**
-	 * Finds all amplicons that overlap with a given range on a chromosome and returns the 
-	 * maximum range over all overlapping amplicons as an ensembl location object.
+	 * Finds all CNCs that overlap with a given range on a chromosome and returns the 
+	 * maximum range over all overlapping CNCs as an ensembl location object.
 	 * 
 	 * @param chr chromosome number
 	 * @param start Starting position on the chromosome.
 	 * @param end Ending postion on the chromosome.
-	 * @return 		An ensembl API location object storing chromosome, start and end
+	 * @param lowerTh Lower segment Threshold.
+	 * @param upperTh Upper segment Threshold.
+	 * @return 		An ensembl API location object storing chromosome, start and end.
 	 * 
 	 * */
 	public Location getMaxCNCRange(String chr, int start, int end, Double lowerTh, Double upperTh){
@@ -377,12 +377,15 @@ public class DBQuery {
 	}
 	
 	/**
-	 * For a range on a chromosome an array with all overlapping amplicons is returned.
+	 * For a range on a chromosome an array with all overlapping CNCs is returned.
 	 * 
 	 * @param chr chromosome
 	 * @param start Starting position on the chromosome.
 	 * @param end Ending postion on the chromosome.
-	 * @return		Array containing amplicon objects
+	 * @param lowerTh Lower segment Threshold.
+	 * @param upperTh Upper segment Threshold.
+	 * @param organFilter An array of organs.
+	 * @return		Array containing CNC objects.
 	 * 
 	 * */
 	public CopyNumberChange[] getCNCData(String chr,
@@ -590,12 +593,11 @@ public class DBQuery {
 	*/
 	
 	/**
-	 * Fetch all data for a given Amplicon stable id
+	 * Fetch all data for a given CNC stable id
 	 * 
-	 * @param query Amplicon Stable ID
-	 * @return		Amplicon object conaiting all amplicon data.
-	 * @throws Exception 
-	 * @throws Exception 
+	 * @param query CNC Stable ID
+	 * @return		CNC object containing all CNC data.
+	 * @throws Exception  
 	 * 
 	 * */
 	public CopyNumberChange getCNCInfos(String query) throws Exception{
@@ -696,7 +698,7 @@ public class DBQuery {
 	 * Fetch all data for a gene given by an ensembl stable id.
 	 * 
 	 * @param query Ensembl Stable ID
-	 * @return		Gen object conaiting all gene data.
+	 * @return		Gen object containing all gene data.
 	 * @throws Exception 
 	 * 
 	 * */
