@@ -13,13 +13,11 @@ import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
-import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.RadioGroupItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
-import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
@@ -34,7 +32,6 @@ import com.smartgwt.client.widgets.tree.TreeNode;
 import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
 import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
-import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Organ;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
@@ -361,28 +358,6 @@ public class WestPanel extends SectionStack{
 			};
 			req.generateImage(q, callback);
 		}
-	
-	public void fetchCncData(final boolean isAmplicon){
-		
-		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<CopyNumberChange[]> callback = new AsyncCallback<CopyNumberChange[]>(){
-			public void onSuccess(CopyNumberChange[] result){
-				
-				//MessageBox.hide();
-				//mp.getCenterPanel().newDataTab(result, isAmplicon);
-
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				//MessageBox.hide();
-				SC.say(caught.getMessage());
-			}
-		};
-		req.getListOfCncs(isAmplicon, callback);
-	}
 	
 	public void showAllUsers(){
 		

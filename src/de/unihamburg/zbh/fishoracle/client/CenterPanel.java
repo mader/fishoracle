@@ -753,62 +753,6 @@ public class CenterPanel extends VLayout{
 		window.show();
 	}
 	
-	/*
-	public void newDataTab(CopyNumberChange[] cncs, boolean isAmplicon) {
-		
-		String type = null;
-		
-		if(isAmplicon){
-			type = "amplicons";
-		} else {
-			type = "delicons";
-		}
-		
-		Tab tab = new Tab("List of all " + type);
-		tab.setCanClose(true);
-		
-		final ListGrid summaryGrid = new ListGrid();
-		summaryGrid.setWidth100();
-		summaryGrid.setHeight100();
-		summaryGrid.setShowAllRecords(true);  
-		summaryGrid.setAlternateRecordStyles(true);
-		summaryGrid.setWrapCells(true);
-		summaryGrid.setFixedRecordHeights(false);
-		
-		ListGridField lgfId = new ListGridField("stableId", "Stable ID");
-		ListGridField lgfChromosome = new ListGridField("chromosome", "Chromosome");
-		ListGridField lgfStart = new ListGridField("start", "Start");
-		ListGridField lgfEnd = new ListGridField("end", "End");
-		ListGridField lgfCaseName = new ListGridField("caseName", "Case name");
-		ListGridField lgfTumorType = new ListGridField("tumorType", "Tumor Type");
-		ListGridField lgfContinuous = new ListGridField("continuous", "Continuous");
-		ListGridField lgfLevel = new ListGridField("level", "Level");
-		
-		summaryGrid.setFields(lgfId, lgfChromosome, lgfStart, lgfEnd, lgfCaseName, lgfTumorType, lgfContinuous, lgfLevel);
-		
-		ListGridRecord[] lgr = new ListGridRecord[cncs.length];
-		
-		for(int i=0; i < cncs.length; i++){
-			lgr[i] = new ListGridRecord();
-			lgr[i].setAttribute("stableId", cncs[i].getCncStableId());
-			lgr[i].setAttribute("chromosome", cncs[i].getChromosome());
-			lgr[i].setAttribute("start", cncs[i].getStart());
-			lgr[i].setAttribute("end", cncs[i].getEnd());
-			lgr[i].setAttribute("caseName", cncs[i].getCaseName());
-			lgr[i].setAttribute("tumorType", cncs[i].getTumorType());
-			lgr[i].setAttribute("continuous", cncs[i].getContinuous());
-			lgr[i].setAttribute("level", cncs[i].getCnclevel());
-		}
-		
-		summaryGrid.setData(lgr);
-		
-		tab.setPane(summaryGrid);
-		
-		centerTabSet.addTab(tab);
-		
-		centerTabSet.selectTab(tab);
-	}
-	*/
 	public void openUserAdminTab(final User[] users){
 	
 		Tab usersAdminTab = new Tab("Users");
