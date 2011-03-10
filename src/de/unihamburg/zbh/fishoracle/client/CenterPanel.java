@@ -110,10 +110,6 @@ public class CenterPanel extends VLayout{
         		" e.g. 'CNC100' or for a gene specified by a gene name e.g. 'kras'" +
         		" or a karyoband giving the exact karyoband identifier e.g. '8q21.3'." +
         		" By clicking on an element a window opens that shows additional information." +
-        		" As the CNC data is incompatible to the Ensembl version 57 the currently" +
-        		" used Ensembl version is 54. If you want to search for a gene in the Ensembl " +
-        		" browser you better also use version 54 " +
-        		"<a href=\"http://may2009.archive.ensembl.org\" target=_blank>http://may09.archive.ensembl.org</a>" +
         		"</p><p id=\"welcome\"><br>FISH Oracle uses:<br> " +
         		"<ul id=\"welcome\">" +
         		"<li> the Google Web Toolkit <a href=\"http://code.google.com/webtoolkit/\" target=_blank>http://code.google.com/webtoolkit/</a></li>" +
