@@ -148,7 +148,6 @@ public class WestPanel extends SectionStack{
 		lessTextItem = new TextItem();
 		lessTextItem.setTitle("less than");
 		lessTextItem.setValue("-0.5");
-		//lessTextItem.disable();
 		
 		lessTextItem.addKeyPressHandler(new KeyPressHandler(){
 			
@@ -159,19 +158,6 @@ public class WestPanel extends SectionStack{
 				}
 			}
 		});
-		
-		/*show more information*/
-		/*
-		LinkItem AllDataLinkItem = new LinkItem();   
-		AllDataLinkItem.setLinkTitle("show all CNCs");
-		AllDataLinkItem.addClickHandler(new ClickHandler(){
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				wp.fetchCncData(true);
-			}
-		});
-		*/
 		
 		selectItemTissues = new SelectItem();
 		selectItemTissues.setTitle("Tissue Filter");
@@ -192,10 +178,6 @@ public class WestPanel extends SectionStack{
 		
 		searchSection.setItems(searchContent);
 		
-		SectionStackSection settingsSection = new SectionStackSection();  
-		settingsSection.setTitle("Settings");
-		settingsSection.setID("settings1");
-		
 		VLayout settingsContent = new VLayout();
 		
 		/*user settings*/
@@ -209,9 +191,7 @@ public class WestPanel extends SectionStack{
 		
 		settingsContent.addMember(userForm);
 		
-		settingsSection.addItem(settingsContent);
-		
-		this.setSections(searchSection, settingsSection);
+		this.setSections(searchSection);
 			
 	}
 	
