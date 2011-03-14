@@ -124,8 +124,20 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 					featuresLoc = db.getLocationForKaryoband(chrStr, bandStr);
 				}
 				
-			} else if(query.getSearchType().equals("range")){
+			} else if(query.getSearchType().equals("Region")){
+
+				try{
+				featuresLoc = new Location(query.getQueryString());
+				} catch (Exception e){
+					e.printStackTrace();
+					System.out.println("Error: " + e.getMessage());
+					System.out.println(e.getCause());
+					throw new Exception("Error: " + e.getMessage());
+				}
 				
+				if(featuresLoc.getEnd() - featuresLoc.getStart() < 10 ){
+					throw new Exception("The end value must at least be 10 base pairs greater than the start value!");
+				}
 			}
 			
 			maxCNCRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), 

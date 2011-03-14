@@ -18,6 +18,8 @@ import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
@@ -47,7 +49,10 @@ public class WestPanel extends SectionStack{
 	private MainPanel mp = null;
 	
 	private TextItem searchTextItem;
-
+	private TextItem chrTextItem;
+	private TextItem startTextItem;
+	private TextItem endTextItem;
+	
 	private RadioGroupItem SearchRadioGroupItem;
 	
 	private TextItem greaterTextItem;
@@ -71,13 +76,43 @@ public class WestPanel extends SectionStack{
 		/*basic search options*/
 		DynamicForm searchForm = new DynamicForm();
 		
-		searchTextItem = new TextItem();  
+		searchTextItem = new TextItem();
 		searchTextItem.setTitle("Search");
+		
+		chrTextItem = new TextItem();
+		chrTextItem.setTitle("Chromosome");
+		chrTextItem.setVisible(false);
+		
+		startTextItem = new TextItem();  
+		startTextItem.setTitle("Start");
+		startTextItem.setVisible(false);
+
+		endTextItem = new TextItem();  
+		endTextItem.setTitle("End");
+		endTextItem.setVisible(false);
 		
 		SearchRadioGroupItem = new RadioGroupItem();  
 		SearchRadioGroupItem.setTitle("Type");  
-		SearchRadioGroupItem.setValueMap("CNC Stable ID", "Gene", "Karyoband"); 
+		SearchRadioGroupItem.setValueMap("Region", "CNC Stable ID", "Gene", "Karyoband"); 
 		SearchRadioGroupItem.setDefaultValue("Gene");
+		SearchRadioGroupItem.addChangedHandler(new ChangedHandler(){
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				if(event.getItem().getDisplayValue().equals("Region")){
+					searchTextItem.hide();
+					chrTextItem.show();
+					startTextItem.show();
+					endTextItem.show();
+				} else {
+					chrTextItem.hide();
+					startTextItem.hide();
+					endTextItem.hide();
+					searchTextItem.show();
+				}
+			}
+			
+		});
 		
 		ButtonItem searchButton = new ButtonItem("Search");
 		searchButton.setAlign(Alignment.CENTER);
@@ -92,6 +127,36 @@ public class WestPanel extends SectionStack{
 		});
 		
 		searchTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
+		
+		chrTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
+		
+		startTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
+
+		endTextItem.addKeyPressHandler(new KeyPressHandler(){
 			
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
@@ -167,6 +232,9 @@ public class WestPanel extends SectionStack{
 		selectItemTissues.setDefaultToFirstOption(true);
 		
 		searchForm.setItems(searchTextItem,
+							chrTextItem,
+							startTextItem,
+							endTextItem,
 							SearchRadioGroupItem, 
 							cncDataSelectItem, 
 							greaterTextItem, 
@@ -276,25 +344,37 @@ public class WestPanel extends SectionStack{
 
 	public void startSearch(){
 		String typeStr = null;
+		String qryStr = null;
 		
-		if(searchTextItem.getDisplayValue().equals("")){
-			SC.say("You have to type in a search term!");
+		if(searchTextItem.getDisplayValue().equals("") &&
+			chrTextItem.getDisplayValue().equals("") &&
+			startTextItem.getDisplayValue().equals("") &&
+			endTextItem.getDisplayValue().equals("") ){
+			SC.say("You have to type in a search term or provide a chromosome, start position and end position!");
 		} else {
 		
+			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Region")){
+				typeStr = "Region";
+				qryStr = "chromosome:" + chrTextItem.getDisplayValue() + ":" 
+							+ startTextItem.getDisplayValue() + "-" + endTextItem.getDisplayValue();
+			}
 			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("CNC Stable ID")){
 				typeStr = "CNC Search";
+				qryStr = searchTextItem.getDisplayValue();
 			}
 			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Gene")){
 				typeStr = "Gene Search";
+				qryStr = searchTextItem.getDisplayValue();
 			}
 			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Karyoband")){
 				typeStr = "Band Search";
+				qryStr = searchTextItem.getDisplayValue();
 			}
 						
 			QueryInfo newQuery = null;
 			try {
 				
-				newQuery = new QueryInfo(searchTextItem.getDisplayValue(),
+				newQuery = new QueryInfo(qryStr,
 											typeStr,
 											lessTextItem.getDisplayValue(),
 											greaterTextItem.getDisplayValue(),
