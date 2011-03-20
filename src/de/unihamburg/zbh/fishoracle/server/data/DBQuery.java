@@ -1,16 +1,10 @@
 package de.unihamburg.zbh.fishoracle.server.data;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.Date;
 
 import org.ensembl.datamodel.CoordinateSystem;
@@ -27,6 +21,7 @@ import com.csvreader.CsvReader;
 
 import de.unihamburg.zbh.fishoracle.client.data.Chip;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
+import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.MetaStatus;
 import de.unihamburg.zbh.fishoracle.client.data.Organ;
@@ -41,19 +36,9 @@ import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
  * 
  * */
 public class DBQuery {
-
-	//ensembl connection parameters
-	private String ehost = null;
-	private int eport;
-	private String edb = null;
-	private String euser = null;
-	private String epw = null;
 	
-	//fish oracle connection parameters
-	private String fhost = null;
-	private String fdb = null;
-	private String fuser = null;
-	private String fpw = null;
+	private DBConfig dbConfig;
+	private DBConfigData connectionData;
 	
 	/**
 	 * Initializes the database object by fetching the database connection 
@@ -66,101 +51,8 @@ public class DBQuery {
 	 * 
 	 * */
 	public DBQuery(String serverPath) {
-		
-		try{
-
-	    FileInputStream fStream = new FileInputStream(serverPath + "config" + System.getProperty("file.separator") + "database.conf");
-	    DataInputStream inStream = new DataInputStream(fStream);
-	    BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
-	    
-	    String strLine;
-	    String[] dataStr;
-	    
-	    Boolean ensmbl = false;
-	    Boolean fishoracle = false;   
-	    
-	    while ((strLine = br.readLine()) != null)   {
-		  
-	      Pattern pensmbl = Pattern.compile("^\\[ensembl\\]$");
-		  Matcher mensmbl = pensmbl.matcher(strLine);
-	      
-		  if(mensmbl.find()){
-			  ensmbl = true;  
-			  fishoracle = false; 
-		  }
-		  
-		  Pattern pforacle = Pattern.compile("^\\[fishoracle\\]$");
-		  Matcher mforacle = pforacle.matcher(strLine);
-		  
-		  if(mforacle.find()){
-			  fishoracle = true; 
-			  ensmbl = false; 
-		  }
-		  
-		  Pattern phost = Pattern.compile("^host");
-		  Matcher mhost = phost.matcher(strLine);
-	      
-		  Pattern pport = Pattern.compile("^port");
-		  Matcher mport = pport.matcher(strLine);
-		  
-		  Pattern pdb = Pattern.compile("^db");
-		  Matcher mdb = pdb.matcher(strLine);
-		  
-		  Pattern puser = Pattern.compile("^user");
-		  Matcher muser = puser.matcher(strLine);
-		  
-		  Pattern ppw = Pattern.compile("^pw");
-		  Matcher mpw = ppw.matcher(strLine);
-		  
-		  if(ensmbl){
-			  
-			  if(mhost.find()){
-				  dataStr = strLine.split("=");
-				  ehost = dataStr[1].trim();
-			  }
-			  if(mport.find()){
-				  dataStr = strLine.split("=");
-				  eport = Integer.parseInt(dataStr[1].trim());
-			  }
-			  if(mdb.find()){
-				  dataStr = strLine.split("=");
-				  edb = dataStr[1].trim();
-			  }
-			  if(muser.find()){
-				  dataStr = strLine.split("=");
-				  euser = dataStr[1].trim();
-			  }
-			  if(mpw.find()){
-				  dataStr = strLine.split("=");
-				  epw = dataStr[1].trim();
-			  }
-		  }
-		  if(fishoracle){
-			  
-			  if(mhost.find()){
-				  dataStr = strLine.split("=");
-				  fhost = dataStr[1].trim();
-			  }
-			  if(mdb.find()){
-				  dataStr = strLine.split("=");
-				  fdb = dataStr[1].trim();
-			  }
-			  if(muser.find()){
-				  dataStr = strLine.split("=");
-				  fuser = dataStr[1].trim();
-			  }
-			  if(mpw.find()){
-				  dataStr = strLine.split("=");
-				  fpw = dataStr[1].trim();
-			  }
-		  }
-	    }
-
-	    inStream.close();
-	    } catch (Exception e){
-	    	e.printStackTrace();
-	    	System.err.println("Error: " + e.getMessage());
-	    }
+		dbConfig = new DBConfig(serverPath);
+		connectionData = dbConfig.getConnectionData();
 	}
 	
 	/**
@@ -181,7 +73,7 @@ public class DBQuery {
 			int copyNumberChangeEnd = 0;
 			String copyNumberChangeChr = null;
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 				
@@ -239,7 +131,7 @@ public class DBQuery {
 		Gene gene = null;
 		CoreDriver coreDriver;
 		try {
-			coreDriver = CoreDriverFactory.createCoreDriver(ehost, eport, edb, euser, epw);
+			coreDriver = CoreDriverFactory.createCoreDriver(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 			coreDriver.getConnection();
 		
 			gene = (Gene) coreDriver.getGeneAdaptor().fetchBySynonym(symbol).get(0);
@@ -273,7 +165,7 @@ public class DBQuery {
 		KaryotypeBand k = null;
 		CoreDriver coreDriver;
 		try {
-			coreDriver = CoreDriverFactory.createCoreDriver(ehost, eport, edb, euser, epw);
+			coreDriver = CoreDriverFactory.createCoreDriver(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 			coreDriver.getConnection();
 			
 			KaryotypeBandAdaptor kband = coreDriver.getKaryotypeBandAdaptor();
@@ -337,7 +229,7 @@ public class DBQuery {
 			
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			
@@ -461,7 +353,7 @@ public class DBQuery {
 		CopyNumberChange[] cnc = null;
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			
@@ -537,7 +429,7 @@ public class DBQuery {
 		CopyNumberChange[] cnc = null;
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			
@@ -634,7 +526,7 @@ public class DBQuery {
 		CopyNumberChange cnc = null;
 		try{
 		
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			
@@ -708,7 +600,7 @@ public class DBQuery {
 		
 		CoreDriver coreDriver;
 		try {
-			coreDriver = CoreDriverFactory.createCoreDriver(ehost, eport, edb, euser, epw);
+			coreDriver = CoreDriverFactory.createCoreDriver(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 		
 			coreDriver.getConnection();
 			
@@ -763,7 +655,7 @@ public class DBQuery {
 		try {
 			
 			CoreDriver coreDriver =
-				CoreDriverFactory.createCoreDriver(ehost, eport, edb, euser, epw);
+				CoreDriverFactory.createCoreDriver(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 
 			coreDriver.getConnection();
 			
@@ -815,7 +707,7 @@ public class DBQuery {
 		
 			CoreDriver coreDriver;
 			try {
-				coreDriver = CoreDriverFactory.createCoreDriver(ehost, eport, edb, euser, epw);
+				coreDriver = CoreDriverFactory.createCoreDriver(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 
 				coreDriver.getConnection();
 			
@@ -856,7 +748,7 @@ public class DBQuery {
 		
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			
@@ -920,7 +812,7 @@ public class DBQuery {
 		
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			
@@ -965,7 +857,7 @@ public class DBQuery {
 		
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			s.executeQuery("SELECT count(*) FROM user");
@@ -1054,7 +946,7 @@ public class DBQuery {
 				
 			}
 
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			
@@ -1085,7 +977,7 @@ public class DBQuery {
 		
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			s.executeQuery("SELECT count(*) FROM chip");
@@ -1138,7 +1030,7 @@ public class DBQuery {
 		
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			s.executeQuery("SELECT count(*) FROM organ WHERE organ_activity = 'enabled'");
@@ -1191,7 +1083,7 @@ public class DBQuery {
 		
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			s.executeQuery("SELECT count(*) FROM patho_stage WHERE patho_stage_activity = 'enabled'");
@@ -1244,7 +1136,7 @@ public class DBQuery {
 		
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			s.executeQuery("SELECT count(*) FROM patho_grade WHERE patho_grade_activity = 'enabled'");
@@ -1297,7 +1189,7 @@ public class DBQuery {
 		
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement s = conn.createStatement();
 			s.executeQuery("SELECT count(*) FROM meta_status WHERE meta_status_activity = 'enabled'");
@@ -1360,7 +1252,7 @@ public class DBQuery {
 		
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement idStatement = conn.createStatement();
 			idStatement.executeQuery("SELECT organ_id FROM organ WHERE organ_label = '" + tissue + "'");
@@ -1458,7 +1350,7 @@ public class DBQuery {
 		
 		try{
 			
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement cncidStatement = conn.createStatement();
 			cncidStatement.executeQuery("SELECT cnc_segment_stable_id, MID(cnc_segment_stable_id, 4) + 0 as id FROM cnc_segment " +
@@ -1528,7 +1420,7 @@ public class DBQuery {
 		boolean access = false;
 		
 		try {
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement pageAccessStatement = conn.createStatement();
 			pageAccessStatement.executeQuery("SELECT area_access_user_id, (NOW() - area_access_table_time) / 60 AS timeleft FROM area_access WHERE area_access_area_name = '" + page + "'");
@@ -1582,7 +1474,7 @@ public class DBQuery {
 		Connection conn = null;
 		
 		try {
-			conn = FishOracleConnection.connect(fhost, fdb, fuser, fpw);
+			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 			
 			Statement pageAccessStatement = conn.createStatement();
 			pageAccessStatement.executeUpdate("DELETE FROM area_access WHERE area_access_area_name = '" + page + "' AND " +

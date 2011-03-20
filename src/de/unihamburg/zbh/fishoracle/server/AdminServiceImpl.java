@@ -9,6 +9,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 
 import de.unihamburg.zbh.fishoracle.client.data.Chip;
+import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.MetaStatus;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.Organ;
@@ -16,6 +17,7 @@ import de.unihamburg.zbh.fishoracle.client.data.PathologicalGrade;
 import de.unihamburg.zbh.fishoracle.client.data.PathologicalStage;
 import de.unihamburg.zbh.fishoracle.client.data.User;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
+import de.unihamburg.zbh.fishoracle.server.data.DBConfig;
 import de.unihamburg.zbh.fishoracle.server.data.DBQuery;
 
 public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
@@ -74,6 +76,23 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		return toggeledUser;
 		
+	}
+	
+	public DBConfigData fetchDBConfigData() throws Exception{
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		DBConfig dbconfig = new DBConfig(servletContext);
+		return dbconfig.getConnectionData();
+	}
+	
+	public boolean writeConfigData(DBConfigData dbcdata) throws Exception{
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		DBConfig dbconfig = new DBConfig();
+		dbconfig.setConnectionData(dbcdata);
+		dbconfig.setServerPath(servletContext);
+		dbconfig.writeConfigDataToFile();
+		return true;
 	}
 	
 	public MicroarrayOptions getMicroarrayOptions() throws Exception{

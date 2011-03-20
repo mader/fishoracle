@@ -30,7 +30,9 @@ import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
+import com.smartgwt.client.widgets.form.fields.HeaderItem;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
+import com.smartgwt.client.widgets.form.fields.PasswordItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
@@ -56,6 +58,7 @@ import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
+import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
@@ -88,6 +91,16 @@ public class CenterPanel extends VLayout{
 	private SelectItem metaStatus;
 	private TextItem sampleId;
 	private TextAreaItem descriptionItem;
+	
+	private TextItem ensemblHost;
+    private TextItem ensemblPort;
+    private TextItem ensemblDatabase;
+    private TextItem ensemblUser;
+    private TextItem ensemblPW;
+    private TextItem fishoracleHost;
+    private TextItem fishoracleDatabase;
+    private TextItem fishoracleUser;
+    private TextItem fishoraclePW;
 	
 	@SuppressWarnings("unused")
 	private MainPanel mp = null;
@@ -994,6 +1007,115 @@ public class CenterPanel extends VLayout{
 		
 	}
 	
+	public void openDatabaseConfigTab(DBConfigData dbdata){
+		Tab DatabaseConfigTab;
+		DatabaseConfigTab = new Tab("Database Configuration");
+		DatabaseConfigTab.setCanClose(true);
+		
+		VLayout pane = new VLayout();
+		pane.setWidth100();
+		pane.setHeight100();
+		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		HLayout header = new HLayout();
+		header.setAutoWidth();
+		header.setAutoHeight();
+		
+		Label headerLbl = new Label("<h2>Configure Database Connections</h2>");
+		headerLbl.setWidth("300");
+		header.addMember(headerLbl);
+		
+		pane.addMember(header);
+	    
+	    DynamicForm dataForm = new DynamicForm();
+	    dataForm.setWidth("100");
+	    dataForm.setHeight("25");
+	    
+	    HeaderItem ensemblHeaderItem =  new HeaderItem();
+	    ensemblHeaderItem.setDefaultValue("Ensembl Connection Data");
+	    
+	    ensemblHost = new TextItem();
+	    ensemblHost.setTitle("Host");
+	    ensemblHost.setValue(dbdata.getEhost());
+	    
+	    ensemblPort = new TextItem();
+	    ensemblPort.setTitle("Port");
+	    ensemblPort.setValue(dbdata.getEport());
+	    
+	    ensemblDatabase = new TextItem();
+	    ensemblDatabase.setTitle("Database");
+	    ensemblDatabase.setValue(dbdata.getEdb());
+	    
+	    ensemblUser = new TextItem();
+	    ensemblUser.setTitle("User");
+	    ensemblUser.setValue(dbdata.getEuser());
+	    
+	    ensemblPW = new PasswordItem();
+	    ensemblPW.setTitle("Password");
+	    ensemblPW.setValue(dbdata.getEpw());
+		
+	    HeaderItem fishoracleHeaderItem =  new HeaderItem();
+	    fishoracleHeaderItem.setDefaultValue("Fish Oracle Connection Data"); 
+	    
+	    fishoracleHost = new TextItem();
+	    fishoracleHost.setTitle("Host");
+	    fishoracleHost.setValue(dbdata.getFhost());
+	    
+	    fishoracleDatabase = new TextItem();
+	    fishoracleDatabase.setTitle("Database");
+	    fishoracleDatabase.setValue(dbdata.getFdb());
+	    
+	    fishoracleUser = new TextItem();
+	    fishoracleUser.setTitle("User");
+	    fishoracleUser.setValue(dbdata.getFuser());
+	    
+	    fishoraclePW = new PasswordItem();
+	    fishoraclePW.setTitle("Password");
+	    fishoraclePW.setValue(dbdata.getFpw());
+	    
+	    ButtonItem submitButton = new ButtonItem("submit");
+		submitButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				DBConfigData dbcd = new DBConfigData(ensemblHost.getDisplayValue(),
+														Integer.parseInt(ensemblPort.getDisplayValue()),
+														ensemblDatabase.getDisplayValue(),
+														ensemblUser.getDisplayValue(),
+														ensemblPW.getDisplayValue(),
+														fishoracleHost.getDisplayValue(),
+														fishoracleDatabase.getDisplayValue(),
+														fishoracleUser.getDisplayValue(),
+														fishoraclePW.getDisplayValue());
+				storedbConfigData(dbcd);
+			}
+			
+		});
+	    
+	    dataForm.setItems(ensemblHeaderItem,
+	    					ensemblHost,
+	    					ensemblPort,
+	    					ensemblDatabase,
+	    					ensemblUser,
+	    					ensemblPW,
+	    					fishoracleHeaderItem,
+	    					fishoracleHost,
+	    					fishoracleDatabase,
+	    					fishoracleUser,
+	    					fishoraclePW,
+	    					submitButton);
+	    
+	    pane.addMember(dataForm);
+	    
+	    
+	    DatabaseConfigTab.setPane(pane);
+	    
+	    centerTabSet.addTab(DatabaseConfigTab);
+		
+		centerTabSet.selectTab(DatabaseConfigTab);
+	}
+	
 	/*=============================================================================
 	 *||                              RPC Calls                                  ||
 	 *=============================================================================
@@ -1120,8 +1242,29 @@ public class CenterPanel extends VLayout{
 		req.redrawImage(imgInfo, callback);
 	}
 	
-	public void toggleIsActiveOrIsAdmin(int id, String flag, String type, int rowNum, int colNum){
+	public void storedbConfigData(DBConfigData data){
 	
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+			@Override
+			public void onSuccess(Boolean result){
+				
+				SC.say("Database connection parameters stored.");
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());
+			}
+		};
+		req.writeConfigData(data, callback);
+	}
+	
+	public void toggleIsActiveOrIsAdmin(int id, String flag, String type, int rowNum, int colNum){
+		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";

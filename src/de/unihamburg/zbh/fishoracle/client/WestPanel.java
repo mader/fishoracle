@@ -34,6 +34,7 @@ import com.smartgwt.client.widgets.tree.TreeNode;
 import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
 import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
+import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Organ;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
@@ -317,6 +318,24 @@ public class WestPanel extends SectionStack{
 						checkImportData();
 					}
 				}
+				if(event.getNode().getName().equals("Database Configuration")){
+					boolean exists = false;
+					int index = 0;
+					
+					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+					for(int i=0; i < tabs.length; i++){
+						if(tabs[i].getTitle().equals("Database Configuration")){
+							exists = true;
+							index = i;
+						}
+					}
+					if(exists){
+						centerTabSet.selectTab(index);
+					} else {
+						getDatabaseConnectionData();
+					}
+				}
 			}
 			
 		});
@@ -326,8 +345,9 @@ public class WestPanel extends SectionStack{
 		adminTree.setModelType(TreeModelType.CHILDREN);  
 		adminTree.setRoot(new TreeNode("root",  
 							new TreeNode("Show Users"),  
-							new TreeNode("Add Data")
-							));  
+							new TreeNode("Add Data"),
+							new TreeNode("Database Configuration")
+							)); 
 		
 		adminTreeGrid.setData(adminTree);
 		
@@ -488,4 +508,24 @@ public class WestPanel extends SectionStack{
 		req.getOrganData(callback);
 	}
 	
+	public void getDatabaseConnectionData(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<DBConfigData> callback = new AsyncCallback<DBConfigData>(){
+			@Override
+			public void onSuccess(DBConfigData result){
+				
+				mp.getCenterPanel().openDatabaseConfigTab(result);
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());
+			}
+		};
+		req.fetchDBConfigData(callback);
+	}
 }

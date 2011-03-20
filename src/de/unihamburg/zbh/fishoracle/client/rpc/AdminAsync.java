@@ -3,6 +3,7 @@ package de.unihamburg.zbh.fishoracle.client.rpc;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.User;
 
@@ -12,6 +13,10 @@ public interface AdminAsync {
 
 	void toggleFlag(int id, String flag, String type, int rowNum, int colNum, AsyncCallback<String[]> callback);
 
+	void fetchDBConfigData(AsyncCallback<DBConfigData> callback);
+	
+	void writeConfigData(DBConfigData dbcdata, AsyncCallback<Boolean> callback);
+	
 	void getMicroarrayOptions(AsyncCallback<MicroarrayOptions> callback);
 
 	void importData(String fileName,
