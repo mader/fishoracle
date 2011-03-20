@@ -87,9 +87,9 @@ public class NorthPanel extends HLayout{
 		infoLayer.setHeight(200);
 		
 		Label infoLbl = new Label();
-		infoLbl.setContents("Copyright (c) 2009-2010 Malte Mader <br>" +
-							"Copyright (c) 2009-2010 Center for Bioinformatics, University of Hamburg <br>" +
-							"Copyright (c) 2009-2010 Department of Pathology University Medical Center Hamburg-Eppendorf");
+		infoLbl.setContents("Copyright (c) 2009-2011 Malte Mader <br>" +
+							"Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg <br>" +
+							"Copyright (c) 2009-2011 Department of Pathology University Medical Center Hamburg-Eppendorf");
 		
 		Img ukeImg = new Img("uke.jpg");
 		ukeImg.setImageType(ImageStyle.NORMAL);
