@@ -140,6 +140,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				}
 			}
 			
+			if(query.getSearchType().equals("Region")){
+				maxCNCRange = featuresLoc;
+			} else {
 			maxCNCRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), 
 											featuresLoc.getStart(), 
 											featuresLoc.getEnd(), 
@@ -147,6 +150,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 											query.getUpperTh());
 			
 			maxCNCRange = adjustMaxCNCRange(maxCNCRange, featuresLoc, query.getSearchType());
+			}
 			
 			cncs = db.getCNCData(maxCNCRange.getSeqRegionName(), 
 									maxCNCRange.getStart(), 
