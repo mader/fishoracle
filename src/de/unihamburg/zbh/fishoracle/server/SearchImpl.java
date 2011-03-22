@@ -187,15 +187,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	private Location adjustMaxCNCRange(Location maxCNCRange, Location featuresLoc, String searchType){
 		
 		Location loc = maxCNCRange; 
-		
-		if(maxCNCRange.getEnd() - maxCNCRange.getStart() == 0){
 			
-			if(searchType.equals("Band Search")){
-			
-				loc = featuresLoc;
-			
-			}
-			if(searchType.equals("Gene Search")){
+			if(searchType.equals("Gene Search") && 
+				maxCNCRange.getStart() == featuresLoc.getStart() && 
+				maxCNCRange.getEnd() == featuresLoc.getEnd()){
 				
 				int perc = 200;
 				int percRange;
@@ -224,7 +219,6 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 					loc.setStart(newStart);
 					loc.setEnd(newEnd);
 			}
-		}
 		
 		if(maxCNCRange.getEnd() - maxCNCRange.getStart() > 20000000){
 			
