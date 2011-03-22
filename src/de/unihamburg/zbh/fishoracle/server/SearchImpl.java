@@ -147,7 +147,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 											featuresLoc.getStart(), 
 											featuresLoc.getEnd(), 
 											query.getLowerTh(), 
-											query.getUpperTh());
+											query.getUpperTh(),
+											query.getOrganFilter());
 			
 			maxCNCRange = adjustMaxCNCRange(maxCNCRange, featuresLoc, query.getSearchType());
 			}

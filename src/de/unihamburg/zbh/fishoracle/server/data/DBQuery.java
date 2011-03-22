@@ -202,7 +202,7 @@ public class DBQuery {
 	 * @return 		An ensembl API location object storing chromosome, start and end.
 	 * 
 	 * */
-	public Location getMaxCNCRange(String chr, int start, int end, Double lowerTh, Double upperTh){
+	public Location getMaxCNCRange(String chr, int start, int end, Double lowerTh, Double upperTh, String[] organFilter){
 		Location loc = null;
 		Connection conn = null;
 		String copyNumberChangeChr = chr;
@@ -210,7 +210,12 @@ public class DBQuery {
 		int copyNumberChangeEnd = end;
 		String qrystr = null;
 		
-		qrystr = "SELECT MIN(cnc_segment_start) as minstart, MAX(cnc_segment_end) as maxend FROM cnc_segment WHERE cnc_segment_chromosome = \"" + copyNumberChangeChr + 
+		qrystr = "SELECT MIN(cnc_segment_start) as minstart, MAX(cnc_segment_end) as maxend FROM cnc_segment " +
+		"LEFT JOIN microarraystudy ON microarraystudy_id = cnc_segment_microarraystudy_id " +
+		"LEFT JOIN sample_on_chip ON sample_on_chip_id = microarraystudy_sample_on_chip_id " +
+		"LEFT JOIN tissue_sample ON tissue_sample_id = sample_on_chip_tissue_sample_id " +
+		"LEFT JOIN organ ON organ_id = tissue_sample_organ_id " +
+		"WHERE cnc_segment_chromosome = \"" + copyNumberChangeChr + 
 		"\" AND ((cnc_segment_start <= " + copyNumberChangeStart + " AND cnc_segment_end >= " + copyNumberChangeEnd + ") OR" +
 		" (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_end <= " + copyNumberChangeEnd + ") OR" +
 	    " (cnc_segment_start >= " + copyNumberChangeStart + " AND cnc_segment_start <= " + copyNumberChangeEnd + ") OR" +
@@ -227,6 +232,22 @@ public class DBQuery {
 			"cnc_segment_mean > '" + upperTh + "')";
 		}
 			
+		if(organFilter.length > 0){
+			String organFilterStr = "";
+			for(int i = 0; i < organFilter.length; i++){
+				if(i == 0){
+					organFilterStr = " organ_id = '" + (Integer.parseInt(organFilter[i]) + 1) + "'";
+				} else {
+					organFilterStr = organFilterStr + " OR organ_id = '" + (Integer.parseInt(organFilter[i]) + 1) + "'";
+				}
+			}
+		
+			organFilterStr = " AND (" + organFilterStr + ")";
+			
+			qrystr = qrystr + organFilterStr;
+
+		}
+		
 		try{
 			
 			conn = FishOracleConnection.connect(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
