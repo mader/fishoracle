@@ -1,4 +1,4 @@
--- fishoracle database (former tamex)
+-- fishoracle database
 
 -- 
 -- Table structure for table `area_access`
