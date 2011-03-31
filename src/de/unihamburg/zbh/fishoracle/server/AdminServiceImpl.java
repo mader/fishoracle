@@ -5,6 +5,7 @@ import java.io.File;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.csvreader.CsvReader;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 
@@ -174,6 +175,15 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		User user = isAdmin();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
+		
+		CsvReader reader = new CsvReader(servletContext + "tmp" + System.getProperty("file.separator")  + fileName);
+		reader.setDelimiter('\t');
+		reader.readHeaders();
+		
+		if(!reader.getHeader(0).equals("") || !reader.getHeader(0).equals("chr")){
+			throw new Exception("Something is wrong! Check that your file is tab delimited and that " +
+					"the first collumn contains either a row index  or chromosome numbering.");
+		}
 		
 		DBQuery db = new DBQuery(servletContext);
 		
