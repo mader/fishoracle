@@ -20,12 +20,13 @@ package de.unihamburg.zbh.fishoracle.client.rpc;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
-import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 
 public interface AdminAsync {
 
-	void getAllUsers(AsyncCallback<User[]> callback);
+	void getAllUsers(AsyncCallback<FoUser[]> callback);
 
 	void toggleFlag(int id, String flag, String type, int rowNum, int colNum, AsyncCallback<String[]> callback);
 
@@ -49,4 +50,13 @@ public interface AdminAsync {
 
 	void unlockDataImport(AsyncCallback<Void> callback);
 
+	void getAllFoGroups(AsyncCallback<FoGroup[]> callback);
+
+	void addGroup(FoGroup foGroup, AsyncCallback<FoGroup> callback);
+
+	void getAllUsersExceptFoGroup(FoGroup foGroup,
+			AsyncCallback<FoUser[]> callback);
+
+	void addUserToFoGroup(FoGroup foGroup, int userId,
+			AsyncCallback<FoUser> callback);
 }

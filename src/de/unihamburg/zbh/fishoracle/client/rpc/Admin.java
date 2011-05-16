@@ -22,14 +22,15 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
-import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
 @RemoteServiceRelativePath("admin")
 public interface Admin extends RemoteService  {
 
-	public User[] getAllUsers() throws Exception;
+	public FoUser[] getAllUsers() throws Exception;
 	public String[] toggleFlag(int id, String flag, String type, int rowNum, int colNum) throws Exception;
 	public DBConfigData fetchDBConfigData() throws Exception;
 	public boolean writeConfigData(DBConfigData dbcdata) throws Exception;
@@ -45,6 +46,10 @@ public interface Admin extends RemoteService  {
 						String description) throws Exception;
 	boolean canAccessDataImport() throws UserException;
 	void unlockDataImport() throws UserException;
+	FoGroup[] getAllFoGroups() throws Exception;
+	FoGroup addGroup(FoGroup foGroup) throws UserException;
+	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
+	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
 	
 	public static class Util {
 

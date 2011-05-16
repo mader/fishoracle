@@ -37,7 +37,7 @@ import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.Organ;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
-import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
@@ -51,7 +51,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		HttpServletRequest request=this.getThreadLocalRequest();
 		HttpSession session=request.getSession();
 		
-		User user = (User) session.getAttribute("user");
+		FoUser user = (FoUser) session.getAttribute("user");
 		
 		if(!user.getIsActive()){
 			
@@ -82,7 +82,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 			String servletContext = this.getServletContext().getRealPath("/");
 			
-			DBQuery db = new DBQuery(servletContext);
+			DBInterface db = new DBInterface(servletContext);
 			
 			Location maxCNCRange = null;
 			
@@ -282,7 +282,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		System.out.println(dt + " Redraw range: " + chr + ":" +  start + "-" + end);
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
 		CopyNumberChange[] cncs = null;
 		
@@ -349,7 +349,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		Date dt = new Date();
 		System.out.println(dt + " Get amplicon data for: " + query);
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
 		CopyNumberChange  cncData = db.getCNCInfos(query);
 		
@@ -373,7 +373,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		Date dt = new Date();
 		System.out.println(dt + " Get gene data for: " + query);
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
 		Gen  gene = db.getGeneInfos(query);
 		return gene;
@@ -391,7 +391,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		int start = imageInfo.getStart();
 		int end = imageInfo.getEnd();
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
 		CopyNumberChange[] cncs = null;
 		
@@ -434,7 +434,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				
 		String servletContext = this.getServletContext().getRealPath("/");
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
 		Organ[] organs = db.fetchAllEnabledOrganData();
 		

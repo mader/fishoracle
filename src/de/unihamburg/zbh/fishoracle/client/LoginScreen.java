@@ -36,7 +36,7 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.layout.LayoutSpacer;
 import com.smartgwt.client.widgets.layout.VLayout;
 
-import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
@@ -162,7 +162,7 @@ public class LoginScreen extends VLayout{
 			@Override
 			public void onClick(ClickEvent event) {
 				if(passwordRegItem.getDisplayValue().equals(passwordReRegItem.getDisplayValue())){
-					User user = new User(firstNameRegTextItem.getDisplayValue(),
+					FoUser user = new FoUser(firstNameRegTextItem.getDisplayValue(),
 											lastNameRegTextItem.getDisplayValue(),
 											userRegTextItem.getDisplayValue(),
 											emailRegTextItem.getDisplayValue(),
@@ -206,8 +206,8 @@ public class LoginScreen extends VLayout{
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<User> callback = new AsyncCallback<User>(){
-			public void onSuccess(User result){
+		final AsyncCallback<FoUser> callback = new AsyncCallback<FoUser>(){
+			public void onSuccess(FoUser result){
 				
 				passwordItem.setValue("");
 				
@@ -235,14 +235,14 @@ public class LoginScreen extends VLayout{
 		req.login(userName, password, callback);
 	}	
 
-	public void registerUser(User user){
+	public void registerUser(FoUser user){
 	
 		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<User> callback = new AsyncCallback<User>(){
-			public void onSuccess(User result){
+		final AsyncCallback<FoUser> callback = new AsyncCallback<FoUser>(){
+			public void onSuccess(FoUser result){
 		
 				userRegTextItem.setValue("");
 				emailRegTextItem.setValue("");

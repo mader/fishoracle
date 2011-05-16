@@ -21,13 +21,13 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 
 @RemoteServiceRelativePath("user")
 public interface UserService extends RemoteService {
 	
-	public User register(User user) throws Exception;
-	public User login(String email, String password) throws Exception;
+	public FoUser register(FoUser user) throws Exception;
+	public FoUser login(String email, String password) throws Exception;
 	public void logout();
 	
 	public static class Util {

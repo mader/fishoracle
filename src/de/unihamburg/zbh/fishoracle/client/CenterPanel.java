@@ -60,6 +60,8 @@ import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.CellClickEvent;
 import com.smartgwt.client.widgets.grid.events.CellClickHandler;
+import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
+import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.LayoutSpacer;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -76,11 +78,12 @@ import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
-import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.ImgCanvas;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
@@ -90,6 +93,11 @@ import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 public class CenterPanel extends VLayout{
 
 	private ListGrid userGrid;
+	private ListGrid groupGrid;
+	private ListGrid groupUserGrid;
+	private SelectItem userSelectItem;
+	
+	TextItem groupNameTextItem;
 	
 	private TabSet centerTabSet = null;
 	private TextItem chrTextItem;
@@ -779,7 +787,7 @@ public class CenterPanel extends VLayout{
 		window.show();
 	}
 	
-	public void openUserAdminTab(final User[] users){
+	public void openUserAdminTab(final FoUser[] users){
 	
 		Tab usersAdminTab = new Tab("Users");
 		usersAdminTab.setCanClose(true);
@@ -801,9 +809,7 @@ public class CenterPanel extends VLayout{
 				int id = Integer.parseInt(record.getAttribute("id"));
 				
 				int colNum = event.getColNum();  
-				String fieldName = userGrid.getFieldName(colNum);  
-				
-				
+				String fieldName = userGrid.getFieldName(colNum);
 				
 				if(fieldName.equals("isAdmin")){
 					String flag = record.getAttributeAsString("isAdmin");
@@ -846,6 +852,219 @@ public class CenterPanel extends VLayout{
 		centerTabSet.addTab(usersAdminTab);
 		
 		centerTabSet.selectTab(usersAdminTab);
+		
+	}
+	
+	public void loadUserToGroupWindow(final FoGroup foGroup){
+		
+		final Window window = new Window();
+		
+		window.setTitle("Add User to Group: " + foGroup.getName());
+		window.setWidth(250);
+		window.setHeight(100);
+		window.setAlign(Alignment.CENTER);
+		
+		window.setAutoCenter(true);
+		window.setIsModal(true);
+		window.setShowModalMask(true);
+		
+		DynamicForm userToGroupForm = new DynamicForm();
+		
+		userSelectItem = new SelectItem();  
+        userSelectItem.setTitle("User");
+        
+        //TODO
+        
+        getAllUsersExceptGroup(foGroup); 
+        
+        ButtonItem addUserToGroupButton = new ButtonItem("Add");
+		addUserToGroupButton.setWidth(50);
+		
+		addUserToGroupButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+
+				addUserToGroup(foGroup, Integer.parseInt(userSelectItem.getValueAsString()));
+				window.hide();
+			}
+			
+		});
+		
+		userToGroupForm.setItems(userSelectItem, addUserToGroupButton);
+		
+		window.addItem(userToGroupForm);
+		
+		window.show();
+	}
+	
+	public void loadGroupManageWindow(){
+		
+		final Window window = new Window();
+
+		window.setTitle("Add Group");
+		window.setWidth(250);
+		window.setHeight(100);
+		window.setAlign(Alignment.CENTER);
+		
+		window.setAutoCenter(true);
+		window.setIsModal(true);
+		window.setShowModalMask(true); 
+		
+		DynamicForm groupForm = new DynamicForm();
+		groupNameTextItem = new TextItem();
+		groupNameTextItem.setTitle("Group Name");
+		
+		ButtonItem addGroupButton = new ButtonItem("Add");
+		addGroupButton.setWidth(50);
+		
+		addGroupButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				addGroup(new FoGroup(0, groupNameTextItem.getDisplayValue(), true));
+				window.hide();
+			}
+			
+		});
+
+		groupForm.setItems(groupNameTextItem, addGroupButton);
+	
+		window.addItem(groupForm);
+		
+		window.show();
+	}
+	
+	public void openGroupAdminTab(){
+		Tab groupAdminTab;
+		groupAdminTab = new Tab("Group Management");
+		
+		groupAdminTab.setCanClose(true);
+		
+		VLayout pane = new VLayout();
+		pane.setWidth100();
+		pane.setHeight100();
+		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		VLayout headerContainer = new VLayout();
+		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
+		headerContainer.setWidth100();
+		headerContainer.setAutoHeight();
+		
+		HLayout header = new HLayout();
+		header.setAutoWidth();
+		header.setAutoHeight();
+		
+		Label headerLbl = new Label("<h2>Group Management</h2>");
+		headerLbl.setWidth("300");
+		header.addMember(headerLbl);
+		
+		headerContainer.addMember(header);
+		
+		HLayout controlsPanel = new HLayout();
+		controlsPanel.setWidth100();
+		controlsPanel.setAutoHeight();
+		
+		VLayout groupPanel = new VLayout();
+		groupPanel.setDefaultLayoutAlign(Alignment.CENTER);
+		groupPanel.setWidth("50%");
+		groupPanel.setHeight100();
+		
+		Button newGroupButton = new Button("Add Group");
+		newGroupButton.setShowRollOver(true);
+		newGroupButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				loadGroupManageWindow();
+			}
+			
+		});
+		
+		groupPanel.addMember(newGroupButton);		
+
+		controlsPanel.addMember(groupPanel);
+		
+		VLayout userPanel = new VLayout();
+		userPanel.setDefaultLayoutAlign(Alignment.CENTER);
+		userPanel.setWidth("50%");
+		userPanel.setHeight100();
+		
+		Button addUserButton = new Button("Add User to Group");
+		addUserButton.setShowRollOver(true);
+		addUserButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				
+				ListGridRecord lgr = groupGrid.getSelectedRecord();
+				
+				FoGroup group = new FoGroup(Integer.parseInt(lgr.getAttribute("groupId")),
+															lgr.getAttribute("groupName"),
+															Boolean.parseBoolean(lgr.getAttribute("isactive")));
+				
+				loadUserToGroupWindow(group);
+			}
+			
+		});
+		
+		userPanel.addMember(addUserButton);	
+		
+		controlsPanel.addMember(userPanel);
+		
+		headerContainer.addMember(controlsPanel);
+		
+		pane.addMember(headerContainer);
+		
+		HLayout gridContainer = new HLayout();
+		gridContainer.setWidth100();
+		gridContainer.setHeight100();
+		
+		groupGrid = new ListGrid();
+		groupGrid.setWidth("50%");
+		groupGrid.setHeight100();
+		groupGrid.setShowAllRecords(true);  
+		groupGrid.setAlternateRecordStyles(true);
+		groupGrid.setWrapCells(true);
+		groupGrid.setFixedRecordHeights(false);
+		groupGrid.markForRedraw();
+		
+		ListGridField lgfGroupId = new ListGridField("groupId", "group ID");
+		ListGridField lgfGroupName = new ListGridField("groupName", "Group Name");
+		ListGridField lgfGroupActivated = new ListGridField("isactive", "Activated");
+		
+		groupGrid.setFields(lgfGroupId, lgfGroupName, lgfGroupActivated);
+		
+		showAllGroups();
+		
+		gridContainer.addMember(groupGrid);
+		
+		groupUserGrid = new ListGrid();
+		groupUserGrid.setWidth("50%");
+		groupUserGrid.setHeight100();
+		groupUserGrid.setShowAllRecords(true);  
+		groupUserGrid.setAlternateRecordStyles(true);
+		groupUserGrid.setWrapCells(true);
+		groupUserGrid.setFixedRecordHeights(false);
+		groupUserGrid.markForRedraw();
+		
+		ListGridField lgfGroupUserId = new ListGridField("userId", "User ID");
+		ListGridField lgfGroupUserName = new ListGridField("userName", "Username");
+		
+		groupUserGrid.setFields(lgfGroupUserId, lgfGroupUserName);
+		
+		gridContainer.addMember(groupUserGrid);
+		
+		pane.addMember(gridContainer);
+		
+		groupAdminTab.setPane(pane);
+		
+		centerTabSet.addTab(groupAdminTab);
+		
+		centerTabSet.selectTab(groupAdminTab);
 		
 	}
 	
@@ -924,11 +1143,6 @@ public class CenterPanel extends VLayout{
 		Label step2Lbl = new Label("<h3>Step2: enter meta information</h3>");
 		step2Lbl.setAutoHeight();
 		pane.addMember(step2Lbl);
-		
-		/* 
-		 * normalized with
-		 * sample id
-		 * */
 		
 		HLayout metaData = new HLayout();
 		metaData.setWidth100();
@@ -1366,6 +1580,114 @@ public class CenterPanel extends VLayout{
 		req.getMicroarrayOptions(callback);
 	}
 	
+	public void showAllGroups(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoGroup[]> callback = new AsyncCallback<FoGroup[]>(){
+			
+			public void onSuccess(FoGroup[] result){
+				
+				FoGroup[] groups = result;
+				
+				groupGrid.addRecordClickHandler(new MyRecordClickHandler(groupUserGrid,groups));
+								
+				ListGridRecord[] lgr = new ListGridRecord[groups.length];
+				
+				for(int i=0; i < groups.length; i++){
+					lgr[i] = new ListGridRecord();
+					lgr[i].setAttribute("groupId", groups[i].getId());
+					lgr[i].setAttribute("groupName", groups[i].getName());
+					lgr[i].setAttribute("isactive", groups[i].isIsactive());
+				}
+
+				groupGrid.setData(lgr);
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.getAllFoGroups(callback);
+	}
+	
+	public void addGroup(FoGroup foGroup){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoGroup> callback = new AsyncCallback<FoGroup>(){
+			
+			public void onSuccess(FoGroup result){
+				FoGroup group = result;
+				
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("groupId", group.getId());
+				lgr.setAttribute("groupName", group.getName());
+				lgr.setAttribute("isactive", group.isIsactive());
+				
+				groupGrid.addData(lgr);
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.addGroup(foGroup, callback);
+	}
+	
+	public void getAllUsersExceptGroup(FoGroup foGroup){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoUser[]> callback = new AsyncCallback<FoUser[]>(){
+			
+			public void onSuccess(FoUser[] result){
+				
+				 LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
+				 
+				 for(int i=0; i< result.length; i++){
+					 valueMap.put(new Integer(result[i].getId()).toString(), result[i].getUserName());
+				 }
+			     
+				 userSelectItem.setValueMap(valueMap);
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+		};
+		req.getAllUsersExceptFoGroup(foGroup, callback);
+	}
+	
+	public void addUserToGroup(FoGroup foGroup, int userId){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoUser> callback = new AsyncCallback<FoUser>(){
+			
+			public void onSuccess(FoUser result){
+				//TODO
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("userId", result.getId());
+				lgr.setAttribute("userName", result.getUserName());
+				
+				groupUserGrid.addData(lgr);
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+		};
+		req.addUserToFoGroup(foGroup, userId, callback);
+	}
+	
 	public void importData(String fileName,
 							String studyName,
 							String chipType,
@@ -1472,6 +1794,40 @@ public class CenterPanel extends VLayout{
 			}
 		};
 		req.canAccessDataImport(callback);
+	}
+	
+}
+
+class MyRecordClickHandler implements RecordClickHandler {
+
+	private ListGrid groupUserGrid;
+	private FoGroup[] groups;
+	
+	public MyRecordClickHandler(ListGrid groupUserGrid, FoGroup[] groups){
+		this.groupUserGrid = groupUserGrid;
+		this.groups = groups;
+	}
+	
+	@Override
+	public void onRecordClick(RecordClickEvent event) {
+		ListGridRecord[] oldRecords = groupUserGrid.getRecords();
+		
+		for (int i= 0; i < oldRecords.length; i++){
+			groupUserGrid.removeData(oldRecords[i]);
+		}
+		
+		FoUser[] users = groups[Integer.parseInt(event.getRecord().getAttribute("groupId")) -1].getUsers();
+
+		ListGridRecord[] userLgr = new ListGridRecord[users.length];
+		
+		
+		for(int i=0; i < users.length; i++){
+			userLgr[i] = new ListGridRecord();
+			userLgr[i].setAttribute("userid", users[i].getId());
+			userLgr[i].setAttribute("userName", users[i].getUserName());
+		}
+
+		groupUserGrid.setData(userLgr);
 	}
 	
 }

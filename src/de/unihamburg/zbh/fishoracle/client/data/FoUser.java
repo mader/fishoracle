@@ -19,8 +19,8 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class User implements IsSerializable {
-
+public class FoUser implements IsSerializable {
+	
 	private int id;
 	private String firstName;
 	private String lastName;
@@ -30,11 +30,11 @@ public class User implements IsSerializable {
 	private Boolean isActive;
 	private Boolean isAdmin;
 	
-	public User() {
+	public FoUser() {
 		
 	}
 
-	public User(int id, String firstName, String lastName, String userName,
+	public FoUser(int id, String firstName, String lastName, String userName,
 			String email, Boolean isActive, Boolean isAdmin) {
 		super();
 		this.id = id;
@@ -42,11 +42,12 @@ public class User implements IsSerializable {
 		this.lastName = lastName;
 		this.userName = userName;
 		this.email = email;
+		this.pw = "";
 		this.isActive = isActive;
 		this.isAdmin = isAdmin;
 	}
 	
-	public User(String firstName, String lastName, String userName,
+	public FoUser(String firstName, String lastName, String userName,
 			String email, String pw, Boolean isActive, Boolean isAdmin) {
 		super();
 		this.firstName = firstName;
@@ -110,6 +111,11 @@ public class User implements IsSerializable {
 		return isActive;
 	}
 
+	public int getIsActiveAsInt() {
+		return (isActive) ? 1 : 0;
+	}
+
+	
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
@@ -117,9 +123,19 @@ public class User implements IsSerializable {
 	public Boolean getIsAdmin() {
 		return isAdmin;
 	}
+	
+	public int getIsAdminAsInt() {
+		return (isAdmin) ? 1 : 0;
+	}
 
 	public void setIsAdmin(Boolean isAdmin) {
 		this.isAdmin = isAdmin;
+	}
+	
+	public String toString(){
+		return "ID: " + id + ", First Name: " + firstName + ", " +
+				"Last Name: " + lastName + ", Username: " + userName + ", " +
+				"E-Mail: " + email + ", Active?: " + isActive + ", Admin?: " + isAdmin;
 	}
 	
 }

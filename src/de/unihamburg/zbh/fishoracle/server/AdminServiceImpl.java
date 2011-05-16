@@ -28,25 +28,26 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 
 import de.unihamburg.zbh.fishoracle.client.data.Chip;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.MetaStatus;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.Organ;
 import de.unihamburg.zbh.fishoracle.client.data.PathologicalGrade;
 import de.unihamburg.zbh.fishoracle.client.data.PathologicalStage;
-import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle.server.data.DBConfig;
-import de.unihamburg.zbh.fishoracle.server.data.DBQuery;
+import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 
 public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 
 	private static final long serialVersionUID = 4434993420272783276L;
 
-	public User isAdmin() throws UserException{
+	public FoUser isAdmin() throws UserException{
 		HttpServletRequest request=this.getThreadLocalRequest();
 		HttpSession session=request.getSession();
 		
-		User user = (User) session.getAttribute("user");
+		FoUser user = (FoUser) session.getAttribute("user");
 		
 		if(!user.getIsAdmin()){
 			
@@ -56,15 +57,15 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		return user;
 	}
 	
-	public User[] getAllUsers() throws Exception {
+	public FoUser[] getAllUsers() throws Exception {
 		
 		isAdmin();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
-		User[] users = db.fetchAllUsers();
+		FoUser[] users = db.getAllUsers();
 		
 		return users;
 		
@@ -76,9 +77,16 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
-		int isActivated = db.setIsActive(id, flag, type);
+		int isActivated = 0;
+		
+		if(type.equals("isAdmin")){
+			isActivated = db.setAdminStatus(id, Boolean.parseBoolean(flag));
+		}
+		if(type.equals("isActive")){
+			isActivated = db.setActiveStatus(id,Boolean.parseBoolean(flag));
+		}
 		
 		String isActivatedStr;
 		
@@ -94,6 +102,47 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		return toggeledUser;
 		
+	}
+	
+	@Override
+	public FoGroup[] getAllFoGroups() throws Exception {
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getAllGroups();
+	}
+	
+	@Override
+	public FoGroup addGroup(FoGroup foGroup) throws UserException {
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.addGroup(foGroup);
+	}
+	
+	@Override
+	public FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException {
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getAllUserExceptGroup(foGroup);
+	}
+	
+	@Override
+	public FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException {
+		
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.addUserGroup(foGroup, userId);
 	}
 	
 	public DBConfigData fetchDBConfigData() throws Exception{
@@ -119,7 +168,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
 		MicroarrayOptions mo = new MicroarrayOptions();
 		
@@ -189,7 +238,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 								String sampleId,
 								String description) throws Exception {
 		
-		User user = isAdmin();
+		FoUser user = isAdmin();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -202,7 +251,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 					"the first collumn contains either a row index  or chromosome numbering.");
 		}
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
 		int studyId = db.createNewStudy(studyName,
 										chipType,
@@ -238,11 +287,11 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	
 	public boolean canAccessDataImport() throws UserException{
 		
-		User user = isAdmin();
+		FoUser user = isAdmin();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
 		boolean access = db.isAccessable("DataImport", user);
 		
@@ -251,11 +300,11 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	
 	public void unlockDataImport() throws UserException{
 		
-		User user = isAdmin();
+		FoUser user = isAdmin();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
 		db.unlockPage("DataImport", user);
 	}

@@ -52,10 +52,11 @@ import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
 import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Organ;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
-import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
@@ -246,7 +247,7 @@ public class WestPanel extends SectionStack{
 		selectItemTissues.setTitle("Tissue Filter");
 		selectItemTissues.setMultiple(true);
 		selectItemTissues.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		loadTissueFilterData();
+		//loadTissueFilterData();
 		selectItemTissues.setDefaultToFirstOption(true);
 		
 		searchForm.setItems(searchTextItem,
@@ -264,6 +265,42 @@ public class WestPanel extends SectionStack{
 		
 		searchSection.setItems(searchContent);
 		
+		/*data adminstration*/
+		
+		SectionStackSection dataAdminSection = new SectionStackSection();
+		dataAdminSection.setTitle("Data Adminstration");
+		dataAdminSection.setExpanded(true);
+		
+		VLayout dataAdminContent = new VLayout();
+		
+		TreeGrid dataAdminTreeGrid = new TreeGrid();
+		dataAdminTreeGrid.setShowConnectors(true);
+		dataAdminTreeGrid.setShowHeader(false);
+		
+		Tree dataAdminTree = new Tree();  
+		dataAdminTree.setModelType(TreeModelType.CHILDREN);  
+		dataAdminTree.setRoot(new TreeNode("root",  
+							new TreeNode("Data Upload"),  
+							new TreeNode("Data Import"),
+							new TreeNode("Manage Projects")
+							)); 
+		
+		dataAdminTreeGrid.addNodeClickHandler(new NodeClickHandler(){
+
+			@Override
+			public void onNodeClick(NodeClickEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
+		dataAdminTreeGrid.setData(dataAdminTree);
+		
+		dataAdminContent.addMember(dataAdminTreeGrid);
+		
+		dataAdminSection.setItems(dataAdminContent);
+		
 		VLayout settingsContent = new VLayout();
 		
 		/*user settings*/
@@ -277,7 +314,7 @@ public class WestPanel extends SectionStack{
 		
 		settingsContent.addMember(userForm);
 		
-		this.setSections(searchSection);
+		this.setSections(searchSection,dataAdminSection);
 			
 	}
 	
@@ -315,6 +352,25 @@ public class WestPanel extends SectionStack{
 						centerTabSet.selectTab(index);
 					} else {
 						showAllUsers();
+					}
+				}
+				if(event.getNode().getName().equals("Manage Groups")){
+					boolean exists = false;
+					int index = 0;
+					
+					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+					for(int i=0; i < tabs.length; i++){
+						if(tabs[i].getTitle().equals("Group Management")){
+							exists = true;
+							index = i;
+						}
+					}
+					
+					if(exists){
+						centerTabSet.selectTab(index);
+					} else {
+						mp.getCenterPanel().openGroupAdminTab();
 					}
 				}
 				if(event.getNode().getName().equals("Add Data")){
@@ -361,7 +417,8 @@ public class WestPanel extends SectionStack{
 		Tree adminTree = new Tree();  
 		adminTree.setModelType(TreeModelType.CHILDREN);  
 		adminTree.setRoot(new TreeNode("root",  
-							new TreeNode("Show Users"),  
+							new TreeNode("Show Users"),
+							new TreeNode("Manage Groups"),
 							new TreeNode("Add Data"),
 							new TreeNode("Database Configuration")
 							)); 
@@ -462,9 +519,9 @@ public class WestPanel extends SectionStack{
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<User[]> callback = new AsyncCallback<User[]>(){
+		final AsyncCallback<FoUser[]> callback = new AsyncCallback<FoUser[]>(){
 			
-			public void onSuccess(User[] result){
+			public void onSuccess(FoUser[] result){
 				
 				mp.getCenterPanel().openUserAdminTab(result);
 				

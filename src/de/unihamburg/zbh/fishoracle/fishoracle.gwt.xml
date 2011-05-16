@@ -16,4 +16,6 @@
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='de.unihamburg.zbh.fishoracle.client.FishOracle'/>
+  <inherits name="de.unihamburg.zbh.fishoracle.fishoracle"/>
+  <inherits name="de.unihamburg.zbh.fishoracle.fishoracle"/>
 </module>

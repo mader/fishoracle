@@ -22,32 +22,32 @@ import javax.servlet.http.HttpSession;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import de.unihamburg.zbh.fishoracle.client.data.User;
+import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
-import de.unihamburg.zbh.fishoracle.server.data.DBQuery;
+import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 
 public class UserServiceImpl extends RemoteServiceServlet implements UserService {
 
 	private static final long serialVersionUID = 1929980857354870885L;
 
-	public User register(User user) throws Exception{
+	public FoUser register(FoUser user) throws Exception{
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
-		db.insertUserData(user);
+		FoUser storedUser = db.insertUser(user);
 		
-		return user;
+		return storedUser;
 	}
 	
-	public User login(String userName, String password) throws Exception{
+	public FoUser login(String userName, String password) throws Exception{
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
-		DBQuery db = new DBQuery(servletContext);
+		DBInterface db = new DBInterface(servletContext);
 		
-		User user = db.getUserData(userName, password);
+		FoUser user = db.getUser(userName, password);
 		
 		HttpServletRequest request=this.getThreadLocalRequest();
 		HttpSession session=request.getSession();
