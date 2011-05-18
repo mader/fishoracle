@@ -24,7 +24,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
-import de.unihamburg.zbh.fishoracle.client.data.Organ;
+import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 
 @RemoteServiceRelativePath("search")
@@ -36,7 +36,7 @@ public interface Search extends RemoteService {
 	public CopyNumberChange getCNCInfo(String query) throws Exception;
 	public Gen getGeneInfo(String query) throws Exception;
 	public String exportData(GWTImageInfo imageInfo) throws Exception;
-	public Organ[] getOrganData() throws Exception;
+	public FoOrgan[] getOrganData() throws Exception;
 	
 	public static class Util {
 

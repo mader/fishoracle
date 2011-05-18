@@ -21,54 +21,54 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class MicroarrayOptions implements IsSerializable{
 
-	private String[] chipName;
-	private String[] tissue;
-	private String[] pStage;
-	private String[] pGrade;
-	private String[] metaStatus;
+	private FoChip[] chips;
+	private FoOrgan[] organs;
+	private FoProperty[] properties;
+	private String[] propertyTypes;
+	private FoProject[] projects;
 	
 	public MicroarrayOptions() {
 		
 	}
 
-	public String[] getChipName() {
-		return chipName;
+	public FoChip[] getChips() {
+		return chips;
 	}
 
-	public void setChipName(String[] chipName) {
-		this.chipName = chipName;
+	public void setChips(FoChip[] chips) {
+		this.chips = chips;
 	}
 
-	public String[] getTissue() {
-		return tissue;
+	public FoOrgan[] getOrgans() {
+		return organs;
 	}
 
-	public void setTissue(String[] tissue) {
-		this.tissue = tissue;
+	public void setOrgans(FoOrgan[] organs) {
+		this.organs = organs;
 	}
 
-	public String[] getPStage() {
-		return pStage;
+	public FoProperty[] getProperties() {
+		return properties;
 	}
 
-	public void setPStage(String[] stage) {
-		pStage = stage;
+	public void setProperties(FoProperty[] properties) {
+		this.properties = properties;
 	}
 
-	public String[] getPGrade() {
-		return pGrade;
+	public String[] getPropertyTypes() {
+		return propertyTypes;
 	}
 
-	public void setPGrade(String[] grade) {
-		pGrade = grade;
+	public void setPropertyTypes(String[] propertyTypes) {
+		this.propertyTypes = propertyTypes;
 	}
 
-	public String[] getMetaStatus() {
-		return metaStatus;
+	public FoProject[] getProjects() {
+		return projects;
 	}
 
-	public void setMetaStatus(String[] metaStatus) {
-		this.metaStatus = metaStatus;
+	public void setProjects(FoProject[] projects) {
+		this.projects = projects;
 	}
 	
 }

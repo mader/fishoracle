@@ -47,6 +47,7 @@ import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
+import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.HeaderItem;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.PasswordItem;
@@ -79,6 +80,9 @@ import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
+import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
+import de.unihamburg.zbh.fishoracle.client.data.FoProject;
+import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
@@ -97,7 +101,15 @@ public class CenterPanel extends VLayout{
 	private ListGrid groupUserGrid;
 	private SelectItem userSelectItem;
 	
-	TextItem groupNameTextItem;
+	private ListGrid projectGrid;
+	private ListGrid projectMstudyGrid;
+	private TextItem projectNameTextItem;
+	private TextAreaItem projectDescriptionItem;
+	private ListGrid projectAccessGrid;
+	private SelectItem accessRightSelectItem;
+	private SelectItem groupSelectItem;
+	
+	private TextItem groupNameTextItem;
 	
 	private TabSet centerTabSet = null;
 	private TextItem chrTextItem;
@@ -108,14 +120,13 @@ public class CenterPanel extends VLayout{
 	
 	private FormPanel uploadForm;
 	private FileUpload fu;
+	private DynamicForm metaDataForm;
 	private TextItem studyName;
 	private SelectItem chip;
 	private SelectItem tissue;
-	private SelectItem pstage;
-	private SelectItem pgrade;
-	private SelectItem metaStatus;
-	private TextItem sampleId;
+	private SelectItem project;
 	private TextAreaItem descriptionItem;
+	private ButtonItem submitNewMstudyButton;
 	
 	private TextItem ensemblHost;
     private TextItem ensemblPort;
@@ -873,8 +884,6 @@ public class CenterPanel extends VLayout{
 		userSelectItem = new SelectItem();  
         userSelectItem.setTitle("User");
         
-        //TODO
-        
         getAllUsersExceptGroup(foGroup); 
         
         ButtonItem addUserToGroupButton = new ButtonItem("Add");
@@ -1068,6 +1077,279 @@ public class CenterPanel extends VLayout{
 		
 	}
 	
+	public void loadProjectManageWindow(){
+		
+		final Window window = new Window();
+
+		window.setTitle("Add Project");
+		window.setWidth(250);
+		window.setHeight(200);
+		window.setAlign(Alignment.CENTER);
+		
+		window.setAutoCenter(true);
+		window.setIsModal(true);
+		window.setShowModalMask(true); 
+		
+		DynamicForm projectForm = new DynamicForm();
+		projectNameTextItem = new TextItem();
+		projectNameTextItem.setTitle("Project Name");
+		
+		projectDescriptionItem = new TextAreaItem(); 
+		projectDescriptionItem.setTitle("Description");
+		projectDescriptionItem.setLength(5000);
+		
+		ButtonItem addProjectButton = new ButtonItem("Add");
+		addProjectButton.setWidth(50);
+
+		addProjectButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				addProject(new FoProject(0, projectNameTextItem.getDisplayValue(), projectDescriptionItem.getDisplayValue()));
+				window.hide();
+			}
+			
+		});
+		
+		projectForm.setItems(projectNameTextItem, projectDescriptionItem, addProjectButton);
+	
+		window.addItem(projectForm);
+		
+		window.show();
+	}
+	
+	public void loadProjectAccessManageWindow(final FoProject project){
+		
+		final Window window = new Window();
+
+		window.setTitle("Add Project Access to Project " + project.getName());
+		window.setWidth(250);
+		window.setHeight(200);
+		window.setAlign(Alignment.CENTER);
+		
+		window.setAutoCenter(true);
+		window.setIsModal(true);
+		window.setShowModalMask(true); 
+		
+		final DynamicForm projectAccessForm = new DynamicForm();
+		
+		groupSelectItem = new SelectItem();  
+        groupSelectItem.setTitle("Group");
+        
+        getAllGroupsExceptProject(project); 
+		
+		accessRightSelectItem = new SelectItem();
+		accessRightSelectItem.setTitle("Access right");
+		
+		LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();  
+        valueMap.put("r", "r");
+        valueMap.put("rw", "rw");
+		
+        accessRightSelectItem.setValueMap(valueMap);
+        
+		ButtonItem addProjectAccessButton = new ButtonItem("Add");
+		addProjectAccessButton.setWidth(50);
+
+		addProjectAccessButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				
+				FoProjectAccess pa = new FoProjectAccess(0, Integer.parseInt(groupSelectItem.getValueAsString()), accessRightSelectItem.getDisplayValue());
+				
+				addProjectAccess(pa, project.getId());
+				
+				window.hide();
+			}
+			
+		});
+		
+		projectAccessForm.setItems(groupSelectItem, accessRightSelectItem, addProjectAccessButton);
+	
+		window.addItem(projectAccessForm);
+		
+		window.show();
+	}
+	
+	public void openProjectAdminTab(){
+		Tab projectAdminTab;
+		projectAdminTab = new Tab("Project Management");
+		
+		projectAdminTab.setCanClose(true);
+		
+		VLayout pane = new VLayout();
+		pane.setWidth100();
+		pane.setHeight100();
+		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		VLayout headerContainer = new VLayout();
+		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
+		headerContainer.setWidth100();
+		headerContainer.setAutoHeight();
+		
+		HLayout header = new HLayout();
+		header.setAutoWidth();
+		header.setAutoHeight();
+		
+		Label headerLbl = new Label("<h2>Project Management</h2>");
+		headerLbl.setWidth("300");
+		header.addMember(headerLbl);
+		
+		headerContainer.addMember(header);
+		
+		HLayout controlsPanel = new HLayout();
+		controlsPanel.setWidth100();
+		controlsPanel.setAutoHeight();
+		
+		VLayout projectPanel = new VLayout();
+		projectPanel.setDefaultLayoutAlign(Alignment.CENTER);
+		projectPanel.setWidth("33%");
+		projectPanel.setHeight100();
+		
+		Button newProjectButton = new Button("Add Project");
+		newProjectButton.setShowRollOver(true);
+		newProjectButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				loadProjectManageWindow();
+			}
+			
+		});
+		
+		projectPanel.addMember(newProjectButton);		
+
+		controlsPanel.addMember(projectPanel);
+		
+		VLayout projectAccessPanel = new VLayout();
+		projectAccessPanel.setDefaultLayoutAlign(Alignment.CENTER);
+		projectAccessPanel.setWidth("33%");
+		projectAccessPanel.setHeight100();
+		
+		Button newProjectAccessButton = new Button("Add Project Access");
+		newProjectAccessButton.setShowRollOver(true);
+		newProjectAccessButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				ListGridRecord lgr = projectGrid.getSelectedRecord();
+				
+				FoProject project = new FoProject(Integer.parseInt(lgr.getAttribute("projectId")),
+															lgr.getAttribute("projectName"),
+															lgr.getAttribute("projectDescription"));
+				
+				loadProjectAccessManageWindow(project);
+			}
+			
+		});
+		
+		projectAccessPanel.addMember(newProjectAccessButton);		
+
+		controlsPanel.addMember(projectAccessPanel);
+		
+		VLayout microarrayStudyPanel = new VLayout();
+		microarrayStudyPanel.setDefaultLayoutAlign(Alignment.CENTER);
+		microarrayStudyPanel.setWidth("33%");
+		microarrayStudyPanel.setHeight100();
+		
+		Button addMstudyButton = new Button("Add Microarraystudy to Project");
+		addMstudyButton.setWidth(200);
+		addMstudyButton.setShowRollOver(true);
+		addMstudyButton.addClickHandler(new ClickHandler(){
+			//TODO
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				/*
+				ListGridRecord lgr = groupGrid.getSelectedRecord();
+				
+				FoGroup group = new FoGroup(Integer.parseInt(lgr.getAttribute("groupId")),
+															lgr.getAttribute("groupName"),
+															Boolean.parseBoolean(lgr.getAttribute("isactive")));
+				
+				loadUserToGroupWindow(group);*/
+			}
+			
+		});
+		
+		microarrayStudyPanel.addMember(addMstudyButton);	
+		
+		controlsPanel.addMember(microarrayStudyPanel);
+		
+		headerContainer.addMember(controlsPanel);
+		
+		pane.addMember(headerContainer);
+		
+		HLayout gridContainer = new HLayout();
+		gridContainer.setWidth100();
+		gridContainer.setHeight100();
+		
+		projectGrid = new ListGrid();
+		projectGrid.setWidth("50%");
+		projectGrid.setHeight100();
+		projectGrid.setShowAllRecords(true);  
+		projectGrid.setAlternateRecordStyles(true);
+		projectGrid.setWrapCells(true);
+		projectGrid.setFixedRecordHeights(false);
+		projectGrid.markForRedraw();
+		
+		ListGridField lgfProjectId = new ListGridField("projectId", "Project ID");
+		ListGridField lgfProjectName = new ListGridField("projectName", "Project Name");
+		ListGridField lgfProjectActivated = new ListGridField("projectDescription", "Description");
+		
+		projectGrid.setFields(lgfProjectId, lgfProjectName, lgfProjectActivated);
+		
+		showAllProjects();
+		
+		gridContainer.addMember(projectGrid);
+		
+		projectMstudyGrid = new ListGrid();
+		projectMstudyGrid.setWidth("50%");
+		projectMstudyGrid.setHeight100();
+		projectMstudyGrid.setShowAllRecords(true);  
+		projectMstudyGrid.setAlternateRecordStyles(true);
+		projectMstudyGrid.setWrapCells(true);
+		projectMstudyGrid.setFixedRecordHeights(false);
+		projectMstudyGrid.markForRedraw();
+		
+		ListGridField lgfProjectMstudyId = new ListGridField("mstudyId", "Microarraystudy ID");
+		ListGridField lgfProjectMstudyName = new ListGridField("mstudyName", "Name");
+		ListGridField lgfProjectMstudyDescription = new ListGridField("mstudyDescription", "Description");
+		
+		projectMstudyGrid.setFields(lgfProjectMstudyId, lgfProjectMstudyName, lgfProjectMstudyDescription);
+		
+		gridContainer.addMember(projectMstudyGrid);
+		
+		pane.addMember(gridContainer);
+		
+		projectAccessGrid = new ListGrid();
+		projectAccessGrid.setWidth100();
+		projectAccessGrid.setHeight("50%");
+		projectAccessGrid.setShowAllRecords(true);  
+		projectAccessGrid.setAlternateRecordStyles(true);
+		projectAccessGrid.setWrapCells(true);
+		projectAccessGrid.setFixedRecordHeights(false);
+		projectAccessGrid.markForRedraw();
+		
+		ListGridField lgfProjectAccessId = new ListGridField("accessId", "ID");
+		ListGridField lgfProjectAccessGroup = new ListGridField("accessGroup", "Group");
+		ListGridField lgfProjectAccessRight = new ListGridField("accessRight", "Access Right");
+		
+		projectAccessGrid.setFields(lgfProjectAccessId, lgfProjectAccessGroup, lgfProjectAccessRight);
+		
+		pane.addMember(projectAccessGrid);
+		
+		projectAdminTab.setPane(pane);
+		
+		centerTabSet.addTab(projectAdminTab);
+		
+		centerTabSet.selectTab(projectAdminTab);
+		
+	}
+	
 	public void openDataAdminTab(boolean unlock){
 		Tab dataAdminTab;
 		if(unlock){
@@ -1151,7 +1433,7 @@ public class CenterPanel extends VLayout{
 		
 		metaData.addMember(new LayoutSpacer());
 		
-		DynamicForm metaDataForm = new DynamicForm();
+		metaDataForm = new DynamicForm();
 		
 		studyName = new TextItem();
 		studyName.setTitle("study name");
@@ -1162,23 +1444,14 @@ public class CenterPanel extends VLayout{
 		tissue = new SelectItem();
 		tissue.setTitle("tissue");
 		
-		pstage = new SelectItem();
-		pstage.setTitle("pathological stage");
-		
-		pgrade = new SelectItem();
-		pgrade.setTitle("pathological grade");
-		
-		metaStatus = new SelectItem();
-		metaStatus.setTitle("meta status");
-		
-		sampleId = new TextItem();
-		sampleId.setTitle("sample Id");
+		project = new SelectItem();
+		project.setTitle("project");
 		
 		descriptionItem = new TextAreaItem();
-		descriptionItem.setTitle("description");  
+		descriptionItem.setTitle("description");
 		
-		ButtonItem submitButton = new ButtonItem("submit");
-		submitButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+		submitNewMstudyButton = new ButtonItem("submit");
+		submitNewMstudyButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
 
 			@Override
 			public void onClick(
@@ -1186,18 +1459,15 @@ public class CenterPanel extends VLayout{
 				checkImportData();
 			}
 			
-			
 		});
 		
-		metaDataForm.setItems(studyName, chip, tissue, pstage, pgrade, metaStatus, sampleId, descriptionItem, submitButton);
+		getMicroarrayOptions();
 		
 		metaData.addMember(metaDataForm);
 
 		metaData.addMember(new LayoutSpacer());
 		
-		pane.addMember(metaData);
-		
-		getMicroarrayOptions();
+		pane.addMember(metaData);	
 		
 		//dataAdminTab.setPane(pane);
 		
@@ -1533,44 +1803,56 @@ public class CenterPanel extends VLayout{
 				
 				LinkedHashMap<String, String> chipValueMap = new LinkedHashMap<String, String>();
 				
-				for(int i=0; i < result.getChipName().length; i++){
-					chipValueMap.put(new Integer(i).toString(),result.getChipName()[i]);
+				for(int i=0; i < result.getChips().length; i++){
+					chipValueMap.put(new Integer(result.getChips()[i].getId()).toString(), result.getChips()[i].getName());
 				}
 				
 				chip.setValueMap(chipValueMap);
 				
 				LinkedHashMap<String, String> tissueValueMap = new LinkedHashMap<String, String>();
 				
-				for(int i=0; i < result.getTissue().length; i++){
-					tissueValueMap.put(new Integer(i).toString(),result.getTissue()[i]);
+				for(int i=0; i < result.getOrgans().length; i++){
+					tissueValueMap.put(new Integer(result.getOrgans()[i].getId()).toString(), result.getOrgans()[i].getLabel() + " (" + result.getOrgans()[i].getType() + ")");
 				}
 				
 				tissue.setValueMap(tissueValueMap);
 				
-				LinkedHashMap<String, String> pstageValueMap = new LinkedHashMap<String, String>();
+				LinkedHashMap<String, String> projectValueMap = new LinkedHashMap<String, String>();
 				
-				for(int i=0; i < result.getPStage().length; i++){
-					pstageValueMap.put(new Integer(i).toString(),result.getPStage()[i]);
+				for(int i=0; i < result.getProjects().length; i++){
+					projectValueMap.put(new Integer(result.getProjects()[i].getId()).toString(), result.getProjects()[i].getName());
 				}
 				
-				pstage.setValueMap(pstageValueMap);
+				project.setValueMap(projectValueMap);
 				
-				LinkedHashMap<String, String> pgradeValueMap = new LinkedHashMap<String, String>();
+				FormItem[] fi = new FormItem[(result.getPropertyTypes().length + 6)];
+				fi[0] = studyName;
+				fi[1] = chip;
+				fi[2] = tissue;
+				fi[3] = project;
+				fi[4] = descriptionItem; 
 				
-				for(int i=0; i < result.getPGrade().length; i++){
-					pgradeValueMap.put(new Integer(i).toString(),result.getPGrade()[i]);
+				for(int i=0; i < result.getPropertyTypes().length; i++){
+					
+					SelectItem item = new SelectItem();
+					item.setTitle(result.getPropertyTypes()[i]);
+					LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
+					
+					for(int j=0; j < result.getProperties().length; j++){
+						
+						if(result.getProperties()[j].getType().equals(result.getPropertyTypes()[i])){
+							valueMap.put(new Integer(result.getProperties()[j].getId()).toString(), result.getProperties()[j].getLabel());
+						}
+						
+					}
+					
+					item.setValueMap(valueMap);
+					fi[(i+5)] = item;
 				}
 				
-				pgrade.setValueMap(pgradeValueMap);
-				
-				LinkedHashMap<String, String> mstatusValueMap = new LinkedHashMap<String, String>();
-				
-				for(int i=0; i < result.getMetaStatus().length; i++){
-					mstatusValueMap.put(new Integer(i).toString(),result.getMetaStatus()[i]);
-				}
-				
-				metaStatus.setValueMap(mstatusValueMap);
-				
+				fi[fi.length -1] = submitNewMstudyButton;
+
+				metaDataForm.setFields(fi);
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
@@ -1592,7 +1874,7 @@ public class CenterPanel extends VLayout{
 				
 				FoGroup[] groups = result;
 				
-				groupGrid.addRecordClickHandler(new MyRecordClickHandler(groupUserGrid,groups));
+				groupGrid.addRecordClickHandler(new MyGroupRecordClickHandler(groupUserGrid,groups));
 								
 				ListGridRecord[] lgr = new ListGridRecord[groups.length];
 				
@@ -1674,7 +1956,7 @@ public class CenterPanel extends VLayout{
 		final AsyncCallback<FoUser> callback = new AsyncCallback<FoUser>(){
 			
 			public void onSuccess(FoUser result){
-				//TODO
+
 				ListGridRecord lgr = new ListGridRecord();
 				lgr.setAttribute("userId", result.getId());
 				lgr.setAttribute("userName", result.getUserName());
@@ -1688,14 +1970,123 @@ public class CenterPanel extends VLayout{
 		req.addUserToFoGroup(foGroup, userId, callback);
 	}
 	
+	public void showAllProjects(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoProject[]> callback = new AsyncCallback<FoProject[]>(){
+			
+			public void onSuccess(FoProject[] result){
+				
+				FoProject[] projects = result;
+				
+				projectGrid.addRecordClickHandler(new MyProjectRecordClickHandler(projectMstudyGrid, projectAccessGrid, projects));
+								
+				ListGridRecord[] lgr = new ListGridRecord[projects.length];
+				
+				for(int i=0; i < projects.length; i++){
+					lgr[i] = new ListGridRecord();
+					lgr[i].setAttribute("projectId", projects[i].getId());
+					lgr[i].setAttribute("projectName", projects[i].getName());
+					lgr[i].setAttribute("projectDescription", projects[i].getDescription());
+				}
+
+				projectGrid.setData(lgr);
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.getAllFoProjects(callback);
+	}
+	
+	public void addProject(FoProject foProject){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoProject> callback = new AsyncCallback<FoProject>(){
+			
+			public void onSuccess(FoProject result){
+				FoProject project = result;
+				
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("projectId", project.getId());
+				lgr.setAttribute("projectName", project.getName());
+				lgr.setAttribute("projectDescription", project.getDescription());
+				
+				projectGrid.addData(lgr);
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.addFoProject(foProject, callback);
+	}
+	
+	public void getAllGroupsExceptProject(FoProject foProject){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoGroup[]> callback = new AsyncCallback<FoGroup[]>(){
+			
+			public void onSuccess(FoGroup[] result){
+				
+				 LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
+				 
+				 for(int i=0; i< result.length; i++){
+					 valueMap.put(new Integer(result[i].getId()).toString(), result[i].getName());
+				 }
+				 
+				 groupSelectItem.setValueMap(valueMap);
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+		};
+		req.getAllGroupsExceptFoProject(foProject, callback);
+	}
+	
+	public void addProjectAccess(FoProjectAccess foProjectAccess, int projectId){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoProjectAccess> callback = new AsyncCallback<FoProjectAccess>(){
+			
+			public void onSuccess(FoProjectAccess result){
+				
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("accessId", result.getId());
+				lgr.setAttribute("accessGroup", result.getFoGroup().getName());
+				lgr.setAttribute("accessRight", result.getAccess());
+				
+				projectAccessGrid.addData(lgr);
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+		};
+		
+		req.addAccessToFoProject(foProjectAccess, projectId, callback);
+	}
+	
 	public void importData(String fileName,
 							String studyName,
-							String chipType,
-							String tissue,
-							String pstage,
-							String pgrade,
-							String metaStatus,
-							String sampleId,
+							int chipId,
+							int organId,
+							int projectId,
+							int[] propertyIds,
 							String description){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -1716,12 +2107,10 @@ public class CenterPanel extends VLayout{
 		};
 		req.importData(fileName,
 						studyName,
-						chipType,
-						tissue,
-						pstage,
-						pgrade,
-						metaStatus,
-						sampleId,
+						chipId,
+						organId,
+						projectId,
+						propertyIds,
 						description,
 						callback);
 	}
@@ -1781,9 +2170,40 @@ public class CenterPanel extends VLayout{
 			public void onSuccess(Boolean result){
 
 				if(result){
-					importData(fu.getFilename(), studyName.getDisplayValue(), chip.getDisplayValue(), tissue.getDisplayValue(), 
-							pstage.getDisplayValue(), pgrade.getDisplayValue(), metaStatus.getDisplayValue(),
-							sampleId.getDisplayValue(), descriptionItem.getDisplayValue());
+					
+					FormItem[] newData = metaDataForm.getFields();
+					
+					String sName = null;
+					int chipId = 0;
+					int organId = 0;
+					int projectId = 0;
+					String description = null;
+					int[] propertyIds = new int[newData.length - 5 -1];
+					int j = 0;
+					
+					for(int i = 0; i< newData.length; i++){
+						
+						if(newData[i].getTitle().equals("study name")){
+							sName = newData[i].getDisplayValue();
+						}  else if(newData[i].getTitle().equals("chip type")){
+							chipId = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
+						} else if(newData[i].getTitle().equals("tissue")){
+							organId = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
+						} else if(newData[i].getTitle().equals("project")){
+							projectId = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
+						} else if(newData[i].getTitle().equals("description")){
+							description = newData[i].getDisplayValue();
+						} else if(newData[i].getTitle().equals("submit")){
+							//do nothing
+						} else {
+							propertyIds[j] = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
+							j++;
+						}
+					
+					}
+					
+					importData(fu.getFilename(), sName, chipId, organId, projectId, propertyIds, description);
+							
 				} else {
 					SC.say("Page currently locked by another user.");
 				}
@@ -1798,12 +2218,73 @@ public class CenterPanel extends VLayout{
 	
 }
 
-class MyRecordClickHandler implements RecordClickHandler {
+class MyProjectRecordClickHandler implements RecordClickHandler {
+
+	private ListGrid projectMstudyGrid;
+	private ListGrid projectAccessGrid;
+	private FoProject[] projects;
+	
+	public MyProjectRecordClickHandler(ListGrid projectMstudyGrid, ListGrid projectAccessGrid, FoProject[] projects){
+		this.projectMstudyGrid = projectMstudyGrid;
+		this.projectAccessGrid = projectAccessGrid;
+		this.projects = projects;
+	}
+	
+	@Override
+	public void onRecordClick(RecordClickEvent event) {
+		ListGridRecord[] oldMstudyRecords = projectMstudyGrid.getRecords();
+		
+		for (int i= 0; i < oldMstudyRecords.length; i++){
+			projectMstudyGrid.removeData(oldMstudyRecords[i]);
+		}
+		
+		FoMicroarraystudy[] mstudies = projects[Integer.parseInt(event.getRecord().getAttribute("projectId")) -1].getMstudies();
+		
+		if(mstudies != null){
+		
+			ListGridRecord[] mstudyLgr = new ListGridRecord[mstudies.length];
+		
+			for(int i=0; i < mstudies.length; i++){
+				mstudyLgr[i] = new ListGridRecord();
+				mstudyLgr[i].setAttribute("mstudyId", mstudies[i].getId());
+				mstudyLgr[i].setAttribute("mstudyName", mstudies[i].getName());
+				mstudyLgr[i].setAttribute("mstudyDescription", mstudies[i].getDescription());
+			}
+
+			projectMstudyGrid.setData(mstudyLgr);
+		
+		}
+		
+		ListGridRecord[] oldAccessRecords = projectAccessGrid.getRecords();
+		
+		for (int i= 0; i < oldAccessRecords.length; i++){
+			projectAccessGrid.removeData(oldAccessRecords[i]);
+		}
+		
+		FoProjectAccess[] accesses = projects[Integer.parseInt(event.getRecord().getAttribute("projectId")) -1].getProjectAccess();
+
+		if(accesses != null){
+		
+			ListGridRecord[] accessLgr = new ListGridRecord[accesses.length];
+		
+			for(int i=0; i < accesses.length; i++){
+				accessLgr[i] = new ListGridRecord();
+				accessLgr[i].setAttribute("accessId", accesses[i].getId());
+				accessLgr[i].setAttribute("accessGroup", accesses[i].getFoGroup().getName());
+				accessLgr[i].setAttribute("accessRight", accesses[i].getAccess());
+			}
+
+			projectAccessGrid.setData(accessLgr);
+		}
+	}
+}
+
+class MyGroupRecordClickHandler implements RecordClickHandler {
 
 	private ListGrid groupUserGrid;
 	private FoGroup[] groups;
 	
-	public MyRecordClickHandler(ListGrid groupUserGrid, FoGroup[] groups){
+	public MyGroupRecordClickHandler(ListGrid groupUserGrid, FoGroup[] groups){
 		this.groupUserGrid = groupUserGrid;
 		this.groups = groups;
 	}

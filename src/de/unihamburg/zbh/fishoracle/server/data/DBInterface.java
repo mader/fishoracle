@@ -34,16 +34,37 @@ import org.ensembl.driver.KaryotypeBandAdaptor;
 import com.csvreader.CsvReader;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoChip;
+import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
+import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
+import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
+import de.unihamburg.zbh.fishoracle.client.data.FoProject;
+import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
+import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
+import de.unihamburg.zbh.fishoracle.client.data.FoTissueSample;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
+import de.unihamburg.zbh.fishoracle_db_api.data.Chip;
+import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Group;
+import de.unihamburg.zbh.fishoracle_db_api.data.Microarraystudy;
+import de.unihamburg.zbh.fishoracle_db_api.data.Organ;
+import de.unihamburg.zbh.fishoracle_db_api.data.Project;
+import de.unihamburg.zbh.fishoracle_db_api.data.ProjectAccess;
+import de.unihamburg.zbh.fishoracle_db_api.data.Property;
+import de.unihamburg.zbh.fishoracle_db_api.data.TissueSample;
 import de.unihamburg.zbh.fishoracle_db_api.data.User;
+import de.unihamburg.zbh.fishoracle_db_api.driver.ChipAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriver;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriverImpl;
 import de.unihamburg.zbh.fishoracle_db_api.driver.GroupAdaptor;
+import de.unihamburg.zbh.fishoracle_db_api.driver.MicroarraystudyAdaptor;
+import de.unihamburg.zbh.fishoracle_db_api.driver.OrganAdaptor;
+import de.unihamburg.zbh.fishoracle_db_api.driver.ProjectAdaptor;
+import de.unihamburg.zbh.fishoracle_db_api.driver.PropertyAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.UserAdaptor;
 
 /**
@@ -298,6 +319,13 @@ public class DBInterface {
 	
 	/* FISH ORACLE INTERFACE */
 	
+	public int createNewStudy(Microarraystudy mstudy, int projectId){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		MicroarraystudyAdaptor ma = driver.getMicroarraystudyAdaptor();
+	
+		return ma.storeMicroarraystudy(mstudy, projectId);
+	}
+	
 	public FoUser insertUser(FoUser user) throws Exception{
 		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
 		UserAdaptor ua = driver.getUserAdaptor();
@@ -388,6 +416,248 @@ public class DBInterface {
 		
 		return userToFoUser(user);
 		
+	}
+	
+	public FoProject[] getAllProjects() throws Exception {
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		ProjectAdaptor pa = driver.getProjectAdaptor();
+		
+		Project[] projects = pa.fetchAllProjects();
+		
+		return projectsToFoProjects(projects);
+	}
+	
+	public FoProject addFoProject(FoProject foProject){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		ProjectAdaptor pa = driver.getProjectAdaptor();
+		
+		int newProjectId = pa.storeProject(foProject.getName(), foProject.getDescription());
+		
+		Project newProject = pa.fetchProjectById(newProjectId);
+		
+		return projectToFoProject(newProject);
+		
+	}
+	
+	private FoMicroarraystudy[] mstudiesToFoMstudies(Microarraystudy[] mstudies, boolean withChildren){
+		FoMicroarraystudy[] foMstudies = new FoMicroarraystudy[mstudies.length];
+		
+		for(int i=0; i < mstudies.length; i++){
+			foMstudies[i] = mstudyToFoMstudy(mstudies[i], withChildren);
+		}
+		return foMstudies;
+		
+	}
+	
+	public FoGroup[] getAllGroupsExceptProject(FoProject foProject){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		GroupAdaptor ga = driver.getGroupAdaptor();
+		
+		Group[] groups = ga.fetchGroupsNotInProject(foProject.getId());
+		
+		return groupsToFoGroups(groups);
+	}
+	
+	public FoProjectAccess addAccessToProject(FoProjectAccess foProjectAccess, int projectId){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		ProjectAdaptor pa = driver.getProjectAdaptor();
+		
+		ProjectAccess projectAccess = pa.addGroupAccessToProject(foProjectAccess.getGroupId(), projectId, foProjectAccess.getAccess());
+		
+		return projectAccessToFoProjectAccess(projectAccess);
+	}
+	
+	public FoChip[] getAllChips(){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		ChipAdaptor ca = driver.getChipAdaptor();
+		
+		Chip[] chips = ca.fetchAllChips();
+		
+		return chipsToFoChips(chips);
+	}
+	
+	public FoOrgan[] getOrgans(boolean enabled){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		OrganAdaptor oa = driver.getOrganAdaptor();
+		
+		Organ[] organs = oa.fetchOrgans(enabled);
+		
+		return organsToFoOrgans(organs);
+	}
+	
+	public FoProperty[] getProperties(boolean enabled){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		PropertyAdaptor pa = driver.getPropertyAdaptor();
+		
+		Property[] properties = pa.fetchProperties(true);
+		
+		return propertiesToFoProperties(properties);
+	}
+	
+	public String[] getPropertyTypes(){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		PropertyAdaptor pa = driver.getPropertyAdaptor();
+		
+		String[] propertyTypes = pa.fetchAllTypes();
+		
+		return propertyTypes;
+	}
+	
+	/* private methods */
+	
+	private FoProjectAccess[] projectAccessesToFoProjectAccesses(ProjectAccess[] projectAccess){
+		FoProjectAccess[] foProjectAccess = new FoProjectAccess[projectAccess.length];
+		
+		for(int i=0; i < projectAccess.length; i++){
+			foProjectAccess[i] = projectAccessToFoProjectAccess(projectAccess[i]);
+		}
+		return foProjectAccess;
+	}
+	
+	private FoProjectAccess projectAccessToFoProjectAccess(ProjectAccess projectAccess){
+		
+		FoGroup foGroup = groupToFoGroup(projectAccess.getGroup());
+		
+		FoProjectAccess foProjectAccess = new FoProjectAccess(projectAccess.getId(),
+															foGroup,
+															projectAccess.getAccess());
+		return foProjectAccess;
+	}
+	
+	private FoCnSegment[] cnSegmentsToFoCnSegments(CnSegment[] segments){
+		FoCnSegment[] foSegments = new FoCnSegment[segments.length];
+		
+		for(int i=0; i < segments.length; i++){
+			foSegments[i] = cnSegmentToFoCnSegment(segments[i]);
+		}
+		return foSegments;
+	}
+	
+	private FoCnSegment cnSegmentToFoCnSegment(CnSegment segment){
+		FoCnSegment foSegment = new FoCnSegment(segment.getId(),
+											segment.getChromosome(),
+											segment.getStart(),
+											segment.getEnd(),
+											segment.getMean(),
+											segment.getNumberOfMarkers());
+		return foSegment;
+	}
+	
+	private FoTissueSample[] tissueSamplesToFoTissueSamples(TissueSample[] tissues){
+	
+		FoTissueSample[] foTissues = new FoTissueSample[tissues.length];
+		
+		for(int i=0; i < tissues.length; i++){
+			foTissues[i] = tissueSampleToFoTissueSample(tissues[i]);
+		}
+		
+		return foTissues;
+	}
+	
+	private FoTissueSample tissueSampleToFoTissueSample(TissueSample tissue){
+		
+		FoOrgan foOrgan = organToFoOrgan(tissue.getOrgan());
+		FoProperty[] foProperties = propertiesToFoProperties(tissue.getProperties()); 
+		
+		FoTissueSample foTissue = new FoTissueSample(tissue.getId(),
+													foOrgan,
+													foProperties);
+		return foTissue;
+	}
+	
+	private FoProperty[] propertiesToFoProperties(Property[] properties){
+		FoProperty[] foProperties = new FoProperty[properties.length];
+		
+		for(int i=0; i < properties.length; i++){
+			foProperties[i] = propertyToFoProperty(properties[i]);
+		}
+		return foProperties;
+	}
+	
+	private FoProperty propertyToFoProperty(Property property){
+		FoProperty foProperty = new FoProperty(property.getId(),
+											property.getLabel(),
+											property.getType(),
+											property.getActivty());
+		return foProperty;
+	}
+	
+	private FoOrgan[] organsToFoOrgans(Organ[] organs){
+		FoOrgan[] foOrgans = new FoOrgan[organs.length];
+		
+		for(int i=0; i < organs.length; i++){
+			foOrgans[i] = organToFoOrgan(organs[i]);
+		}
+		return foOrgans;
+	}
+	
+	private FoOrgan organToFoOrgan(Organ organ){
+		FoOrgan foOrgan = new FoOrgan(organ.getId(),
+									organ.getLabel(),
+									organ.getType(),
+									organ.getActivty());
+		return foOrgan;
+	}
+	
+	private FoChip[] chipsToFoChips(Chip[] chips){
+		FoChip[] foChips = new FoChip[chips.length];
+		
+		for(int i=0; i < chips.length; i++){
+			foChips[i] = chipToFoChip(chips[i]);
+		}
+		return foChips;
+	}
+	
+	private FoChip chipToFoChip(Chip chip){
+		FoChip foChip = new FoChip(chip.getId(),
+								chip.getName(),
+								chip.getType());
+		return foChip;
+	}
+	
+	private FoMicroarraystudy mstudyToFoMstudy(Microarraystudy mstudy, boolean withChildren){
+		
+		FoMicroarraystudy foMstudy = new FoMicroarraystudy(mstudy.getId(),
+														mstudy.getDate(),
+														mstudy.getName(),
+														mstudy.getDescription(),
+														mstudy.getUserId());
+		
+		if(withChildren){
+			foMstudy.setChip(chipToFoChip(mstudy.getChip()));
+			foMstudy.setSegments(cnSegmentsToFoCnSegments(mstudy.getSegments()));
+			foMstudy.setTissue(tissueSampleToFoTissueSample(mstudy.getTissue()));
+		} else {
+			foMstudy.setChipId(mstudy.getChipId());
+			foMstudy.setOrgan_id(mstudy.getOrgan_id());
+			foMstudy.setPropertyIds(mstudy.getPropertyIds());
+		}
+		return foMstudy;
+	}
+	
+	private FoProject[] projectsToFoProjects(Project[] projects){
+		FoProject[] foProjects = new FoProject[projects.length];
+		
+		for(int i=0; i < projects.length; i++){
+			foProjects[i] = projectToFoProject(projects[i]);
+		}
+		return foProjects;
+	}
+	
+	private FoProject projectToFoProject(Project project){
+		
+		FoProject foProject = new FoProject(project.getId(),
+											project.getName(),
+											project.getDescription());
+		
+		if(project.getMstudies() != null){
+			foProject.setMstudies(mstudiesToFoMstudies(project.getMstudies(), false));
+		}
+		
+		if(project.getProjectAccess() != null){
+			foProject.setProjectAccess(projectAccessesToFoProjectAccesses(project.getProjectAccess()));
+		}
+		return foProject;
 	}
 	
 	private FoGroup[] groupsToFoGroups(Group[] groups){

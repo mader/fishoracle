@@ -54,7 +54,7 @@ import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
-import de.unihamburg.zbh.fishoracle.client.data.Organ;
+import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
@@ -279,8 +279,7 @@ public class WestPanel extends SectionStack{
 		
 		Tree dataAdminTree = new Tree();  
 		dataAdminTree.setModelType(TreeModelType.CHILDREN);  
-		dataAdminTree.setRoot(new TreeNode("root",  
-							new TreeNode("Data Upload"),  
+		dataAdminTree.setRoot(new TreeNode("root", 
 							new TreeNode("Data Import"),
 							new TreeNode("Manage Projects")
 							)); 
@@ -289,7 +288,45 @@ public class WestPanel extends SectionStack{
 
 			@Override
 			public void onNodeClick(NodeClickEvent event) {
-				// TODO Auto-generated method stub
+				
+				if(event.getNode().getName().equals("Manage Projects")){
+					boolean exists = false;
+					int index = 0;
+					
+					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+					for(int i=0; i < tabs.length; i++){
+						if(tabs[i].getTitle().equals("Manage Projects")){
+							exists = true;
+							index = i;
+						}
+					}
+					
+					if(exists){
+						centerTabSet.selectTab(index);
+					} else {
+						mp.getCenterPanel().openProjectAdminTab();
+					}
+				}
+				
+				if(event.getNode().getName().equals("Data Import")){
+					boolean exists = false;
+					int index = 0;
+					
+					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+					for(int i=0; i < tabs.length; i++){
+						if(tabs[i].getTitle().equals("Data Import") || tabs[i].getTitle().equals("Data Import (occupied)")){
+							exists = true;
+							index = i;
+						}
+					}
+					if(exists){
+						centerTabSet.selectTab(index);
+					} else {
+						checkImportData();
+					}
+				}
 				
 			}
 			
@@ -373,24 +410,6 @@ public class WestPanel extends SectionStack{
 						mp.getCenterPanel().openGroupAdminTab();
 					}
 				}
-				if(event.getNode().getName().equals("Add Data")){
-					boolean exists = false;
-					int index = 0;
-					
-					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
-					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
-					for(int i=0; i < tabs.length; i++){
-						if(tabs[i].getTitle().equals("Data Import") || tabs[i].getTitle().equals("Data Import (occupied)")){
-							exists = true;
-							index = i;
-						}
-					}
-					if(exists){
-						centerTabSet.selectTab(index);
-					} else {
-						checkImportData();
-					}
-				}
 				if(event.getNode().getName().equals("Database Configuration")){
 					boolean exists = false;
 					int index = 0;
@@ -419,7 +438,6 @@ public class WestPanel extends SectionStack{
 		adminTree.setRoot(new TreeNode("root",  
 							new TreeNode("Show Users"),
 							new TreeNode("Manage Groups"),
-							new TreeNode("Add Data"),
 							new TreeNode("Database Configuration")
 							)); 
 		
@@ -562,9 +580,9 @@ public class WestPanel extends SectionStack{
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Organ[]> callback = new AsyncCallback<Organ[]>(){
+		final AsyncCallback<FoOrgan[]> callback = new AsyncCallback<FoOrgan[]>(){
 			@Override
-			public void onSuccess(Organ[] result){
+			public void onSuccess(FoOrgan[] result){
 
 				LinkedHashMap<String, String> organValueMap = new LinkedHashMap<String, String>();
 				for(int i=0; i < result.length; i++){

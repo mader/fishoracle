@@ -23,6 +23,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
+import de.unihamburg.zbh.fishoracle.client.data.FoProject;
+import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
@@ -37,12 +39,10 @@ public interface Admin extends RemoteService  {
 	public MicroarrayOptions getMicroarrayOptions() throws Exception;
 	boolean importData(String fileName,
 						String studyName,
-						String chipType,
-						String tissue,
-						String pstage,
-						String pgrade,
-						String metaStatus,
-						String sampleId,
+						int chipId,
+						int organId,
+						int projectId,
+						int[] propertyIds,
 						String description) throws Exception;
 	boolean canAccessDataImport() throws UserException;
 	void unlockDataImport() throws UserException;
@@ -50,6 +50,11 @@ public interface Admin extends RemoteService  {
 	FoGroup addGroup(FoGroup foGroup) throws UserException;
 	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
 	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
+	FoProject[] getAllFoProjects() throws Exception;
+	FoProject addFoProject(FoProject foProject);
+	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);
+	FoProjectAccess addAccessToFoProject(FoProjectAccess foProjectAccess,
+			int projectId);
 	
 	public static class Util {
 

@@ -21,6 +21,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
+import de.unihamburg.zbh.fishoracle.client.data.FoProject;
+import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 
@@ -38,12 +40,10 @@ public interface AdminAsync {
 
 	void importData(String fileName,
 					String studyName,
-					String chipType,
-					String tissue,
-					String pstage,
-					String pgrade,
-					String metaStatus,
-					String sampleId,
+					int chipId,
+					int OrganId,
+					int projectId,
+					int[] propertyIds,
 					String description, AsyncCallback<Boolean> callback);
 
 	void canAccessDataImport(AsyncCallback<Boolean> callback);
@@ -54,9 +54,19 @@ public interface AdminAsync {
 
 	void addGroup(FoGroup foGroup, AsyncCallback<FoGroup> callback);
 
+	void addUserToFoGroup(FoGroup foGroup, int userId,
+			AsyncCallback<FoUser> callback);
+
+	void getAllFoProjects(AsyncCallback<FoProject[]> callback);
+
+	void addFoProject(FoProject foProject, AsyncCallback<FoProject> callback);
+
 	void getAllUsersExceptFoGroup(FoGroup foGroup,
 			AsyncCallback<FoUser[]> callback);
 
-	void addUserToFoGroup(FoGroup foGroup, int userId,
-			AsyncCallback<FoUser> callback);
+	void getAllGroupsExceptFoProject(FoProject foProject,
+			AsyncCallback<FoGroup[]> callback);
+
+	void addAccessToFoProject(FoProjectAccess foProjectAccess, int projectId,
+			AsyncCallback<FoProjectAccess> callback);
 }

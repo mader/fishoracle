@@ -19,21 +19,19 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class Organ implements IsSerializable{
+public class FoChip implements IsSerializable{
 
 	private int id;
-	private String label;
-	private String activty;
+	private String name;
+	private String type;
 	
-	public Organ() {
-		
+	public FoChip() {
 	}
-	
-	public Organ(int id, String label, String activty) {
-		super();
+
+	public FoChip(int id, String name, String type) {
 		this.id = id;
-		this.label = label;
-		this.activty = activty;
+		this.name = name;
+		this.type = type;
 	}
 
 	public int getId() {
@@ -44,19 +42,19 @@ public class Organ implements IsSerializable{
 		this.id = id;
 	}
 
-	public String getLabel() {
-		return label;
+	public String getName() {
+		return name;
 	}
 
-	public void setLabel(String label) {
-		this.label = label;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getActivty() {
-		return activty;
+	public String getType() {
+		return type;
 	}
 
-	public void setActivty(String activty) {
-		this.activty = activty;
+	public void setType(String type) {
+		this.type = type;
 	}
 }

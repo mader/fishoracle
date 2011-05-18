@@ -19,44 +19,53 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class Chip implements IsSerializable{
+public class FoOrgan implements IsSerializable{
 
-	private String chipName;
-	private String chipType;
-	private String cdfFileName;
+	private int id;
+	private String label;
+	private String type;
+	private String activty;
 	
-	public Chip() {
-
+	public FoOrgan() {
 	}
 
-	public Chip(String chipName, String chipType, String cdfFileName) {
-		super();
-		this.chipName = chipName;
-		this.chipType = chipType;
-		this.cdfFileName = cdfFileName;
+	public FoOrgan(int id, String label, String type, String activty) {
+		this.id = id;
+		this.label = label;
+		this.type = type;
+		this.activty = activty;
 	}
 
-	public String getChipName() {
-		return chipName;
+	public int getId() {
+		return id;
 	}
 
-	public void setChipName(String chipName) {
-		this.chipName = chipName;
+	public void setId(int id) {
+		this.id = id;
 	}
 
-	public String getChipType() {
-		return chipType;
+	public String getLabel() {
+		return label;
 	}
 
-	public void setChipType(String chipType) {
-		this.chipType = chipType;
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	
+	public String getType() {
+		return type;
 	}
 
-	public String getCdfFileName() {
-		return cdfFileName;
+	public void setType(String type) {
+		this.type = type;
 	}
 
-	public void setCdfFileName(String cdfFileName) {
-		this.cdfFileName = cdfFileName;
+	public String getActivty() {
+		return activty;
 	}
+
+	public void setActivty(String activty) {
+		this.activty = activty;
+	}
+	
 }

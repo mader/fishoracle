@@ -35,7 +35,7 @@ import de.unihamburg.zbh.fishoracle.server.data.*;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
-import de.unihamburg.zbh.fishoracle.client.data.Organ;
+import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
@@ -430,13 +430,13 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		return url;
 	}
 	
-	public Organ[] getOrganData() throws Exception{
+	public FoOrgan[] getOrganData() throws Exception{
 				
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		Organ[] organs = db.fetchAllEnabledOrganData();
+		FoOrgan[] organs = db.fetchAllEnabledOrganData();
 		
 		return organs;
 	}	

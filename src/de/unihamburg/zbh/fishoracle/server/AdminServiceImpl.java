@@ -18,6 +18,7 @@
 package de.unihamburg.zbh.fishoracle.server;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -26,18 +27,23 @@ import com.csvreader.CsvReader;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 
-import de.unihamburg.zbh.fishoracle.client.data.Chip;
+import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
+import de.unihamburg.zbh.fishoracle.client.data.FoProject;
+import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
+import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.MetaStatus;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
-import de.unihamburg.zbh.fishoracle.client.data.Organ;
+import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.PathologicalGrade;
 import de.unihamburg.zbh.fishoracle.client.data.PathologicalStage;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle.server.data.DBConfig;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
+import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
+import de.unihamburg.zbh.fishoracle_db_api.data.Microarraystudy;
 
 public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 
@@ -145,6 +151,44 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		return db.addUserGroup(foGroup, userId);
 	}
 	
+	@Override
+	public FoProject[] getAllFoProjects() throws Exception {
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getAllProjects();
+	}
+	
+	@Override
+	public FoProject addFoProject(FoProject foProject) {
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.addFoProject(foProject);
+	}
+	
+	@Override
+	public FoGroup[] getAllGroupsExceptFoProject(FoProject foProject) {
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getAllGroupsExceptProject(foProject);
+	}
+	
+	@Override
+	public FoProjectAccess addAccessToFoProject(
+			FoProjectAccess foProjectAccess, int projectId) {
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.addAccessToProject(foProjectAccess, projectId);
+	}
+	
 	public DBConfigData fetchDBConfigData() throws Exception{
 		isAdmin();
 		String servletContext = this.getServletContext().getRealPath("/");
@@ -172,57 +216,25 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		MicroarrayOptions mo = new MicroarrayOptions();
 		
-	    Chip[] chips = db.fetchAllChipData();
-		
-	    String[] chipNames = new String[chips.length];
+	    FoChip[] chips = db.getAllChips();
 	    
-	    int i = 0;
+	    mo.setChips(chips);
 	    
-	    for(i=0; i < chips.length; i++){
-	    	chipNames[i] = chips[i].getChipName();
-	    }
+	    FoOrgan[] organs = db.getOrgans(true);
 	    
-	    mo.setChipName(chipNames);
+	    mo.setOrgans(organs);
 	    
-	    Organ[] organs = db.fetchAllEnabledOrganData();
+	    FoProject[] projects = db.getAllProjects();
 	    
-	    String[] organNames = new String[organs.length];
+	    mo.setProjects(projects);
 	    
-	    for(i=0; i < organs.length; i++){
-	    	organNames[i] = organs[i].getLabel();
-	    }
+	    FoProperty[] properties = db.getProperties(true);
 	    
-	    mo.setTissue(organNames);
+	    mo.setProperties(properties);
 	    
-	    PathologicalStage[] pstages = db.fetchAllEnabledPathologicalStageData();
+	    String[] propertyTypes = db.getPropertyTypes();
 	    
-	    String[] pstageNames = new String[pstages.length];
-	    
-	    for(i=0; i < pstages.length; i++){
-	    	pstageNames[i] = pstages[i].getLabel();
-	    }
-	    
-	    mo.setPStage(pstageNames);
-	    
-	    PathologicalGrade[] pgrades = db.fetchAllEnabledPathologicalGradeData();
-	    
-	    String[] pgradeNames = new String[pgrades.length];
-	    
-	    for(i=0; i < pgrades.length; i++){
-	    	pgradeNames[i] = pgrades[i].getLabel();
-	    }
-	    
-	    mo.setPGrade(pgradeNames);
-	    
-	    MetaStatus[] mstati = db.fetchAllEnabledMetaStatusData();
-	    
-	    String[] mstatusNames = new String[mstati.length];
-	    
-	    for(i=0; i < mstati.length; i++){
-	    	mstatusNames[i] = mstati[i].getLabel();
-	    }
-	    
-	    mo.setMetaStatus(mstatusNames);
+	    mo.setPropertyTypes(propertyTypes);
 	    
 		return mo;
 	}
@@ -230,15 +242,16 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	@Override
 	public boolean importData(String fileName,
 								String studyName,
-								String chipType,
-								String tissue,
-								String pstage,
-								String pgrade,
-								String metaStatus,
-								String sampleId,
+								int chipId,
+								int organId,
+								int projectId,
+								int[] propertyIds,
 								String description) throws Exception {
+
+		HttpServletRequest request=this.getThreadLocalRequest();
+		HttpSession session=request.getSession();
 		
-		FoUser user = isAdmin();
+		FoUser user = (FoUser) session.getAttribute("user");
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -246,25 +259,49 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		reader.setDelimiter('\t');
 		reader.readHeaders();
 		
-		if(!reader.getHeader(0).equals("") || !reader.getHeader(0).equals("chr")){
+		/*
+		if(!reader.getHeader(0).equals("") || !reader.getHeader(0).equals("ID")){
 			throw new Exception("Something is wrong! Check that your file is tab delimited and that " +
-					"the first collumn contains either a row index  or chromosome numbering.");
+					"the first collumn contains either a row index or ID numbering.");
 		}
+		*/
 		
 		DBInterface db = new DBInterface(servletContext);
+
+		CnSegment[] segments;
+		ArrayList<CnSegment> segmentContainer = new ArrayList<CnSegment>();
 		
-		int studyId = db.createNewStudy(studyName,
-										chipType,
-										tissue,
-										pstage,
-										pgrade,
-										metaStatus,
-										description,
-										sampleId,
-										user.getId());
+		while (reader.readRecord())
+		{
+			String chr = reader.get("chr");
+			String start = reader.get("start");
+			String end = reader.get("end loc");
+			String markers = reader.get("markers");
+			String segmentMean = reader.get("segment mean");
+			
+			CnSegment segment = new CnSegment(0, chr, 
+												Integer.parseInt(start), 
+												Integer.parseInt(end), 
+												Double.parseDouble(segmentMean), 
+												Integer.parseInt(markers));
+			segmentContainer.add(segment);
 		
+		}
+
+		reader.close();
+
+		segments = new CnSegment[segmentContainer.size()];
+		segmentContainer.toArray(segments);
 		
-		db.insertCNCs(fileName, servletContext + "tmp" + System.getProperty("file.separator") , studyId);
+		Microarraystudy mstudy = new Microarraystudy(segments,
+													studyName,
+													description,
+													chipId,
+													organId,
+													propertyIds,
+													user.getId());
+		
+		int studyId = db.createNewStudy(mstudy, projectId);
 			
 	    File f = new File(servletContext + "tmp" + System.getProperty("file.separator") + fileName);
 
