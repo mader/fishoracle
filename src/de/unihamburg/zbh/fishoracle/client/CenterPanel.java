@@ -1007,11 +1007,11 @@ public class CenterPanel extends VLayout{
 				
 				loadUserToGroupWindow(group);
 				
-			}});
+		}});
 		
 		groupToolStrip.addButton(addUserGroupButton);
 		
-		ToolStripButton removeUserGroupButton = new ToolStripButton();  
+		ToolStripButton removeUserGroupButton = new ToolStripButton();
 		removeUserGroupButton.setTitle("remove User from Group");
 		removeUserGroupButton.addClickHandler(new ClickHandler(){
 
@@ -1019,8 +1019,8 @@ public class CenterPanel extends VLayout{
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
 				SC.say("Not implemented yet!");
-				
-			}});
+		}});
+		
 		groupToolStrip.addButton(removeUserGroupButton);
 		
 		controlsPanel.addMember(groupToolStrip);
@@ -1036,7 +1036,7 @@ public class CenterPanel extends VLayout{
 		groupGrid = new ListGrid();
 		groupGrid.setWidth("50%");
 		groupGrid.setHeight100();
-		groupGrid.setShowAllRecords(true);  
+		groupGrid.setShowAllRecords(true);
 		groupGrid.setAlternateRecordStyles(true);
 		groupGrid.setWrapCells(true);
 		groupGrid.setFixedRecordHeights(false);
@@ -1189,96 +1189,93 @@ public class CenterPanel extends VLayout{
 		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
 		headerContainer.setWidth100();
 		headerContainer.setAutoHeight();
-		
-		HLayout header = new HLayout();
-		header.setAutoWidth();
-		header.setAutoHeight();
-		
-		Label headerLbl = new Label("<h2>Project Management</h2>");
-		headerLbl.setWidth("300");
-		header.addMember(headerLbl);
-		
-		headerContainer.addMember(header);
-		
+
 		HLayout controlsPanel = new HLayout();
 		controlsPanel.setWidth100();
 		controlsPanel.setAutoHeight();
 		
-		VLayout projectPanel = new VLayout();
-		projectPanel.setDefaultLayoutAlign(Alignment.CENTER);
-		projectPanel.setWidth("33%");
-		projectPanel.setHeight100();
+		ToolStrip projectToolStrip = new ToolStrip();
+		projectToolStrip.setWidth100();
 		
-		Button newProjectButton = new Button("Add Project");
-		newProjectButton.setShowRollOver(true);
-		newProjectButton.addClickHandler(new ClickHandler(){
+		ToolStripButton addProjectButton = new ToolStripButton();  
+		addProjectButton.setTitle("add Project");
+		addProjectButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
 				loadProjectManageWindow();
-			}
-			
-		});
+			}});
 		
-		projectPanel.addMember(newProjectButton);		
-
-		controlsPanel.addMember(projectPanel);
+		projectToolStrip.addButton(addProjectButton);
 		
-		VLayout projectAccessPanel = new VLayout();
-		projectAccessPanel.setDefaultLayoutAlign(Alignment.CENTER);
-		projectAccessPanel.setWidth("33%");
-		projectAccessPanel.setHeight100();
-		
-		Button newProjectAccessButton = new Button("Add Project Access");
-		newProjectAccessButton.setShowRollOver(true);
-		newProjectAccessButton.addClickHandler(new ClickHandler(){
+		ToolStripButton deleteProjectButton = new ToolStripButton();  
+		deleteProjectButton.setTitle("delete Project");
+		deleteProjectButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				SC.say("Not implemented yet!");
 				
+			}});
+		
+		projectToolStrip.addButton(deleteProjectButton);
+		
+		
+		ToolStripButton addProjectAccessButton = new ToolStripButton();  
+		addProjectAccessButton.setTitle("add Project Access");
+		addProjectAccessButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
 				ListGridRecord lgr = projectGrid.getSelectedRecord();
 				
 				FoProject project = new FoProject(Integer.parseInt(lgr.getAttribute("projectId")),
 															lgr.getAttribute("projectName"),
 															lgr.getAttribute("projectDescription"));
-				
 				loadProjectAccessManageWindow(project);
-			}
-			
-		});
+			}});
 		
-		projectAccessPanel.addMember(newProjectAccessButton);		
+		projectToolStrip.addButton(addProjectAccessButton);
+		
+		ToolStripButton removeProjectAccessButton = new ToolStripButton();  
+		removeProjectAccessButton.setTitle("remove Project Access");
+		removeProjectAccessButton.addClickHandler(new ClickHandler(){
 
-		controlsPanel.addMember(projectAccessPanel);
-		
-		VLayout microarrayStudyPanel = new VLayout();
-		microarrayStudyPanel.setDefaultLayoutAlign(Alignment.CENTER);
-		microarrayStudyPanel.setWidth("33%");
-		microarrayStudyPanel.setHeight100();
-		
-		Button addMstudyButton = new Button("Add Microarraystudy to Project");
-		addMstudyButton.setWidth(200);
-		addMstudyButton.setShowRollOver(true);
-		addMstudyButton.addClickHandler(new ClickHandler(){
-			//TODO
 			@Override
 			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				SC.say("Not implemented yet!");
 				
-				/*
-				ListGridRecord lgr = groupGrid.getSelectedRecord();
-				
-				FoGroup group = new FoGroup(Integer.parseInt(lgr.getAttribute("groupId")),
-															lgr.getAttribute("groupName"),
-															Boolean.parseBoolean(lgr.getAttribute("isactive")));
-				
-				loadUserToGroupWindow(group);*/
-			}
-			
-		});
+			}});
 		
-		microarrayStudyPanel.addMember(addMstudyButton);	
+		projectToolStrip.addButton(removeProjectAccessButton);
 		
-		controlsPanel.addMember(microarrayStudyPanel);
+		ToolStripButton addMicroarraystudyProjectButton = new ToolStripButton();  
+		addMicroarraystudyProjectButton.setTitle("add Microarraystudy to Project");
+		addMicroarraystudyProjectButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				SC.say("Not implemented yet!");
+			}});
+		
+		projectToolStrip.addButton(addMicroarraystudyProjectButton);
+		
+		ToolStripButton removeMicroarraystudyProjectButton = new ToolStripButton();  
+		removeMicroarraystudyProjectButton.setTitle("remove Microarraystudy from Project");
+		removeMicroarraystudyProjectButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				SC.say("Not implemented yet!");
+			}});
+		
+		projectToolStrip.addButton(removeMicroarraystudyProjectButton);
+		
+		controlsPanel.addMember(projectToolStrip);
 		
 		headerContainer.addMember(controlsPanel);
 		
