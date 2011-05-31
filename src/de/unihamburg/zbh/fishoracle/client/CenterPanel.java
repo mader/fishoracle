@@ -962,53 +962,43 @@ public class CenterPanel extends VLayout{
 		headerContainer.setWidth100();
 		headerContainer.setAutoHeight();
 		
-		HLayout header = new HLayout();
-		header.setAutoWidth();
-		header.setAutoHeight();
-		
-		Label headerLbl = new Label("<h2>Group Management</h2>");
-		headerLbl.setWidth("300");
-		header.addMember(headerLbl);
-		
-		headerContainer.addMember(header);
-		
 		HLayout controlsPanel = new HLayout();
 		controlsPanel.setWidth100();
 		controlsPanel.setAutoHeight();
 		
-		VLayout groupPanel = new VLayout();
-		groupPanel.setDefaultLayoutAlign(Alignment.CENTER);
-		groupPanel.setWidth("50%");
-		groupPanel.setHeight100();
+		ToolStrip groupToolStrip = new ToolStrip();
+		groupToolStrip.setWidth100();
 		
-		Button newGroupButton = new Button("Add Group");
-		newGroupButton.setShowRollOver(true);
-		newGroupButton.addClickHandler(new ClickHandler(){
+		ToolStripButton addGroupButton = new ToolStripButton();  
+		addGroupButton.setTitle("add Group");
+		addGroupButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
 				loadGroupManageWindow();
-			}
-			
-		});
+			}});
 		
-		groupPanel.addMember(newGroupButton);		
-
-		controlsPanel.addMember(groupPanel);
+		groupToolStrip.addButton(addGroupButton);
 		
-		VLayout userPanel = new VLayout();
-		userPanel.setDefaultLayoutAlign(Alignment.CENTER);
-		userPanel.setWidth("50%");
-		userPanel.setHeight100();
-		
-		Button addUserButton = new Button("Add User to Group");
-		addUserButton.setShowRollOver(true);
-		addUserButton.addClickHandler(new ClickHandler(){
+		ToolStripButton deleteGroupButton = new ToolStripButton();  
+		deleteGroupButton.setTitle("delete Group");
+		deleteGroupButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				SC.say("Not implemented yet!");
 				
-				
+			}});
+		
+		groupToolStrip.addButton(deleteGroupButton);
+		
+		ToolStripButton addUserGroupButton = new ToolStripButton();  
+		addUserGroupButton.setTitle("add User to Group");
+		addUserGroupButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
 				ListGridRecord lgr = groupGrid.getSelectedRecord();
 				
 				FoGroup group = new FoGroup(Integer.parseInt(lgr.getAttribute("groupId")),
@@ -1016,13 +1006,24 @@ public class CenterPanel extends VLayout{
 															Boolean.parseBoolean(lgr.getAttribute("isactive")));
 				
 				loadUserToGroupWindow(group);
-			}
-			
-		});
+				
+			}});
 		
-		userPanel.addMember(addUserButton);	
+		groupToolStrip.addButton(addUserGroupButton);
 		
-		controlsPanel.addMember(userPanel);
+		ToolStripButton removeUserGroupButton = new ToolStripButton();  
+		removeUserGroupButton.setTitle("remove User from Group");
+		removeUserGroupButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				SC.say("Not implemented yet!");
+				
+			}});
+		groupToolStrip.addButton(removeUserGroupButton);
+		
+		controlsPanel.addMember(groupToolStrip);
 		
 		headerContainer.addMember(controlsPanel);
 		
