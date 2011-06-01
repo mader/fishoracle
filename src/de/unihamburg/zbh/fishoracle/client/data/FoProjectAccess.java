@@ -7,6 +7,7 @@ public class FoProjectAccess implements IsSerializable {
 	private int id;
 	private FoGroup group;
 	private int groupId;
+	private int projectId;
 	private String access;
 	
 	public FoProjectAccess() {
@@ -55,4 +56,13 @@ public class FoProjectAccess implements IsSerializable {
 	public void setGroupId(int groupId) {
 		this.groupId = groupId;
 	}
+
+	public int getFoProjectId() {
+		return projectId;
+	}
+
+	public void setFoProjectId(int projectId) {
+		this.projectId = projectId;
+	}
+	
 }
