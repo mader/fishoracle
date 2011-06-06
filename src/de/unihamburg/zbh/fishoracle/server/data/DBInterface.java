@@ -84,7 +84,7 @@ public class DBInterface {
 	 * @param serverPath should contain the realPath of a servlet context to the 
 	 *         database.conf file. e.g.:
 	 *         <p> 
-	 *         <code>new DBQuery(getServletContext().getRealPath("/"));<code>
+	 *         <code>new DBInterface(getServletContext().getRealPath("/"));<code>
 	 * 
 	 * */
 	public DBInterface(String serverPath) {
@@ -501,6 +501,14 @@ public class DBInterface {
 		String[] propertyTypes = pa.fetchAllTypes();
 		
 		return propertyTypes;
+	}
+	
+	public void removeAccessFromProject(int projectAccessId){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		ProjectAdaptor pa = driver.getProjectAdaptor();
+		
+		pa.removeGroupAccessFromProject(projectAccessId);
+
 	}
 	
 	/* private methods */

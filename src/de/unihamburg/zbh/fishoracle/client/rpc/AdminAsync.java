@@ -69,4 +69,7 @@ public interface AdminAsync {
 
 	void addAccessToFoProject(FoProjectAccess foProjectAccess, int projectId,
 			AsyncCallback<FoProjectAccess> callback);
+
+	void removeAccessFromFoProject(int projectAccessId,
+			AsyncCallback<Boolean> callback);
 }

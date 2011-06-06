@@ -1244,8 +1244,9 @@ public class CenterPanel extends VLayout{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				SC.say("Not implemented yet!");
+				ListGridRecord projectAccessLgr = projectAccessGrid.getSelectedRecord();
+
+				removeProjectAccess(projectAccessLgr.getAttributeAsInt("accessId"));
 				
 			}});
 		
@@ -2077,6 +2078,27 @@ public class CenterPanel extends VLayout{
 		};
 		
 		req.addAccessToFoProject(foProjectAccess, projectId, callback);
+	}
+	
+	public void removeProjectAccess(int projectAccessId){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+			
+			public void onSuccess(Boolean result){
+				
+			projectAccessGrid.removeData(projectAccessGrid.getSelectedRecord());
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+		};
+		
+		req.removeAccessFromFoProject(projectAccessId, callback);
 	}
 	
 	public void importData(String fileName,

@@ -186,6 +186,19 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		return db.addAccessToProject(foProjectAccess, projectId);
 	}
 	
+	@Override
+	public boolean removeAccessFromFoProject(int projectAccessId) throws UserException {
+		
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		db.removeAccessFromProject(projectAccessId);
+		
+		return true;
+	}
+	
 	public DBConfigData fetchDBConfigData() throws Exception{
 		isAdmin();
 		String servletContext = this.getServletContext().getRealPath("/");
@@ -342,4 +355,5 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		db.unlockPage("DataImport", user);
 	}
+
 }
