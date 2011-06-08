@@ -149,6 +149,19 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
+	public boolean removeUserFromFoGroup(int groupId, int userId) throws UserException {
+		
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		db.removeUserFromGroup(groupId, userId);
+		
+		return true;
+	}
+	
+	@Override
 	public FoProject[] getAllFoProjects() throws Exception {
 		String servletContext = this.getServletContext().getRealPath("/");
 		

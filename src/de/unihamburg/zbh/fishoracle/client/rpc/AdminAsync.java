@@ -74,4 +74,7 @@ public interface AdminAsync {
 			AsyncCallback<Boolean> callback);
 
 	void removeFoProject(int projectId, AsyncCallback<Boolean> callback);
+
+	void removeUserFromFoGroup(int groupId, int userId,
+			AsyncCallback<Boolean> callback);
 }

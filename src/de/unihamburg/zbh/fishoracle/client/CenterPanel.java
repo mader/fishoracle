@@ -1017,8 +1017,14 @@ public class CenterPanel extends VLayout{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				SC.say("Not implemented yet!");
+				ListGridRecord userLgr = groupUserGrid.getSelectedRecord();
+				ListGridRecord groupLgr = groupGrid.getSelectedRecord();
+				
+				int groupId = groupLgr.getAttributeAsInt("groupId");
+				int userId = userLgr.getAttributeAsInt("userId");
+				
+				removeUserFromGroup(groupId, userId);
+				
 		}});
 		
 		groupToolStrip.addButton(removeUserGroupButton);
@@ -1968,6 +1974,25 @@ public class CenterPanel extends VLayout{
 		req.addUserToFoGroup(foGroup, userId, callback);
 	}
 	
+	public void removeUserFromGroup(int groupId, int userId){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+			
+			public void onSuccess(Boolean result){
+				groupUserGrid.removeData(groupUserGrid.getSelectedRecord());
+				groupUserGrid.getRecords();
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+		};
+		req.removeUserFromFoGroup(groupId, userId, callback);
+	}
+	
 	public void showAllProjects(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -2348,7 +2373,7 @@ class MyGroupRecordClickHandler implements RecordClickHandler {
 		
 		for(int i=0; i < users.length; i++){
 			userLgr[i] = new ListGridRecord();
-			userLgr[i].setAttribute("userid", users[i].getId());
+			userLgr[i].setAttribute("userId", users[i].getId());
 			userLgr[i].setAttribute("userName", users[i].getUserName());
 		}
 

@@ -518,6 +518,14 @@ public class DBInterface {
 		pa.deleteProject(projectId);
 	}
 	
+	public void removeUserFromGroup(int groupId, int userId){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		GroupAdaptor ga = driver.getGroupAdaptor();
+		
+		ga.removeUserFromGroup(userId, groupId);
+		
+	}
+	
 	/* private methods */
 	
 	private FoProjectAccess[] projectAccessesToFoProjectAccesses(ProjectAccess[] projectAccess){
