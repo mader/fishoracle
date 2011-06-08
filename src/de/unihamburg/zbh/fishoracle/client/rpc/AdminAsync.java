@@ -72,4 +72,6 @@ public interface AdminAsync {
 
 	void removeAccessFromFoProject(int projectAccessId,
 			AsyncCallback<Boolean> callback);
+
+	void removeFoProject(int projectId, AsyncCallback<Boolean> callback);
 }

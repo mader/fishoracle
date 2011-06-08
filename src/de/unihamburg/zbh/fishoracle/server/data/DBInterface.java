@@ -511,6 +511,13 @@ public class DBInterface {
 
 	}
 	
+	public void removeProject(int projectId){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		ProjectAdaptor pa = driver.getProjectAdaptor();
+		
+		pa.deleteProject(projectId);
+	}
+	
 	/* private methods */
 	
 	private FoProjectAccess[] projectAccessesToFoProjectAccesses(ProjectAccess[] projectAccess){

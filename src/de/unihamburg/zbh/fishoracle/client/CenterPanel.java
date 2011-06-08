@@ -1214,8 +1214,9 @@ public class CenterPanel extends VLayout{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				SC.say("Not implemented yet!");
+				ListGridRecord lgr = projectGrid.getSelectedRecord();
+				
+				removeProject(lgr.getAttributeAsInt("projectId"));
 				
 			}});
 		
@@ -1798,8 +1799,6 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onSuccess(MicroarrayOptions result){
 				
-				
-				
 				LinkedHashMap<String, String> chipValueMap = new LinkedHashMap<String, String>();
 				
 				for(int i=0; i < result.getChips().length; i++){
@@ -2028,6 +2027,31 @@ public class CenterPanel extends VLayout{
 
 		};
 		req.addFoProject(foProject, callback);
+	}
+	
+	public void removeProject(int projectId){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+			
+			public void onSuccess(Boolean result){
+
+				projectGrid.removeData(projectGrid.getSelectedRecord());
+				projectAccessGrid.selectAllRecords();
+				projectAccessGrid.removeSelectedData();
+				projectMstudyGrid.selectAllRecords();
+				projectMstudyGrid.removeSelectedData();
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.removeFoProject(projectId, callback);
 	}
 	
 	public void getAllGroupsExceptProject(FoProject foProject){

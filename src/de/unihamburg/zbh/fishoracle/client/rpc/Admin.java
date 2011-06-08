@@ -56,6 +56,7 @@ public interface Admin extends RemoteService  {
 	FoProjectAccess addAccessToFoProject(FoProjectAccess foProjectAccess,
 			int projectId);
 	boolean removeAccessFromFoProject(int projectAccessId) throws UserException;
+	boolean removeFoProject(int projectId);
 	
 	public static class Util {
 
@@ -64,5 +65,5 @@ public interface Admin extends RemoteService  {
 			return GWT.create(Admin.class);
 		}
 	}
-	
+
 }
