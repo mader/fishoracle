@@ -102,14 +102,16 @@ public class SketchTool {
 		
 		try {
 		
-		for(int j=0; j < genes.length; j++ ){
-			fnode = new FeatureNode(seqid, "gene", genes[j].getStart(), genes[j].getEnd(), genes[j].getStrand());
-			features.add(fnode);
-			fnode.add_attribute("ID", genes[j].getGenName());
-			fnode.add_attribute("NAME", genes[j].getAccessionID());
-			fnode.add_attribute("ROOT", "NO");
-			if(genes[j].getGenName().equalsIgnoreCase(query.getQueryString())){
-				fnode.mark();
+		if(genes != null){
+			for(int j=0; j < genes.length; j++ ){
+				fnode = new FeatureNode(seqid, "gene", genes[j].getStart(), genes[j].getEnd(), genes[j].getStrand());
+				features.add(fnode);
+				fnode.add_attribute("ID", genes[j].getGenName());
+				fnode.add_attribute("NAME", genes[j].getAccessionID());
+				fnode.add_attribute("ROOT", "NO");
+				if(genes[j].getGenName().equalsIgnoreCase(query.getQueryString())){
+					fnode.mark();
+				}
 			}
 		}
 		

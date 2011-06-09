@@ -155,7 +155,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 												query);
 			
 			Gen[] genes = null;
-			genes = db.getEnsembleGenes(maxSegmentRange.getSeqRegionName(), maxSegmentRange.getStart(), maxSegmentRange.getEnd());
+			
+			if(maxSegmentRange.getEnd() - maxSegmentRange.getStart() < 10000000){
+				genes = db.getEnsembleGenes(maxSegmentRange.getSeqRegionName(), maxSegmentRange.getStart(), maxSegmentRange.getEnd());
+			}
 			
 			Karyoband[] band = null;
 			band = db.getEnsemblKaryotypes(maxSegmentRange.getSeqRegionName(), maxSegmentRange.getStart(), maxSegmentRange.getEnd());
@@ -276,7 +279,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 										imageInfo.getQuery());
 		
 		Gen[] genes = null;
-		genes = db.getEnsembleGenes(chr, start, end);
+		
+		if(end - start < 10000000){
+			genes = db.getEnsembleGenes(chr, start, end);
+		}
 		
 		Karyoband[] band = null;
 		band = db.getEnsemblKaryotypes(chr, start, end);
