@@ -455,7 +455,7 @@ public class CenterPanel extends VLayout{
 			}
 		});
 		
-		zoomInButton.setIcon("[APP]/icons/arrow_in.png");
+		zoomInButton.setIcon("[APP]/icons/zoom_in.png");
 		zoomInButton.setAppImgDir("/");
 		presentationToolStrip.addButton(zoomInButton);
 		
@@ -500,7 +500,7 @@ public class CenterPanel extends VLayout{
     		    cp.imageRedraw(imgInfo);
 			}
 		});
-		zoomOutButton.setIcon("[APP]/icons/arrow_out.png");
+		zoomOutButton.setIcon("[APP]/icons/zoom_out.png");
 		zoomOutButton.setAppImgDir("/");
 		presentationToolStrip.addButton(zoomOutButton);
 		
