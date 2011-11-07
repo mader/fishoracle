@@ -2340,11 +2340,21 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 	public void onRecordClick(RecordClickEvent event) {
 		ListGridRecord[] oldMstudyRecords = projectMstudyGrid.getRecords();
 		
+		int projectId = Integer.parseInt(event.getRecord().getAttribute("projectId"));
+		FoMicroarraystudy[] mstudies = null;
+		FoProjectAccess[] accesses = null;
+		
 		for (int i= 0; i < oldMstudyRecords.length; i++){
 			projectMstudyGrid.removeData(oldMstudyRecords[i]);
 		}
 		
-		FoMicroarraystudy[] mstudies = projects[Integer.parseInt(event.getRecord().getAttribute("projectId")) -1].getMstudies();
+		for(int p=0; p < projects.length; p++){
+			if(projects[p].getId() == projectId){
+				mstudies = projects[p].getMstudies();
+				accesses = projects[p].getProjectAccess();
+				break;
+			}
+		}
 		
 		if(mstudies != null){
 		
@@ -2367,8 +2377,6 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 			projectAccessGrid.removeData(oldAccessRecords[i]);
 		}
 		
-		FoProjectAccess[] accesses = projects[Integer.parseInt(event.getRecord().getAttribute("projectId")) -1].getProjectAccess();
-
 		if(accesses != null){
 		
 			ListGridRecord[] accessLgr = new ListGridRecord[accesses.length];
