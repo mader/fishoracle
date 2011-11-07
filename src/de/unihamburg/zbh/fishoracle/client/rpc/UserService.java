@@ -28,6 +28,7 @@ public interface UserService extends RemoteService {
 	
 	public FoUser register(FoUser user) throws Exception;
 	public FoUser login(String email, String password) throws Exception;
+	FoUser getSessionUserObject();
 	public void logout();
 	
 	public static class Util {
@@ -37,4 +38,5 @@ public interface UserService extends RemoteService {
 			return GWT.create(UserService.class);
 		}
 	}
+	
 }

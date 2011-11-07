@@ -171,7 +171,9 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
-	public FoProject addFoProject(FoProject foProject) {
+	public FoProject addFoProject(FoProject foProject) throws UserException {
+		
+		isAdmin();
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
@@ -180,7 +182,9 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
-	public boolean removeFoProject(int projectId) {
+	public boolean removeFoProject(int projectId) throws UserException {
+		
+		isAdmin();
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
@@ -201,8 +205,9 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	
 	@Override
 	public FoProjectAccess addAccessToFoProject(
-			FoProjectAccess foProjectAccess, int projectId) {
+			FoProjectAccess foProjectAccess, int projectId) throws UserException {
 		
+		isAdmin();
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);

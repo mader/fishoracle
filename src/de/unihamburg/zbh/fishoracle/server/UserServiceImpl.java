@@ -57,6 +57,16 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		
 		return user;
 	}
+	
+	public FoUser getSessionUserObject(){
+		
+		HttpServletRequest request=this.getThreadLocalRequest();
+		HttpSession session=request.getSession();
+		
+		FoUser user = (FoUser) session.getAttribute("user");
+		
+		return user;
+	}
 
 	public void logout(){
 		HttpServletRequest request=this.getThreadLocalRequest();

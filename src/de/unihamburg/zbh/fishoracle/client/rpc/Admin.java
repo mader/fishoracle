@@ -51,12 +51,12 @@ public interface Admin extends RemoteService  {
 	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
 	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
 	FoProject[] getAllFoProjects() throws Exception;
-	FoProject addFoProject(FoProject foProject);
+	FoProject addFoProject(FoProject foProject) throws UserException;
 	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);
 	FoProjectAccess addAccessToFoProject(FoProjectAccess foProjectAccess,
-			int projectId);
+			int projectId) throws UserException;
 	boolean removeAccessFromFoProject(int projectAccessId) throws UserException;
-	boolean removeFoProject(int projectId);
+	boolean removeFoProject(int projectId) throws UserException;
 	boolean removeUserFromFoGroup(int groupId, int userId) throws UserException;
 	
 	public static class Util {

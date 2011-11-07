@@ -305,7 +305,7 @@ public class WestPanel extends SectionStack{
 					if(exists){
 						centerTabSet.selectTab(index);
 					} else {
-						mp.getCenterPanel().openProjectAdminTab();
+						mp.getCenterPanel().getUserObject("ProjectAdminTab");
 					}
 				}
 				

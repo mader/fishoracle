@@ -93,6 +93,8 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
+import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
+import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
 public class CenterPanel extends VLayout{
 
@@ -1180,7 +1182,7 @@ public class CenterPanel extends VLayout{
 		window.show();
 	}
 	
-	public void openProjectAdminTab(){
+	public void openProjectAdminTab(FoUser user){
 		Tab projectAdminTab;
 		projectAdminTab = new Tab("Project Management");
 		
@@ -1205,6 +1207,9 @@ public class CenterPanel extends VLayout{
 		
 		ToolStripButton addProjectButton = new ToolStripButton();  
 		addProjectButton.setTitle("add Project");
+		if(user.getIsAdmin() == false){
+			addProjectButton.setDisabled(true);
+		}
 		addProjectButton.addClickHandler(new ClickHandler(){
 
 			@Override
@@ -1216,6 +1221,9 @@ public class CenterPanel extends VLayout{
 		
 		ToolStripButton deleteProjectButton = new ToolStripButton();  
 		deleteProjectButton.setTitle("delete Project");
+		if(user.getIsAdmin() == false){
+			deleteProjectButton.setDisabled(true);
+		}
 		deleteProjectButton.addClickHandler(new ClickHandler(){
 
 			@Override
@@ -1231,6 +1239,9 @@ public class CenterPanel extends VLayout{
 		
 		ToolStripButton addProjectAccessButton = new ToolStripButton();  
 		addProjectAccessButton.setTitle("add Project Access");
+		if(user.getIsAdmin() == false){
+			addProjectAccessButton.setDisabled(true);
+		}
 		addProjectAccessButton.addClickHandler(new ClickHandler(){
 
 			@Override
@@ -1247,6 +1258,9 @@ public class CenterPanel extends VLayout{
 		
 		ToolStripButton removeProjectAccessButton = new ToolStripButton();  
 		removeProjectAccessButton.setTitle("remove Project Access");
+		if(user.getIsAdmin() == false){
+			removeProjectAccessButton.setDisabled(true);
+		}
 		removeProjectAccessButton.addClickHandler(new ClickHandler(){
 
 			@Override
@@ -1925,6 +1939,29 @@ public class CenterPanel extends VLayout{
 		};
 		req.addGroup(foGroup, callback);
 	}
+	
+	public void getUserObject(final String forWhat){
+		
+		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoUser> callback = new AsyncCallback<FoUser>(){
+			
+			public void onSuccess(FoUser result){
+				
+				if(forWhat.equals("ProjectAdminTab")){
+					openProjectAdminTab(result);
+				}
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+		};
+		req.getSessionUserObject(callback);
+	}
+	
 	
 	public void getAllUsersExceptGroup(FoGroup foGroup){
 		
