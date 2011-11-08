@@ -1322,7 +1322,7 @@ public class CenterPanel extends VLayout{
 		
 		projectGrid.setFields(lgfProjectId, lgfProjectName, lgfProjectActivated);
 		
-		showAllProjects();
+		showProjects(user);
 		
 		gridContainer.addMember(projectGrid);
 		
@@ -1345,22 +1345,24 @@ public class CenterPanel extends VLayout{
 		
 		pane.addMember(gridContainer);
 		
-		projectAccessGrid = new ListGrid();
-		projectAccessGrid.setWidth100();
-		projectAccessGrid.setHeight("50%");
-		projectAccessGrid.setShowAllRecords(true);  
-		projectAccessGrid.setAlternateRecordStyles(true);
-		projectAccessGrid.setWrapCells(true);
-		projectAccessGrid.setFixedRecordHeights(false);
-		projectAccessGrid.markForRedraw();
+		if(user.getIsAdmin()){
+			projectAccessGrid = new ListGrid();
+			projectAccessGrid.setWidth100();
+			projectAccessGrid.setHeight("50%");
+			projectAccessGrid.setShowAllRecords(true);
+			projectAccessGrid.setAlternateRecordStyles(true);
+			projectAccessGrid.setWrapCells(true);
+			projectAccessGrid.setFixedRecordHeights(false);
+			projectAccessGrid.markForRedraw();
 		
-		ListGridField lgfProjectAccessId = new ListGridField("accessId", "ID");
-		ListGridField lgfProjectAccessGroup = new ListGridField("accessGroup", "Group");
-		ListGridField lgfProjectAccessRight = new ListGridField("accessRight", "Access Right");
+			ListGridField lgfProjectAccessId = new ListGridField("accessId", "ID");
+			ListGridField lgfProjectAccessGroup = new ListGridField("accessGroup", "Group");
+			ListGridField lgfProjectAccessRight = new ListGridField("accessRight", "Access Right");
 		
-		projectAccessGrid.setFields(lgfProjectAccessId, lgfProjectAccessGroup, lgfProjectAccessRight);
+			projectAccessGrid.setFields(lgfProjectAccessId, lgfProjectAccessGroup, lgfProjectAccessRight);
 		
-		pane.addMember(projectAccessGrid);
+			pane.addMember(projectAccessGrid);
+		}
 		
 		projectAdminTab.setPane(pane);
 		
@@ -2030,7 +2032,7 @@ public class CenterPanel extends VLayout{
 		req.removeUserFromFoGroup(groupId, userId, callback);
 	}
 	
-	public void showAllProjects(){
+	public void showProjects(final FoUser user){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
@@ -2042,7 +2044,7 @@ public class CenterPanel extends VLayout{
 				
 				FoProject[] projects = result;
 				
-				projectGrid.addRecordClickHandler(new MyProjectRecordClickHandler(projectMstudyGrid, projectAccessGrid, projects));
+				projectGrid.addRecordClickHandler(new MyProjectRecordClickHandler(projectMstudyGrid, projectAccessGrid, projects, user));
 								
 				ListGridRecord[] lgr = new ListGridRecord[projects.length];
 				
@@ -2061,7 +2063,7 @@ public class CenterPanel extends VLayout{
 			}
 
 		};
-		req.getAllFoProjects(callback);
+		req.getFoProjects(callback);
 	}
 	
 	public void addProject(FoProject foProject){
@@ -2329,11 +2331,13 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 	private ListGrid projectMstudyGrid;
 	private ListGrid projectAccessGrid;
 	private FoProject[] projects;
+	private FoUser user;
 	
-	public MyProjectRecordClickHandler(ListGrid projectMstudyGrid, ListGrid projectAccessGrid, FoProject[] projects){
+	public MyProjectRecordClickHandler(ListGrid projectMstudyGrid, ListGrid projectAccessGrid, FoProject[] projects, FoUser user){
 		this.projectMstudyGrid = projectMstudyGrid;
 		this.projectAccessGrid = projectAccessGrid;
 		this.projects = projects;
+		this.user = user;
 	}
 	
 	@Override
@@ -2371,24 +2375,26 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 		
 		}
 		
-		ListGridRecord[] oldAccessRecords = projectAccessGrid.getRecords();
+		if(user.getIsAdmin()){
+			ListGridRecord[] oldAccessRecords = projectAccessGrid.getRecords();
 		
-		for (int i= 0; i < oldAccessRecords.length; i++){
-			projectAccessGrid.removeData(oldAccessRecords[i]);
-		}
-		
-		if(accesses != null){
-		
-			ListGridRecord[] accessLgr = new ListGridRecord[accesses.length];
-		
-			for(int i=0; i < accesses.length; i++){
-				accessLgr[i] = new ListGridRecord();
-				accessLgr[i].setAttribute("accessId", accesses[i].getId());
-				accessLgr[i].setAttribute("accessGroup", accesses[i].getFoGroup().getName());
-				accessLgr[i].setAttribute("accessRight", accesses[i].getAccess());
+			for (int i= 0; i < oldAccessRecords.length; i++){
+				projectAccessGrid.removeData(oldAccessRecords[i]);
 			}
+		
+			if(accesses != null){
+		
+				ListGridRecord[] accessLgr = new ListGridRecord[accesses.length];
+		
+				for(int i=0; i < accesses.length; i++){
+					accessLgr[i] = new ListGridRecord();
+					accessLgr[i].setAttribute("accessId", accesses[i].getId());
+					accessLgr[i].setAttribute("accessGroup", accesses[i].getFoGroup().getName());
+					accessLgr[i].setAttribute("accessRight", accesses[i].getAccess());
+				}
 
-			projectAccessGrid.setData(accessLgr);
+				projectAccessGrid.setData(accessLgr);
+			}
 		}
 	}
 }

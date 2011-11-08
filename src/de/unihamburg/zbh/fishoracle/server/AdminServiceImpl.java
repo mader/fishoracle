@@ -41,6 +41,7 @@ import de.unihamburg.zbh.fishoracle.server.data.DBConfig;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Microarraystudy;
+import de.unihamburg.zbh.fishoracle_db_api.data.User;
 
 public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 
@@ -57,6 +58,16 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 			throw new UserException("Permission denied!");
 			
 		}
+		return user;
+	}
+	
+	public FoUser getSessionUserObject(){
+		
+		HttpServletRequest request=this.getThreadLocalRequest();
+		HttpSession session=request.getSession();
+		
+		FoUser user = (FoUser) session.getAttribute("user");
+		
 		return user;
 	}
 	
@@ -162,12 +173,23 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
-	public FoProject[] getAllFoProjects() throws Exception {
+	public FoProject[] getFoProjects() throws Exception {
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.getAllProjects();
+		FoUser u = getSessionUserObject();
+		
+		FoProject[] projects = null;
+		
+		if(u.getIsAdmin()){
+			
+			projects = db.getAllProjects();
+		} else {
+			projects = db.getProjectsForUser(u);
+		}
+		
+		return projects;
 	}
 	
 	@Override

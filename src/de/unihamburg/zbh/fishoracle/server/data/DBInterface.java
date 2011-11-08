@@ -418,6 +418,20 @@ public class DBInterface {
 		
 	}
 	
+	public FoProject[] getProjectsForUser(FoUser user) throws Exception {
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		
+		GroupAdaptor ga = driver.getGroupAdaptor();
+		ProjectAdaptor pa = driver.getProjectAdaptor();
+		
+		Group[] g = ga.fetchGroupsForUser(user.getId());
+		ProjectAccess[] projectAccess = pa.fetchProjectAccessForGroups(g);
+		
+		Project[] p = pa.fetchProjectsForProjectAccess(projectAccess);
+		
+		return projectsToFoProjects(p);
+	}
+	
 	public FoProject[] getAllProjects() throws Exception {
 		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
 		ProjectAdaptor pa = driver.getProjectAdaptor();

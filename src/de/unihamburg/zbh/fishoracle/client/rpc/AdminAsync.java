@@ -57,7 +57,7 @@ public interface AdminAsync {
 	void addUserToFoGroup(FoGroup foGroup, int userId,
 			AsyncCallback<FoUser> callback);
 
-	void getAllFoProjects(AsyncCallback<FoProject[]> callback);
+	void getFoProjects(AsyncCallback<FoProject[]> callback);
 
 	void addFoProject(FoProject foProject, AsyncCallback<FoProject> callback);
 

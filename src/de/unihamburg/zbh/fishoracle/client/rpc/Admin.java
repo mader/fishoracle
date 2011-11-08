@@ -50,7 +50,7 @@ public interface Admin extends RemoteService  {
 	FoGroup addGroup(FoGroup foGroup) throws UserException;
 	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
 	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
-	FoProject[] getAllFoProjects() throws Exception;
+	FoProject[] getFoProjects() throws Exception;
 	FoProject addFoProject(FoProject foProject) throws UserException;
 	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);
 	FoProjectAccess addAccessToFoProject(FoProjectAccess foProjectAccess,
