@@ -2411,8 +2411,16 @@ class MyGroupRecordClickHandler implements RecordClickHandler {
 			groupUserGrid.removeData(oldRecords[i]);
 		}
 		
-		FoUser[] users = groups[Integer.parseInt(event.getRecord().getAttribute("groupId")) -1].getUsers();
-
+		int groupId = Integer.parseInt(event.getRecord().getAttribute("groupId"));
+		FoUser[] users = null;
+		
+		for(int u=0; u < groups.length; u++){
+		
+			if(groups[u].getId() == groupId){
+				users = groups[u].getUsers();
+			}
+		
+		}
 		ListGridRecord[] userLgr = new ListGridRecord[users.length];
 		
 		
