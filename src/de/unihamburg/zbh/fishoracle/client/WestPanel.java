@@ -410,6 +410,65 @@ public class WestPanel extends SectionStack{
 						mp.getCenterPanel().openGroupAdminTab();
 					}
 				}
+				if(event.getNode().getName().equals("Manage Organs")){
+					boolean exists = false;
+					int index = 0;
+					
+					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+					for(int i=0; i < tabs.length; i++){
+						if(tabs[i].getTitle().equals("Organ Management")){
+							exists = true;
+							index = i;
+						}
+					}
+					
+					if(exists){
+						centerTabSet.selectTab(index);
+					} else {
+						mp.getCenterPanel().showAllOrgans();
+					}
+				}
+				if(event.getNode().getName().equals("Manage Properties")){
+					boolean exists = false;
+					int index = 0;
+					
+					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+					for(int i=0; i < tabs.length; i++){
+						if(tabs[i].getTitle().equals("Property Management")){
+							exists = true;
+							index = i;
+						}
+					}
+					
+					if(exists){
+						centerTabSet.selectTab(index);
+					} else {
+						SC.say("Properties");
+						//TODO mp.getCenterPanel().openGroupAdminTab();
+					}
+				}
+				if(event.getNode().getName().equals("Manage Chips")){
+					boolean exists = false;
+					int index = 0;
+					
+					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+					for(int i=0; i < tabs.length; i++){
+						if(tabs[i].getTitle().equals("Chip Management")){
+							exists = true;
+							index = i;
+						}
+					}
+					
+					if(exists){
+						centerTabSet.selectTab(index);
+					} else {
+						SC.say("Chips");
+						//TODO mp.getCenterPanel().openGroupAdminTab();
+					}
+				}
 				if(event.getNode().getName().equals("Database Configuration")){
 					boolean exists = false;
 					int index = 0;
@@ -438,6 +497,9 @@ public class WestPanel extends SectionStack{
 		adminTree.setRoot(new TreeNode("root",  
 							new TreeNode("Show Users"),
 							new TreeNode("Manage Groups"),
+							new TreeNode("Manage Organs"),
+							new TreeNode("Manage Properties"),
+							new TreeNode("Manage Chips"),
 							new TreeNode("Database Configuration")
 							)); 
 		

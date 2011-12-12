@@ -151,6 +151,17 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
+	public FoOrgan[] getAllFoOrgans() throws UserException {
+		
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getAllOrgans();
+	}
+	
+	@Override
 	public FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException {
 		isAdmin();
 		String servletContext = this.getServletContext().getRealPath("/");
@@ -418,5 +429,4 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		db.unlockPage("DataImport", user);
 	}
-
 }

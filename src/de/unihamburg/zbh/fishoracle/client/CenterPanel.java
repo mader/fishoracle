@@ -81,6 +81,7 @@ import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
+import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
@@ -99,6 +100,7 @@ import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 public class CenterPanel extends VLayout{
 
 	private ListGrid userGrid;
+	private ListGrid organGrid;
 	private ListGrid groupGrid;
 	private ListGrid groupUserGrid;
 	private SelectItem userSelectItem;
@@ -1091,6 +1093,47 @@ public class CenterPanel extends VLayout{
 		
 	}
 	
+	public void openOrganAdminTab(final FoOrgan[] organs){
+		
+		Tab organsAdminTab = new Tab("Organ Management");
+		organsAdminTab.setCanClose(true);
+		
+		//TODO add toolbar for actions
+		
+		organGrid = new ListGrid();
+		organGrid.setWidth100();
+		organGrid.setHeight100();
+		organGrid.setShowAllRecords(true);  
+		organGrid.setAlternateRecordStyles(true);
+		organGrid.setWrapCells(true);
+		organGrid.setFixedRecordHeights(false);
+		
+		ListGridField lgfId = new ListGridField("id", "user ID");
+		ListGridField lgfLabel = new ListGridField("organLabel", "Organ Label");
+		ListGridField lgfType = new ListGridField("organType", "Organ Type");
+		ListGridField lgfActivity = new ListGridField("organActivity", "enabled");
+		
+		organGrid.setFields(lgfId, lgfLabel, lgfType, lgfActivity);
+		
+		ListGridRecord[] lgr = new ListGridRecord[organs.length];
+		
+		for(int i=0; i < organs.length; i++){
+			lgr[i] = new ListGridRecord();
+			lgr[i].setAttribute("id", organs[i].getId());
+			lgr[i].setAttribute("organLabel", organs[i].getLabel());
+			lgr[i].setAttribute("organType", organs[i].getType());
+			lgr[i].setAttribute("organActivity", organs[i].getActivty());
+		}
+		
+		organGrid.setData(lgr);
+		
+		organsAdminTab.setPane(organGrid);
+		
+		centerTabSet.addTab(organsAdminTab);
+		
+		centerTabSet.selectTab(organsAdminTab);		
+	}
+	
 	public void loadProjectManageWindow(){
 		
 		final Window window = new Window();
@@ -1885,6 +1928,27 @@ public class CenterPanel extends VLayout{
 			}
 		};
 		req.getMicroarrayOptions(callback);
+	}
+	
+	public void showAllOrgans(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoOrgan[]> callback = new AsyncCallback<FoOrgan[]>(){
+			
+			public void onSuccess(FoOrgan[] result){
+				
+				openOrganAdminTab(result);
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.getAllFoOrgans(callback);
 	}
 	
 	public void showAllGroups(){

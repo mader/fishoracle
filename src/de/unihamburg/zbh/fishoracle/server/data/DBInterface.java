@@ -507,6 +507,16 @@ public class DBInterface {
 		return organsToFoOrgans(organs);
 	}
 	
+	public FoOrgan[] getAllOrgans(){
+		
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		OrganAdaptor oa = driver.getOrganAdaptor();
+		
+		Organ[] organs = oa.fetchAllOrgans();
+		
+		return organsToFoOrgans(organs);
+	}
+	
 	public FoProperty[] getProperties(boolean enabled){
 		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
 		PropertyAdaptor pa = driver.getPropertyAdaptor();
