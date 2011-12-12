@@ -48,6 +48,7 @@ public interface Admin extends RemoteService  {
 	void unlockDataImport() throws UserException;
 	FoGroup[] getAllFoGroups() throws Exception;
 	FoGroup addGroup(FoGroup foGroup) throws UserException;
+	void deleteGroup(FoGroup foGroup) throws UserException;
 	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
 	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
 	FoProject[] getFoProjects() throws Exception;
@@ -66,4 +67,5 @@ public interface Admin extends RemoteService  {
 			return GWT.create(Admin.class);
 		}
 	}
+
 }

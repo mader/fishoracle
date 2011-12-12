@@ -988,9 +988,14 @@ public class CenterPanel extends VLayout{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				SC.say("Not implemented yet!");
 				
+				ListGridRecord lgr = groupGrid.getSelectedRecord();
+				
+				FoGroup group = new FoGroup(Integer.parseInt(lgr.getAttribute("groupId")),
+											lgr.getAttribute("groupName"),
+											Boolean.parseBoolean(lgr.getAttribute("isactive")));
+				
+				deleteGroup(group);
 			}});
 		
 		groupToolStrip.addButton(deleteGroupButton);
@@ -1914,6 +1919,27 @@ public class CenterPanel extends VLayout{
 
 		};
 		req.getAllFoGroups(callback);
+	}
+	
+	public void deleteGroup(FoGroup foGroup){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
+			
+			public void onSuccess(Void result){
+				
+				SC.say("Group deleted");
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.deleteGroup(foGroup, callback);
 	}
 	
 	public void addGroup(FoGroup foGroup){

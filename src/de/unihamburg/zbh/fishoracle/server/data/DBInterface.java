@@ -31,8 +31,6 @@ import org.ensembl.driver.CoreDriver;
 import org.ensembl.driver.CoreDriverFactory;
 import org.ensembl.driver.KaryotypeBandAdaptor;
 
-import com.csvreader.CsvReader;
-
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
@@ -349,7 +347,7 @@ public class DBInterface {
 		
 		User user = ua.fetchUserForLogin(userName, password);
 
-		return userToFoUser(user);		
+		return userToFoUser(user);
 	}
 	
 	public FoUser[] getAllUsers(){
@@ -395,6 +393,16 @@ public class DBInterface {
 		return groupToFoGroup(newGroup);
 		
 	}
+	
+	public void deleteGroup(FoGroup foGroup){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		GroupAdaptor ga = driver.getGroupAdaptor();
+		
+		Group g = foGroupToGroup(foGroup);
+		
+		ga.deleteGroup(g);
+	}
+	
 	
 	public FoUser[] getAllUserExceptGroup(FoGroup foGroup){
 		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
@@ -697,6 +705,30 @@ public class DBInterface {
 		return foProject;
 	}
 	
+	private Group[] foGroupsToGroups(FoGroup[] foGroups){
+		
+		Group[] groups = new Group[foGroups.length];
+		
+		for(int i=0; i < groups.length; i++){
+			groups[i] = foGroupToGroup(foGroups[i]);
+		}
+		
+		return groups;
+	}
+	
+	private Group foGroupToGroup(FoGroup foGroup){
+		
+		Group group = new Group(foGroup.getId(),
+								foGroup.getName(),
+								foGroup.isIsactive());
+		
+		if(foGroup.getUsers() != null){
+			group.setUsers(foUsersToUsers(foGroup.getUsers()));
+		}
+		
+		return group;
+	}
+	
 	private FoGroup[] groupsToFoGroups(Group[] groups){
 		
 		FoGroup[] foGroups = new FoGroup[groups.length];
@@ -716,6 +748,30 @@ public class DBInterface {
 		foGroup.setUsers(usersToFoUsers(group.getUsers()));
 		
 		return foGroup;
+	}
+	
+	private User[] foUsersToUsers(FoUser[] foUsers){
+		
+		User[] users = new User[foUsers.length];
+		
+		for(int i=0; i < users.length; i++){
+			users[i] = foUserToUser(foUsers[i]);
+		}
+		
+		return users;
+	}
+	
+	private User foUserToUser(FoUser foUser){
+		
+		User user = new User(foUser.getId(),
+				foUser.getFirstName(),
+				foUser.getLastName(),
+				foUser.getUserName(),
+				foUser.getEmail(),
+				foUser.getIsActive(),
+				foUser.getIsAdmin());
+		
+		return user;
 	}
 	
 	private FoUser[] usersToFoUsers(User[] users){

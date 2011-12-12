@@ -54,6 +54,8 @@ public interface AdminAsync {
 
 	void addGroup(FoGroup foGroup, AsyncCallback<FoGroup> callback);
 
+	void deleteGroup(FoGroup foGroup, AsyncCallback<Void> callback);
+	
 	void addUserToFoGroup(FoGroup foGroup, int userId,
 			AsyncCallback<FoUser> callback);
 
@@ -77,4 +79,5 @@ public interface AdminAsync {
 
 	void removeUserFromFoGroup(int groupId, int userId,
 			AsyncCallback<Boolean> callback);
+
 }
