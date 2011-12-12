@@ -526,6 +526,15 @@ public class DBInterface {
 		return propertiesToFoProperties(properties);
 	}
 	
+	public FoProperty[] getAllProperties(){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		PropertyAdaptor pa = driver.getPropertyAdaptor();
+		
+		Property[] properties = pa.fetchAllProperties();
+		
+		return propertiesToFoProperties(properties);
+	}
+	
 	public String[] getPropertyTypes(){
 		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
 		PropertyAdaptor pa = driver.getPropertyAdaptor();

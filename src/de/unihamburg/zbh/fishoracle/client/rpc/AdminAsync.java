@@ -24,6 +24,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
+import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 
@@ -58,6 +59,8 @@ public interface AdminAsync {
 	void deleteGroup(FoGroup foGroup, AsyncCallback<Void> callback);
 	
 	void getAllFoOrgans(AsyncCallback<FoOrgan[]> callback);
+	
+	void getAllFoProperties(AsyncCallback<FoProperty[]> callback);
 	
 	void addUserToFoGroup(FoGroup foGroup, int userId,
 			AsyncCallback<FoUser> callback);

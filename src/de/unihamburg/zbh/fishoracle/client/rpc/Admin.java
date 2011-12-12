@@ -26,6 +26,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
+import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
@@ -51,6 +52,7 @@ public interface Admin extends RemoteService  {
 	FoGroup addGroup(FoGroup foGroup) throws UserException;
 	void deleteGroup(FoGroup foGroup) throws UserException;
 	FoOrgan[] getAllFoOrgans() throws UserException;
+	FoProperty[] getAllFoProperties() throws UserException;
 	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
 	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
 	FoProject[] getFoProjects() throws Exception;
@@ -69,6 +71,8 @@ public interface Admin extends RemoteService  {
 			return GWT.create(Admin.class);
 		}
 	}
+
+	
 
 	
 

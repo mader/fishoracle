@@ -84,6 +84,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
+import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
@@ -101,6 +102,7 @@ public class CenterPanel extends VLayout{
 
 	private ListGrid userGrid;
 	private ListGrid organGrid;
+	private ListGrid propertyGrid;
 	private ListGrid groupGrid;
 	private ListGrid groupUserGrid;
 	private SelectItem userSelectItem;
@@ -1134,6 +1136,47 @@ public class CenterPanel extends VLayout{
 		centerTabSet.selectTab(organsAdminTab);		
 	}
 	
+	public void openPropertyAdminTab(final FoProperty[] properties){
+		
+		Tab propertiesAdminTab = new Tab("Property Management");
+		propertiesAdminTab.setCanClose(true);
+		
+		//TODO add toolbar for actions
+		
+		propertyGrid = new ListGrid();
+		propertyGrid.setWidth100();
+		propertyGrid.setHeight100();
+		propertyGrid.setShowAllRecords(true);
+		propertyGrid.setAlternateRecordStyles(true);
+		propertyGrid.setWrapCells(true);
+		propertyGrid.setFixedRecordHeights(false);
+		
+		ListGridField lgfId = new ListGridField("id", "user ID");
+		ListGridField lgfLabel = new ListGridField("propertyLabel", "Property Label");
+		ListGridField lgfType = new ListGridField("propertyType", "Property Type");
+		ListGridField lgfActivity = new ListGridField("propertyActivity", "enabled");
+		
+		propertyGrid.setFields(lgfId, lgfLabel, lgfType, lgfActivity);
+		
+		ListGridRecord[] lgr = new ListGridRecord[properties.length];
+		
+		for(int i=0; i < properties.length; i++){
+			lgr[i] = new ListGridRecord();
+			lgr[i].setAttribute("id", properties[i].getId());
+			lgr[i].setAttribute("propertyLabel", properties[i].getLabel());
+			lgr[i].setAttribute("propertyType", properties[i].getType());
+			lgr[i].setAttribute("propertyActivity", properties[i].getActivty());
+		}
+		
+		propertyGrid.setData(lgr);
+		
+		propertiesAdminTab.setPane(propertyGrid);
+		
+		centerTabSet.addTab(propertiesAdminTab);
+		
+		centerTabSet.selectTab(propertiesAdminTab);
+	}
+	
 	public void loadProjectManageWindow(){
 		
 		final Window window = new Window();
@@ -1145,13 +1188,13 @@ public class CenterPanel extends VLayout{
 		
 		window.setAutoCenter(true);
 		window.setIsModal(true);
-		window.setShowModalMask(true); 
+		window.setShowModalMask(true);
 		
 		DynamicForm projectForm = new DynamicForm();
 		projectNameTextItem = new TextItem();
 		projectNameTextItem.setTitle("Project Name");
 		
-		projectDescriptionItem = new TextAreaItem(); 
+		projectDescriptionItem = new TextAreaItem();
 		projectDescriptionItem.setTitle("Description");
 		projectDescriptionItem.setLength(5000);
 		
@@ -1187,19 +1230,19 @@ public class CenterPanel extends VLayout{
 		
 		window.setAutoCenter(true);
 		window.setIsModal(true);
-		window.setShowModalMask(true); 
+		window.setShowModalMask(true);
 		
 		final DynamicForm projectAccessForm = new DynamicForm();
 		
-		groupSelectItem = new SelectItem();  
+		groupSelectItem = new SelectItem();
         groupSelectItem.setTitle("Group");
         
-        getAllGroupsExceptProject(project); 
+        getAllGroupsExceptProject(project);
 		
 		accessRightSelectItem = new SelectItem();
 		accessRightSelectItem.setTitle("Access right");
 		
-		LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();  
+		LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
         valueMap.put("r", "r");
         valueMap.put("rw", "rw");
 		
@@ -1949,6 +1992,27 @@ public class CenterPanel extends VLayout{
 
 		};
 		req.getAllFoOrgans(callback);
+	}
+	
+	public void showAllProperties(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoProperty[]> callback = new AsyncCallback<FoProperty[]>(){
+			
+			public void onSuccess(FoProperty[] result){
+				
+				openPropertyAdminTab(result);
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.getAllFoProperties(callback);
 	}
 	
 	public void showAllGroups(){

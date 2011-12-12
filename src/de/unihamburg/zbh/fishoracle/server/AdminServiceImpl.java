@@ -162,6 +162,17 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
+	public FoProperty[] getAllFoProperties() throws UserException {
+		
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getAllProperties();
+	}
+	
+	@Override
 	public FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException {
 		isAdmin();
 		String servletContext = this.getServletContext().getRealPath("/");
@@ -204,7 +215,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		FoUser u = getSessionUserObject();
 		
 		FoProject[] projects = null;
-		
+		 
 		if(u.getIsAdmin()){
 			
 			projects = db.getAllProjects();
