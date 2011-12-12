@@ -79,6 +79,7 @@ import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
@@ -103,6 +104,7 @@ public class CenterPanel extends VLayout{
 	private ListGrid userGrid;
 	private ListGrid organGrid;
 	private ListGrid propertyGrid;
+	private ListGrid chipGrid;
 	private ListGrid groupGrid;
 	private ListGrid groupUserGrid;
 	private SelectItem userSelectItem;
@@ -1110,7 +1112,7 @@ public class CenterPanel extends VLayout{
 		organGrid.setWrapCells(true);
 		organGrid.setFixedRecordHeights(false);
 		
-		ListGridField lgfId = new ListGridField("id", "user ID");
+		ListGridField lgfId = new ListGridField("id", "Organ ID");
 		ListGridField lgfLabel = new ListGridField("organLabel", "Organ Label");
 		ListGridField lgfType = new ListGridField("organType", "Organ Type");
 		ListGridField lgfActivity = new ListGridField("organActivity", "enabled");
@@ -1133,7 +1135,7 @@ public class CenterPanel extends VLayout{
 		
 		centerTabSet.addTab(organsAdminTab);
 		
-		centerTabSet.selectTab(organsAdminTab);		
+		centerTabSet.selectTab(organsAdminTab);
 	}
 	
 	public void openPropertyAdminTab(final FoProperty[] properties){
@@ -1151,7 +1153,7 @@ public class CenterPanel extends VLayout{
 		propertyGrid.setWrapCells(true);
 		propertyGrid.setFixedRecordHeights(false);
 		
-		ListGridField lgfId = new ListGridField("id", "user ID");
+		ListGridField lgfId = new ListGridField("id", "Property ID");
 		ListGridField lgfLabel = new ListGridField("propertyLabel", "Property Label");
 		ListGridField lgfType = new ListGridField("propertyType", "Property Type");
 		ListGridField lgfActivity = new ListGridField("propertyActivity", "enabled");
@@ -1175,6 +1177,45 @@ public class CenterPanel extends VLayout{
 		centerTabSet.addTab(propertiesAdminTab);
 		
 		centerTabSet.selectTab(propertiesAdminTab);
+	}
+	
+	public void openChipAdminTab(final FoChip[] chips){
+		
+		Tab chipsAdminTab = new Tab("Chip Management");
+		chipsAdminTab.setCanClose(true);
+		
+		//TODO add toolbar for actions
+		
+		chipGrid = new ListGrid();
+		chipGrid.setWidth100();
+		chipGrid.setHeight100();
+		chipGrid.setShowAllRecords(true);
+		chipGrid.setAlternateRecordStyles(true);
+		chipGrid.setWrapCells(true);
+		chipGrid.setFixedRecordHeights(false);
+		
+		ListGridField lgfId = new ListGridField("id", "Chip ID");
+		ListGridField lgfLabel = new ListGridField("chipName", "Chip Label");
+		ListGridField lgfType = new ListGridField("chipType", "Chip Type");
+		
+		chipGrid.setFields(lgfId, lgfLabel, lgfType);
+		
+		ListGridRecord[] lgr = new ListGridRecord[chips.length];
+		
+		for(int i=0; i < chips.length; i++){
+			lgr[i] = new ListGridRecord();
+			lgr[i].setAttribute("id", chips[i].getId());
+			lgr[i].setAttribute("chipName", chips[i].getName());
+			lgr[i].setAttribute("chipType", chips[i].getType());
+		}
+		
+		chipGrid.setData(lgr);
+		
+		chipsAdminTab.setPane(chipGrid);
+		
+		centerTabSet.addTab(chipsAdminTab);
+		
+		centerTabSet.selectTab(chipsAdminTab);
 	}
 	
 	public void loadProjectManageWindow(){
@@ -2013,6 +2054,27 @@ public class CenterPanel extends VLayout{
 
 		};
 		req.getAllFoProperties(callback);
+	}
+	
+	public void showAllChips(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoChip[]> callback = new AsyncCallback<FoChip[]>(){
+			
+			public void onSuccess(FoChip[] result){
+				
+				openChipAdminTab(result);
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.getAllFoChips(callback);
 	}
 	
 	public void showAllGroups(){

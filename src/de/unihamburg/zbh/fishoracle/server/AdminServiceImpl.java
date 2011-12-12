@@ -173,6 +173,17 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
+	public FoChip[] getAllFoChips() throws UserException {
+		
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getAllChips();
+	}
+	
+	@Override
 	public FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException {
 		isAdmin();
 		String servletContext = this.getServletContext().getRealPath("/");

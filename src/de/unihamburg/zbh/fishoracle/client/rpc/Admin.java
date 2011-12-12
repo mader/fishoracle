@@ -22,6 +22,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
@@ -53,6 +54,7 @@ public interface Admin extends RemoteService  {
 	void deleteGroup(FoGroup foGroup) throws UserException;
 	FoOrgan[] getAllFoOrgans() throws UserException;
 	FoProperty[] getAllFoProperties() throws UserException;
+	FoChip[] getAllFoChips() throws UserException;
 	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
 	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
 	FoProject[] getFoProjects() throws Exception;
@@ -71,6 +73,8 @@ public interface Admin extends RemoteService  {
 			return GWT.create(Admin.class);
 		}
 	}
+
+	
 
 	
 

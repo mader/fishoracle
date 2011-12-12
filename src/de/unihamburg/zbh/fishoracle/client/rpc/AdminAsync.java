@@ -20,6 +20,7 @@ package de.unihamburg.zbh.fishoracle.client.rpc;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
@@ -61,6 +62,8 @@ public interface AdminAsync {
 	void getAllFoOrgans(AsyncCallback<FoOrgan[]> callback);
 	
 	void getAllFoProperties(AsyncCallback<FoProperty[]> callback);
+	
+	void getAllFoChips(AsyncCallback<FoChip[]> callback);
 	
 	void addUserToFoGroup(FoGroup foGroup, int userId,
 			AsyncCallback<FoUser> callback);
