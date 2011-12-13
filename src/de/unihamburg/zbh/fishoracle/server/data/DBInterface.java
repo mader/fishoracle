@@ -517,6 +517,17 @@ public class DBInterface {
 		return organsToFoOrgans(organs);
 	}
 	
+	public FoProperty addProperty(FoProperty foProperty){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		PropertyAdaptor pa = driver.getPropertyAdaptor();
+		
+		int id = pa.storeProperty(foPropertyToProperty(foProperty));
+		
+		Property p = pa.fetchPropertyById(id);
+		
+		return propertyToFoProperty(p);
+	}
+	
 	public FoProperty[] getProperties(boolean enabled){
 		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
 		PropertyAdaptor pa = driver.getPropertyAdaptor();
@@ -627,6 +638,23 @@ public class DBInterface {
 													foOrgan,
 													foProperties);
 		return foTissue;
+	}
+	
+	private Property[] foPropertiesToProperties(FoProperty[] foProperties){
+		Property[] properties = new Property[foProperties.length];
+		
+		for(int i=0; i < properties.length; i++){
+			properties[i] = foPropertyToProperty(foProperties[i]);
+		}
+		return properties;
+	}
+	
+	private Property foPropertyToProperty(FoProperty foProperty){
+		Property property = new Property(foProperty.getId(),
+											foProperty.getLabel(),
+											foProperty.getType(),
+											foProperty.getActivty());
+		return property;
 	}
 	
 	private FoProperty[] propertiesToFoProperties(Property[] properties){

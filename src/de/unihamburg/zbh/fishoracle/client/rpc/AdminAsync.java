@@ -61,7 +61,11 @@ public interface AdminAsync {
 	
 	void getAllFoOrgans(AsyncCallback<FoOrgan[]> callback);
 	
+	void addProperty(FoProperty foProperty, AsyncCallback<FoProperty> callback);
+	
 	void getAllFoProperties(AsyncCallback<FoProperty[]> callback);
+	
+	void getAllPropertyTypes(AsyncCallback<String[]> callback);
 	
 	void getAllFoChips(AsyncCallback<FoChip[]> callback);
 	
@@ -88,5 +92,7 @@ public interface AdminAsync {
 
 	void removeUserFromFoGroup(int groupId, int userId,
 			AsyncCallback<Boolean> callback);
+
+	
 
 }

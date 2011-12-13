@@ -162,6 +162,17 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
+	public FoProperty addProperty(FoProperty foProperty) throws UserException {
+		
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.addProperty(foProperty);
+	}
+	
+	@Override
 	public FoProperty[] getAllFoProperties() throws UserException {
 		
 		isAdmin();
@@ -170,6 +181,16 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		DBInterface db = new DBInterface(servletContext);
 		
 		return db.getAllProperties();
+	}
+	
+	@Override
+	public String[] getAllPropertyTypes() {
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getPropertyTypes();
 	}
 	
 	@Override

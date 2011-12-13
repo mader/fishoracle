@@ -47,6 +47,7 @@ import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
+import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.HeaderItem;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
@@ -118,6 +119,8 @@ public class CenterPanel extends VLayout{
 	private SelectItem groupSelectItem;
 	
 	private TextItem groupNameTextItem;
+	private TextItem propertyLabelTextItem;
+	private ComboBoxItem propertyTypeCbItem;
 	
 	private TabSet centerTabSet = null;
 	private TextItem chrTextItem;
@@ -1107,7 +1110,7 @@ public class CenterPanel extends VLayout{
 		organGrid = new ListGrid();
 		organGrid.setWidth100();
 		organGrid.setHeight100();
-		organGrid.setShowAllRecords(true);  
+		organGrid.setShowAllRecords(true);
 		organGrid.setAlternateRecordStyles(true);
 		organGrid.setWrapCells(true);
 		organGrid.setFixedRecordHeights(false);
@@ -1138,13 +1141,91 @@ public class CenterPanel extends VLayout{
 		centerTabSet.selectTab(organsAdminTab);
 	}
 	
+	public void loadPropertyManageWindow(){
+		
+		final Window window = new Window();
+
+		window.setTitle("Add Property");
+		window.setWidth(250);
+		window.setHeight(120);
+		window.setAlign(Alignment.CENTER);
+		
+		window.setAutoCenter(true);
+		window.setIsModal(true);
+		window.setShowModalMask(true);
+		
+		DynamicForm propertyForm = new DynamicForm();
+		propertyLabelTextItem = new TextItem();
+		propertyLabelTextItem.setTitle("Property Label");
+		
+		propertyTypeCbItem = new ComboBoxItem(); 
+		propertyTypeCbItem.setTitle("Type");
+		propertyTypeCbItem.setType("comboBox");
+		
+	    getAllPropertyTypes();
+		
+		ButtonItem addPropertyButton = new ButtonItem("Add");
+		addPropertyButton.setWidth(50);
+		
+		addPropertyButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				addProperty(new FoProperty(0, propertyLabelTextItem.getDisplayValue(), propertyTypeCbItem.getDisplayValue(), "enabled"));
+				window.hide();
+			}
+		});
+
+		propertyForm.setItems(propertyLabelTextItem, propertyTypeCbItem, addPropertyButton);
+	
+		window.addItem(propertyForm);
+		
+		window.show();
+	}
+	
 	public void openPropertyAdminTab(final FoProperty[] properties){
 		
 		Tab propertiesAdminTab = new Tab("Property Management");
 		propertiesAdminTab.setCanClose(true);
 		
-		//TODO add toolbar for actions
+		VLayout pane = new VLayout();
+		pane.setWidth100();
+		pane.setHeight100();
+		pane.setDefaultLayoutAlign(Alignment.CENTER);
 		
+		VLayout headerContainer = new VLayout();
+		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
+		headerContainer.setWidth100();
+		headerContainer.setAutoHeight();
+		
+		HLayout controlsPanel = new HLayout();
+		controlsPanel.setWidth100();
+		controlsPanel.setAutoHeight();
+		
+		ToolStrip propertyToolStrip = new ToolStrip();
+		propertyToolStrip.setWidth100();
+		
+		ToolStripButton addPropertyButton = new ToolStripButton();
+		addPropertyButton.setTitle("add Group");
+		addPropertyButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				loadPropertyManageWindow();
+			}});
+		
+		propertyToolStrip.addButton(addPropertyButton);
+		
+		controlsPanel.addMember(propertyToolStrip);
+		
+		headerContainer.addMember(controlsPanel);
+		
+		pane.addMember(headerContainer);
+		
+		HLayout gridContainer = new HLayout();
+		gridContainer.setWidth100();
+		gridContainer.setHeight100();
+				
 		propertyGrid = new ListGrid();
 		propertyGrid.setWidth100();
 		propertyGrid.setHeight100();
@@ -1172,7 +1253,11 @@ public class CenterPanel extends VLayout{
 		
 		propertyGrid.setData(lgr);
 		
-		propertiesAdminTab.setPane(propertyGrid);
+		gridContainer.addMember(propertyGrid);
+		
+		pane.addMember(gridContainer);
+		
+		propertiesAdminTab.setPane(pane);
 		
 		centerTabSet.addTab(propertiesAdminTab);
 		
@@ -2035,6 +2120,33 @@ public class CenterPanel extends VLayout{
 		req.getAllFoOrgans(callback);
 	}
 	
+	public void getAllPropertyTypes(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<String[]> callback = new AsyncCallback<String[]>(){
+			
+			public void onSuccess(String[] result){
+				
+				LinkedHashMap<String, String> propertyTypeValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.length; i++){
+					propertyTypeValueMap.put(new Integer(i).toString(), result[i]);
+				}
+				
+				propertyTypeCbItem.setValueMap(propertyTypeValueMap);
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.getAllPropertyTypes(callback);
+	}
+	
 	public void showAllProperties(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -2156,6 +2268,32 @@ public class CenterPanel extends VLayout{
 
 		};
 		req.addGroup(foGroup, callback);
+	}
+	
+	public void addProperty(FoProperty foProperty){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoProperty> callback = new AsyncCallback<FoProperty>(){
+			
+			public void onSuccess(FoProperty result){
+				
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("id", result.getId());
+				lgr.setAttribute("propertyLabel", result.getLabel());
+				lgr.setAttribute("propertyType", result.getType());
+				lgr.setAttribute("propertyActivity", result.getActivty());
+				
+				propertyGrid.addData(lgr);
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.addProperty(foProperty, callback);
 	}
 	
 	public void getUserObject(final String forWhat){
