@@ -59,7 +59,11 @@ public interface AdminAsync {
 
 	void deleteGroup(FoGroup foGroup, AsyncCallback<Void> callback);
 	
+	void addOrgan(FoOrgan foOrgan, AsyncCallback<FoOrgan> callback);
+	
 	void getAllFoOrgans(AsyncCallback<FoOrgan[]> callback);
+	
+	void getAllOrganTypes(AsyncCallback<String[]> callback);
 	
 	void addProperty(FoProperty foProperty, AsyncCallback<FoProperty> callback);
 	
@@ -92,7 +96,4 @@ public interface AdminAsync {
 
 	void removeUserFromFoGroup(int groupId, int userId,
 			AsyncCallback<Boolean> callback);
-
-	
-
 }

@@ -498,6 +498,17 @@ public class DBInterface {
 		return chipsToFoChips(chips);
 	}
 	
+	public FoOrgan addOrgan(FoOrgan foOrgan){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		OrganAdaptor oa = driver.getOrganAdaptor();
+		
+		int id = oa.storeOrgan(foOrganToOrgan(foOrgan));
+		
+		Organ o = oa.fetchOrganById(id);
+		
+		return organToFoOrgan(o);
+	}
+	
 	public FoOrgan[] getOrgans(boolean enabled){
 		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
 		OrganAdaptor oa = driver.getOrganAdaptor();
@@ -515,6 +526,15 @@ public class DBInterface {
 		Organ[] organs = oa.fetchAllOrgans();
 		
 		return organsToFoOrgans(organs);
+	}
+	
+	public String[] getOrganTypes(){
+		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		OrganAdaptor oa = driver.getOrganAdaptor();
+		
+		String[] organTypes = oa.fetchAllTypes();
+		
+		return organTypes;
 	}
 	
 	public FoProperty addProperty(FoProperty foProperty){
@@ -672,6 +692,23 @@ public class DBInterface {
 											property.getType(),
 											property.getActivty());
 		return foProperty;
+	}
+	
+	private Organ[] foOrgansToOrgans(FoOrgan[] foOrgans){
+		Organ[] organs = new Organ[foOrgans.length];
+		
+		for(int i=0; i < foOrgans.length; i++){
+			organs[i] = foOrganToOrgan(foOrgans[i]);
+		}
+		return organs;
+	}
+	
+	private Organ foOrganToOrgan(FoOrgan foOrgan){
+		Organ organ = new Organ(foOrgan.getId(),
+									foOrgan.getLabel(),
+									foOrgan.getType(),
+									foOrgan.getActivty());
+		return organ;
 	}
 	
 	private FoOrgan[] organsToFoOrgans(Organ[] organs){

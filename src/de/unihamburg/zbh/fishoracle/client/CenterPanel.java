@@ -119,6 +119,8 @@ public class CenterPanel extends VLayout{
 	private SelectItem groupSelectItem;
 	
 	private TextItem groupNameTextItem;
+	private TextItem organLabelTextItem;
+	private ComboBoxItem organTypeCbItem;
 	private TextItem propertyLabelTextItem;
 	private ComboBoxItem propertyTypeCbItem;
 	
@@ -1100,12 +1102,90 @@ public class CenterPanel extends VLayout{
 		
 	}
 	
+	public void loadOrganManageWindow(){
+		
+		final Window window = new Window();
+
+		window.setTitle("Add Organ");
+		window.setWidth(250);
+		window.setHeight(120);
+		window.setAlign(Alignment.CENTER);
+		
+		window.setAutoCenter(true);
+		window.setIsModal(true);
+		window.setShowModalMask(true);
+		
+		DynamicForm organForm = new DynamicForm();
+		organLabelTextItem = new TextItem();
+		organLabelTextItem.setTitle("Property Label");
+		
+		organTypeCbItem = new ComboBoxItem(); 
+		organTypeCbItem.setTitle("Type");
+		organTypeCbItem.setType("comboBox");
+		
+	    getAllOrganTypes();
+		
+		ButtonItem addOrganButton = new ButtonItem("Add");
+		addOrganButton.setWidth(50);
+		
+		addOrganButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				addOrgan(new FoOrgan(0, organLabelTextItem.getDisplayValue(), organTypeCbItem.getDisplayValue(), "enabled"));
+				window.hide();
+			}
+		});
+
+		organForm.setItems(organLabelTextItem, organTypeCbItem, addOrganButton);
+	
+		window.addItem(organForm);
+		
+		window.show();
+	}
+	
 	public void openOrganAdminTab(final FoOrgan[] organs){
 		
 		Tab organsAdminTab = new Tab("Organ Management");
 		organsAdminTab.setCanClose(true);
+
+		VLayout pane = new VLayout();
+		pane.setWidth100();
+		pane.setHeight100();
+		pane.setDefaultLayoutAlign(Alignment.CENTER);
 		
-		//TODO add toolbar for actions
+		VLayout headerContainer = new VLayout();
+		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
+		headerContainer.setWidth100();
+		headerContainer.setAutoHeight();
+		
+		HLayout controlsPanel = new HLayout();
+		controlsPanel.setWidth100();
+		controlsPanel.setAutoHeight();
+		
+		ToolStrip organToolStrip = new ToolStrip();
+		organToolStrip.setWidth100();
+		
+		ToolStripButton addOrganButton = new ToolStripButton();
+		addOrganButton.setTitle("add Organ");
+		addOrganButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				loadOrganManageWindow();
+			}});
+		
+		organToolStrip.addButton(addOrganButton);
+		
+		controlsPanel.addMember(organToolStrip);
+		
+		headerContainer.addMember(controlsPanel);
+		
+		pane.addMember(headerContainer);
+		
+		HLayout gridContainer = new HLayout();
+		gridContainer.setWidth100();
+		gridContainer.setHeight100();
 		
 		organGrid = new ListGrid();
 		organGrid.setWidth100();
@@ -1134,7 +1214,11 @@ public class CenterPanel extends VLayout{
 		
 		organGrid.setData(lgr);
 		
-		organsAdminTab.setPane(organGrid);
+		gridContainer.addMember(organGrid);
+		
+		pane.addMember(gridContainer);
+		
+		organsAdminTab.setPane(pane);
 		
 		centerTabSet.addTab(organsAdminTab);
 		
@@ -1206,7 +1290,7 @@ public class CenterPanel extends VLayout{
 		propertyToolStrip.setWidth100();
 		
 		ToolStripButton addPropertyButton = new ToolStripButton();
-		addPropertyButton.setTitle("add Group");
+		addPropertyButton.setTitle("add Property");
 		addPropertyButton.addClickHandler(new ClickHandler(){
 
 			@Override
@@ -2120,6 +2204,33 @@ public class CenterPanel extends VLayout{
 		req.getAllFoOrgans(callback);
 	}
 	
+	public void getAllOrganTypes(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<String[]> callback = new AsyncCallback<String[]>(){
+			
+			public void onSuccess(String[] result){
+				
+				LinkedHashMap<String, String> organTypeValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.length; i++){
+					organTypeValueMap.put(new Integer(i).toString(), result[i]);
+				}
+				
+				organTypeCbItem.setValueMap(organTypeValueMap);
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.getAllOrganTypes(callback);
+	}
+	
 	public void getAllPropertyTypes(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -2268,6 +2379,32 @@ public class CenterPanel extends VLayout{
 
 		};
 		req.addGroup(foGroup, callback);
+	}
+	
+	public void addOrgan(FoOrgan foOrgan){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoOrgan> callback = new AsyncCallback<FoOrgan>(){
+			
+			public void onSuccess(FoOrgan result){
+				
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("id", result.getId());
+				lgr.setAttribute("organLabel", result.getLabel());
+				lgr.setAttribute("organType", result.getType());
+				lgr.setAttribute("organActivity", result.getActivty());
+				
+				organGrid.addData(lgr);
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.addOrgan(foOrgan, callback);
 	}
 	
 	public void addProperty(FoProperty foProperty){

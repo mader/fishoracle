@@ -52,7 +52,9 @@ public interface Admin extends RemoteService  {
 	FoGroup[] getAllFoGroups() throws Exception;
 	FoGroup addGroup(FoGroup foGroup) throws UserException;
 	void deleteGroup(FoGroup foGroup) throws UserException;
+	FoOrgan addOrgan(FoOrgan foOrgan) throws UserException;
 	FoOrgan[] getAllFoOrgans() throws UserException;
+	String[] getAllOrganTypes();
 	FoProperty addProperty(FoProperty foProperty) throws UserException;
 	FoProperty[] getAllFoProperties() throws UserException;
 	String[] getAllPropertyTypes();
@@ -74,5 +76,5 @@ public interface Admin extends RemoteService  {
 
 			return GWT.create(Admin.class);
 		}
-	}
+	}	
 }
