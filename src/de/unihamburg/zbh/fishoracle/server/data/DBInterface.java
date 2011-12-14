@@ -317,15 +317,19 @@ public class DBInterface {
 	
 	/* FISH ORACLE INTERFACE */
 	
+	private FODriver getFoDriver(){
+		return new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+	}
+	
 	public int createNewStudy(Microarraystudy mstudy, int projectId){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		MicroarraystudyAdaptor ma = driver.getMicroarraystudyAdaptor();
 	
 		return ma.storeMicroarraystudy(mstudy, projectId);
 	}
 	
 	public FoUser insertUser(FoUser user) throws Exception{
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
 		int userId = ua.storeUser(user.getFirstName(),
@@ -342,7 +346,7 @@ public class DBInterface {
 	}
 	
 	public FoUser getUser(String userName, String password) throws Exception{
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
 		User user = ua.fetchUserForLogin(userName, password);
@@ -351,7 +355,7 @@ public class DBInterface {
 	}
 	
 	public FoUser[] getAllUsers(){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
 		User[] users = ua.fetchAllUsers();
@@ -360,21 +364,21 @@ public class DBInterface {
 	}
 	
 	public int setActiveStatus(int userId, boolean activeFlag){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
 		return ua.toggleUserActiveStatus(userId, activeFlag);
 	}
 	
 	public int setAdminStatus(int userId, boolean adminFlag){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
 		return ua.toggleUserAdminStatus(userId, adminFlag);
 	}
 	
 	public FoGroup[] getAllGroups() throws Exception{
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		
 		Group[] groups = ga.fetchAllGroups();
@@ -383,7 +387,7 @@ public class DBInterface {
 	}
 	
 	public FoGroup addGroup(FoGroup foGroup){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		
 		int newGroupId = ga.storeGroup(foGroup.getName(), foGroup.getIsactiveAsInt());
@@ -395,7 +399,7 @@ public class DBInterface {
 	}
 	
 	public void deleteGroup(FoGroup foGroup){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		
 		Group g = foGroupToGroup(foGroup);
@@ -405,7 +409,7 @@ public class DBInterface {
 	
 	
 	public FoUser[] getAllUserExceptGroup(FoGroup foGroup){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
 		User[] users = ua.fetchAllUsersNotInGroup(foGroup.getId());
@@ -414,7 +418,7 @@ public class DBInterface {
 	}
 	
 	public FoUser addUserGroup(FoGroup foGroup, int userId){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
@@ -427,7 +431,7 @@ public class DBInterface {
 	}
 	
 	public FoProject[] getProjectsForUser(FoUser user) throws Exception {
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		ProjectAdaptor pa = driver.getProjectAdaptor();
@@ -441,7 +445,7 @@ public class DBInterface {
 	}
 	
 	public FoProject[] getAllProjects() throws Exception {
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		ProjectAdaptor pa = driver.getProjectAdaptor();
 		
 		Project[] projects = pa.fetchAllProjects();
@@ -450,7 +454,7 @@ public class DBInterface {
 	}
 	
 	public FoProject addFoProject(FoProject foProject){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		ProjectAdaptor pa = driver.getProjectAdaptor();
 		
 		int newProjectId = pa.storeProject(foProject.getName(), foProject.getDescription());
@@ -472,7 +476,7 @@ public class DBInterface {
 	}
 	
 	public FoGroup[] getAllGroupsExceptProject(FoProject foProject){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		
 		Group[] groups = ga.fetchGroupsNotInProject(foProject.getId());
@@ -481,7 +485,7 @@ public class DBInterface {
 	}
 	
 	public FoProjectAccess addAccessToProject(FoProjectAccess foProjectAccess, int projectId){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		ProjectAdaptor pa = driver.getProjectAdaptor();
 		
 		ProjectAccess projectAccess = pa.addGroupAccessToProject(foProjectAccess.getGroupId(), projectId, foProjectAccess.getAccess());
@@ -490,7 +494,7 @@ public class DBInterface {
 	}
 	
 	public FoChip[] getAllChips(){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		ChipAdaptor ca = driver.getChipAdaptor();
 		
 		Chip[] chips = ca.fetchAllChips();
@@ -499,7 +503,7 @@ public class DBInterface {
 	}
 	
 	public FoOrgan addOrgan(FoOrgan foOrgan){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		OrganAdaptor oa = driver.getOrganAdaptor();
 		
 		int id = oa.storeOrgan(foOrganToOrgan(foOrgan));
@@ -510,7 +514,7 @@ public class DBInterface {
 	}
 	
 	public FoOrgan[] getOrgans(boolean enabled){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		OrganAdaptor oa = driver.getOrganAdaptor();
 		
 		Organ[] organs = oa.fetchOrgans(enabled);
@@ -520,7 +524,7 @@ public class DBInterface {
 	
 	public FoOrgan[] getAllOrgans(){
 		
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		OrganAdaptor oa = driver.getOrganAdaptor();
 		
 		Organ[] organs = oa.fetchAllOrgans();
@@ -529,7 +533,7 @@ public class DBInterface {
 	}
 	
 	public String[] getOrganTypes(){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		OrganAdaptor oa = driver.getOrganAdaptor();
 		
 		String[] organTypes = oa.fetchAllTypes();
@@ -538,7 +542,7 @@ public class DBInterface {
 	}
 	
 	public FoProperty addProperty(FoProperty foProperty){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		PropertyAdaptor pa = driver.getPropertyAdaptor();
 		
 		int id = pa.storeProperty(foPropertyToProperty(foProperty));
@@ -549,7 +553,7 @@ public class DBInterface {
 	}
 	
 	public FoProperty[] getProperties(boolean enabled){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		PropertyAdaptor pa = driver.getPropertyAdaptor();
 		
 		Property[] properties = pa.fetchProperties(true);
@@ -558,7 +562,7 @@ public class DBInterface {
 	}
 	
 	public FoProperty[] getAllProperties(){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		PropertyAdaptor pa = driver.getPropertyAdaptor();
 		
 		Property[] properties = pa.fetchAllProperties();
@@ -567,7 +571,7 @@ public class DBInterface {
 	}
 	
 	public String[] getPropertyTypes(){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		PropertyAdaptor pa = driver.getPropertyAdaptor();
 		
 		String[] propertyTypes = pa.fetchAllTypes();
@@ -576,7 +580,7 @@ public class DBInterface {
 	}
 	
 	public void removeAccessFromProject(int projectAccessId){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		ProjectAdaptor pa = driver.getProjectAdaptor();
 		
 		pa.removeGroupAccessFromProject(projectAccessId);
@@ -584,14 +588,14 @@ public class DBInterface {
 	}
 	
 	public void removeProject(int projectId){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		ProjectAdaptor pa = driver.getProjectAdaptor();
 		
 		pa.deleteProject(projectId);
 	}
 	
 	public void removeUserFromGroup(int groupId, int userId){
-		FODriver driver = new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		
 		ga.removeUserFromGroup(userId, groupId);
