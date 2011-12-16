@@ -579,6 +579,26 @@ public class DBInterface {
 		return propertyTypes;
 	}
 	
+	public FoChip addChip(FoChip foChip){
+		FODriver driver = getFoDriver();
+		ChipAdaptor ca = driver.getChipAdaptor();
+		
+		int id = ca.storeChip(foChipToChip(foChip));
+		
+		Chip c = ca.fetchChipById(id);
+		
+		return chipToFoChip(c);
+	}
+	
+	public String[] getChipTypes(){
+		FODriver driver = getFoDriver();
+		ChipAdaptor ca = driver.getChipAdaptor();
+		
+		String[] chipTypes = ca.fetchAllTypes();
+		
+		return chipTypes;
+	}
+	
 	public void removeAccessFromProject(int projectAccessId){
 		FODriver driver = getFoDriver();
 		ProjectAdaptor pa = driver.getProjectAdaptor();
@@ -730,6 +750,22 @@ public class DBInterface {
 									organ.getType(),
 									organ.getActivty());
 		return foOrgan;
+	}
+	
+	private Chip[] foChipsToChips(FoChip[] foChips){
+		Chip[] chips = new Chip[foChips.length];
+		
+		for(int i=0; i < chips.length; i++){
+			chips[i] = foChipToChip(foChips[i]);
+		}
+		return chips;
+	}
+	
+	private Chip foChipToChip(FoChip foChip){
+		Chip chip = new Chip(foChip.getId(),
+								foChip.getName(),
+								foChip.getType());
+		return chip;
 	}
 	
 	private FoChip[] chipsToFoChips(Chip[] chips){

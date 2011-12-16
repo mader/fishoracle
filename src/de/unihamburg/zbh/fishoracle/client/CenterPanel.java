@@ -123,6 +123,8 @@ public class CenterPanel extends VLayout{
 	private ComboBoxItem organTypeCbItem;
 	private TextItem propertyLabelTextItem;
 	private ComboBoxItem propertyTypeCbItem;
+	private TextItem chipLabelTextItem;
+	private ComboBoxItem chipTypeCbItem;
 	
 	private TabSet centerTabSet = null;
 	private TextItem chrTextItem;
@@ -1348,12 +1350,90 @@ public class CenterPanel extends VLayout{
 		centerTabSet.selectTab(propertiesAdminTab);
 	}
 	
+	public void loadChipManageWindow(){
+		
+		final Window window = new Window();
+
+		window.setTitle("Add Chip");
+		window.setWidth(250);
+		window.setHeight(120);
+		window.setAlign(Alignment.CENTER);
+		
+		window.setAutoCenter(true);
+		window.setIsModal(true);
+		window.setShowModalMask(true);
+		
+		DynamicForm chipForm = new DynamicForm();
+		chipLabelTextItem = new TextItem();
+		chipLabelTextItem.setTitle("Chip Label");
+		
+		chipTypeCbItem = new ComboBoxItem(); 
+		chipTypeCbItem.setTitle("Type");
+		chipTypeCbItem.setType("comboBox");
+		
+	    getAllChipTypes();
+		
+		ButtonItem addChipButton = new ButtonItem("Add");
+		addChipButton.setWidth(50);
+		
+		addChipButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				addChip(new FoChip(0, chipLabelTextItem.getDisplayValue(), chipTypeCbItem.getDisplayValue()));
+				window.hide();
+			}
+		});
+
+		chipForm.setItems(chipLabelTextItem, chipTypeCbItem, addChipButton);
+	
+		window.addItem(chipForm);
+		
+		window.show();
+	}
+	
 	public void openChipAdminTab(final FoChip[] chips){
 		
 		Tab chipsAdminTab = new Tab("Chip Management");
 		chipsAdminTab.setCanClose(true);
 		
-		//TODO add toolbar for actions
+		VLayout pane = new VLayout();
+		pane.setWidth100();
+		pane.setHeight100();
+		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		VLayout headerContainer = new VLayout();
+		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
+		headerContainer.setWidth100();
+		headerContainer.setAutoHeight();
+		
+		HLayout controlsPanel = new HLayout();
+		controlsPanel.setWidth100();
+		controlsPanel.setAutoHeight();
+		
+		ToolStrip chipToolStrip = new ToolStrip();
+		chipToolStrip.setWidth100();
+		
+		ToolStripButton addChipButton = new ToolStripButton();
+		addChipButton.setTitle("add Chip");
+		addChipButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				loadChipManageWindow();
+			}});
+		
+		chipToolStrip.addButton(addChipButton);
+		
+		controlsPanel.addMember(chipToolStrip);
+		
+		headerContainer.addMember(controlsPanel);
+		
+		pane.addMember(headerContainer);
+		
+		HLayout gridContainer = new HLayout();
+		gridContainer.setWidth100();
+		gridContainer.setHeight100();
 		
 		chipGrid = new ListGrid();
 		chipGrid.setWidth100();
@@ -1380,7 +1460,11 @@ public class CenterPanel extends VLayout{
 		
 		chipGrid.setData(lgr);
 		
-		chipsAdminTab.setPane(chipGrid);
+		gridContainer.addMember(chipGrid);
+		
+		pane.addMember(gridContainer);
+		
+		chipsAdminTab.setPane(pane);
 		
 		centerTabSet.addTab(chipsAdminTab);
 		
@@ -2279,6 +2363,33 @@ public class CenterPanel extends VLayout{
 		req.getAllFoProperties(callback);
 	}
 	
+	public void getAllChipTypes(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<String[]> callback = new AsyncCallback<String[]>(){
+			
+			public void onSuccess(String[] result){
+				
+				LinkedHashMap<String, String> chipTypeValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.length; i++){
+					chipTypeValueMap.put(new Integer(i).toString(), result[i]);
+				}
+				
+				chipTypeCbItem.setValueMap(chipTypeValueMap);
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.getAllChipTypes(callback);
+	}
+	
 	public void showAllChips(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -2431,6 +2542,31 @@ public class CenterPanel extends VLayout{
 
 		};
 		req.addProperty(foProperty, callback);
+	}
+	
+	public void addChip(FoChip foChip){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoChip> callback = new AsyncCallback<FoChip>(){
+			
+			public void onSuccess(FoChip result){
+				
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("id", result.getId());
+				lgr.setAttribute("chipName", result.getName());
+				lgr.setAttribute("chipType", result.getType());
+				
+				chipGrid.addData(lgr);
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.addChip(foChip, callback);
 	}
 	
 	public void getUserObject(final String forWhat){

@@ -71,6 +71,10 @@ public interface AdminAsync {
 	
 	void getAllPropertyTypes(AsyncCallback<String[]> callback);
 	
+	void addChip(FoChip foChip, AsyncCallback<FoChip> callback);
+	
+	void getAllChipTypes(AsyncCallback<String[]> callback);
+	
 	void getAllFoChips(AsyncCallback<FoChip[]> callback);
 	
 	void addUserToFoGroup(FoGroup foGroup, int userId,

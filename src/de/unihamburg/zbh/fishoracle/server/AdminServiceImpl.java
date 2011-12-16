@@ -214,6 +214,26 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
+	public FoChip addChip(FoChip foChip) throws UserException {
+		
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.addChip(foChip);
+	}
+	
+	@Override
+	public String[] getAllChipTypes() {
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getChipTypes();
+	}
+	
+	@Override
 	public FoChip[] getAllFoChips() throws UserException {
 		
 		isAdmin();

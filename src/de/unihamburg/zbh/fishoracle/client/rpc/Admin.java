@@ -58,6 +58,8 @@ public interface Admin extends RemoteService  {
 	FoProperty addProperty(FoProperty foProperty) throws UserException;
 	FoProperty[] getAllFoProperties() throws UserException;
 	String[] getAllPropertyTypes();
+	FoChip addChip(FoChip foChip) throws UserException;
+	String[] getAllChipTypes();
 	FoChip[] getAllFoChips() throws UserException;
 	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
 	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
@@ -76,5 +78,5 @@ public interface Admin extends RemoteService  {
 
 			return GWT.create(Admin.class);
 		}
-	}	
+	}
 }
