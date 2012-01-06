@@ -105,6 +105,7 @@ public class CenterPanel extends VLayout{
 	private ListGrid userGrid;
 	private ListGrid organGrid;
 	private ListGrid propertyGrid;
+	private ListGrid msGrid;
 	private ListGrid chipGrid;
 	private ListGrid groupGrid;
 	private ListGrid groupUserGrid;
@@ -1471,6 +1472,79 @@ public class CenterPanel extends VLayout{
 		centerTabSet.selectTab(chipsAdminTab);
 	}
 	
+	public void openMicrorraystudyAdminTab(){
+		
+		Tab msAdminTab = new Tab("Microarraystudy Management");
+		msAdminTab.setCanClose(true);
+		
+		VLayout pane = new VLayout();
+		pane.setWidth100();
+		pane.setHeight100();
+		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		VLayout headerContainer = new VLayout();
+		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
+		headerContainer.setWidth100();
+		headerContainer.setAutoHeight();
+		
+		HLayout controlsPanel = new HLayout();
+		controlsPanel.setWidth100();
+		controlsPanel.setAutoHeight();
+		
+		ToolStrip msToolStrip = new ToolStrip();
+		msToolStrip.setWidth100();
+		
+		/*
+		ToolStripButton addChipButton = new ToolStripButton();
+		addChipButton.setTitle("add Chip");
+		addChipButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				loadChipManageWindow();
+			}});
+		
+		chipToolStrip.addButton(addChipButton);
+		*/
+		//TODO
+		controlsPanel.addMember(msToolStrip);
+		
+		headerContainer.addMember(controlsPanel);
+		
+		pane.addMember(headerContainer);
+		
+		HLayout gridContainer = new HLayout();
+		gridContainer.setWidth100();
+		gridContainer.setHeight100();
+		
+		msGrid = new ListGrid();
+		msGrid.setWidth100();
+		msGrid.setHeight100();
+		msGrid.setShowAllRecords(true);
+		msGrid.setAlternateRecordStyles(true);
+		msGrid.setWrapCells(true);
+		msGrid.setFixedRecordHeights(false);
+		
+		ListGridField lgfId = new ListGridField("id", "Microarraystudy ID");
+		ListGridField lgfChip = new ListGridField("chip", "Chip");
+		ListGridField lgfTissue = new ListGridField("tissue", "Tissue");
+		ListGridField lgfDate = new ListGridField("date", "Date");
+		ListGridField lgfName = new ListGridField("name", "Name");
+		ListGridField lgfDescription = new ListGridField("description", "Description");
+		
+		msGrid.setFields(lgfId, lgfChip, lgfTissue, lgfDate, lgfName, lgfDescription);
+		
+		gridContainer.addMember(chipGrid);
+		
+		pane.addMember(gridContainer);
+		
+		msAdminTab.setPane(pane);
+		
+		centerTabSet.addTab(msAdminTab);
+		
+		centerTabSet.selectTab(msAdminTab);
+	}
+	
 	public void loadProjectManageWindow(){
 		
 		final Window window = new Window();
@@ -2267,6 +2341,27 @@ public class CenterPanel extends VLayout{
 		req.getMicroarrayOptions(callback);
 	}
 	
+	public void showAllMicroarrayStudiesForGroup(String[] groups){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoMicroarraystudy[]> callback = new AsyncCallback<FoMicroarraystudy[]>(){
+			
+			public void onSuccess(FoMicroarraystudy[] result){
+				
+				//TODO
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		//req.getAllFoOrgans(callback);
+	}
+	
 	public void showAllOrgans(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -2888,7 +2983,7 @@ public class CenterPanel extends VLayout{
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());				
+				SC.say(caught.getMessage());
 			}
 		};
 		req.canAccessDataImport(callback);

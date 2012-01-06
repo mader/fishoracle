@@ -391,6 +391,25 @@ public class WestPanel extends SectionStack{
 						showAllUsers();
 					}
 				}
+				if(event.getNode().getName().equals("Manage Microarraystudies")){
+					boolean exists = false;
+					int index = 0;
+					
+					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+					for(int i=0; i < tabs.length; i++){
+						if(tabs[i].getTitle().equals("Microarraystudy Management")){
+							exists = true;
+							index = i;
+						}
+					}
+					
+					if(exists){
+						centerTabSet.selectTab(index);
+					} else {
+						mp.getCenterPanel().openMicrorraystudyAdminTab();
+					}
+				}
 				if(event.getNode().getName().equals("Manage Groups")){
 					boolean exists = false;
 					int index = 0;
@@ -494,6 +513,7 @@ public class WestPanel extends SectionStack{
 		adminTree.setModelType(TreeModelType.CHILDREN);  
 		adminTree.setRoot(new TreeNode("root",  
 							new TreeNode("Show Users"),
+							new TreeNode("Manage Microarraystudies"),
 							new TreeNode("Manage Groups"),
 							new TreeNode("Manage Organs"),
 							new TreeNode("Manage Properties"),
