@@ -430,6 +430,17 @@ public class DBInterface {
 		
 	}
 	
+	public FoMicroarraystudy[] getMicroarraystudiesForProject(int projectId){
+		
+		FODriver driver = getFoDriver();
+		
+		MicroarraystudyAdaptor ma = driver.getMicroarraystudyAdaptor();
+		
+		Microarraystudy[] m = ma.fetchMicroarraystudiesForProject(projectId, true);
+		
+		return mstudiesToFoMstudies(m, true);
+	}
+	
 	public FoProject[] getProjectsForUser(FoUser user) throws Exception {
 		FODriver driver = getFoDriver();
 		

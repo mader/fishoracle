@@ -22,6 +22,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
+import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
@@ -60,6 +61,9 @@ public interface AdminAsync {
 	void deleteGroup(FoGroup foGroup, AsyncCallback<Void> callback);
 	
 	void addOrgan(FoOrgan foOrgan, AsyncCallback<FoOrgan> callback);
+	
+	void getMicorarrayStudiesForProject(
+			int i, AsyncCallback<FoMicroarraystudy[]> callback);
 	
 	void getAllFoOrgans(AsyncCallback<FoOrgan[]> callback);
 	
@@ -100,4 +104,5 @@ public interface AdminAsync {
 
 	void removeUserFromFoGroup(int groupId, int userId,
 			AsyncCallback<Boolean> callback);
+
 }

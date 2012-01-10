@@ -55,6 +55,8 @@ import com.smartgwt.client.widgets.form.fields.PasswordItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -110,6 +112,7 @@ public class CenterPanel extends VLayout{
 	private ListGrid groupGrid;
 	private ListGrid groupUserGrid;
 	private SelectItem userSelectItem;
+	private SelectItem projectSelectItem;
 	
 	private ListGrid projectGrid;
 	private ListGrid projectMstudyGrid;
@@ -1494,6 +1497,25 @@ public class CenterPanel extends VLayout{
 		ToolStrip msToolStrip = new ToolStrip();
 		msToolStrip.setWidth100();
 		
+		projectSelectItem = new SelectItem();
+		projectSelectItem.setTitle("Project");
+		
+		getProjects();
+		
+		projectSelectItem.setDefaultToFirstOption(true);
+		projectSelectItem.addChangedHandler(new ChangedHandler(){
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				
+				showAllMicroarrayStudiesForProject(projectSelectItem.getValueAsString());
+			}
+			
+		});
+		
+		
+		msToolStrip.addFormItem(projectSelectItem);
+		
 		/*
 		ToolStripButton addChipButton = new ToolStripButton();
 		addChipButton.setTitle("add Chip");
@@ -1534,7 +1556,7 @@ public class CenterPanel extends VLayout{
 		
 		msGrid.setFields(lgfId, lgfChip, lgfTissue, lgfDate, lgfName, lgfDescription);
 		
-		gridContainer.addMember(chipGrid);
+		gridContainer.addMember(msGrid);
 		
 		pane.addMember(gridContainer);
 		
@@ -2341,7 +2363,7 @@ public class CenterPanel extends VLayout{
 		req.getMicroarrayOptions(callback);
 	}
 	
-	public void showAllMicroarrayStudiesForGroup(String[] groups){
+	public void showAllMicroarrayStudiesForProject(String projectId){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
@@ -2352,14 +2374,25 @@ public class CenterPanel extends VLayout{
 			public void onSuccess(FoMicroarraystudy[] result){
 				
 				//TODO
+				ListGridRecord[] lgr = new ListGridRecord[result.length];
 				
+				for(int i=0; i < result.length; i++){
+					lgr[i] = new ListGridRecord();
+					lgr[i].setAttribute("id", result[i].getId());
+					lgr[i].setAttribute("chip", result[i].getChip().getName());
+					lgr[i].setAttribute("tissue", result[i].getTissue().getOrgan().getLabel());
+					lgr[i].setAttribute("date", result[i].getDate());
+					lgr[i].setAttribute("name", result[i].getName());
+					lgr[i].setAttribute("description", result[i].getDescription());
+				}
+				msGrid.setData(lgr);
 			}
 			public void onFailure(Throwable caught){
 				SC.say(caught.getMessage());
 			}
 
 		};
-		//req.getAllFoOrgans(callback);
+		req.getMicorarrayStudiesForProject(Integer.parseInt(projectId), callback);
 	}
 	
 	public void showAllOrgans(){
@@ -2752,6 +2785,33 @@ public class CenterPanel extends VLayout{
 			}
 		};
 		req.removeUserFromFoGroup(groupId, userId, callback);
+	}
+	
+	public void getProjects(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoProject[]> callback = new AsyncCallback<FoProject[]>(){
+			
+			public void onSuccess(FoProject[] result){
+				
+				LinkedHashMap<String, String> projectValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.length; i++){
+					projectValueMap.put(new Integer(result[i].getId()).toString(), result[i].getName());
+				}
+				
+				projectSelectItem.setValueMap(projectValueMap);
+				//TODO
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.getFoProjects(callback);
 	}
 	
 	public void showProjects(final FoUser user){

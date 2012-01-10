@@ -30,6 +30,7 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
+import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
@@ -159,6 +160,16 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		DBInterface db = new DBInterface(servletContext);
 		
 		return db.addOrgan(foOrgan);
+	}
+	
+	@Override
+	public FoMicroarraystudy[] getMicorarrayStudiesForProject(int projectId) {
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext); 
+		
+		return db.getMicroarraystudiesForProject(projectId);
 	}
 	
 	@Override
