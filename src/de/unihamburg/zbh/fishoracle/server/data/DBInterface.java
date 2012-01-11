@@ -56,6 +56,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.Property;
 import de.unihamburg.zbh.fishoracle_db_api.data.TissueSample;
 import de.unihamburg.zbh.fishoracle_db_api.data.User;
 import de.unihamburg.zbh.fishoracle_db_api.driver.ChipAdaptor;
+import de.unihamburg.zbh.fishoracle_db_api.driver.CnSegmentAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriver;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriverImpl;
 import de.unihamburg.zbh.fishoracle_db_api.driver.GroupAdaptor;
@@ -430,6 +431,16 @@ public class DBInterface {
 		
 	}
 	
+	public FoCnSegment[] getCnSegmentsForMstudyId(int mstudyId){
+		
+		FODriver driver = getFoDriver();
+		CnSegmentAdaptor ca = driver.getCnSegmentAdaptor();
+		
+		CnSegment[] segments = ca.fetchCnSegmentsForMicroarraystudyId(mstudyId);
+		
+		return cnSegmentsToFoCnSegments(segments);
+	}
+	
 	public FoMicroarraystudy[] getMicroarraystudiesForProject(int projectId){
 		
 		FODriver driver = getFoDriver();
@@ -473,16 +484,6 @@ public class DBInterface {
 		Project newProject = pa.fetchProjectById(newProjectId);
 		
 		return projectToFoProject(newProject);
-		
-	}
-	
-	private FoMicroarraystudy[] mstudiesToFoMstudies(Microarraystudy[] mstudies, boolean withChildren){
-		FoMicroarraystudy[] foMstudies = new FoMicroarraystudy[mstudies.length];
-		
-		for(int i=0; i < mstudies.length; i++){
-			foMstudies[i] = mstudyToFoMstudy(mstudies[i], withChildren);
-		}
-		return foMstudies;
 		
 	}
 	
@@ -793,6 +794,16 @@ public class DBInterface {
 								chip.getName(),
 								chip.getType());
 		return foChip;
+	}
+	
+	private FoMicroarraystudy[] mstudiesToFoMstudies(Microarraystudy[] mstudies, boolean withChildren){
+		FoMicroarraystudy[] foMstudies = new FoMicroarraystudy[mstudies.length];
+		
+		for(int i=0; i < mstudies.length; i++){
+			foMstudies[i] = mstudyToFoMstudy(mstudies[i], withChildren);
+		}
+		return foMstudies;
+		
 	}
 	
 	private FoMicroarraystudy mstudyToFoMstudy(Microarraystudy mstudy, boolean withChildren){

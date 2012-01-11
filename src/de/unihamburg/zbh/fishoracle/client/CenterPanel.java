@@ -83,6 +83,7 @@ import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
+import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
@@ -111,6 +112,7 @@ public class CenterPanel extends VLayout{
 	private ListGrid chipGrid;
 	private ListGrid groupGrid;
 	private ListGrid groupUserGrid;
+	private ListGrid segmentGrid;
 	private SelectItem userSelectItem;
 	private SelectItem projectSelectItem;
 	
@@ -1475,6 +1477,61 @@ public class CenterPanel extends VLayout{
 		centerTabSet.selectTab(chipsAdminTab);
 	}
 	
+	public void openCnSegmentTab(FoCnSegment[] segments){
+		Tab segmentAdminTab = new Tab("Segments");
+		segmentAdminTab.setCanClose(true);
+		
+		VLayout pane = new VLayout();
+		pane.setWidth100();
+		pane.setHeight100();
+		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		HLayout gridContainer = new HLayout();
+		gridContainer.setWidth100();
+		gridContainer.setHeight100();
+		
+		segmentGrid = new ListGrid();
+		segmentGrid.setWidth100();
+		segmentGrid.setHeight100();
+		segmentGrid.setShowAllRecords(true);
+		segmentGrid.setAlternateRecordStyles(true);
+		segmentGrid.setWrapCells(true);
+		segmentGrid.setFixedRecordHeights(false);
+		
+		ListGridField lgfId = new ListGridField("id", "Segment Id");
+		ListGridField lgfChr = new ListGridField("chromosome", "Chromosome");
+		ListGridField lgfStart = new ListGridField("start", "Start");
+		ListGridField lgfEnd = new ListGridField("end", "End");
+		ListGridField lgfMean = new ListGridField("mean", "Segment Mean");
+		ListGridField lgfMarkers = new ListGridField("markers", "Number of Markers");
+		
+		segmentGrid.setFields(lgfId, lgfChr, lgfStart, lgfEnd, lgfMean, lgfMarkers);
+		
+		ListGridRecord[] lgr = new ListGridRecord[segments.length];
+		
+		for(int i=0; i < segments.length; i++){
+			lgr[i] = new ListGridRecord();
+			lgr[i].setAttribute("id", segments[i].getId());
+			lgr[i].setAttribute("chromosome", segments[i].getChromosome());
+			lgr[i].setAttribute("start", segments[i].getStart());
+			lgr[i].setAttribute("end", segments[i].getEnd());
+			lgr[i].setAttribute("mean", segments[i].getMean());
+			lgr[i].setAttribute("markers", segments[i].getNumberOfMarkers());
+		}
+
+		segmentGrid.setData(lgr);
+		
+		gridContainer.addMember(segmentGrid);
+		
+		pane.addMember(gridContainer);
+		
+		segmentAdminTab.setPane(pane);
+		
+		centerTabSet.addTab(segmentAdminTab);
+		
+		centerTabSet.selectTab(segmentAdminTab);
+	}
+	
 	public void openMicrorraystudyAdminTab(){
 		
 		Tab msAdminTab = new Tab("Microarraystudy Management");
@@ -1513,21 +1570,35 @@ public class CenterPanel extends VLayout{
 			
 		});
 		
-		
 		msToolStrip.addFormItem(projectSelectItem);
 		
-		/*
-		ToolStripButton addChipButton = new ToolStripButton();
-		addChipButton.setTitle("add Chip");
-		addChipButton.addClickHandler(new ClickHandler(){
+		ToolStripButton showSegmentsButton = new ToolStripButton();
+		showSegmentsButton.setTitle("show segments");
+		showSegmentsButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
-				loadChipManageWindow();
+				
+				ListGridRecord lgr = msGrid.getSelectedRecord();
+				
+				getCnSegmentsForMstudyId(lgr.getAttributeAsInt("id"));
+				
 			}});
 		
-		chipToolStrip.addButton(addChipButton);
-		*/
+		msToolStrip.addButton(showSegmentsButton);
+		
+		ToolStripButton removeMstudyButton = new ToolStripButton();
+		removeMstudyButton.setTitle("remove microarray study");
+		removeMstudyButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				//loadChipManageWindow();
+				SC.say("Remove selected Microarraystudy");
+			}});
+		
+		msToolStrip.addButton(removeMstudyButton);
+		
 		//TODO
 		controlsPanel.addMember(msToolStrip);
 		
@@ -2363,6 +2434,26 @@ public class CenterPanel extends VLayout{
 		req.getMicroarrayOptions(callback);
 	}
 	
+	//TODO
+	public void getCnSegmentsForMstudyId(int mstudyId){
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoCnSegment[]> callback = new AsyncCallback<FoCnSegment[]>(){
+			
+			public void onSuccess(FoCnSegment[] result){
+				
+				openCnSegmentTab(result);
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.getCnSegmentsForMstudyId(mstudyId, callback);
+	}
+	
 	public void showAllMicroarrayStudiesForProject(String projectId){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -2373,7 +2464,6 @@ public class CenterPanel extends VLayout{
 			
 			public void onSuccess(FoMicroarraystudy[] result){
 				
-				//TODO
 				ListGridRecord[] lgr = new ListGridRecord[result.length];
 				
 				for(int i=0; i < result.length; i++){
@@ -2804,7 +2894,6 @@ public class CenterPanel extends VLayout{
 				}
 				
 				projectSelectItem.setValueMap(projectValueMap);
-				//TODO
 			}
 			public void onFailure(Throwable caught){
 				SC.say(caught.getMessage());

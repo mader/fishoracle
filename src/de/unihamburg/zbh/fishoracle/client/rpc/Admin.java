@@ -23,6 +23,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
+import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
@@ -54,6 +55,7 @@ public interface Admin extends RemoteService  {
 	FoGroup addGroup(FoGroup foGroup) throws UserException;
 	void deleteGroup(FoGroup foGroup) throws UserException;
 	FoOrgan addOrgan(FoOrgan foOrgan) throws UserException;
+	FoCnSegment[] getCnSegmentsForMstudyId(int mstudyId);
 	FoMicroarraystudy[] getMicorarrayStudiesForProject(int i);
 	FoOrgan[] getAllFoOrgans() throws UserException;
 	String[] getAllOrganTypes();
