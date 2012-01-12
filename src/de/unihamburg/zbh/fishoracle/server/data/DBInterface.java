@@ -441,6 +441,16 @@ public class DBInterface {
 		return cnSegmentsToFoCnSegments(segments);
 	}
 	
+	public void removeMstudy(int mstudyId){
+		
+		FODriver driver = getFoDriver();
+		MicroarraystudyAdaptor ma = driver.getMicroarraystudyAdaptor();
+		
+		ma.deleteMicroarraystudy(mstudyId);
+		
+	}
+		
+	
 	public FoMicroarraystudy[] getMicroarraystudiesForProject(int projectId){
 		
 		FODriver driver = getFoDriver();

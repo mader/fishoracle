@@ -14,7 +14,7 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/junit-4.8.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gt-java.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-servlet.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/fo_db_api.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/mysql-connector-java-5.1.18-bin.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/fo_db_api.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

@@ -65,6 +65,8 @@ public interface AdminAsync {
 	
 	void getCnSegmentsForMstudyId(int mstudyId, AsyncCallback<FoCnSegment[]> callback);
 	
+	void removeMstudy(int mstudyId, AsyncCallback<Void> callback);
+	
 	void getMicorarrayStudiesForProject(
 			int i, AsyncCallback<FoMicroarraystudy[]> callback);
 	

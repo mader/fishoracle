@@ -1593,8 +1593,11 @@ public class CenterPanel extends VLayout{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				//loadChipManageWindow();
-				SC.say("Remove selected Microarraystudy");
+				
+				ListGridRecord lgr = msGrid.getSelectedRecord();
+				
+				removeMstudy(lgr.getAttributeAsInt("id"));
+				
 			}});
 		
 		msToolStrip.addButton(removeMstudyButton);
@@ -2452,6 +2455,27 @@ public class CenterPanel extends VLayout{
 
 		};
 		req.getCnSegmentsForMstudyId(mstudyId, callback);
+	}
+	
+	public void removeMstudy(int mstudyId){
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
+			
+			public void onSuccess(Void result){
+				
+				msGrid.removeData(msGrid.getSelectedRecord());
+				msGrid.getRecords();
+				
+			}
+			
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+		};
+		req.removeMstudy(mstudyId, callback);
 	}
 	
 	public void showAllMicroarrayStudiesForProject(String projectId){

@@ -174,6 +174,17 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
+	public void removeMstudy(int mstudyId) {
+		
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		db.removeMstudy(mstudyId);
+	}
+	
+	@Override
 	public FoMicroarraystudy[] getMicorarrayStudiesForProject(int projectId) {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
