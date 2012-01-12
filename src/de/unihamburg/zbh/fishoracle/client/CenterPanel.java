@@ -1602,7 +1602,6 @@ public class CenterPanel extends VLayout{
 		
 		msToolStrip.addButton(removeMstudyButton);
 		
-		//TODO
 		controlsPanel.addMember(msToolStrip);
 		
 		headerContainer.addMember(controlsPanel);
@@ -1827,30 +1826,6 @@ public class CenterPanel extends VLayout{
 			}});
 		
 		projectToolStrip.addButton(removeProjectAccessButton);
-		
-		ToolStripButton addMicroarraystudyProjectButton = new ToolStripButton();  
-		addMicroarraystudyProjectButton.setTitle("add Microarraystudy to Project");
-		addMicroarraystudyProjectButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				SC.say("Not implemented yet!");
-			}});
-		
-		projectToolStrip.addButton(addMicroarraystudyProjectButton);
-		
-		ToolStripButton removeMicroarraystudyProjectButton = new ToolStripButton();  
-		removeMicroarraystudyProjectButton.setTitle("remove Microarraystudy from Project");
-		removeMicroarraystudyProjectButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				SC.say("Not implemented yet!");
-			}});
-		
-		projectToolStrip.addButton(removeMicroarraystudyProjectButton);
 		
 		controlsPanel.addMember(projectToolStrip);
 		
@@ -2437,7 +2412,6 @@ public class CenterPanel extends VLayout{
 		req.getMicroarrayOptions(callback);
 	}
 	
-	//TODO
 	public void getCnSegmentsForMstudyId(int mstudyId){
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
