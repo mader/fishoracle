@@ -25,7 +25,8 @@ public interface UserServiceAsync {
 	
 	public void register(FoUser user, AsyncCallback<FoUser> callback);
 	public void login(String email, String password, AsyncCallback<FoUser> callback);
+	void updateUserProfile(FoUser user, AsyncCallback<Void> callback);
+	public void updateUserPassword(FoUser user, AsyncCallback<Void> callback);
 	public void getSessionUserObject(AsyncCallback<FoUser> callback);
 	public void logout(AsyncCallback<Void> callback);
-
 }

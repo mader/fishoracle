@@ -449,7 +449,6 @@ public class DBInterface {
 		ma.deleteMicroarraystudy(mstudyId);
 		
 	}
-		
 	
 	public FoMicroarraystudy[] getMicroarraystudiesForProject(int projectId){
 		
@@ -641,6 +640,42 @@ public class DBInterface {
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		
 		ga.removeUserFromGroup(userId, groupId);
+		
+	}
+	
+	public void updateProfile(FoUser updateUser, FoUser sessionUser) throws Exception{
+		FODriver driver = getFoDriver();
+		UserAdaptor ua = driver.getUserAdaptor();
+		
+		if(updateUser.getId() == sessionUser.getId() &&
+				updateUser.getUserName().equals(sessionUser.getUserName())){
+			
+			ua.updateUserFistName(updateUser.getId(), updateUser.getFirstName());
+			ua.updateUserLastName(updateUser.getId(), updateUser.getLastName());
+			ua.updateUserEmail(updateUser.getId(), updateUser.getEmail());
+			
+		} else {
+			
+			throw new Exception("ID or Username not correct");
+			
+		}
+		
+	}
+	
+	public void updatePassword(FoUser updateUser, FoUser sessionUser) throws Exception{
+		FODriver driver = getFoDriver();
+		UserAdaptor ua = driver.getUserAdaptor();
+		
+		if(updateUser.getId() == sessionUser.getId() &&
+				updateUser.getUserName().equals(sessionUser.getUserName())){
+			
+			ua.updateUserPassword(updateUser.getId(), updateUser.getPw());
+			
+		} else {
+			
+			throw new Exception("ID or Username not correct");
+			
+		}
 		
 	}
 	

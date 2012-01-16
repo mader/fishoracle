@@ -38,6 +38,7 @@ import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
 
+import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
@@ -46,6 +47,7 @@ public class NorthPanel extends HLayout{
 	
 	private MainPanel mp = null;
 	private LinkItem logout;
+	private LinkItem userName;
 	private Window infoWin;
 	
 	public NorthPanel(MainPanel mainPanel) {
@@ -68,10 +70,39 @@ public class NorthPanel extends HLayout{
 		
 		left.setItems(info);
 		
-		DynamicForm right = new DynamicForm();
-		right.markForRedraw();
+		DynamicForm rightLogout = new DynamicForm();
+		rightLogout.setNumCols(4);
+		rightLogout.setColWidths("*", "*", "*", "*");
+		
+		rightLogout.markForRedraw();		
+		userName = new LinkItem();
+		userName.setTitle("");
+		userName.addClickHandler(new ClickHandler(){
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				boolean exists = false;
+				int index = 0;
+				
+				Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+				for(int i=0; i < tabs.length; i++){
+					if(tabs[i].getTitle().equals("Profile")){
+						exists = true;
+						index = i;
+					}
+				}
+				
+				if(exists){
+					mp.getCenterPanel().getCenterTabSet().selectTab(index);
+				} else {
+					showUserProfile();
+				}
+			}
+		});
+		
+		
 		logout = new LinkItem();
-		logout.setTitle("");
+		logout.setTitle(" ");
 		logout.setLinkTitle("Logout");
 		logout.addClickHandler(new ClickHandler(){
 			
@@ -87,11 +118,11 @@ public class NorthPanel extends HLayout{
 			}
 		});
 		
-		right.setItems(logout);
+		rightLogout.setItems(userName, logout);
 		
 		this.addMember(left);
 		this.addMember(new LayoutSpacer());
-		this.addMember(right);
+		this.addMember(rightLogout);
 		
 		infoWin = new Window();
 		infoWin.setTitle("Info");
@@ -121,14 +152,34 @@ public class NorthPanel extends HLayout{
 		infoWin.addItem(infoLayer);
 	}
 
-	public LinkItem getLogout() {
-		return logout;
+	public LinkItem getUserNameLink() {
+		return userName;
 	}
 	
 	/*=============================================================================
 	 *||                              RPC Calls                                  ||
 	 *=============================================================================
 	 * */	
+	
+	public void showUserProfile(){
+		
+		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoUser> callback = new AsyncCallback<FoUser>(){
+			public void onSuccess(FoUser result){
+				
+				mp.getCenterPanel().openUserProfileTab(result);
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());
+			}
+		};
+		req.getSessionUserObject(callback);
+	}	
 	
 	public void userLogout(){
 		
@@ -169,7 +220,6 @@ public class NorthPanel extends HLayout{
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				//MessageBox.hide();
 				SC.say(caught.getMessage());
 				GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler(){
 

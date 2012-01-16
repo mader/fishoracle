@@ -70,7 +70,6 @@ public class LoginScreen extends VLayout{
 		loginForm.setGroupTitle("FISH Oracle");
 		loginForm.setIsGroup(true);
 		loginForm.setWidth(300);
-		//loginForm.setBorder("1px dotted");
 		
 		userTextItem = new TextItem();
 		userTextItem.setTitle("Username");
@@ -122,7 +121,6 @@ public class LoginScreen extends VLayout{
 				}
 			}
 		});
-		
 		
 		loginForm.setItems(userTextItem, passwordItem, logInButton, registerLink);
 		
@@ -215,20 +213,18 @@ public class LoginScreen extends VLayout{
 					mp.getWestPanel().addSection(mp.getWestPanel().newAdminSection());
 				}
 				mp.getWestPanel().expandSection(0);
-				mp.getNorthPanel().getLogout().setTitle(result.getUserName());
-				mp.getNorthPanel().getLogout().redraw();
+				mp.getNorthPanel().getUserNameLink().setLinkTitle(result.getUserName());
+				mp.getNorthPanel().getUserNameLink().redraw();
 				ls.animateFade(0, new AnimationCallback(){
 					@Override
 					public void execute(boolean earlyFinish) {
-						ls.hide();	
+						ls.hide();
 					}
 				});
-				//MessageBox.hide();
 				
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				//MessageBox.hide();
 				SC.say(caught.getMessage());
 			}
 		};
@@ -266,5 +262,4 @@ public class LoginScreen extends VLayout{
 		};
 		req.register(user, callback);
 	}
-	
 }

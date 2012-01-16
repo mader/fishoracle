@@ -58,6 +58,30 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		return user;
 	}
 	
+	@Override
+	public void updateUserProfile(FoUser user) throws Exception {
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		FoUser sessionUser = getSessionUserObject();
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		db.updateProfile(user, sessionUser);
+	}
+	
+	@Override
+	public void updateUserPassword(FoUser user) throws Exception {
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		FoUser sessionUser = getSessionUserObject();
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		db.updatePassword(user, sessionUser);
+		
+	}
+	
 	public FoUser getSessionUserObject(){
 		
 		HttpServletRequest request=this.getThreadLocalRequest();
@@ -73,5 +97,4 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		HttpSession session=request.getSession();
 		session.invalidate();
 	}
-
 }
