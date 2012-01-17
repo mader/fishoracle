@@ -861,7 +861,7 @@ public class DBInterface {
 		
 		if(withChildren){
 			foMstudy.setChip(chipToFoChip(mstudy.getChip()));
-			foMstudy.setSegments(cnSegmentsToFoCnSegments(mstudy.getSegments()));
+			//foMstudy.setSegments(cnSegmentsToFoCnSegments(mstudy.getSegments()));
 			foMstudy.setTissue(tissueSampleToFoTissueSample(mstudy.getTissue()));
 		} else {
 			foMstudy.setChipId(mstudy.getChipId());

@@ -41,7 +41,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		return storedUser;
 	}
 	
-	public FoUser login(String userName, String password) throws Exception{
+	public FoUser login(String userName, String password) throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
