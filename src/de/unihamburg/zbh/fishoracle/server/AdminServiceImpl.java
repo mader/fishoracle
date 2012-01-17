@@ -325,7 +325,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 			
 			projects = db.getAllProjects();
 		} else {
-			projects = db.getProjectsForUser(u);
+			projects = db.getProjectsForUser(u, false);
 		}
 		
 		return projects;
@@ -408,11 +408,11 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	
 	public MicroarrayOptions getMicroarrayOptions() throws Exception{
 		
-		isAdmin();
-		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
+		
+		FoUser u = getSessionUserObject();
 		
 		MicroarrayOptions mo = new MicroarrayOptions();
 		
@@ -423,8 +423,15 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	    FoOrgan[] organs = db.getOrgans(true);
 	    
 	    mo.setOrgans(organs);
+	    //TODO
+	    FoProject[] projects;
 	    
-	    FoProject[] projects = db.getAllProjects();
+	    if(u.getIsAdmin()){
+			
+			projects = db.getAllProjects();
+		} else {
+			projects = db.getProjectsForUser(u, true);
+		}
 	    
 	    mo.setProjects(projects);
 	    
@@ -524,7 +531,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	
 	public boolean canAccessDataImport() throws UserException{
 		
-		FoUser user = isAdmin();
+		FoUser user = getSessionUserObject();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -537,7 +544,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	
 	public void unlockDataImport() throws UserException{
 		
-		FoUser user = isAdmin();
+		FoUser user = getSessionUserObject();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		

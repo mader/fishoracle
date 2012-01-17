@@ -1666,7 +1666,7 @@ public class CenterPanel extends VLayout{
 		centerTabSet.selectTab(segmentAdminTab);
 	}
 	
-	public void openMicrorraystudyAdminTab(){
+	public void openMicrorraystudyAdminTab(FoUser user){
 		
 		Tab msAdminTab = new Tab("Microarraystudy Management");
 		msAdminTab.setCanClose(true);
@@ -1729,8 +1729,11 @@ public class CenterPanel extends VLayout{
 		
 		ToolStripButton removeMstudyButton = new ToolStripButton();
 		removeMstudyButton.setTitle("remove microarray study");
+		if(!user.getIsAdmin()){
+			removeMstudyButton.setDisabled(true);
+		}
 		removeMstudyButton.addClickHandler(new ClickHandler(){
-
+		
 			@Override
 			public void onClick(ClickEvent event) {
 				
@@ -3013,6 +3016,9 @@ public class CenterPanel extends VLayout{
 				
 				if(forWhat.equals("ProjectAdminTab")){
 					openProjectAdminTab(result);
+				}
+				if(forWhat.equals("MicroarraystudyAdminTab")){
+					openMicrorraystudyAdminTab(result);
 				}
 				
 			}

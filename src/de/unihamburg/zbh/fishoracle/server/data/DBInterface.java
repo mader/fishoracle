@@ -461,14 +461,14 @@ public class DBInterface {
 		return mstudiesToFoMstudies(m, true);
 	}
 	
-	public FoProject[] getProjectsForUser(FoUser user) throws Exception {
+	public FoProject[] getProjectsForUser(FoUser user, boolean writeOnly) throws Exception {
 		FODriver driver = getFoDriver();
 		
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		ProjectAdaptor pa = driver.getProjectAdaptor();
 		
 		Group[] g = ga.fetchGroupsForUser(user.getId());
-		ProjectAccess[] projectAccess = pa.fetchProjectAccessForGroups(g);
+		ProjectAccess[] projectAccess = pa.fetchProjectAccessForGroups(g, writeOnly);
 		
 		Project[] p = pa.fetchProjectsForProjectAccess(projectAccess);
 		

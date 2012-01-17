@@ -52,7 +52,6 @@ import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
 import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
@@ -281,7 +280,8 @@ public class WestPanel extends SectionStack{
 		dataAdminTree.setModelType(TreeModelType.CHILDREN);  
 		dataAdminTree.setRoot(new TreeNode("root", 
 							new TreeNode("Data Import"),
-							new TreeNode("Manage Projects")
+							new TreeNode("Manage Projects"),
+							new TreeNode("Manage Microarraystudies")
 							)); 
 		
 		dataAdminTreeGrid.addNodeClickHandler(new NodeClickHandler(){
@@ -328,8 +328,26 @@ public class WestPanel extends SectionStack{
 					}
 				}
 				
+				if(event.getNode().getName().equals("Manage Microarraystudies")){
+					boolean exists = false;
+					int index = 0;
+					
+					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+					for(int i=0; i < tabs.length; i++){
+						if(tabs[i].getTitle().equals("Microarraystudy Management")){
+							exists = true;
+							index = i;
+						}
+					}
+					
+					if(exists){
+						centerTabSet.selectTab(index);
+					} else {
+						mp.getCenterPanel().getUserObject("MicroarraystudyAdminTab");
+					}
+				}
 			}
-			
 		});
 		
 		dataAdminTreeGrid.setData(dataAdminTree);
@@ -389,25 +407,6 @@ public class WestPanel extends SectionStack{
 						centerTabSet.selectTab(index);
 					} else {
 						showAllUsers();
-					}
-				}
-				if(event.getNode().getName().equals("Manage Microarraystudies")){
-					boolean exists = false;
-					int index = 0;
-					
-					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
-					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
-					for(int i=0; i < tabs.length; i++){
-						if(tabs[i].getTitle().equals("Microarraystudy Management")){
-							exists = true;
-							index = i;
-						}
-					}
-					
-					if(exists){
-						centerTabSet.selectTab(index);
-					} else {
-						mp.getCenterPanel().openMicrorraystudyAdminTab();
 					}
 				}
 				if(event.getNode().getName().equals("Manage Groups")){
@@ -508,12 +507,10 @@ public class WestPanel extends SectionStack{
 			
 		});
 		
-		
 		Tree adminTree = new Tree();  
 		adminTree.setModelType(TreeModelType.CHILDREN);  
 		adminTree.setRoot(new TreeNode("root",  
 							new TreeNode("Show Users"),
-							new TreeNode("Manage Microarraystudies"),
 							new TreeNode("Manage Groups"),
 							new TreeNode("Manage Organs"),
 							new TreeNode("Manage Properties"),
@@ -597,13 +594,11 @@ public class WestPanel extends SectionStack{
 			final AsyncCallback<GWTImageInfo> callback = new AsyncCallback<GWTImageInfo>(){
 				public void onSuccess(GWTImageInfo result){
 					
-					//MessageBox.hide();
 					mp.getCenterPanel().newImageTab(result);				
 					
 				}
 				public void onFailure(Throwable caught){
 
-					//MessageBox.hide();
 					SC.say(caught.getMessage());
 					
 				}
