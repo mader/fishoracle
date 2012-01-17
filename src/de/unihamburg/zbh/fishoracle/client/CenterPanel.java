@@ -34,6 +34,7 @@ import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.VerticalAlignment;
+import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
@@ -900,8 +901,6 @@ public class CenterPanel extends VLayout{
 		Tab userProfileTab = new Tab("Profile");
 		userProfileTab.setCanClose(true);
 		
-		//TODO
-		
 		VLayout pane = new VLayout();
 		pane.setWidth100();
 		pane.setHeight100();
@@ -1134,13 +1133,22 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onClick(ClickEvent event) {
 				
-				ListGridRecord lgr = groupGrid.getSelectedRecord();
+				final ListGridRecord lgr = groupGrid.getSelectedRecord();
 				
-				FoGroup group = new FoGroup(Integer.parseInt(lgr.getAttribute("groupId")),
+				SC.confirm("Do you really want to delete " + lgr.getAttribute("groupName") + "?", new BooleanCallback(){
+
+					@Override
+					public void execute(Boolean value) {
+						if(value != null && value){
+							FoGroup group = new FoGroup(Integer.parseInt(lgr.getAttribute("groupId")),
 											lgr.getAttribute("groupName"),
 											Boolean.parseBoolean(lgr.getAttribute("isactive")));
 				
-				deleteGroup(group);
+							deleteGroup(group);
+						}
+					}
+				});
+				
 			}});
 		
 		groupToolStrip.addButton(deleteGroupButton);
@@ -1707,7 +1715,13 @@ public class CenterPanel extends VLayout{
 				
 				ListGridRecord lgr = msGrid.getSelectedRecord();
 				
-				getCnSegmentsForMstudyId(lgr.getAttributeAsInt("id"));
+				if (lgr != null){
+				
+					getCnSegmentsForMstudyId(lgr.getAttributeAsInt("id"));
+					
+				} else {
+					SC.say("Select a microarray study.");
+				}
 				
 			}});
 		
@@ -1720,9 +1734,24 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onClick(ClickEvent event) {
 				
-				ListGridRecord lgr = msGrid.getSelectedRecord();
+				final ListGridRecord lgr = msGrid.getSelectedRecord();
 				
-				removeMstudy(lgr.getAttributeAsInt("id"));
+				if(lgr != null) {
+				
+					SC.confirm("Do you really want to delete " + lgr.getAttribute("name") + "?", new BooleanCallback(){
+
+						@Override
+						public void execute(Boolean value) {
+							if(value != null && value){
+							
+								removeMstudy(lgr.getAttributeAsInt("id"));
+							}
+						}
+					});
+					
+				} else {
+					SC.say("Select a microarray study.");
+				}
 				
 			}});
 		
@@ -1908,9 +1937,25 @@ public class CenterPanel extends VLayout{
 
 			@Override
 			public void onClick(ClickEvent event) {
-				ListGridRecord lgr = projectGrid.getSelectedRecord();
 				
-				removeProject(lgr.getAttributeAsInt("projectId"));
+				final ListGridRecord lgr = projectGrid.getSelectedRecord();
+				
+				if (lgr != null) {
+				
+					SC.confirm("Do you really want to delete " + lgr.getAttribute("projectName") + "?", new BooleanCallback(){
+
+						@Override
+						public void execute(Boolean value) {
+							if(value != null && value){
+						
+								removeProject(lgr.getAttributeAsInt("projectId"));
+							}
+						}
+					});
+				
+				} else {
+					SC.say("Select a project.");
+				}
 				
 			}});
 		
@@ -1947,7 +1992,11 @@ public class CenterPanel extends VLayout{
 			public void onClick(ClickEvent event) {
 				ListGridRecord projectAccessLgr = projectAccessGrid.getSelectedRecord();
 
-				removeProjectAccess(projectAccessLgr.getAttributeAsInt("accessId"));
+				if (projectAccessLgr != null){
+					removeProjectAccess(projectAccessLgr.getAttributeAsInt("accessId"));
+				} else {
+					SC.say("Select a group.");
+				}
 				
 			}});
 		
@@ -2797,7 +2846,8 @@ public class CenterPanel extends VLayout{
 			
 			public void onSuccess(Void result){
 				
-				SC.say("Group deleted");
+				groupGrid.removeData(groupGrid.getSelectedRecord());
+				groupGrid.getRecords();
 				
 			}
 			public void onFailure(Throwable caught){
@@ -2912,7 +2962,7 @@ public class CenterPanel extends VLayout{
 	}
 	
 	public void updateUserProfile(FoUser user){
-		//TODO
+		
 		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
@@ -2932,7 +2982,7 @@ public class CenterPanel extends VLayout{
 	}
 	
 	public void updateUserPassword(FoUser user){
-		//TODO
+		
 		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
@@ -3462,15 +3512,19 @@ class MyGroupRecordClickHandler implements RecordClickHandler {
 			}
 		
 		}
-		ListGridRecord[] userLgr = new ListGridRecord[users.length];
 		
+		ListGridRecord[] userLgr = null;
 		
-		for(int i=0; i < users.length; i++){
-			userLgr[i] = new ListGridRecord();
-			userLgr[i].setAttribute("userId", users[i].getId());
-			userLgr[i].setAttribute("userName", users[i].getUserName());
+		if(users != null){
+			userLgr = new ListGridRecord[users.length];
+		
+			for(int i=0; i < users.length; i++){
+				userLgr[i] = new ListGridRecord();
+				userLgr[i].setAttribute("userId", users[i].getId());
+				userLgr[i].setAttribute("userName", users[i].getUserName());
+			}
 		}
-
+		
 		groupUserGrid.setData(userLgr);
 	}
 	
