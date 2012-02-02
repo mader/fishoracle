@@ -88,7 +88,9 @@ public interface AdminAsync {
 	
 	void addUserToFoGroup(FoGroup foGroup, int userId,
 			AsyncCallback<FoUser> callback);
-
+	
+	void setPassword(int userId, String pw, AsyncCallback<Void> callback);
+	
 	void getFoProjects(AsyncCallback<FoProject[]> callback);
 
 	void addFoProject(FoProject foProject, AsyncCallback<FoProject> callback);

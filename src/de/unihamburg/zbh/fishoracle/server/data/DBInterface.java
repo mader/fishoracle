@@ -679,6 +679,14 @@ public class DBInterface {
 		
 	}
 	
+	public void setPassword(int userId, String pw){
+		FODriver driver = getFoDriver();
+		UserAdaptor ua = driver.getUserAdaptor();
+		
+		ua.updateUserPassword(userId, pw);
+		
+	}
+	
 	/* private methods */
 	
 	private FoProjectAccess[] projectAccessesToFoProjectAccesses(ProjectAccess[] projectAccess){

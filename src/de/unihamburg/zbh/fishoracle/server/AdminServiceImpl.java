@@ -311,6 +311,17 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		return true;
 	}
 	
+	public void setPassword(int userId, String pw) throws UserException{
+		
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		db.setPassword(userId, pw);
+		
+	}
+	
 	@Override
 	public FoProject[] getFoProjects() throws Exception {
 		String servletContext = this.getServletContext().getRealPath("/");
@@ -423,7 +434,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	    FoOrgan[] organs = db.getOrgans(true);
 	    
 	    mo.setOrgans(organs);
-	    //TODO
+	    
 	    FoProject[] projects;
 	    
 	    if(u.getIsAdmin()){

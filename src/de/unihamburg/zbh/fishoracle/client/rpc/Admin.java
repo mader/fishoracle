@@ -68,6 +68,7 @@ public interface Admin extends RemoteService  {
 	FoChip[] getAllFoChips() throws UserException;
 	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
 	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
+	void setPassword(int userId, String pw) throws UserException;
 	FoProject[] getFoProjects() throws Exception;
 	FoProject addFoProject(FoProject foProject) throws UserException;
 	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);

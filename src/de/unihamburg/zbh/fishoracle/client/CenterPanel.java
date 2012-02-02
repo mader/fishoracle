@@ -124,6 +124,7 @@ public class CenterPanel extends VLayout{
 	private TextItem userEmailTextItem;
 	private PasswordItem userPwItem;
 	private PasswordItem userPwConfirmItem;
+	private PasswordItem newPwPasswordItem;
 	
 	private ListGrid projectGrid;
 	private ListGrid projectMstudyGrid;
@@ -828,10 +829,98 @@ public class CenterPanel extends VLayout{
 		window.show();
 	}
 	
+	public void loadSetPwWindow(final int userId, String username){
+		
+		final Window window = new Window();
+
+		window.setTitle("Set password for " + username);
+		window.setWidth(250);
+		window.setHeight(100);
+		window.setAlign(Alignment.CENTER);
+		
+		window.setAutoCenter(true);
+		window.setIsModal(true);
+		window.setShowModalMask(true); 
+		
+		DynamicForm pwForm = new DynamicForm();
+		newPwPasswordItem = new PasswordItem();
+		newPwPasswordItem.setTitle("New Password");
+		
+		ButtonItem submitPwButton = new ButtonItem("submit");
+		submitPwButton.setWidth(50);
+		
+		submitPwButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				setPassword(userId, newPwPasswordItem.getDisplayValue());
+				window.hide();
+			}
+			
+		});
+
+		pwForm.setItems(newPwPasswordItem, submitPwButton);
+	
+		window.addItem(pwForm);
+		
+		window.show();
+		
+	}
+	
 	public void openUserAdminTab(final FoUser[] users){
 	
 		Tab usersAdminTab = new Tab("Users");
 		usersAdminTab.setCanClose(true);
+		
+		//TODO
+		VLayout pane = new VLayout();
+		pane.setWidth100();
+		pane.setHeight100();
+		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		VLayout headerContainer = new VLayout();
+		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
+		headerContainer.setWidth100();
+		headerContainer.setAutoHeight();
+		
+		HLayout controlsPanel = new HLayout();
+		controlsPanel.setWidth100();
+		controlsPanel.setAutoHeight();
+		
+		ToolStrip userToolStrip = new ToolStrip();
+		userToolStrip.setWidth100();
+		
+		ToolStripButton changePwButton = new ToolStripButton();  
+		changePwButton.setTitle("Change Password");
+		changePwButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				ListGridRecord lgr = userGrid.getSelectedRecord();
+				
+				if (lgr != null){
+				
+					loadSetPwWindow(userGrid.getSelectedRecord().getAttributeAsInt("id"),
+						userGrid.getSelectedRecord().getAttribute("userName"));
+					
+				} else {
+					SC.say("Select a user.");
+				}
+			}});
+		
+		userToolStrip.addButton(changePwButton);
+		
+		controlsPanel.addMember(userToolStrip);
+		
+		headerContainer.addMember(controlsPanel);
+		
+		pane.addMember(headerContainer);
+		
+		HLayout gridContainer = new HLayout();
+		gridContainer.setWidth100();
+		gridContainer.setHeight100();
 		
 		userGrid = new ListGrid();
 		userGrid.setWidth100();
@@ -888,7 +977,11 @@ public class CenterPanel extends VLayout{
 		
 		userGrid.setData(lgr);
 		
-		usersAdminTab.setPane(userGrid);
+		gridContainer.addMember(userGrid);
+		
+		pane.addMember(gridContainer);
+		
+		usersAdminTab.setPane(pane);
 		
 		centerTabSet.addTab(usersAdminTab);
 		
@@ -3002,6 +3095,26 @@ public class CenterPanel extends VLayout{
 			}
 		};
 		req.updateUserPassword(user, callback);
+	}
+	
+	public void setPassword(int userId, String pw){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
+			
+			public void onSuccess(Void result){
+				
+				SC.say("Update successful!");
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+		};
+		req.setPassword(userId, pw, callback);
 	}
 	
 	public void getUserObject(final String forWhat){
