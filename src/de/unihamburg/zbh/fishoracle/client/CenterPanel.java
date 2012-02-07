@@ -873,7 +873,6 @@ public class CenterPanel extends VLayout{
 		Tab usersAdminTab = new Tab("Users");
 		usersAdminTab.setCanClose(true);
 		
-		//TODO
 		VLayout pane = new VLayout();
 		pane.setWidth100();
 		pane.setHeight100();

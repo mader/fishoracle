@@ -17,19 +17,20 @@
 
 package de.unihamburg.zbh.fishoracle.client;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-
-import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.types.TreeModelType;
 import com.smartgwt.client.util.SC;
-import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
+import com.smartgwt.client.widgets.form.fields.CheckboxItem;
+import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.RadioGroupItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
@@ -52,10 +53,10 @@ import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
 import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
-import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
+import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
+import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
@@ -66,12 +67,15 @@ public class WestPanel extends SectionStack{
 
 	private MainPanel mp = null;
 	
+	VLayout searchContent;
+	
 	private TextItem searchTextItem;
 	private TextItem chrTextItem;
 	private TextItem startTextItem;
 	private TextItem endTextItem;
 	
 	private RadioGroupItem SearchRadioGroupItem;
+	private CheckboxItem globalThresholdCheckbox;
 	
 	private TextItem greaterTextItem;
 	private TextItem lessTextItem;
@@ -79,6 +83,21 @@ public class WestPanel extends SectionStack{
 	private SelectItem selectItemTissues;
 	
 	private SectionStackSection adminSection;
+	
+	private int numberOfTracks = 1;
+	
+	private List<Track> tracks = new ArrayList<Track>();
+	
+	public void addTrack(){
+		
+		Track t = new Track(numberOfTracks, globalThresholdCheckbox);
+		
+		tracks.add(t);
+		
+		numberOfTracks++;
+		searchContent.addMember(t.getTrackForm());
+		searchContent.redraw();
+	}
 	
 	public WestPanel(MainPanel mainPanel) {
 		
@@ -89,9 +108,9 @@ public class WestPanel extends SectionStack{
 		searchSection.setID("search1");
 		searchSection.setExpanded(true);
 		
-		VLayout searchContent = new VLayout();
+		searchContent = new VLayout();
+		searchContent.markForRedraw();
 		
-		/*basic search options*/
 		DynamicForm searchForm = new DynamicForm();
 		
 		searchTextItem = new TextItem();
@@ -111,10 +130,10 @@ public class WestPanel extends SectionStack{
 		
 		SearchRadioGroupItem = new RadioGroupItem();  
 		SearchRadioGroupItem.setTitle("Type");  
-		SearchRadioGroupItem.setValueMap("Region", "CNC Stable ID", "Gene", "Karyoband"); 
+		SearchRadioGroupItem.setValueMap("Region", "Gene", "Karyoband"); 
 		SearchRadioGroupItem.setDefaultValue("Gene");
 		SearchRadioGroupItem.addChangedHandler(new ChangedHandler(){
-
+			
 			@Override
 			public void onChanged(ChangedEvent event) {
 				if(event.getItem().getDisplayValue().equals("Region")){
@@ -132,59 +151,7 @@ public class WestPanel extends SectionStack{
 			
 		});
 		
-		ButtonItem searchButton = new ButtonItem("Search");
-		searchButton.setAlign(Alignment.CENTER);
-		searchButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				startSearch();
-				
-			}
-		});
-		
-		searchTextItem.addKeyPressHandler(new KeyPressHandler(){
-			
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if(event.getKeyName().equals("Enter")){
-					startSearch();
-				}
-			}
-		});
-		
-		chrTextItem.addKeyPressHandler(new KeyPressHandler(){
-			
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if(event.getKeyName().equals("Enter")){
-					startSearch();
-				}
-			}
-		});
-		
-		startTextItem.addKeyPressHandler(new KeyPressHandler(){
-			
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if(event.getKeyName().equals("Enter")){
-					startSearch();
-				}
-			}
-		});
-
-		endTextItem.addKeyPressHandler(new KeyPressHandler(){
-			
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if(event.getKeyName().equals("Enter")){
-					startSearch();
-				}
-			}
-		});
-		
-		SelectItem cncDataSelectItem = new SelectItem();
+		final SelectItem cncDataSelectItem = new SelectItem();
 		cncDataSelectItem.setTitle("");
 		cncDataSelectItem.setType("Select"); 
 		cncDataSelectItem.setValueMap("greater than", "less than");
@@ -218,46 +185,71 @@ public class WestPanel extends SectionStack{
 		greaterTextItem.setTitle("greater than");
 		greaterTextItem.setDisabled(true);
 		
-		greaterTextItem.addKeyPressHandler(new KeyPressHandler(){
-			
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if(event.getKeyName().equals("Enter")){
-					startSearch();
-				}
-			}
-		});
-		
 		lessTextItem = new TextItem();
 		lessTextItem.setTitle("less than");
 		lessTextItem.setValue("-0.5");
 		
-		lessTextItem.addKeyPressHandler(new KeyPressHandler(){
-			
+		globalThresholdCheckbox = new CheckboxItem();
+		globalThresholdCheckbox.setTitle("Global Intensity Threshold");
+		globalThresholdCheckbox.setValue(true);
+		globalThresholdCheckbox.addChangedHandler(new ChangedHandler(){
+
 			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if(event.getKeyName().equals("Enter")){
-					startSearch();
+			public void onChanged(ChangedEvent event) {
+				
+				if(!((Boolean) event.getValue())){
+					cncDataSelectItem.hide();
+					greaterTextItem.hide();
+					lessTextItem.hide();
+				}
+				
+				if((Boolean) event.getValue()){
+					cncDataSelectItem.show();
+					greaterTextItem.show();
+					lessTextItem.show();
 				}
 			}
 		});
 		
-		selectItemTissues = new SelectItem();
-		selectItemTissues.setTitle("Tissue Filter");
-		selectItemTissues.setMultiple(true);
-		selectItemTissues.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		//loadTissueFilterData();
-		selectItemTissues.setDefaultToFirstOption(true);
+		ButtonItem searchButton = new ButtonItem("Search");
+		searchButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				//startSearch();
+				SC.say("Im too lazy to search!");
+			}
+		});
+		
+		ButtonItem addTrackButton = new ButtonItem();
+		addTrackButton.setTitle("add Track");
+		addTrackButton.setEndRow(false);
+		addTrackButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				
+					addTrack();
+			}
+		});
+		
+		ButtonItem removeTrackButton = new ButtonItem();
+		removeTrackButton.setTitle("remove Track");
+		removeTrackButton.setStartRow(false);
 		
 		searchForm.setItems(searchTextItem,
 							chrTextItem,
 							startTextItem,
 							endTextItem,
-							SearchRadioGroupItem, 
-							cncDataSelectItem, 
-							greaterTextItem, 
-							lessTextItem, 
-							selectItemTissues, 
+							SearchRadioGroupItem,
+							globalThresholdCheckbox,
+							cncDataSelectItem,
+							greaterTextItem,
+							lessTextItem,
+							addTrackButton,
+							removeTrackButton,
 							searchButton);
 		
 		searchContent.addMember(searchForm);
@@ -355,19 +347,6 @@ public class WestPanel extends SectionStack{
 		dataAdminContent.addMember(dataAdminTreeGrid);
 		
 		dataAdminSection.setItems(dataAdminContent);
-		
-		VLayout settingsContent = new VLayout();
-		
-		/*user settings*/
-		DynamicForm userForm = new DynamicForm();
-		
-		Label info = new Label("user settings here");
-		
-		//serForm.setItems();
-		
-		settingsContent.addMember(info);
-		
-		settingsContent.addMember(userForm);
 		
 		this.setSections(searchSection,dataAdminSection);
 			
