@@ -195,6 +195,18 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
+	public FoOrgan[] getOrgans() {
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		FoOrgan[] organs = db.getOrgans(true);
+		
+		return organs;
+	}
+	
+	@Override
 	public FoOrgan[] getAllFoOrgans() throws UserException {
 		
 		isAdmin();

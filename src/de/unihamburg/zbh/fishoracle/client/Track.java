@@ -1,13 +1,25 @@
 package de.unihamburg.zbh.fishoracle.client;
 
+import java.util.LinkedHashMap;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.types.MultipleAppearance;
+import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.CheckboxItem;
-import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
+
+import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
+import de.unihamburg.zbh.fishoracle.client.data.FoProject;
+import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
+import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 
 public class Track {
 
@@ -16,7 +28,10 @@ public class Track {
 	private SelectItem selectItemFilter;
 	private SelectItem selectItemProjects;
 	private SelectItem selectItemTissues;
-	private LinkItem segMean;
+	private SelectItem segmentThresholdSelectItem;
+	private TextItem greaterTextItem;
+	private TextItem lessTextItem;
+	
 	private SelectItem selectItemExperiments;
 	
 	private int trackNumber;
@@ -46,7 +61,7 @@ public class Track {
 		selectItemProjects.setTitle("Project Filter");
 		selectItemProjects.setMultiple(true);
 		selectItemProjects.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		//loadProjectFilterData();
+		getProjects();
 		selectItemProjects.setDefaultToFirstOption(true);
 		selectItemProjects.setVisible(false);
 		
@@ -54,13 +69,50 @@ public class Track {
 		selectItemTissues.setTitle("Tissue Filter");
 		selectItemTissues.setMultiple(true);
 		selectItemTissues.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		//loadTissueFilterData();
+		showAllOrgans();
 		selectItemTissues.setDefaultToFirstOption(true);
 		selectItemTissues.setVisible(false);
 		
-		segMean = new LinkItem();
-		segMean.setTitle("Segment Mean");
-		segMean.setVisible(false);
+		segmentThresholdSelectItem = new SelectItem();
+		segmentThresholdSelectItem.setTitle("");
+		segmentThresholdSelectItem.setType("Select"); 
+		segmentThresholdSelectItem.setValueMap("greater than", "less than");
+		segmentThresholdSelectItem.setDefaultValue("less than");
+		segmentThresholdSelectItem.setVisible(false);
+		segmentThresholdSelectItem.addChangeHandler(new ChangeHandler(){
+
+			@Override
+			public void onChange(ChangeEvent event) {
+				if(event.getValue().equals("greater than")){
+					greaterTextItem.enable();
+					greaterTextItem.setValue("0.5");
+					lessTextItem.disable();
+					lessTextItem.setValue("");
+				}
+				if(event.getValue().equals("less than")){
+					greaterTextItem.disable();
+					greaterTextItem.setValue("");
+					lessTextItem.enable();
+					lessTextItem.setValue("-0.5");
+				}
+				if(event.getValue().equals("between")){
+					greaterTextItem.enable();
+					greaterTextItem.setValue("0.5");
+					lessTextItem.enable();
+					lessTextItem.setValue("-0.5");
+				}
+			}
+		});
+		
+		greaterTextItem = new TextItem();
+		greaterTextItem.setTitle("greater than");
+		greaterTextItem.setDisabled(true);
+		greaterTextItem.setVisible(false);
+		
+		lessTextItem = new TextItem();
+		lessTextItem.setTitle("less than");
+		lessTextItem.setValue("-0.5");
+		lessTextItem.setVisible(false);
 		
 		selectItemExperiments = new SelectItem();
 		selectItemExperiments.setTitle("Experiment Filter");
@@ -83,7 +135,9 @@ public class Track {
 						selectItemTissues.show();
 					}
 					if(selectItemFilter.getValue().equals("Segment Mean")){
-						segMean.show();
+						segmentThresholdSelectItem.show();
+						greaterTextItem.show();
+						lessTextItem.show();
 					}
 					if(selectItemFilter.getValue().equals("Project")){
 						selectItemProjects.show();
@@ -107,7 +161,9 @@ public class Track {
 						selectItemTissues.hide();
 					}
 					if(selectItemFilter.getValue().equals("Segment Mean")){
-						segMean.hide();
+						segmentThresholdSelectItem.hide();
+						greaterTextItem.hide();
+						lessTextItem.hide();
 					}
 					if(selectItemFilter.getValue().equals("Project")){
 						selectItemProjects.hide();
@@ -122,7 +178,9 @@ public class Track {
 							selectItemFilter,
 							selectItemProjects,
 							selectItemTissues,
-							segMean,
+							segmentThresholdSelectItem,
+							greaterTextItem,
+							lessTextItem,
 							selectItemExperiments,
 							addFilterButton,
 							removeFilterButton);
@@ -169,12 +227,28 @@ public class Track {
 		this.selectItemTissues = selectItemTissues;
 	}
 
-	public LinkItem getSegMean() {
-		return segMean;
+	public SelectItem getSegmentThresholdSelectItem() {
+		return segmentThresholdSelectItem;
 	}
 
-	public void setSegMean(LinkItem segMean) {
-		this.segMean = segMean;
+	public void setSegmentThresholdSelectItem(SelectItem segmentThresholdSelectItem) {
+		this.segmentThresholdSelectItem = segmentThresholdSelectItem;
+	}
+
+	public TextItem getGreaterTextItem() {
+		return greaterTextItem;
+	}
+
+	public void setGreaterTextItem(TextItem greaterTextItem) {
+		this.greaterTextItem = greaterTextItem;
+	}
+
+	public TextItem getLessTextItem() {
+		return lessTextItem;
+	}
+
+	public void setLessTextItem(TextItem lessTextItem) {
+		this.lessTextItem = lessTextItem;
 	}
 
 	public SelectItem getSelectItemExperiments() {
@@ -193,4 +267,63 @@ public class Track {
 		this.trackNumber = trackNumber;
 	}
 	
+	/*=============================================================================
+	 *||                              RPC Calls                                  ||
+	 *=============================================================================
+	 * */
+	
+	public void getProjects(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoProject[]> callback = new AsyncCallback<FoProject[]>(){
+			
+			public void onSuccess(FoProject[] result){
+				
+				LinkedHashMap<String, String> projectValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.length; i++){
+					projectValueMap.put(new Integer(result[i].getId()).toString(), result[i].getName());
+				}
+				
+				selectItemProjects.setValueMap(projectValueMap);
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.getFoProjects(callback);
+	}
+	
+	public void showAllOrgans(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoOrgan[]> callback = new AsyncCallback<FoOrgan[]>(){
+			
+			public void onSuccess(FoOrgan[] result){
+				
+				LinkedHashMap<String, String> tissueValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.length; i++){
+					tissueValueMap.put(new Integer(result[i].getId()).toString(),
+							result[i].getLabel() + " (" + result[i].getType() + ")");
+				}
+				
+				selectItemTissues.setValueMap(tissueValueMap);
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		req.getOrgans(callback);
+	}
 }

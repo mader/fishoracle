@@ -70,6 +70,8 @@ public interface AdminAsync {
 	void getMicorarrayStudiesForProject(
 			int i, AsyncCallback<FoMicroarraystudy[]> callback);
 	
+	void getOrgans(AsyncCallback<FoOrgan[]> callback);
+	
 	void getAllFoOrgans(AsyncCallback<FoOrgan[]> callback);
 	
 	void getAllOrganTypes(AsyncCallback<String[]> callback);

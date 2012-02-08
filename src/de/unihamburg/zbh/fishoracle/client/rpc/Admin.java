@@ -58,6 +58,7 @@ public interface Admin extends RemoteService  {
 	FoCnSegment[] getCnSegmentsForMstudyId(int mstudyId);
 	void removeMstudy(int mstudyId);
 	FoMicroarraystudy[] getMicorarrayStudiesForProject(int i);
+	FoOrgan[] getOrgans();
 	FoOrgan[] getAllFoOrgans() throws UserException;
 	String[] getAllOrganTypes();
 	FoProperty addProperty(FoProperty foProperty) throws UserException;

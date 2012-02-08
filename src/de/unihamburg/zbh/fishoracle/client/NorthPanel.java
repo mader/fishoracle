@@ -114,6 +114,7 @@ public class NorthPanel extends HLayout{
 						mp.getCenterPanel().freePage();
 					}
 				}
+				mp.getWestPanel().removeAllTracks();
 				userLogout();
 			}
 		});

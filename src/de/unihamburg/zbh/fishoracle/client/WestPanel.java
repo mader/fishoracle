@@ -24,13 +24,12 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.smartgwt.client.types.MultipleAppearance;
+import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.TreeModelType;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.CheckboxItem;
-import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.RadioGroupItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
@@ -88,6 +87,16 @@ public class WestPanel extends SectionStack{
 	
 	private List<Track> tracks = new ArrayList<Track>();
 	
+	public void removeAllTracks(){
+		
+		while(!tracks.isEmpty()){
+			Track t = tracks.get(tracks.size() - 1);
+			tracks.remove(tracks.size() - 1);
+			numberOfTracks--;
+			searchContent.removeMember(t.getTrackForm());
+		}
+	}
+	
 	public void addTrack(){
 		
 		Track t = new Track(numberOfTracks, globalThresholdCheckbox);
@@ -102,6 +111,7 @@ public class WestPanel extends SectionStack{
 	public WestPanel(MainPanel mainPanel) {
 		
 		mp = mainPanel;
+		this.setOverflow(Overflow.AUTO);
 		
 		SectionStackSection searchSection = new SectionStackSection();
 		searchSection.setTitle("Search");
@@ -201,12 +211,34 @@ public class WestPanel extends SectionStack{
 					cncDataSelectItem.hide();
 					greaterTextItem.hide();
 					lessTextItem.hide();
+					
+					for(int i = 0; i < tracks.size(); i++){
+						
+						Track t = tracks.get(i);
+						t.getSelectItemFilter().setValueMap("Project", "Tissue", "Segment Mean", "Experiments");
+						t.getSelectItemFilter().redraw();
+					}
 				}
 				
 				if((Boolean) event.getValue()){
 					cncDataSelectItem.show();
 					greaterTextItem.show();
 					lessTextItem.show();
+					
+					for(int i = 0; i < tracks.size(); i++){
+						
+						Track t = tracks.get(i);
+						t.getSelectItemFilter().setValueMap("Project", "Tissue", "Experiments");
+						if(t.getSelectItemFilter().getValue().equals("Segment Mean")){
+							t.getSelectItemFilter().setValue("Project");
+						}
+						if(t.getSegmentThresholdSelectItem().getVisible()){
+							t.getSegmentThresholdSelectItem().hide();
+							t.getGreaterTextItem().hide();
+							t.getLessTextItem().hide();
+						}
+						t.getSelectItemFilter().redraw();
+					}
 				}
 			}
 		});
@@ -238,6 +270,18 @@ public class WestPanel extends SectionStack{
 		ButtonItem removeTrackButton = new ButtonItem();
 		removeTrackButton.setTitle("remove Track");
 		removeTrackButton.setStartRow(false);
+		removeTrackButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				
+					Track lastTrack = tracks.get(tracks.size() - 1);
+					tracks.remove(tracks.size() - 1);
+					numberOfTracks--;
+					searchContent.removeMember(lastTrack.getTrackForm());
+			}
+		});
 		
 		searchForm.setItems(searchTextItem,
 							chrTextItem,
