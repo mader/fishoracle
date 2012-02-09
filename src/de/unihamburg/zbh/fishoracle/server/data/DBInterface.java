@@ -450,7 +450,7 @@ public class DBInterface {
 		
 	}
 	
-	public FoMicroarraystudy[] getMicroarraystudiesForProject(int projectId){
+	public FoMicroarraystudy[] getMicroarraystudiesForProject(int[] projectId){
 		
 		FODriver driver = getFoDriver();
 		

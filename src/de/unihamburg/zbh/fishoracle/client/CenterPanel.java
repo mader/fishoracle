@@ -2750,7 +2750,10 @@ public class CenterPanel extends VLayout{
 			}
 
 		};
-		req.getMicorarrayStudiesForProject(Integer.parseInt(projectId), callback);
+		
+		int[] pId = {Integer.parseInt(projectId)};
+		
+		req.getMicorarrayStudiesForProject(pId, callback);
 	}
 	
 	public void showAllOrgans(){

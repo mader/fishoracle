@@ -185,13 +185,33 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
-	public FoMicroarraystudy[] getMicorarrayStudiesForProject(int projectId) {
+	public FoMicroarraystudy[] getMicorarrayStudiesForProject() throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
-		DBInterface db = new DBInterface(servletContext); 
+		DBInterface db = new DBInterface(servletContext);
 		
-		return db.getMicroarraystudiesForProject(projectId);
+		FoProject[] projects = getFoProjects();
+		
+		int[] projectIds = new int[projects.length];
+				
+		for(int i = 0; i < projects.length; i++){
+			
+			projectIds[i] = projects[i].getId();
+			
+		}
+				
+		return db.getMicroarraystudiesForProject(projectIds);
+	}
+	
+	@Override
+	public FoMicroarraystudy[] getMicorarrayStudiesForProject(int[] pId) {
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getMicroarraystudiesForProject(pId);
 	}
 	
 	@Override

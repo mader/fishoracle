@@ -16,6 +16,7 @@ import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 
+import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
@@ -50,28 +51,8 @@ public class Track {
 		
 		selectItemFilter = new SelectItem();
 		selectItemFilter.setTitle("Filter");
+		selectItemFilter.setValueMap("Project","Tissue","Experiments");
 		selectItemFilter.setDefaultToFirstOption(true);
-		if((Boolean) globalThresholdCheckbox.getValue()){
-			selectItemFilter.setValueMap("Project", "Tissue", "Experiments");
-		} else {
-			selectItemFilter.setValueMap("Project", "Tissue", "Segment Mean", "Experiments");
-		}
-		
-		selectItemProjects = new SelectItem();
-		selectItemProjects.setTitle("Project Filter");
-		selectItemProjects.setMultiple(true);
-		selectItemProjects.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		getProjects();
-		selectItemProjects.setDefaultToFirstOption(true);
-		selectItemProjects.setVisible(false);
-		
-		selectItemTissues = new SelectItem();
-		selectItemTissues.setTitle("Tissue Filter");
-		selectItemTissues.setMultiple(true);
-		selectItemTissues.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		showAllOrgans();
-		selectItemTissues.setDefaultToFirstOption(true);
-		selectItemTissues.setVisible(false);
 		
 		segmentThresholdSelectItem = new SelectItem();
 		segmentThresholdSelectItem.setTitle("");
@@ -114,11 +95,33 @@ public class Track {
 		lessTextItem.setValue("-0.5");
 		lessTextItem.setVisible(false);
 		
+		if(!(Boolean) globalThresholdCheckbox.getValue()){
+			segmentThresholdSelectItem.setVisible(true);
+			greaterTextItem.setVisible(true);
+			lessTextItem.setVisible(true);
+		}
+		
+		selectItemProjects = new SelectItem();
+		selectItemProjects.setTitle("Project Filter");
+		selectItemProjects.setMultiple(true);
+		selectItemProjects.setMultipleAppearance(MultipleAppearance.PICKLIST);
+		getProjects();
+		selectItemProjects.setDefaultToFirstOption(true);
+		selectItemProjects.setVisible(false);
+		
+		selectItemTissues = new SelectItem();
+		selectItemTissues.setTitle("Tissue Filter");
+		selectItemTissues.setMultiple(true);
+		selectItemTissues.setMultipleAppearance(MultipleAppearance.PICKLIST);
+		showAllOrgans();
+		selectItemTissues.setDefaultToFirstOption(true);
+		selectItemTissues.setVisible(false);
+		
 		selectItemExperiments = new SelectItem();
 		selectItemExperiments.setTitle("Experiment Filter");
 		selectItemExperiments.setMultiple(true);
 		selectItemExperiments.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		//loadExperimentFilterData();
+		showAllMicroarrayStudiesForProject();
 		selectItemExperiments.setDefaultToFirstOption(true);
 		selectItemExperiments.setVisible(false);
 		
@@ -133,11 +136,6 @@ public class Track {
 				
 					if(selectItemFilter.getValue().equals("Tissue")){
 						selectItemTissues.show();
-					}
-					if(selectItemFilter.getValue().equals("Segment Mean")){
-						segmentThresholdSelectItem.show();
-						greaterTextItem.show();
-						lessTextItem.show();
 					}
 					if(selectItemFilter.getValue().equals("Project")){
 						selectItemProjects.show();
@@ -160,11 +158,6 @@ public class Track {
 					if(selectItemFilter.getValue().equals("Tissue")){
 						selectItemTissues.hide();
 					}
-					if(selectItemFilter.getValue().equals("Segment Mean")){
-						segmentThresholdSelectItem.hide();
-						greaterTextItem.hide();
-						lessTextItem.hide();
-					}
 					if(selectItemFilter.getValue().equals("Project")){
 						selectItemProjects.hide();
 					}
@@ -176,15 +169,14 @@ public class Track {
 		
 		trackForm.setItems(trackNameItem, 
 							selectItemFilter,
-							selectItemProjects,
-							selectItemTissues,
 							segmentThresholdSelectItem,
 							greaterTextItem,
 							lessTextItem,
+							selectItemProjects,
+							selectItemTissues,
 							selectItemExperiments,
 							addFilterButton,
 							removeFilterButton);
-		
 	}
 
 	public DynamicForm getTrackForm() {
@@ -325,5 +317,34 @@ public class Track {
 
 		};
 		req.getOrgans(callback);
+	}
+	
+	public void showAllMicroarrayStudiesForProject(){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoMicroarraystudy[]> callback = new AsyncCallback<FoMicroarraystudy[]>(){
+			
+			public void onSuccess(FoMicroarraystudy[] result){
+				
+				LinkedHashMap<String, String> expValueMap = new LinkedHashMap<String, String>();
+				
+				for(int i=0; i < result.length; i++){
+					expValueMap.put(new Integer(result[i].getId()).toString(),
+							result[i].getName());
+				}
+				
+				selectItemExperiments.setValueMap(expValueMap);
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		
+		req.getMicorarrayStudiesForProject(callback);
 	}
 }

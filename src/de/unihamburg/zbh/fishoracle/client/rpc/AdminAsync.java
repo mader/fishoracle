@@ -68,7 +68,10 @@ public interface AdminAsync {
 	void removeMstudy(int mstudyId, AsyncCallback<Void> callback);
 	
 	void getMicorarrayStudiesForProject(
-			int i, AsyncCallback<FoMicroarraystudy[]> callback);
+			AsyncCallback<FoMicroarraystudy[]> callback);
+	
+	void getMicorarrayStudiesForProject(
+			int[] pId, AsyncCallback<FoMicroarraystudy[]> callback);
 	
 	void getOrgans(AsyncCallback<FoOrgan[]> callback);
 	

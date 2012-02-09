@@ -215,8 +215,9 @@ public class WestPanel extends SectionStack{
 					for(int i = 0; i < tracks.size(); i++){
 						
 						Track t = tracks.get(i);
-						t.getSelectItemFilter().setValueMap("Project", "Tissue", "Segment Mean", "Experiments");
-						t.getSelectItemFilter().redraw();
+						t.getSegmentThresholdSelectItem().show();
+						t.getGreaterTextItem().show();
+						t.getLessTextItem().show();
 					}
 				}
 				
@@ -228,16 +229,9 @@ public class WestPanel extends SectionStack{
 					for(int i = 0; i < tracks.size(); i++){
 						
 						Track t = tracks.get(i);
-						t.getSelectItemFilter().setValueMap("Project", "Tissue", "Experiments");
-						if(t.getSelectItemFilter().getValue().equals("Segment Mean")){
-							t.getSelectItemFilter().setValue("Project");
-						}
-						if(t.getSegmentThresholdSelectItem().getVisible()){
-							t.getSegmentThresholdSelectItem().hide();
-							t.getGreaterTextItem().hide();
-							t.getLessTextItem().hide();
-						}
-						t.getSelectItemFilter().redraw();
+						t.getSegmentThresholdSelectItem().hide();
+						t.getGreaterTextItem().hide();
+						t.getLessTextItem().hide();
 					}
 				}
 			}
