@@ -23,12 +23,12 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 
 	private String queryString;
 	private String searchType;
-	private Double lowerTh;
-	private Double upperTh;
+	private Double globalLowerTh;
+	private Double globalUpperTh;
 	private String imageType;
+	private TrackData[] td;
 	private String[] organFilter;
 	private int winWidth;
-	
 	
 	public QueryInfo() {
 		
@@ -40,14 +40,14 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		this.searchType = searchType;
 		try {
 			if(lowerTh.equals("")){
-				this.lowerTh = null;
+				this.globalLowerTh = null;
 			} else 	{
-				this.lowerTh = Double.parseDouble(lowerTh);
+				this.globalLowerTh = Double.parseDouble(lowerTh);
 			}
 			if(upperTh.equals("")){
-				this.upperTh = null;
+				this.globalUpperTh = null;
 			} else {
-				this.upperTh = Double.parseDouble(upperTh);
+				this.globalUpperTh = Double.parseDouble(upperTh);
 			}
 		} catch (Exception e){
 			e.getMessage();
@@ -65,8 +65,8 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		QueryInfo query = new QueryInfo();
 		query.setImageType(this.imageType);
 		try {
-			if(lowerTh != null){
-				query.setLowerTh(this.lowerTh.toString());
+			if(globalLowerTh != null){
+				query.setLowerTh(this.globalLowerTh.toString());
 			} else {
 				query.setLowerTh("");
 			}
@@ -76,8 +76,8 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		query.setQueryString(this.queryString);
 		query.setSearchType(this.searchType);
 		try {
-			if((upperTh != null)){
-				query.setUpperTh(this.upperTh.toString());
+			if((globalUpperTh != null)){
+				query.setUpperTh(this.globalUpperTh.toString());
 			} else {
 				query.setUpperTh("");
 			}
@@ -107,12 +107,12 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 	}
 	
 	public Double getLowerTh() {
-		return lowerTh;
+		return globalLowerTh;
 	}
 	
 	public String getLowerThAsString() {
-		if(lowerTh != null){
-			return Double.toString(lowerTh);
+		if(globalLowerTh != null){
+			return Double.toString(globalLowerTh);
 		} else {
 			return "";
 		}
@@ -122,9 +122,9 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		
 		try {
 			if(lowerTh.equals("")){
-				this.lowerTh = null;
+				this.globalLowerTh = null;
 			} else 	{
-				this.lowerTh = Double.parseDouble(lowerTh);
+				this.globalLowerTh = Double.parseDouble(lowerTh);
 			}
 		} catch (Exception e){
 			e.getMessage();
@@ -135,12 +135,12 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 	}
 
 	public Double getUpperTh() {
-		return upperTh;
+		return globalUpperTh;
 	}
 	
 	public String getUpperThAsString() {
-		if(upperTh != null){
-			return Double.toString(upperTh);
+		if(globalUpperTh != null){
+			return Double.toString(globalUpperTh);
 		} else {
 			return "";
 		}
@@ -149,9 +149,9 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 	public void setUpperTh(String upperTh) throws Exception {		
 		try {
 			if(upperTh.equals("")){
-				this.upperTh = null;
+				this.globalUpperTh = null;
 			} else {
-				this.upperTh = Double.parseDouble(upperTh);
+				this.globalUpperTh = Double.parseDouble(upperTh);
 			}
 		} catch (Exception e){
 			e.getMessage();
