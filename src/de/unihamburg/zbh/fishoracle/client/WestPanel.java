@@ -56,6 +56,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
+import de.unihamburg.zbh.fishoracle.client.data.TrackData;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
@@ -243,8 +244,8 @@ public class WestPanel extends SectionStack{
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				//startSearch();
-				SC.say("Im too lazy to search!");
+				startSearch();
+				//SC.say("Im too lazy to search!");
 			}
 		});
 		
@@ -548,6 +549,17 @@ public class WestPanel extends SectionStack{
 		return searchTextItem;
 	}
 
+	private int[] strArrToIntArr(String[] strArr){
+		
+		int[] intArr = new int[strArr.length];
+		
+		for(int j = 0; j < strArr.length; j++){
+			intArr[j] = Integer.parseInt(strArr[j]);
+		}
+		
+		return intArr;
+	}
+	
 	public void startSearch(){
 		String typeStr = null;
 		String qryStr = null;
@@ -564,10 +576,6 @@ public class WestPanel extends SectionStack{
 				qryStr = "chromosome:" + chrTextItem.getDisplayValue() + ":" 
 							+ startTextItem.getDisplayValue() + "-" + endTextItem.getDisplayValue();
 			}
-			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("CNC Stable ID")){
-				typeStr = "CNC Search";
-				qryStr = searchTextItem.getDisplayValue();
-			}
 			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Gene")){
 				typeStr = "Gene Search";
 				qryStr = searchTextItem.getDisplayValue();
@@ -580,18 +588,71 @@ public class WestPanel extends SectionStack{
 			QueryInfo newQuery = null;
 			try {
 				
+				String globalLessThenThr;
+				String globalGreaterThenThr;
+				
+				if(globalThresholdCheckbox.getValueAsBoolean()){
+					globalLessThenThr = lessTextItem.getDisplayValue();
+					globalGreaterThenThr = greaterTextItem.getDisplayValue();
+				} else {
+					globalLessThenThr = null;
+					globalGreaterThenThr = null;
+				}
+				
+				TrackData[] trackData = new TrackData[tracks.size()];
+				
+				for(int i = 0; i < tracks.size(); i++){
+					trackData[i] = new TrackData();
+					trackData[i].setTrackNumber(tracks.get(i).getTrackNumber());
+					trackData[i].setTrackName(tracks.get(i).getTrackNameItem().getDisplayValue());
+					if(globalThresholdCheckbox.getValueAsBoolean()){
+						trackData[i].setLowerTh(null);
+						trackData[i].setUpperTh(null);
+					}
+					if(tracks.get(i).getSelectItemProjects().getVisible()){
+						
+						String[] strArr = tracks.get(i).getSelectItemProjects().getValues();
+						
+						trackData[i].setProjectIds(strArrToIntArr(strArr));
+						
+					} else {
+						trackData[i].setProjectIds(null);
+					}
+					
+					if(tracks.get(i).getSelectItemTissues().getVisible()){
+						
+						String[] strArr = tracks.get(i).getSelectItemTissues().getValues();
+						
+						trackData[i].setTissueIds(strArrToIntArr(strArr));
+						
+					} else {
+						trackData[i].setTissueIds(null);
+					}
+					
+					if(tracks.get(i).getSelectItemExperiments().getVisible()){
+						
+						String[] strArr = tracks.get(i).getSelectItemExperiments().getValues();
+						
+						trackData[i].setExperimentIds(strArrToIntArr(strArr));
+						
+					} else {
+						trackData[i].setExperimentIds(null);
+					}
+					
+				}
+				
 				newQuery = new QueryInfo(qryStr,
 											typeStr,
-											lessTextItem.getDisplayValue(),
-											greaterTextItem.getDisplayValue(),
+											globalLessThenThr,
+											globalGreaterThenThr,
+											globalThresholdCheckbox.getValueAsBoolean(),
 											"png",
-											selectItemTissues.getValues(),
+											trackData,
 											mp.getCenterPanel().getWidth() - 30);
 			} catch (Exception e) {
 				SC.say(e.getMessage());
 			}
 			
-			//MessageBox.wait("Searching for " + searchBox.getText());
 			search(newQuery);
 		}
 	}
@@ -638,7 +699,6 @@ public class WestPanel extends SectionStack{
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				//MessageBox.hide();
 				SC.say(caught.getMessage());
 			}
 

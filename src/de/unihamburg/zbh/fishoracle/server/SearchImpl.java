@@ -33,6 +33,7 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.server.data.*;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
+import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
@@ -40,6 +41,7 @@ import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
+import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
 
@@ -65,7 +67,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * visualizing the data and sending it to the client side 
 	 * for further processing.
 	 * 
-	 * @param query The search query that can be  an amplicon stable id, a gene name
+	 * @param query The search query that can be a specified region, a gene name
 	 *         or a karyoband identifier.
 	 * @param searchType Determines what data the query represents.
 	 * @param intWidth The inner width of the center panel.
@@ -84,9 +86,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			DBInterface db = new DBInterface(servletContext);
 			
-			Location maxCNCRange = null;
+			Location maxSegmentRange = null;
 			
-			CopyNumberChange[] cncs = null;
+			CnSegment[][] segments = null;
 			
 			Location featuresLoc = null;
 			
@@ -94,22 +96,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			System.out.println(dt + " Search: " + query.getQueryString());
 			System.out.println(dt + " Search type: " + query.getSearchType());
-			
-			if(query.getSearchType().equals("CNC Search")){
-
-				Pattern pid = Pattern.compile("^(CNC)[0-9]+$", Pattern.CASE_INSENSITIVE);
-				Matcher mid = pid.matcher(query.getQueryString());
 				
-				if(mid.find()){
-					featuresLoc = db.getLocationForCNCId(query.getQueryString());
-				} else {
-					
-					throw new SearchException("The stable id has to begin with \"CNC\"  followed by a number" +
-							"e.g.: CNC100");
-					
-				}
-				
-			} else if(query.getSearchType().equals("Gene Search")){
+			if(query.getSearchType().equals("Gene Search")){
 
 				featuresLoc = db.getLocationForGene(query.getQueryString());
 				
@@ -158,51 +146,45 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			}
 			
 			if(query.getSearchType().equals("Region")){
-				maxCNCRange = featuresLoc;
+				maxSegmentRange = featuresLoc;
 			} else {
-			maxCNCRange = db.getMaxCNCRange(featuresLoc.getSeqRegionName(), 
+			maxSegmentRange = db.getMaxSegmentRange(featuresLoc.getSeqRegionName(), 
 											featuresLoc.getStart(), 
 											featuresLoc.getEnd(), 
-											query.getLowerTh(), 
-											query.getUpperTh(),
-											query.getOrganFilter());
+											query);
 			
-			maxCNCRange = adjustMaxCNCRange(maxCNCRange, featuresLoc, query.getSearchType());
+			maxSegmentRange = adjustMaxSegmentRange(maxSegmentRange, featuresLoc, query.getSearchType());
 			}
 			
-			cncs = db.getCNCData(maxCNCRange.getSeqRegionName(), 
-									maxCNCRange.getStart(), 
-									maxCNCRange.getEnd(), 
-									query.getLowerTh(), 
-									query.getUpperTh(),
-									query.getOrganFilter());
+			segments = db.getSegmentsForTracks(maxSegmentRange.getSeqRegionName(), 
+												maxSegmentRange.getStart(),
+												maxSegmentRange.getEnd(),
+												query);
 			
 			Gen[] genes = null;
-			genes = db.getEnsembleGenes(maxCNCRange.getSeqRegionName(), maxCNCRange.getStart(), maxCNCRange.getEnd());
+			genes = db.getEnsembleGenes(maxSegmentRange.getSeqRegionName(), maxSegmentRange.getStart(), maxSegmentRange.getEnd());
 			
 			Karyoband[] band = null;
-			band = db.getEnsemblKaryotypes(maxCNCRange.getSeqRegionName(), maxCNCRange.getStart(), maxCNCRange.getEnd());
+			band = db.getEnsemblKaryotypes(maxSegmentRange.getSeqRegionName(), maxSegmentRange.getStart(), maxSegmentRange.getEnd());
 			
 			SketchTool sketch = new SketchTool();
 			
-			imgInfo = sketch.generateImage(cncs,
+			imgInfo = sketch.generateImage(segments,
 										genes,
 										band,
-										maxCNCRange,
-										query.getWinWidth(),
-										query.getQueryString(),
-										query.getImageType(),
+										maxSegmentRange,
+										query,
 										servletContext);
 			
-			imgInfo.setChromosome(maxCNCRange.getSeqRegionName());
-			imgInfo.setStart(maxCNCRange.getStart());
-			imgInfo.setEnd(maxCNCRange.getEnd());
+			imgInfo.setChromosome(maxSegmentRange.getSeqRegionName());
+			imgInfo.setStart(maxSegmentRange.getStart());
+			imgInfo.setEnd(maxSegmentRange.getEnd());
 			imgInfo.setQuery(query);
 			
 		return imgInfo;
 	}
 
-	private Location adjustMaxCNCRange(Location maxCNCRange, Location featuresLoc, String searchType){
+	private Location adjustMaxSegmentRange(Location maxCNCRange, Location featuresLoc, String searchType){
 		
 		Location loc = maxCNCRange; 
 			
@@ -250,9 +232,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			} else {
 				loc.setEnd(featuresLoc.getEnd() + 10000000);
 			}
-			
 		}
-		
 		return loc;
 	}
 	
@@ -284,7 +264,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		CopyNumberChange[] cncs = null;
+		CnSegment[][] segments = null;
 		
 		Location maxRange = null;
 		
@@ -297,12 +277,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			throw e;
 		}
 		
-		cncs = db.getCNCData(chr, 
-							start, 
-							end, 
-							imageInfo.getQuery().getLowerTh(), 
-							imageInfo.getQuery().getUpperTh(), 
-							imageInfo.getQuery().getOrganFilter());
+		segments = db.getSegmentsForTracks(chr, 
+										start, 
+										end,
+										imageInfo.getQuery());
 		
 		Gen[] genes = null;
 		genes = db.getEnsembleGenes(chr, start, end);
@@ -313,13 +291,13 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		SketchTool sketch = new SketchTool();
 		
-		imgInfo = sketch.generateImage(cncs,
+		imageInfo.getQuery().setWinWidth(imageInfo.getWidth());
+		
+		imgInfo = sketch.generateImage(segments,
 									genes,
 									band,
 									maxRange,
-									imageInfo.getWidth(),
-									imageInfo.getQuery().getQueryString(),
-									imageInfo.getQuery().getImageType(),
+									imageInfo.getQuery(),
 									servletContext);
 		
 		imgInfo.setChromosome(maxRange.getSeqRegionName());
@@ -405,9 +383,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			System.out.println(e.getCause());
 		}
 		
-		cncs = db.getCNCData(chr, 
-							start, 
-							end, 
+		cncs = db.getCNCData(chr,
+							start,
+							end,
 							imageInfo.getQuery().getLowerTh(), 
 							imageInfo.getQuery().getUpperTh(), 
 							imageInfo.getQuery().getOrganFilter());

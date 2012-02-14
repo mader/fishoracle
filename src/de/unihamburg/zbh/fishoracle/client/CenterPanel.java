@@ -243,8 +243,9 @@ public class CenterPanel extends VLayout{
 	    	imgInfo.setEnd(newEnd);
 
 	    	try {
-				imgInfo.getQuery().setLowerTh(newLowerTh);
-				imgInfo.getQuery().setUpperTh(newUpperTh);
+	    		//TODO
+				//imgInfo.getQuery().setLowerTh(newLowerTh);
+				//imgInfo.getQuery().setUpperTh(newUpperTh);
 			} catch (Exception e) {
 				SC.say(e.getMessage());
 			}
@@ -530,7 +531,8 @@ public class CenterPanel extends VLayout{
 		lowerThTextItem.setTitle("Less Than");
 		lowerThTextItem.setWrapTitle(false);
 		lowerThTextItem.setWidth(40);
-		lowerThTextItem.setValue(imgInfo.getQuery().getLowerThAsString());
+		//TODO
+		//lowerThTextItem.setValue(imgInfo.getQuery().getLowerThAsString());
 		lowerThTextItem.addKeyPressHandler(new KeyPressHandler(){
 
 			@Override
@@ -546,7 +548,8 @@ public class CenterPanel extends VLayout{
 		upperThTextItem.setTitle("Greater Than");
 		upperThTextItem.setWrapTitle(false);
 		upperThTextItem.setWidth(40);
-		upperThTextItem.setValue(imgInfo.getQuery().getUpperThAsString());
+		//Todo
+		//upperThTextItem.setValue(imgInfo.getQuery().getUpperThAsString());
 		upperThTextItem.addKeyPressHandler(new KeyPressHandler(){
 
 			@Override

@@ -23,40 +23,42 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 
 	private String queryString;
 	private String searchType;
-	private Double globalLowerTh;
-	private Double globalUpperTh;
+	private String globalLowerTh;
+	private String globalUpperTh;
 	private String imageType;
-	private TrackData[] td;
-	private String[] organFilter;
+	private TrackData[] tracks;
 	private int winWidth;
+	private boolean globalTh;
 	
 	public QueryInfo() {
 		
 	}
 
-	public QueryInfo(String queryString, String searchType, String lowerTh, String upperTh, String imageType, String[] organFilter, int winWidth) throws Exception {
+	public QueryInfo(String queryString,
+						String searchType,
+						String globalLowerTh,
+						String globalUpperTh,
+						boolean globalTh,
+						String imageType,
+						TrackData[] tracks,
+						int winWidth) throws Exception {
 		super();
 		this.queryString = queryString;
 		this.searchType = searchType;
-		try {
-			if(lowerTh.equals("")){
-				this.globalLowerTh = null;
-			} else 	{
-				this.globalLowerTh = Double.parseDouble(lowerTh);
-			}
-			if(upperTh.equals("")){
-				this.globalUpperTh = null;
-			} else {
-				this.globalUpperTh = Double.parseDouble(upperTh);
-			}
-		} catch (Exception e){
-			e.getMessage();
-			e.printStackTrace();
-			throw new Exception("The segment threshold has to be a real number e.g. 0.5!");
+		if(globalLowerTh.equals("")){
+			this.globalLowerTh = null;
+		} else 	{
+			this.globalLowerTh = globalLowerTh;
 		}
 		
+		if(globalUpperTh.equals("")){
+			this.globalUpperTh = null;
+		} else {
+			this.globalUpperTh = globalUpperTh;
+		}
+		this.globalTh = globalTh; 
 		this.imageType = imageType;
-		this.organFilter = organFilter;
+		this.tracks = tracks;
 		this.winWidth = winWidth;
 	}
 
@@ -64,27 +66,11 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		
 		QueryInfo query = new QueryInfo();
 		query.setImageType(this.imageType);
-		try {
-			if(globalLowerTh != null){
-				query.setLowerTh(this.globalLowerTh.toString());
-			} else {
-				query.setLowerTh("");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		query.setGlobalLowerTh(this.globalLowerTh);
 		query.setQueryString(this.queryString);
 		query.setSearchType(this.searchType);
-		try {
-			if((globalUpperTh != null)){
-				query.setUpperTh(this.globalUpperTh.toString());
-			} else {
-				query.setUpperTh("");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		query.setOrganFilter(this.organFilter);
+		query.setGlobalUpperTh(this.globalUpperTh);
+		query.setTracks(this.tracks);
 		query.setWinWidth(this.winWidth);
 		
 		return query;
@@ -106,60 +92,45 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		this.searchType = searchType;
 	}
 	
-	public Double getLowerTh() {
+	public String getGlobalLowerTh() {
 		return globalLowerTh;
 	}
-	
-	public String getLowerThAsString() {
-		if(globalLowerTh != null){
-			return Double.toString(globalLowerTh);
+
+	public Double getGlobalLowerThAsDouble() {
+		
+		Double r;
+		
+		if(globalLowerTh == null){
+			r = null;
 		} else {
-			return "";
+			r = Double.parseDouble(globalLowerTh);
 		}
+		return r;
 	}
 	
-	public void setLowerTh(String lowerTh) throws Exception {
-		
-		try {
-			if(lowerTh.equals("")){
-				this.globalLowerTh = null;
-			} else 	{
-				this.globalLowerTh = Double.parseDouble(lowerTh);
-			}
-		} catch (Exception e){
-			e.getMessage();
-			e.printStackTrace();
-			throw new Exception("The segment threshold has to be a real number e.g. 0.5!");
-		}
-		
+	public void setGlobalLowerTh(String globalLowerTh) {
+		this.globalLowerTh = globalLowerTh;
 	}
 
-	public Double getUpperTh() {
+	public String getGlobalUpperTh() {
 		return globalUpperTh;
 	}
-	
-	public String getUpperThAsString() {
-		if(globalUpperTh != null){
-			return Double.toString(globalUpperTh);
+
+	public Double getGlobalUpperThAsDouble() {
+		Double r;
+		
+		if(globalUpperTh == null){
+			r = null;
 		} else {
-			return "";
+			r = Double.parseDouble(globalUpperTh);
 		}
+		return r;
 	}
 	
-	public void setUpperTh(String upperTh) throws Exception {		
-		try {
-			if(upperTh.equals("")){
-				this.globalUpperTh = null;
-			} else {
-				this.globalUpperTh = Double.parseDouble(upperTh);
-			}
-		} catch (Exception e){
-			e.getMessage();
-			e.printStackTrace();
-			throw new Exception("The segment threshold has to be a real number e.g. 0.5!");
-		}
+	public void setGlobalUpperTh(String globalUpperTh) {
+		this.globalUpperTh = globalUpperTh;
 	}
-	
+
 	public String getImageType() {
 		return imageType;
 	}
@@ -168,12 +139,12 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		this.imageType = imageType;
 	}
 
-	public String[] getOrganFilter() {
-		return organFilter;
+	public TrackData[] getTracks() {
+		return tracks;
 	}
 
-	public void setOrganFilter(String[] organFilter) {
-		this.organFilter = organFilter;
+	public void setTracks(TrackData[] tracks) {
+		this.tracks = tracks;
 	}
 
 	public int getWinWidth() {
@@ -183,5 +154,12 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 	public void setWinWidth(int winWidth) {
 		this.winWidth = winWidth;
 	}
-	
+
+	public boolean isGlobalTh() {
+		return globalTh;
+	}
+
+	public void setGlobalTh(boolean globalTh) {
+		this.globalTh = globalTh;
+	}
 }

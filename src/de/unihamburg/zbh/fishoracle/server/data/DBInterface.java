@@ -19,6 +19,7 @@ package de.unihamburg.zbh.fishoracle.server.data;
 
 import java.sql.*;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.ensembl.datamodel.CoordinateSystem;
@@ -43,6 +44,8 @@ import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.FoTissueSample;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
+import de.unihamburg.zbh.fishoracle.client.data.TrackData;
 import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
 import de.unihamburg.zbh.fishoracle_db_api.data.Chip;
@@ -320,6 +323,108 @@ public class DBInterface {
 	
 	private FODriver getFoDriver(){
 		return new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+	}
+	
+	/**
+	 * Finds all segments that overlap with a given range on a chromosome and returns the 
+	 * maximum range over all overlapping segments as an ensembl location object.
+	 * 
+	 * @param chr chromosome number
+	 * @param start Starting position on the chromosome.
+	 * @param end Ending postion on the chromosome.
+	 * @param tracks Track data
+	 **/
+	public Location getMaxSegmentRange(String chr, int start, int end, QueryInfo query){
+		
+		FODriver driver = getFoDriver();
+		CnSegmentAdaptor sa = driver.getCnSegmentAdaptor();
+		
+		de.unihamburg.zbh.fishoracle_db_api.data.Location maxLoc = null;
+		
+		for(int i = 0; i < query.getTracks().length; i++){
+			
+			de.unihamburg.zbh.fishoracle_db_api.data. Location l;
+			
+			if(query.isGlobalTh()){
+				
+				l = sa.fetchMaximalOverlappingCnSegmentRange(chr,
+															start,
+															end,
+															query.getGlobalLowerThAsDouble(),
+															query.getGlobalUpperThAsDouble(),
+															query.getTracks()[i].getProjectIds(),
+															query.getTracks()[i].getTissueIds(),
+															query.getTracks()[i].getExperimentIds());
+				try {
+					maxLoc = maxLoc.maximize(l);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				l = sa.fetchMaximalOverlappingCnSegmentRange(chr,
+															start,
+															end,
+															Double.parseDouble(query.getTracks()[i].getLowerTh()),
+															Double.parseDouble(query.getTracks()[i].getUpperTh()),
+															query.getTracks()[i].getProjectIds(),
+															query.getTracks()[i].getTissueIds(),
+															query.getTracks()[i].getExperimentIds());
+			}
+			try {
+				maxLoc = maxLoc.maximize(l);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		Location loc = null;
+		try {
+			loc = new Location("chromosome:" + maxLoc.getChrosmome() + ":" + maxLoc.getStart() + "-" + maxLoc.getEnd());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return loc;
+	}
+	
+	public CnSegment[][] getSegmentsForTracks(String chr, int start, int end, QueryInfo query){
+		
+		FODriver driver = getFoDriver();
+		CnSegmentAdaptor sa = driver.getCnSegmentAdaptor();
+		
+		CnSegment[][] tracks = new CnSegment[query.getTracks().length][];
+		
+		CnSegment[] segments;
+		
+		
+		for(int i = 0; i < query.getTracks().length; i++){
+			
+			de.unihamburg.zbh.fishoracle_db_api.data. Location l;
+			
+			if(query.isGlobalTh()){
+				
+				segments = sa.fetchCnSegments(chr,
+										start,
+										end,
+										Double.parseDouble(query.getGlobalLowerTh()),
+										Double.parseDouble(query.getGlobalUpperTh()),
+										query.getTracks()[i].getProjectIds(),
+										query.getTracks()[i].getTissueIds(),
+										query.getTracks()[i].getExperimentIds());
+				tracks[i] = segments;
+			} else {
+				segments = sa.fetchCnSegments(chr,
+										start,
+										end,
+										Double.parseDouble(query.getTracks()[i].getLowerTh()),
+										Double.parseDouble(query.getTracks()[i].getUpperTh()),
+										query.getTracks()[i].getProjectIds(),
+										query.getTracks()[i].getTissueIds(),
+										query.getTracks()[i].getExperimentIds());
+				tracks[i] = segments;
+			}
+		}
+		return tracks;
 	}
 	
 	public int createNewStudy(Microarraystudy mstudy, int projectId){

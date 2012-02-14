@@ -27,12 +27,14 @@ import java.util.Calendar;
 import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 
 import org.ensembl.datamodel.Location;
 
 import annotationsketch.*;
 import core.*;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
+import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 import extended.*;
 
 /**
@@ -70,13 +72,11 @@ public class SketchTool {
 	 * @throws NoSuchAlgorithmException 
 	 *          @see GWTImageInfo
  	 * */
-	public GWTImageInfo generateImage(CopyNumberChange[] cncs,
+	public GWTImageInfo generateImage(CnSegment[][] segments,
 									Gen[] genes,
 									Karyoband[] kband,
 									Location loc,
-									int winWidth,
-									String query,
-									String imageType,
+									final QueryInfo query,
 									String serverPath) throws NoSuchAlgorithmException, UnsupportedEncodingException {
 			
 		ArrayList<FeatureNode> features;
@@ -102,25 +102,12 @@ public class SketchTool {
 		
 		try {
 		
-		if(cncs != null){
-			for(int l=0; l < cncs.length; l++ ){
-				
-				fnode = new FeatureNode(seqid, "cnc", cncs[l].getStart(), cncs[l].getEnd(), ".");
-				features.add(fnode);
-				fnode.add_attribute("ID", cncs[l].getMicroarrayStudy());
-				fnode.add_attribute("NAME", cncs[l].getCncStableId());
-				if(cncs[l].getCncStableId().equalsIgnoreCase(query)){
-					fnode.mark();
-				}
-		}
-		}
-		
 		for(int j=0; j < genes.length; j++ ){
 			fnode = new FeatureNode(seqid, "gene", genes[j].getStart(), genes[j].getEnd(), genes[j].getStrand());
 			features.add(fnode);
 			fnode.add_attribute("ID", genes[j].getGenName());
 			fnode.add_attribute("NAME", genes[j].getAccessionID());
-			if(genes[j].getGenName().equalsIgnoreCase(query)){
+			if(genes[j].getGenName().equalsIgnoreCase(query.getQueryString())){
 				fnode.mark();
 			}
 		}
@@ -130,6 +117,17 @@ public class SketchTool {
 			features.add(fnode);
 			fnode.add_attribute("ID", loc.getSeqRegionName() + kband[k].getBand());
 			
+		}
+		
+		if(segments != null){
+			for(int l=0; l < segments.length; l++ ){
+				for(int m = 0; m < segments[l].length; m++){
+					fnode = new FeatureNode(seqid, query.getTracks()[l].getTrackName(), segments[l][m].getStart(), segments[l][m].getEnd(), ".");
+					features.add(fnode);
+					fnode.add_attribute("ID", new Integer(segments[l][m].getMicroarraystudyId()).toString());
+					fnode.add_attribute("NAME", new Integer(segments[l][m].getId()).toString());
+				}
+			}
 		}
 		
 		style = new Style();
@@ -147,11 +145,17 @@ public class SketchTool {
 		    	  if(b.get_type().equals("chromosome") ){
 		    		  typeNumber = "1:";
 		    	  }
-		    	  if(b.get_type().equals("gene") ){
+		    	  else if(b.get_type().equals("gene") ){
 		    		  typeNumber = "2:";
 		    	  }
-		    	  if(b.get_type().equals("cnc") ){
-		    		  typeNumber = "3:";
+		    	  else {
+		    		  for(int i = 0; i < query.getTracks().length; i++){
+		    			  if(b.get_type().equals(query.getTracks()[i].getTrackName())){
+		    				  typeNumber = query.getTracks()[i].getTrackNumber() + ":";
+		    			  } else {
+		    				  typeNumber = "ZZZ:";
+		    			  }
+		    		  }
 		    	  }
 		    	  
 		        return typeNumber + b.get_type();
@@ -160,23 +164,23 @@ public class SketchTool {
 		diagram = new Diagram(features, range, style);		
 		diagram.set_track_selector_func(ts);
 		
-		layout = new Layout(diagram, winWidth, style);
+		layout = new Layout(diagram, query.getWinWidth(), style);
 		
 		height = layout.get_height();
 
 		ImageInfo info = new ImageInfo();
 		
-		if(imageType.equals("png")){	
-			canvas = (CanvasCairoBase) new CanvasCairoFilePNG(style, winWidth, (int) height, info);
+		if(query.getImageType().equals("png")){	
+			canvas = (CanvasCairoBase) new CanvasCairoFilePNG(style, query.getWinWidth(), (int) height, info);
 		}	
-		if(imageType.equals("pdf")){	
-			canvas = new CanvasCairoFilePDF(style, winWidth, (int) height, info);
+		if(query.getImageType().equals("pdf")){	
+			canvas = new CanvasCairoFilePDF(style, query.getWinWidth(), (int) height, info);
 		}	
-		if(imageType.equals("ps")){	
-			canvas = new CanvasCairoFilePS(style, winWidth, (int) height, info);
+		if(query.getImageType().equals("ps")){	
+			canvas = new CanvasCairoFilePS(style, query.getWinWidth(), (int) height, info);
 		}	
-		if(imageType.equals("svg")){	
-			canvas = new CanvasCairoFileSVG(style, winWidth, (int) height, info);
+		if(query.getImageType().equals("svg")){	
+			canvas = new CanvasCairoFileSVG(style, query.getWinWidth(), (int) height, info);
 		}
 		
 		layout.sketch(canvas);
@@ -197,13 +201,13 @@ public class SketchTool {
 
 		String fileName = shaStr + "_" + loc.getSeqRegionName() + ":" + loc.getStart() + "-" + loc.getEnd() + "_" + query;
 		
-		imgUrl = "as_output" + System.getProperty("file.separator") + fileName + "." + imageType;
+		imgUrl = "as_output" + System.getProperty("file.separator") + fileName + "." + query.getImageType();
 		
 		file = new File(serverPath + imgUrl);
 
 	    canvas.to_file(serverPath + imgUrl);
 	    
-	    imgInfo = new GWTImageInfo(imgUrl, info.get_height(), winWidth, recmapinfoArr);
+	    imgInfo = new GWTImageInfo(imgUrl, info.get_height(), query.getWinWidth(), recmapinfoArr);
 		
 	    for(int i = 0; i < features.size(); i++){
 	    	features.get(i).dispose();
