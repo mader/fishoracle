@@ -45,16 +45,16 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		super();
 		this.queryString = queryString;
 		this.searchType = searchType;
-		if(globalLowerTh.equals("")){
-			this.globalLowerTh = null;
-		} else 	{
+		if(globalLowerTh != null){
 			this.globalLowerTh = globalLowerTh;
+		} else 	{
+			this.globalLowerTh = null;
 		}
 		
-		if(globalUpperTh.equals("")){
-			this.globalUpperTh = null;
-		} else {
+		if(globalUpperTh != null){
 			this.globalUpperTh = globalUpperTh;
+		} else {
+			this.globalUpperTh = null;
 		}
 		this.globalTh = globalTh; 
 		this.imageType = imageType;

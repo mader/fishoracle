@@ -355,23 +355,23 @@ public class DBInterface {
 															query.getTracks()[i].getProjectIds(),
 															query.getTracks()[i].getTissueIds(),
 															query.getTracks()[i].getExperimentIds());
-				try {
-					maxLoc = maxLoc.maximize(l);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 			} else {
 				l = sa.fetchMaximalOverlappingCnSegmentRange(chr,
 															start,
 															end,
-															Double.parseDouble(query.getTracks()[i].getLowerTh()),
-															Double.parseDouble(query.getTracks()[i].getUpperTh()),
+															query.getTracks()[i].getLowerThAsDouble(),
+															query.getTracks()[i].getUpperThasDouble(),
 															query.getTracks()[i].getProjectIds(),
 															query.getTracks()[i].getTissueIds(),
 															query.getTracks()[i].getExperimentIds());
 			}
+			
 			try {
-				maxLoc = maxLoc.maximize(l);
+				if(maxLoc != null){
+					maxLoc = maxLoc.maximize(l);
+				} else {
+					maxLoc = l;
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -406,8 +406,8 @@ public class DBInterface {
 				segments = sa.fetchCnSegments(chr,
 										start,
 										end,
-										Double.parseDouble(query.getGlobalLowerTh()),
-										Double.parseDouble(query.getGlobalUpperTh()),
+										query.getGlobalLowerThAsDouble(),
+										query.getGlobalUpperThAsDouble(),
 										query.getTracks()[i].getProjectIds(),
 										query.getTracks()[i].getTissueIds(),
 										query.getTracks()[i].getExperimentIds());
@@ -416,8 +416,8 @@ public class DBInterface {
 				segments = sa.fetchCnSegments(chr,
 										start,
 										end,
-										Double.parseDouble(query.getTracks()[i].getLowerTh()),
-										Double.parseDouble(query.getTracks()[i].getUpperTh()),
+										query.getTracks()[i].getLowerThAsDouble(),
+										query.getTracks()[i].getUpperThasDouble(),
 										query.getTracks()[i].getProjectIds(),
 										query.getTracks()[i].getTissueIds(),
 										query.getTracks()[i].getExperimentIds());

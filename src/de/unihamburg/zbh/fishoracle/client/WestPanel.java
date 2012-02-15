@@ -592,8 +592,16 @@ public class WestPanel extends SectionStack{
 				String globalGreaterThenThr;
 				
 				if(globalThresholdCheckbox.getValueAsBoolean()){
-					globalLessThenThr = lessTextItem.getDisplayValue();
-					globalGreaterThenThr = greaterTextItem.getDisplayValue();
+					if(lessTextItem.getDisplayValue().equals("")){
+						globalLessThenThr = null;
+					} else {
+						globalLessThenThr = lessTextItem.getDisplayValue();
+					}
+					if(greaterTextItem.getDisplayValue().equals("")){
+						globalGreaterThenThr = null;
+					} else {
+						globalGreaterThenThr = greaterTextItem.getDisplayValue();
+					}
 				} else {
 					globalLessThenThr = null;
 					globalGreaterThenThr = null;

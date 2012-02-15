@@ -65,12 +65,37 @@ public class TrackData  implements IsSerializable {
 		return lowerTh;
 	}
 
+	public Double getLowerThAsDouble() {
+		
+		Double r;
+		
+		if(lowerTh == null){
+			r = null;
+		} else {
+			r = Double.parseDouble(lowerTh);
+		}
+		return r;
+	}
+
+	
 	public void setLowerTh(String lowerTh) {
 		this.lowerTh = lowerTh;
 	}
 
 	public String getUpperTh() {
 		return upperTh;
+	}
+	
+	public Double getUpperThasDouble() {
+		
+		Double r;
+		
+		if(upperTh == null){
+			r = null;
+		} else {
+			r = Double.parseDouble(upperTh);
+		}
+		return r;
 	}
 
 	public void setUpperTh(String upperTh) {
