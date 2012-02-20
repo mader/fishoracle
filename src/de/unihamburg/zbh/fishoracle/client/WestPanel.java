@@ -616,6 +616,17 @@ public class WestPanel extends SectionStack{
 					if(globalThresholdCheckbox.getValueAsBoolean()){
 						trackData[i].setLowerTh(null);
 						trackData[i].setUpperTh(null);
+					} else {
+						if(tracks.get(i).getLessTextItem().getDisplayValue().equals("")){
+							trackData[i].setLowerTh(null);
+						} else {
+							trackData[i].setLowerTh(tracks.get(i).getLessTextItem().getDisplayValue());
+						}
+						if(tracks.get(i).getGreaterTextItem().getDisplayValue().equals("")){
+							trackData[i].setUpperTh(null);
+						} else {
+							trackData[i].setUpperTh(tracks.get(i).getGreaterTextItem().getDisplayValue());
+						}
 					}
 					if(tracks.get(i).getSelectItemProjects().getVisible()){
 						

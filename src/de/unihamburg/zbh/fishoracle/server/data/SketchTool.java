@@ -152,8 +152,6 @@ public class SketchTool {
 		    		  for(int i = 0; i < query.getTracks().length; i++){
 		    			  if(b.get_type().equals(query.getTracks()[i].getTrackName())){
 		    				  typeNumber = (query.getTracks()[i].getTrackNumber() + 2) + ":";
-		    			  } else {
-		    				  typeNumber = "ZZZ:";
 		    			  }
 		    		  }
 		    	  }
