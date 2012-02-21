@@ -317,21 +317,21 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * @throws Exception 
 	 * @throws Exception
 	 * */
-	public CopyNumberChange getCNCInfo(
-			String query) throws Exception {
+	public FoCnSegment getSegmentInfo(
+			int segmentId) throws Exception {
 		
 		isActiveUser();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		Date dt = new Date();
-		System.out.println(dt + " Get amplicon data for: " + query);
+		System.out.println(dt + " Get amplicon data for: " + segmentId);
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		CopyNumberChange  cncData = db.getCNCInfos(query);
+		FoCnSegment  segmentData = db.getSegmentInfos(segmentId);
 		
-		return cncData;
+		return segmentData;
 	}
 
 	/**

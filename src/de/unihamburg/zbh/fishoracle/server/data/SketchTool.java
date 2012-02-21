@@ -124,7 +124,7 @@ public class SketchTool {
 				for(int m = 0; m < segments[l].length; m++){
 					fnode = new FeatureNode(seqid, query.getTracks()[l].getTrackName(), segments[l][m].getStart(), segments[l][m].getEnd(), ".");
 					features.add(fnode);
-					fnode.add_attribute("ID", new Integer(segments[l][m].getMicroarraystudyId()).toString());
+					fnode.add_attribute("ID", segments[l][m].getMicroarraystudyName());
 					fnode.add_attribute("NAME", new Integer(segments[l][m].getId()).toString());
 				}
 			}
@@ -242,11 +242,12 @@ public class SketchTool {
 			// for genes we need to set an unique identifier like the ensembl stable id
 			if(info.get_rec_map(i).get_genome_feature().get_type().equals("gene")){
 				
-				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("NAME");
+				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("ID");
 				
 				countGenes++;
-			// the same applies to the amplicons but here the caption equals the amplicon stable id	
-			} else if (info.get_rec_map(i).get_genome_feature().get_type().equals("cnc")){
+			// the same applies to the segments but here we use the segment id
+			} else if (!info.get_rec_map(i).get_genome_feature().get_type().equals("gene") &&
+					!info.get_rec_map(i).get_genome_feature().get_type().equals("chromosome")){
 				
 				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("NAME");
 				

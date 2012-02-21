@@ -32,6 +32,7 @@ import org.ensembl.driver.CoreDriver;
 import org.ensembl.driver.CoreDriverFactory;
 import org.ensembl.driver.KaryotypeBandAdaptor;
 
+import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
@@ -399,8 +400,6 @@ public class DBInterface {
 		
 		for(int i = 0; i < query.getTracks().length; i++){
 			
-			de.unihamburg.zbh.fishoracle_db_api.data. Location l;
-			
 			if(query.isGlobalTh()){
 				
 				segments = sa.fetchCnSegments(chr,
@@ -411,7 +410,9 @@ public class DBInterface {
 										query.getTracks()[i].getProjectIds(),
 										query.getTracks()[i].getTissueIds(),
 										query.getTracks()[i].getExperimentIds());
+				
 				tracks[i] = segments;
+				
 			} else {
 				segments = sa.fetchCnSegments(chr,
 										start,
@@ -426,6 +427,17 @@ public class DBInterface {
 		}
 		return tracks;
 	}
+	
+	public FoCnSegment getSegmentInfos(int segmentId) {
+		
+		FODriver driver = getFoDriver();
+		CnSegmentAdaptor sa = driver.getCnSegmentAdaptor();
+		
+		CnSegment s = sa.fetchCnSegmentById(segmentId);
+		
+		return cnSegmentToFoCnSegment(s);
+	}
+	
 	
 	public int createNewStudy(Microarraystudy mstudy, int projectId){
 		FODriver driver = getFoDriver();
@@ -829,6 +841,9 @@ public class DBInterface {
 											segment.getEnd(),
 											segment.getMean(),
 											segment.getNumberOfMarkers());
+		if(segment.getMicroarraystudyName() != null){
+			foSegment.setMicroarraystudyName(segment.getMicroarraystudyName());
+		}
 		return foSegment;
 	}
 	

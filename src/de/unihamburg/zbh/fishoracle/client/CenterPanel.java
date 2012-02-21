@@ -668,10 +668,10 @@ public class CenterPanel extends VLayout{
 				
 	}
 	
-	public void loadWindow(CopyNumberChange cncData){
+	public void loadWindow(FoCnSegment segmentData){
 		
 		Window window = new Window();
-		window.setTitle("Segment " + cncData.getCncStableId());
+		window.setTitle("Segment " + segmentData.getId());
 		window.setWidth(500);
 		window.setHeight(330);
 		window.setAutoCenter(true);
@@ -697,64 +697,32 @@ public class CenterPanel extends VLayout{
 		ListGridRecord[] lgr = new ListGridRecord[15];
 		
 		lgr[0] = new ListGridRecord();
-		lgr[0].setAttribute("key", "CNC Stable ID ");
-		lgr[0].setAttribute("val", cncData.getCncStableId());
+		lgr[0].setAttribute("key", "Segment ID ");
+		lgr[0].setAttribute("val", segmentData.getId());
 		
 		lgr[1] = new ListGridRecord();
 		lgr[1].setAttribute("key", "Chromosome");
-		lgr[1].setAttribute("val", cncData.getChromosome());
+		lgr[1].setAttribute("val", segmentData.getChromosome());
 		
 		lgr[2] = new ListGridRecord();
 		lgr[2].setAttribute("key", "Start");
-		lgr[2].setAttribute("val", cncData.getStart());
+		lgr[2].setAttribute("val", segmentData.getStart());
 		
 		lgr[3] = new ListGridRecord();
 		lgr[3].setAttribute("key", "End");
-		lgr[3].setAttribute("val", cncData.getEnd());
+		lgr[3].setAttribute("val", segmentData.getEnd());
 		
 		lgr[4] = new ListGridRecord();
 		lgr[4].setAttribute("key", "Segment Mean");
-		lgr[4].setAttribute("val", cncData.getSegmentMean());
+		lgr[4].setAttribute("val", segmentData.getMean());
 		
 		lgr[5] = new ListGridRecord();
 		lgr[5].setAttribute("key", "Markers");
-		lgr[5].setAttribute("val", cncData.getNumberOfMarkers());
+		lgr[5].setAttribute("val", segmentData.getNumberOfMarkers());
 		
 		lgr[6] = new ListGridRecord();
 		lgr[6].setAttribute("key", "Study");
-		lgr[6].setAttribute("val", cncData.getMicroarrayStudy());
-		
-		lgr[7] = new ListGridRecord();
-		lgr[7].setAttribute("key", "Import Date");
-		lgr[7].setAttribute("val", cncData.getInsertionDate());
-		
-		lgr[8] = new ListGridRecord();
-		lgr[8].setAttribute("key", "Chip");
-		lgr[8].setAttribute("val", cncData.getChip());
-		
-		lgr[9] = new ListGridRecord();
-		lgr[9].setAttribute("key", "Organ");
-		lgr[9].setAttribute("val", cncData.getOrgan());
-		
-		lgr[10] = new ListGridRecord();
-		lgr[10].setAttribute("key", "Pathological stage");
-		lgr[10].setAttribute("val", cncData.getPstage());
-		
-		lgr[11] = new ListGridRecord();
-		lgr[11].setAttribute("key", "Pathological Grade");
-		lgr[11].setAttribute("val", cncData.getPgrade());
-		
-		lgr[12] = new ListGridRecord();
-		lgr[12].setAttribute("key", "Meta Status");
-		lgr[12].setAttribute("val", cncData.getMetaStatus());
-		
-		lgr[13] = new ListGridRecord();
-		lgr[13].setAttribute("key", "Sample ID");
-		lgr[13].setAttribute("val", cncData.getSampleId());
-		
-		lgr[14] = new ListGridRecord();
-		lgr[14].setAttribute("key", "Description");
-		lgr[14].setAttribute("val", cncData.getMicroarrayStudyDescr());
+		lgr[6].setAttribute("val", segmentData.getMicroarraystudyName());
 		
 		cncGrid.setData(lgr);
 		
@@ -3666,28 +3634,29 @@ class RecMapClickHandler implements ClickHandler{
 	
 	public void onClick(ClickEvent event) {
 		
-		if(recInfo.getType().equals("cnc")){
-			
-			cncDetails(recInfo.getElementName());
-			
-		}
 		if(recInfo.getType().equals("gene")){
 
 			geneDetails(recInfo.getElementName());
 			
 		}
+		
+		if(!recInfo.getType().equals("chromosome") && !recInfo.getType().equals("gene")){
+			
+			segmentDetails(recInfo.getElementName());
+			
+		}
 	}
 	
-	public void cncDetails(String query){
+	public void segmentDetails(String query){
 		
 		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<CopyNumberChange> callback = new AsyncCallback<CopyNumberChange>(){
-			public void onSuccess(CopyNumberChange cncData){
+		final AsyncCallback<FoCnSegment> callback = new AsyncCallback<FoCnSegment>(){
+			public void onSuccess(FoCnSegment segmentData){
 				
-				cp.loadWindow(cncData);
+				cp.loadWindow(segmentData);
 				
 			}
 			public void onFailure(Throwable caught){
@@ -3695,7 +3664,7 @@ class RecMapClickHandler implements ClickHandler{
 				SC.say(caught.getMessage());
 			}
 		};
-		req.getCNCInfo(query, callback);
+		req.getSegmentInfo(Integer.parseInt(query), callback);
 	}
 	
 	
