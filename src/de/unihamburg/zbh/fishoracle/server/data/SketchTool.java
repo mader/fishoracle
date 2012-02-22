@@ -242,7 +242,7 @@ public class SketchTool {
 			// for genes we need to set an unique identifier like the ensembl stable id
 			if(info.get_rec_map(i).get_genome_feature().get_type().equals("gene")){
 				
-				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("ID");
+				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("NAME");
 				
 				countGenes++;
 			// the same applies to the segments but here we use the segment id
