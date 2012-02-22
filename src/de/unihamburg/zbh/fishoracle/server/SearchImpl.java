@@ -283,7 +283,6 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		Gen[] genes = null;
 		genes = db.getEnsembleGenes(chr, start, end);
 		
-		
 		Karyoband[] band = null;
 		band = db.getEnsemblKaryotypes(chr, start, end);
 		
@@ -312,7 +311,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * @param query The segment id
 	 * 
 	 * @return Segment
-	 * @throws Exception 
+	 * @throws Exception
 	 * @throws Exception
 	 * */
 	public FoCnSegment getSegmentInfo(

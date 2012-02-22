@@ -145,6 +145,7 @@ public class CenterPanel extends VLayout{
 	private TextItem chrTextItem;
 	private TextItem startTextItem;
 	private TextItem endTextItem;
+	private SelectItem trackItem;
 	private TextItem lowerThTextItem;
 	private TextItem upperThTextItem;
 	
@@ -242,9 +243,22 @@ public class CenterPanel extends VLayout{
 	    	imgInfo.setEnd(newEnd);
 
 	    	try {
-	    		//TODO
-				//imgInfo.getQuery().setLowerTh(newLowerTh);
-				//imgInfo.getQuery().setUpperTh(newUpperTh);
+	    		if(((String) trackItem.getValue()).equals("Global threshold")){
+	    			imgInfo.getQuery().setGlobalLowerTh(newLowerTh);
+	    			imgInfo.getQuery().setGlobalUpperTh(newUpperTh);
+	    		} else {
+	    			int trackNumber = Integer.parseInt((String) trackItem.getValue());
+	    			if(newLowerTh.equals("")){
+	    				imgInfo.getQuery().getTracks()[trackNumber - 1].setLowerTh(null);
+	    			} else {
+	    				imgInfo.getQuery().getTracks()[trackNumber - 1].setLowerTh(newLowerTh);
+	    			}
+	    			if(newUpperTh.equals("")){
+	    				imgInfo.getQuery().getTracks()[trackNumber - 1].setUpperTh(null);
+	    			} else {
+	    				imgInfo.getQuery().getTracks()[trackNumber - 1].setUpperTh(newUpperTh);
+	    			}
+	    		}
 			} catch (Exception e) {
 				SC.say(e.getMessage());
 			}
@@ -313,6 +327,7 @@ public class CenterPanel extends VLayout{
 		
 		/*scrolling to the left and the right on the chromosome*/
 		ToolStripButton scrollLeftButton = new ToolStripButton();
+		scrollLeftButton.setTooltip("Scroll left");
 		scrollLeftButton.addClickHandler(new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {
@@ -357,6 +372,7 @@ public class CenterPanel extends VLayout{
 		presentationToolStrip.addMember(scrollLabel);
 		
 		ToolStripButton scrollRightButton = new ToolStripButton();
+		scrollRightButton.setTooltip("Scroll right");
 		scrollRightButton.addClickHandler(new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {
@@ -393,6 +409,7 @@ public class CenterPanel extends VLayout{
 		
 		/*zoomin in and out*/
 		ToolStripButton zoomInButton = new ToolStripButton();
+		zoomInButton.setTooltip("Zoom in");
 		zoomInButton.addClickHandler(new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {
@@ -437,6 +454,7 @@ public class CenterPanel extends VLayout{
 		presentationToolStrip.addMember(zoomLabel);
 		
 		ToolStripButton zoomOutButton = new ToolStripButton();
+		zoomOutButton.setTooltip("Zoom out");
 		zoomOutButton.addClickHandler(new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {
@@ -481,8 +499,9 @@ public class CenterPanel extends VLayout{
 		/*display exact chromosome range*/
 		
 		chrTextItem = new TextItem();
-		chrTextItem.setTitle("Chromosome");
-		chrTextItem.setWidth(30);
+		chrTextItem.setTitle("Chr");
+		chrTextItem.setTooltip("Set the chromsome");
+		chrTextItem.setWidth(25);
 		chrTextItem.setValue(imgInfo.getChromosome());
 		chrTextItem.addKeyPressHandler(new KeyPressHandler(){
 
@@ -497,7 +516,8 @@ public class CenterPanel extends VLayout{
 		
 		startTextItem = new TextItem();
 		startTextItem.setTitle("Start");
-		startTextItem.setWidth(80);
+		startTextItem.setTooltip("Set start position");
+		startTextItem.setWidth(70);
 		startTextItem.setValue(imgInfo.getStart());
 		startTextItem.addKeyPressHandler(new KeyPressHandler(){
 
@@ -512,7 +532,8 @@ public class CenterPanel extends VLayout{
 		
 		endTextItem = new TextItem();
 		endTextItem.setTitle("End");
-		endTextItem.setWidth(80);
+		endTextItem.setTooltip("Set end position");
+		endTextItem.setWidth(70);
 		endTextItem.setValue(imgInfo.getEnd());
 		
 		endTextItem.addKeyPressHandler(new KeyPressHandler(){
@@ -526,12 +547,55 @@ public class CenterPanel extends VLayout{
 		});
 		presentationToolStrip.addFormItem(endTextItem);
 		
+		presentationToolStrip.addSeparator();
+		
+		trackItem = new SelectItem();
+		trackItem.setShowTitle(false);
+		trackItem.setTooltip("Select the track for which the intensity" +
+							" thresholds should be displayed.");
+		trackItem.setWidth(80);
+		
+		LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
+		
+		if(imgInfo.getQuery().isGlobalTh()){
+			trackItem.setValueMap("Global threshold");
+		} else {
+		
+			for(int i=0; i< imgInfo.getQuery().getTracks().length; i++){
+				valueMap.put(new Integer(imgInfo.getQuery().getTracks()[i].getTrackNumber()).toString(),
+								imgInfo.getQuery().getTracks()[i].getTrackName());
+			}
+			trackItem.setValueMap(valueMap);
+		}
+		
+		trackItem.setDefaultToFirstOption(true);
+		trackItem.addChangedHandler(new ChangedHandler(){
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				
+				ImgCanvas imgLayer = (ImgCanvas) cp.getCenterTabSet().getSelectedTab().getPane().getChildren()[1];
+				GWTImageInfo imgInfo = imgLayer.getImageInfo();
+				
+				lowerThTextItem.setValue(imgInfo.getQuery().getTracks()[Integer.parseInt((String) event.getItem().getValue()) - 1].getLowerTh());
+				lowerThTextItem.redraw();
+				upperThTextItem.setValue(imgInfo.getQuery().getTracks()[Integer.parseInt((String) event.getItem().getValue()) - 1].getUpperTh());
+				upperThTextItem.redraw();
+			}
+		});
+		
+		presentationToolStrip.addFormItem(trackItem);
+		
 		lowerThTextItem = new TextItem();
+		lowerThTextItem.setTooltip("Set the lower threshold for the selcted track.");
 		lowerThTextItem.setTitle("Less Than");
 		lowerThTextItem.setWrapTitle(false);
 		lowerThTextItem.setWidth(40);
-		//TODO
-		//lowerThTextItem.setValue(imgInfo.getQuery().getLowerThAsString());
+		if(imgInfo.getQuery().isGlobalTh()){
+			lowerThTextItem.setValue(imgInfo.getQuery().getGlobalLowerTh());
+		} else {
+			lowerThTextItem.setValue(imgInfo.getQuery().getTracks()[Integer.parseInt((String)trackItem.getValue()) - 1].getLowerTh());
+		}
 		lowerThTextItem.addKeyPressHandler(new KeyPressHandler(){
 
 			@Override
@@ -544,11 +608,15 @@ public class CenterPanel extends VLayout{
 		presentationToolStrip.addFormItem(lowerThTextItem);
 		
 		upperThTextItem = new TextItem();
+		upperThTextItem.setTooltip("Set the upper threshold for the selected track.");
 		upperThTextItem.setTitle("Greater Than");
 		upperThTextItem.setWrapTitle(false);
 		upperThTextItem.setWidth(40);
-		//Todo
-		//upperThTextItem.setValue(imgInfo.getQuery().getUpperThAsString());
+		if(imgInfo.getQuery().isGlobalTh()){
+			upperThTextItem.setValue(imgInfo.getQuery().getGlobalUpperTh());
+		} else { 
+			upperThTextItem.setValue(imgInfo.getQuery().getTracks()[Integer.parseInt((String) trackItem.getValue()) - 1].getUpperTh());
+		}
 		upperThTextItem.addKeyPressHandler(new KeyPressHandler(){
 
 			@Override
@@ -561,6 +629,7 @@ public class CenterPanel extends VLayout{
 		presentationToolStrip.addFormItem(upperThTextItem);
 		
 		ToolStripButton refreshButton = new ToolStripButton();
+		refreshButton.setTooltip("Refresh image");
 		refreshButton.addClickHandler(new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {
