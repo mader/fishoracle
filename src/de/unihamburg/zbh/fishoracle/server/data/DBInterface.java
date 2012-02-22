@@ -19,7 +19,6 @@ package de.unihamburg.zbh.fishoracle.server.data;
 
 import java.sql.*;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.ensembl.datamodel.CoordinateSystem;
@@ -32,7 +31,6 @@ import org.ensembl.driver.CoreDriver;
 import org.ensembl.driver.CoreDriverFactory;
 import org.ensembl.driver.KaryotypeBandAdaptor;
 
-import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
@@ -46,7 +44,6 @@ import de.unihamburg.zbh.fishoracle.client.data.FoTissueSample;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
-import de.unihamburg.zbh.fishoracle.client.data.TrackData;
 import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
 import de.unihamburg.zbh.fishoracle_db_api.data.Chip;

@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
@@ -234,7 +233,6 @@ public class SketchTool {
 	private ArrayList<RecMapInfo> getRecMapElements(ImageInfo info){
 		
 		ArrayList<RecMapInfo> recmapinfoArray = new ArrayList<RecMapInfo>();
-		int countGenes = 0;
 		String identifier = null;
 		
 		for(int i=0; i < info.num_of_rec_maps(); i++){
@@ -244,7 +242,6 @@ public class SketchTool {
 				
 				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("NAME");
 				
-				countGenes++;
 			// the same applies to the segments but here we use the segment id
 			} else if (!info.get_rec_map(i).get_genome_feature().get_type().equals("gene") &&
 					!info.get_rec_map(i).get_genome_feature().get_type().equals("chromosome")){

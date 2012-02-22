@@ -22,7 +22,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
-import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 
 public interface SearchAsync {
@@ -32,6 +31,5 @@ public interface SearchAsync {
 	public void getSegmentInfo(int segmentId, AsyncCallback<FoCnSegment> callback);
 	public void getGeneInfo(String query, AsyncCallback<Gen> callback);
 	public void exportData(GWTImageInfo imageInfo, AsyncCallback<String> callback);
-	public void getOrganData(AsyncCallback<FoOrgan[]> callback);
 	
 }

@@ -43,7 +43,6 @@ import de.unihamburg.zbh.fishoracle.server.data.DBConfig;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Microarraystudy;
-import de.unihamburg.zbh.fishoracle_db_api.data.User;
 
 public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 
@@ -551,7 +550,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 													propertyIds,
 													user.getId());
 		
-		int studyId = db.createNewStudy(mstudy, projectId);
+		db.createNewStudy(mstudy, projectId);
 			
 	    File f = new File(servletContext + "tmp" + System.getProperty("file.separator") + fileName);
 

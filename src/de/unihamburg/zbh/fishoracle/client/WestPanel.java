@@ -18,7 +18,6 @@
 package de.unihamburg.zbh.fishoracle.client;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -38,8 +37,6 @@ import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
-import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
-import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -52,7 +49,6 @@ import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
 import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
@@ -79,8 +75,6 @@ public class WestPanel extends SectionStack{
 	
 	private TextItem greaterTextItem;
 	private TextItem lessTextItem;
-	
-	private SelectItem selectItemTissues;
 	
 	private SectionStackSection adminSection;
 	
@@ -743,32 +737,6 @@ public class WestPanel extends SectionStack{
 			}
 		};
 		req.canAccessDataImport(callback);
-	}
-	
-	public void loadTissueFilterData(){
-
-		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoOrgan[]> callback = new AsyncCallback<FoOrgan[]>(){
-			@Override
-			public void onSuccess(FoOrgan[] result){
-
-				LinkedHashMap<String, String> organValueMap = new LinkedHashMap<String, String>();
-				for(int i=0; i < result.length; i++){
-					organValueMap.put(new Integer(i).toString(),result[i].getLabel());
-
-				}
-				
-				selectItemTissues.setValueMap(organValueMap);
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());
-			}
-		};
-		req.getOrganData(callback);
 	}
 	
 	public void getDatabaseConnectionData(){

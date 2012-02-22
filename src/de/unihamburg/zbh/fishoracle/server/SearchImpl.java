@@ -32,11 +32,9 @@ import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.server.data.*;
-import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
-import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
@@ -309,11 +307,11 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	}
 
 	/**
-	 * Fetches amplicon data for a particular amplicon.
+	 * Fetches segment data for a particular copy number change.
 	 * 
-	 * @param query The amplicon stable id
+	 * @param query The segment id
 	 * 
-	 * @return Amplicon
+	 * @return Segment
 	 * @throws Exception 
 	 * @throws Exception
 	 * */
@@ -325,7 +323,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		Date dt = new Date();
-		System.out.println(dt + " Get amplicon data for: " + segmentId);
+		System.out.println(dt + " Get segment data for: " + segmentId);
 		
 		DBInterface db = new DBInterface(servletContext);
 		
@@ -357,8 +355,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		return gene;
 	}
 	
+	//TODO adapt to new track concept
 	public String exportData(GWTImageInfo imageInfo) throws Exception {
 		
+		/*
 		isActiveUser();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
@@ -406,16 +406,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		}
 		
 		return url;
+		*/
+		return "";
 	}
-	
-	public FoOrgan[] getOrganData() throws Exception{
-				
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		FoOrgan[] organs = db.fetchAllEnabledOrganData();
-		
-		return organs;
-	}	
 }

@@ -81,7 +81,6 @@ import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
-import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
@@ -586,8 +585,9 @@ public class CenterPanel extends VLayout{
 		excelExportItem.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler(){
 
 			public void onClick(MenuItemClickEvent event) {
-				GWTImageInfo imgInfo = ((ImgCanvas) cp.getCenterTabSet().getSelectedTab().getPane().getChildren()[1]).getImageInfo();
-				cp.exportExcel(imgInfo);
+				//GWTImageInfo imgInfo = ((ImgCanvas) cp.getCenterTabSet().getSelectedTab().getPane().getChildren()[1]).getImageInfo();
+				//cp.exportExcel(imgInfo);
+				SC.say("This function is currently not supported.");
 			}
 		});
 		
