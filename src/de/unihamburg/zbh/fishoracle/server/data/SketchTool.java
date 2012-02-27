@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
@@ -38,7 +39,7 @@ import extended.*;
 
 /**
  *  Draws images visualizing the genomic data especially chromosome,
- *   gene and amplicon data. The drawing is done by AnnotaionsSketch
+ *   gene and segment data. The drawing is done by AnnotaionsSketch
  *   of the GenomeTools which is a bioinformatics library written in C.
  *   The connection to C library is established via the java bindings
  *   genometools-java that are based on JNA (Java Native Access).
@@ -55,7 +56,7 @@ public class SketchTool {
 	 * to the image and addional image information liek a ReqMap of all
 	 * features in the image.
 	 * 
-	 * @param amps Array of amplicons normally retrieved from the database.
+	 * @param amps Array of segments normally retrieved from the database.
 	 * @param genes Array of genes normally retrieved from the database.
 	 * @param kband Array of karyobands normally retrieved from the database.
 	 * @param loc ensembl API location object
@@ -106,6 +107,7 @@ public class SketchTool {
 			features.add(fnode);
 			fnode.add_attribute("ID", genes[j].getGenName());
 			fnode.add_attribute("NAME", genes[j].getAccessionID());
+			fnode.add_attribute("ROOT", "NO");
 			if(genes[j].getGenName().equalsIgnoreCase(query.getQueryString())){
 				fnode.mark();
 			}
@@ -118,6 +120,7 @@ public class SketchTool {
 			
 		}
 		
+		/*
 		if(segments != null){
 			for(int l=0; l < segments.length; l++ ){
 				for(int m = 0; m < segments[l].length; m++){
@@ -128,10 +131,51 @@ public class SketchTool {
 				}
 			}
 		}
+		*/
 		
 		style = new Style();
 		
 		style.load_file(serverPath + "config" + System.getProperty("file.separator") + "default.style");
+		
+		
+		HashMap<String, FeatureNode> hm = new HashMap<String, FeatureNode>();
+		
+		FeatureNode rootFnode;
+		
+		for(int l=0; l < query.getTracks().length; l++ ){
+			
+			for(int m = 0; m < query.getTracks()[l].getTrackSegments().length; m++){
+				
+				if(!hm.containsKey(query.getTracks()[l].getTrackSegments()[m].getMicroarraystudyName())){
+					rootFnode = new FeatureNode(seqid, query.getTracks()[l].getTrackName(), loc.getStart(), loc.getEnd(), ".");
+					rootFnode.add_attribute("ID", query.getTracks()[l].getTrackSegments()[m].getMicroarraystudyName());
+					rootFnode.add_attribute("ROOT", "YES");
+					hm.put(query.getTracks()[l].getTrackSegments()[m].getMicroarraystudyName(), rootFnode);
+					features.add(rootFnode);
+					style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,0.0));
+					style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
+				}
+				
+				fnode = new FeatureNode(seqid,
+										query.getTracks()[l].getTrackName() + "_segments",
+										query.getTracks()[l].getTrackSegments()[m].getStart(),
+										query.getTracks()[l].getTrackSegments()[m].getEnd(), ".");
+				fnode.add_attribute("ID", new Integer(query.getTracks()[l].getTrackSegments()[m].getId()).toString());
+				fnode.add_attribute("NAME", new Integer(query.getTracks()[l].getTrackSegments()[m].getId()).toString());
+				fnode.add_attribute("ROOT", "NO");
+				style.set_bool(query.getTracks()[l].getTrackName() + "_segments", "collapse_to_parent", true);
+				if(query.getTracks()[l].getTrackSegments()[m].getMean() < 0){
+					style.set_color(query.getTracks()[l].getTrackName() + "_segments", "fill", new Color(0.0,0.0,1.0,0.7));
+				} else {
+					style.set_color(query.getTracks()[l].getTrackName() + "_segments", "fill", new Color(1.0,0.0,0.0,0.7));
+				}
+				hm.get(query.getTracks()[l].getTrackSegments()[m].getMicroarraystudyName()).add_child(fnode);
+				
+			}
+			
+			query.getTracks()[l].setTrackSegments(null);
+			hm.clear();
+		}
 		
 		range = new Range(loc.getStart(), loc.getEnd());
 		
@@ -223,7 +267,6 @@ public class SketchTool {
 		}
 	    return imgInfo;
 	}
-
 	
 	/*
 	 * Copies the GTReqMap object into the custom ReqMapInfo object
@@ -244,14 +287,17 @@ public class SketchTool {
 				
 			// the same applies to the segments but here we use the segment id
 			} else if (!info.get_rec_map(i).get_genome_feature().get_type().equals("gene") &&
-					!info.get_rec_map(i).get_genome_feature().get_type().equals("chromosome")){
+					!info.get_rec_map(i).get_genome_feature().get_type().equals("chromosome") && 
+					!info.get_rec_map(i).get_genome_feature().get_attribute("ROOT").equals("YES")){
 				
 				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("NAME");
 				
 			}
 			
 			// we don't need reqmap information for the karyoband
-			if(!info.get_rec_map(i).get_genome_feature().get_type().equals("chromosome")){
+			if(!info.get_rec_map(i).get_genome_feature().get_type().equals("chromosome") &&
+				info.get_rec_map(i).get_genome_feature().get_attribute("ROOT").equals("NO")){
+				
 				RecMapInfo recmapinfo = new RecMapInfo(info.get_rec_map(i).get_northwest_x(),
 														info.get_rec_map(i).get_northwest_y(),
 														info.get_rec_map(i).get_southeast_x(),

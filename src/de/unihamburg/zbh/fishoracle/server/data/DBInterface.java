@@ -385,12 +385,10 @@ public class DBInterface {
 		return loc;
 	}
 	
-	public CnSegment[][] getSegmentsForTracks(String chr, int start, int end, QueryInfo query){
+	public void getSegmentsForTracks(String chr, int start, int end, QueryInfo query){
 		
 		FODriver driver = getFoDriver();
 		CnSegmentAdaptor sa = driver.getCnSegmentAdaptor();
-		
-		CnSegment[][] tracks = new CnSegment[query.getTracks().length][];
 		
 		CnSegment[] segments;
 		
@@ -408,7 +406,7 @@ public class DBInterface {
 										query.getTracks()[i].getTissueIds(),
 										query.getTracks()[i].getExperimentIds());
 				
-				tracks[i] = segments;
+				query.getTracks()[i].setTrackSegments(cnSegmentsToFoCnSegments(segments));
 				
 			} else {
 				segments = sa.fetchCnSegments(chr,
@@ -419,10 +417,9 @@ public class DBInterface {
 										query.getTracks()[i].getProjectIds(),
 										query.getTracks()[i].getTissueIds(),
 										query.getTracks()[i].getExperimentIds());
-				tracks[i] = segments;
+				query.getTracks()[i].setTrackSegments(cnSegmentsToFoCnSegments(segments));
 			}
 		}
-		return tracks;
 	}
 	
 	public FoCnSegment getSegmentInfos(int segmentId) {

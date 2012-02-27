@@ -154,7 +154,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			maxSegmentRange = adjustMaxSegmentRange(maxSegmentRange, featuresLoc, query.getSearchType());
 			}
 			
-			segments = db.getSegmentsForTracks(maxSegmentRange.getSeqRegionName(), 
+			db.getSegmentsForTracks(maxSegmentRange.getSeqRegionName(), 
 												maxSegmentRange.getStart(),
 												maxSegmentRange.getEnd(),
 												query);
@@ -275,7 +275,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			throw e;
 		}
 		
-		segments = db.getSegmentsForTracks(chr, 
+		db.getSegmentsForTracks(chr, 
 										start, 
 										end,
 										imageInfo.getQuery());

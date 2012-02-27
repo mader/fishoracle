@@ -2,6 +2,8 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
+
 public class TrackData  implements IsSerializable {
 
 	private String trackName;
@@ -12,6 +14,8 @@ public class TrackData  implements IsSerializable {
 	
 	private String lowerTh;
 	private String upperTh;
+	
+	private FoCnSegment[] trackSegments;
 	
 	public TrackData() {
 	}
@@ -100,5 +104,13 @@ public class TrackData  implements IsSerializable {
 
 	public void setUpperTh(String upperTh) {
 		this.upperTh = upperTh;
+	}
+
+	public FoCnSegment[] getTrackSegments() {
+		return trackSegments;
+	}
+
+	public void setTrackSegments(FoCnSegment[] trackSegments) {
+		this.trackSegments = trackSegments;
 	}
 }
