@@ -3550,8 +3550,10 @@ public class CenterPanel extends VLayout{
 						} else if(newData[i].getTitle().equals("submit")){
 							//do nothing
 						} else {
-							propertyIds[j] = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
-							j++;
+							if(((SelectItem) newData[i]).getValueAsString() != null){
+								propertyIds[j] = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
+								j++;
+							}
 						}
 					
 					}
