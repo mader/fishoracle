@@ -130,6 +130,8 @@ If you want to install the software manually, open a terminal
 and execute the following commands (you may be prompted for your password):
 
 \begin{lstlisting}
+> sudo apt-get install python-software-properties
+
 > sudo add-apt-repository ppa:sun-java-community-team/sun-java6
 
 > sudo apt-get update
@@ -211,14 +213,15 @@ set up a MySQL user account.
 \subsection{Ensembl database}
 
 Download the genome annotation data of your choice from the Ensembl FTP server.
-For example, to retrieve the annotations from Ensembl release 61, download from
-\url{ftp://ftp.ensembl.org/pub/release-61/mysql}.
+The current version of FISH Oracle works up to Ensembl version 58.
+For example, to retrieve the annotations from Ensembl release 58, download from
+\url{ftp://ftp.ensembl.org/pub/release-58/mysql}.
 
 For instance, to download the human genome annotation execute the following
 command in a terminal:
 
 \begin{lstlisting}
-> wget -r -nd ftp://ftp.ensembl.org/pub/release-61/mysql/homo_sapiens_core_61_37f
+> wget -r -nd ftp://ftp.ensembl.org/pub/release-58/mysql/homo_sapiens_core_58_37c
 \end{lstlisting}
 
 Create a database, unpack all tar files and import the SQL schema and data
@@ -228,10 +231,10 @@ into the database:
 > mysql -u <mysql_user> -p
 mysql> CREATE DATABASE ensembl;
 
-> mysql -u <mysql_user> -p ensembl < homo_sapiens_core_61_37f.sql
+> mysql -u <mysql_user> -p ensembl < homo_sapiens_core_58_37c.sql
 
 > mysqlimport -u <mysql_user> -p --fields_escaped_by=\\ \
-   homo_sapiens_core_61_37f -L *.txt
+   ensembl -L *.txt
 \end{lstlisting}
 
 \subsection{FISH Oracle database}
@@ -255,7 +258,7 @@ mysql> SOURCE fishoracle.sql;
 
 In the last installation step an initial user account for the FISH Oracle with
 administration rights should be created. Open your browser, load the FISH
-Oracle application and register a new user with your desired name, say
+Oracle application and register a new user with your desired username, say
 \emph{adminuser}. 
 
 Next, open a terminal and login to the MySQL console and type the following
@@ -263,8 +266,8 @@ commands:
 
 \begin{lstlisting}
 mysql> use fishoracle;
-mysql> update adminuser set isactive = 1;
-mysql> update adminuser set isadmin = 1;
+mysql> update user set isactive = 1 where user.username = 'adminuser';
+mysql> update user set isadmin = 1 where user.username = 'adminuser';
 \end{lstlisting}
 
 \section{FISH Oracle installation}
