@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/ensj-39.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jna.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jxl.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/smartgwt.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/javacsv.jar"/>
@@ -16,5 +15,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/mysql-connector-java-5.1.18-bin.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/fo_db_api.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/smartgwt.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
