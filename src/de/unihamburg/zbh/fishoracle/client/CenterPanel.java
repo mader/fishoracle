@@ -2169,7 +2169,7 @@ public class CenterPanel extends VLayout{
 		projectMstudyGrid = new ListGrid();
 		projectMstudyGrid.setWidth("50%");
 		projectMstudyGrid.setHeight100();
-		projectMstudyGrid.setShowAllRecords(true);  
+		projectMstudyGrid.setShowAllRecords(true);
 		projectMstudyGrid.setAlternateRecordStyles(true);
 		projectMstudyGrid.setWrapCells(true);
 		projectMstudyGrid.setFixedRecordHeights(false);
@@ -2796,6 +2796,44 @@ public class CenterPanel extends VLayout{
 		req.getMicorarrayStudiesForProject(pId, callback);
 	}
 	
+	public void getMicroarrayStudiesForProject(String projectId){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoMicroarraystudy[]> callback = new AsyncCallback<FoMicroarraystudy[]>(){
+			
+			public void onSuccess(FoMicroarraystudy[] result){
+				
+				FoMicroarraystudy[] mstudies = result;
+				if(mstudies != null){
+				
+					ListGridRecord[] mstudyLgr = new ListGridRecord[mstudies.length];
+				
+					for(int i=0; i < mstudies.length; i++){
+						mstudyLgr[i] = new ListGridRecord();
+						mstudyLgr[i].setAttribute("mstudyId", mstudies[i].getId());
+						mstudyLgr[i].setAttribute("mstudyName", mstudies[i].getName());
+						mstudyLgr[i].setAttribute("mstudyDescription", mstudies[i].getDescription());
+					}
+
+					projectMstudyGrid.setData(mstudyLgr);
+				
+				}
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+
+		};
+		
+		int[] pId = {Integer.parseInt(projectId)};
+		
+		req.getMicorarrayStudiesForProject(pId, callback);
+	}
+	
 	public void showAllOrgans(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -2952,7 +2990,7 @@ public class CenterPanel extends VLayout{
 				
 				FoGroup[] groups = result;
 				
-				groupGrid.addRecordClickHandler(new MyGroupRecordClickHandler(groupUserGrid,groups));
+				groupGrid.addRecordClickHandler(new MyGroupRecordClickHandler(groupUserGrid, cp));
 								
 				ListGridRecord[] lgr = new ListGridRecord[groups.length];
 				
@@ -3210,6 +3248,38 @@ public class CenterPanel extends VLayout{
 		req.getAllUsersExceptFoGroup(foGroup, callback);
 	}
 	
+	public void getUsersForGroup(int groupId){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoUser[]> callback = new AsyncCallback<FoUser[]>(){
+			
+			public void onSuccess(FoUser[] result){
+				
+				FoUser[] users = result;
+				ListGridRecord[] userLgr = null;
+				
+				if(users != null){
+					userLgr = new ListGridRecord[users.length];
+				
+					for(int i=0; i < users.length; i++){
+						userLgr[i] = new ListGridRecord();
+						userLgr[i].setAttribute("userId", users[i].getId());
+						userLgr[i].setAttribute("userName", users[i].getUserName());
+					}
+				}
+				
+				groupUserGrid.setData(userLgr);
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+		};
+		req.getUsersForGroup(groupId, callback);
+	}
+	
 	public void addUserToGroup(FoGroup foGroup, int userId){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3290,7 +3360,7 @@ public class CenterPanel extends VLayout{
 				
 				FoProject[] projects = result;
 				
-				projectGrid.addRecordClickHandler(new MyProjectRecordClickHandler(projectMstudyGrid, projectAccessGrid, projects, user));
+				projectGrid.addRecordClickHandler(new MyProjectRecordClickHandler(projectMstudyGrid, projectAccessGrid, user, cp));
 								
 				ListGridRecord[] lgr = new ListGridRecord[projects.length];
 				
@@ -3412,6 +3482,41 @@ public class CenterPanel extends VLayout{
 		};
 		
 		req.addAccessToFoProject(foProjectAccess, projectId, callback);
+	}
+	
+	public void getProjectAccessesForProject(int projectId){
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoProjectAccess[]> callback = new AsyncCallback<FoProjectAccess[]>(){
+			
+			public void onSuccess(FoProjectAccess[] result){
+				
+				FoProjectAccess[] accesses = result;
+				
+				if(accesses != null){
+					
+					ListGridRecord[] accessLgr = new ListGridRecord[accesses.length];
+			
+					for(int i=0; i < accesses.length; i++){
+						accessLgr[i] = new ListGridRecord();
+						accessLgr[i].setAttribute("accessId", accesses[i].getId());
+						accessLgr[i].setAttribute("accessGroup", accesses[i].getFoGroup().getName());
+						accessLgr[i].setAttribute("accessRight", accesses[i].getAccess());
+					}
+
+					projectAccessGrid.setData(accessLgr);
+				}
+				
+			}
+			public void onFailure(Throwable caught){
+				SC.say(caught.getMessage());
+			}
+		};
+		
+		req.getProjectAccessesForProject(projectId, callback);
 	}
 	
 	public void removeProjectAccess(int projectAccessId){
@@ -3578,50 +3683,27 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 
 	private ListGrid projectMstudyGrid;
 	private ListGrid projectAccessGrid;
-	private FoProject[] projects;
 	private FoUser user;
+	private CenterPanel cp;
 	
-	public MyProjectRecordClickHandler(ListGrid projectMstudyGrid, ListGrid projectAccessGrid, FoProject[] projects, FoUser user){
+	public MyProjectRecordClickHandler(ListGrid projectMstudyGrid, ListGrid projectAccessGrid, FoUser user, CenterPanel cp){
 		this.projectMstudyGrid = projectMstudyGrid;
 		this.projectAccessGrid = projectAccessGrid;
-		this.projects = projects;
 		this.user = user;
+		this.cp = cp;
 	}
 	
 	@Override
 	public void onRecordClick(RecordClickEvent event) {
 		ListGridRecord[] oldMstudyRecords = projectMstudyGrid.getRecords();
 		
-		int projectId = Integer.parseInt(event.getRecord().getAttribute("projectId"));
-		FoMicroarraystudy[] mstudies = null;
-		FoProjectAccess[] accesses = null;
+		String projectId = event.getRecord().getAttribute("projectId");
 		
 		for (int i= 0; i < oldMstudyRecords.length; i++){
 			projectMstudyGrid.removeData(oldMstudyRecords[i]);
 		}
 		
-		for(int p=0; p < projects.length; p++){
-			if(projects[p].getId() == projectId){
-				mstudies = projects[p].getMstudies();
-				accesses = projects[p].getProjectAccess();
-				break;
-			}
-		}
-		
-		if(mstudies != null){
-		
-			ListGridRecord[] mstudyLgr = new ListGridRecord[mstudies.length];
-		
-			for(int i=0; i < mstudies.length; i++){
-				mstudyLgr[i] = new ListGridRecord();
-				mstudyLgr[i].setAttribute("mstudyId", mstudies[i].getId());
-				mstudyLgr[i].setAttribute("mstudyName", mstudies[i].getName());
-				mstudyLgr[i].setAttribute("mstudyDescription", mstudies[i].getDescription());
-			}
-
-			projectMstudyGrid.setData(mstudyLgr);
-		
-		}
+		cp.getMicroarrayStudiesForProject(projectId);
 		
 		if(user.getIsAdmin()){
 			ListGridRecord[] oldAccessRecords = projectAccessGrid.getRecords();
@@ -3630,19 +3712,8 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 				projectAccessGrid.removeData(oldAccessRecords[i]);
 			}
 		
-			if(accesses != null){
-		
-				ListGridRecord[] accessLgr = new ListGridRecord[accesses.length];
-		
-				for(int i=0; i < accesses.length; i++){
-					accessLgr[i] = new ListGridRecord();
-					accessLgr[i].setAttribute("accessId", accesses[i].getId());
-					accessLgr[i].setAttribute("accessGroup", accesses[i].getFoGroup().getName());
-					accessLgr[i].setAttribute("accessRight", accesses[i].getAccess());
-				}
-
-				projectAccessGrid.setData(accessLgr);
-			}
+			cp.getProjectAccessesForProject(Integer.parseInt(projectId));
+			
 		}
 	}
 }
@@ -3650,11 +3721,11 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 class MyGroupRecordClickHandler implements RecordClickHandler {
 
 	private ListGrid groupUserGrid;
-	private FoGroup[] groups;
+	private CenterPanel cp;
 	
-	public MyGroupRecordClickHandler(ListGrid groupUserGrid, FoGroup[] groups){
+	public MyGroupRecordClickHandler(ListGrid groupUserGrid, CenterPanel cp){
 		this.groupUserGrid = groupUserGrid;
-		this.groups = groups;
+		this.cp = cp;
 	}
 	
 	@Override
@@ -3666,31 +3737,9 @@ class MyGroupRecordClickHandler implements RecordClickHandler {
 		}
 		
 		int groupId = Integer.parseInt(event.getRecord().getAttribute("groupId"));
-		FoUser[] users = null;
 		
-		for(int u=0; u < groups.length; u++){
-		
-			if(groups[u].getId() == groupId){
-				users = groups[u].getUsers();
-			}
-		
-		}
-		
-		ListGridRecord[] userLgr = null;
-		
-		if(users != null){
-			userLgr = new ListGridRecord[users.length];
-		
-			for(int i=0; i < users.length; i++){
-				userLgr[i] = new ListGridRecord();
-				userLgr[i].setAttribute("userId", users[i].getId());
-				userLgr[i].setAttribute("userName", users[i].getUserName());
-			}
-		}
-		
-		groupUserGrid.setData(userLgr);
+		cp.getUsersForGroup(groupId);
 	}
-	
 }
 
 class RecMapClickHandler implements ClickHandler{

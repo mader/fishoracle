@@ -52,6 +52,7 @@ public interface Admin extends RemoteService  {
 	boolean canAccessDataImport() throws UserException;
 	void unlockDataImport() throws UserException;
 	FoGroup[] getAllFoGroups() throws Exception;
+	FoUser[] getUsersForGroup(int groupId) throws UserException;
 	FoGroup addGroup(FoGroup foGroup) throws UserException;
 	void deleteGroup(FoGroup foGroup) throws UserException;
 	FoOrgan addOrgan(FoOrgan foOrgan) throws UserException;
@@ -76,6 +77,7 @@ public interface Admin extends RemoteService  {
 	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);
 	FoProjectAccess addAccessToFoProject(FoProjectAccess foProjectAccess,
 			int projectId) throws UserException;
+	FoProjectAccess[] getProjectAccessesForProject(int projectId) throws UserException;
 	boolean removeAccessFromFoProject(int projectAccessId) throws UserException;
 	boolean removeFoProject(int projectId) throws UserException;
 	boolean removeUserFromFoGroup(int groupId, int userId) throws UserException;

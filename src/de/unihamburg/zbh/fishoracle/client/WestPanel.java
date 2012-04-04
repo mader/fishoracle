@@ -239,7 +239,6 @@ public class WestPanel extends SectionStack{
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
 				startSearch();
-				//SC.say("Im too lazy to search!");
 			}
 		});
 		

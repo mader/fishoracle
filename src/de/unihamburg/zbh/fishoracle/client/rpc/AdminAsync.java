@@ -103,12 +103,17 @@ public interface AdminAsync {
 	void getAllUsersExceptFoGroup(FoGroup foGroup,
 			AsyncCallback<FoUser[]> callback);
 
+	void getUsersForGroup(int groupId, AsyncCallback<FoUser[]> callback);
+	
 	void getAllGroupsExceptFoProject(FoProject foProject,
 			AsyncCallback<FoGroup[]> callback);
 
 	void addAccessToFoProject(FoProjectAccess foProjectAccess, int projectId,
 			AsyncCallback<FoProjectAccess> callback);
 
+	void getProjectAccessesForProject(int projectId,
+			AsyncCallback<FoProjectAccess[]> callback);
+	
 	void removeAccessFromFoProject(int projectAccessId,
 			AsyncCallback<Boolean> callback);
 

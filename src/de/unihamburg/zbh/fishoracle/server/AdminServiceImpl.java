@@ -367,7 +367,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 			
 			projects = db.getAllProjects();
 		} else {
-			projects = db.getProjectsForUser(u, false);
+			projects = db.getProjectsForUser(u, false, false);
 		}
 		
 		return projects;
@@ -404,6 +404,29 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		DBInterface db = new DBInterface(servletContext);
 		
 		return db.getAllGroupsExceptProject(foProject);
+	}
+	
+	@Override
+	public FoUser[] getUsersForGroup(int groupId) throws UserException {
+		
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getUsersForGroup(groupId);
+	}
+	
+	@Override
+	public FoProjectAccess[] getProjectAccessesForProject(int projectId) throws UserException {
+		
+		isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		
+		return db.getProjectAccessForProject(projectId);
 	}
 	
 	@Override
@@ -472,7 +495,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 			
 			projects = db.getAllProjects();
 		} else {
-			projects = db.getProjectsForUser(u, true);
+			projects = db.getProjectsForUser(u, false, true);
 		}
 	    
 	    mo.setProjects(projects);

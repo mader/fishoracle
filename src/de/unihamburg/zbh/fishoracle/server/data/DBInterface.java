@@ -475,6 +475,14 @@ public class DBInterface {
 		return usersToFoUsers(users);
 	}
 	
+	public FoUser[] getUsersForGroup(int groupId){
+		
+		FODriver driver = getFoDriver();
+		UserAdaptor ua = driver.getUserAdaptor();
+			
+		return usersToFoUsers(ua.fetchUsersForGroup(groupId));
+	}
+	
 	public int setActiveStatus(int userId, boolean activeFlag){
 		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
@@ -493,9 +501,9 @@ public class DBInterface {
 		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		
-		Group[] groups = ga.fetchAllGroups();
+		Group[] groups = ga.fetchAllGroups(false);
 		
-		return groupsToFoGroups(groups);
+		return groupsToFoGroups(groups, false);
 	}
 	
 	public FoGroup addGroup(FoGroup foGroup){
@@ -504,9 +512,9 @@ public class DBInterface {
 		
 		int newGroupId = ga.storeGroup(foGroup.getName(), foGroup.getIsactiveAsInt());
 		
-		Group newGroup = ga.fetchGroupById(newGroupId);
+		Group newGroup = ga.fetchGroupById(newGroupId, false);
 		
-		return groupToFoGroup(newGroup);
+		return groupToFoGroup(newGroup, false);
 		
 	}
 	
@@ -567,21 +575,21 @@ public class DBInterface {
 		
 		MicroarraystudyAdaptor ma = driver.getMicroarraystudyAdaptor();
 		
-		Microarraystudy[] m = ma.fetchMicroarraystudiesForProject(projectId, true);
+		Microarraystudy[] m = ma.fetchMicroarraystudiesForProject(projectId, false);
 		
-		return mstudiesToFoMstudies(m, true);
+		return mstudiesToFoMstudies(m, false);
 	}
 	
-	public FoProject[] getProjectsForUser(FoUser user, boolean writeOnly) throws Exception {
+	public FoProject[] getProjectsForUser(FoUser user,boolean withChildren, boolean writeOnly) throws Exception {
 		FODriver driver = getFoDriver();
 		
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		ProjectAdaptor pa = driver.getProjectAdaptor();
 		
-		Group[] g = ga.fetchGroupsForUser(user.getId());
-		ProjectAccess[] projectAccess = pa.fetchProjectAccessForGroups(g, writeOnly);
+		Group[] g = ga.fetchGroupsForUser(user.getId(), false);
+		ProjectAccess[] projectAccess = pa.fetchProjectAccessForGroups(g, withChildren, writeOnly);
 		
-		Project[] p = pa.fetchProjectsForProjectAccess(projectAccess);
+		Project[] p = pa.fetchProjectsForProjectAccess(projectAccess, false);
 		
 		return projectsToFoProjects(p);
 	}
@@ -590,7 +598,7 @@ public class DBInterface {
 		FODriver driver = getFoDriver();
 		ProjectAdaptor pa = driver.getProjectAdaptor();
 		
-		Project[] projects = pa.fetchAllProjects();
+		Project[] projects = pa.fetchAllProjects(false);
 		
 		return projectsToFoProjects(projects);
 	}
@@ -601,7 +609,7 @@ public class DBInterface {
 		
 		int newProjectId = pa.storeProject(foProject.getName(), foProject.getDescription());
 		
-		Project newProject = pa.fetchProjectById(newProjectId);
+		Project newProject = pa.fetchProjectById(newProjectId, false);
 		
 		return projectToFoProject(newProject);
 		
@@ -611,9 +619,17 @@ public class DBInterface {
 		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		
-		Group[] groups = ga.fetchGroupsNotInProject(foProject.getId());
+		Group[] groups = ga.fetchGroupsNotInProject(foProject.getId(), false);
 		
-		return groupsToFoGroups(groups);
+		return groupsToFoGroups(groups, false);
+	}
+	
+	public FoProjectAccess[] getProjectAccessForProject(int projectId){
+		
+		FODriver driver = getFoDriver();
+		ProjectAdaptor pa = driver.getProjectAdaptor();
+		
+		return projectAccessesToFoProjectAccesses(pa.fetchProjectAccessForProject(projectId, true), true);
 	}
 	
 	public FoProjectAccess addAccessToProject(FoProjectAccess foProjectAccess, int projectId){
@@ -622,7 +638,7 @@ public class DBInterface {
 		
 		ProjectAccess projectAccess = pa.addGroupAccessToProject(foProjectAccess.getGroupId(), projectId, foProjectAccess.getAccess());
 		
-		return projectAccessToFoProjectAccess(projectAccess);
+		return projectAccessToFoProjectAccess(projectAccess, false);
 	}
 	
 	public FoChip[] getAllChips(){
@@ -800,22 +816,34 @@ public class DBInterface {
 	
 	/* private methods */
 	
-	private FoProjectAccess[] projectAccessesToFoProjectAccesses(ProjectAccess[] projectAccess){
+	private FoProjectAccess[] projectAccessesToFoProjectAccesses(ProjectAccess[] projectAccess, boolean withChildren){
 		FoProjectAccess[] foProjectAccess = new FoProjectAccess[projectAccess.length];
 		
 		for(int i=0; i < projectAccess.length; i++){
-			foProjectAccess[i] = projectAccessToFoProjectAccess(projectAccess[i]);
+			foProjectAccess[i] = projectAccessToFoProjectAccess(projectAccess[i], withChildren);
 		}
 		return foProjectAccess;
 	}
 	
-	private FoProjectAccess projectAccessToFoProjectAccess(ProjectAccess projectAccess){
+	private FoProjectAccess projectAccessToFoProjectAccess(ProjectAccess projectAccess, boolean withChildren){
 		
-		FoGroup foGroup = groupToFoGroup(projectAccess.getGroup());
+		FoProjectAccess foProjectAccess;
 		
-		FoProjectAccess foProjectAccess = new FoProjectAccess(projectAccess.getId(),
-															foGroup,
-															projectAccess.getAccess());
+		if(!withChildren){
+		
+			foProjectAccess = new FoProjectAccess(projectAccess.getId(),
+													projectAccess.getGroupId(),
+													projectAccess.getAccess());
+			
+		} else {
+			
+			FoGroup foGroup = groupToFoGroup(projectAccess.getGroup(), false);
+		
+			foProjectAccess = new FoProjectAccess(projectAccess.getId(),
+													foGroup,
+													projectAccess.getAccess());
+		}
+		
 		return foProjectAccess;
 	}
 	
@@ -1013,7 +1041,7 @@ public class DBInterface {
 		}
 		
 		if(project.getProjectAccess() != null){
-			foProject.setProjectAccess(projectAccessesToFoProjectAccesses(project.getProjectAccess()));
+			foProject.setProjectAccess(projectAccessesToFoProjectAccesses(project.getProjectAccess(),true));
 		}
 		return foProject;
 	}
@@ -1042,24 +1070,26 @@ public class DBInterface {
 		return group;
 	}
 	
-	private FoGroup[] groupsToFoGroups(Group[] groups){
+	private FoGroup[] groupsToFoGroups(Group[] groups, boolean withChildren){
 		
 		FoGroup[] foGroups = new FoGroup[groups.length];
 		
 		for(int i=0; i < groups.length; i++){
-			foGroups[i] = groupToFoGroup(groups[i]);
+			foGroups[i] = groupToFoGroup(groups[i], withChildren);
 		}
 		
 		return foGroups;
 	}
 	
-	private FoGroup groupToFoGroup(Group group){
+	private FoGroup groupToFoGroup(Group group, boolean withChildren){
 		
 		FoGroup foGroup = new FoGroup(group.getId(),
 								group.getName(),
 								group.isIsactive());
-		foGroup.setUsers(usersToFoUsers(group.getUsers()));
 		
+		if(withChildren){
+			foGroup.setUsers(usersToFoUsers(group.getUsers()));
+		}
 		return foGroup;
 	}
 	
