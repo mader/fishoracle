@@ -17,16 +17,11 @@
 
 package de.unihamburg.zbh.fishoracle.server;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.regex.*;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import jxl.write.WriteException;
-import jxl.write.biff.RowsExceededException;
 
 import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;

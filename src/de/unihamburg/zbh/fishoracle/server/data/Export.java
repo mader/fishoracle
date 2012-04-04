@@ -25,8 +25,8 @@ import java.util.Calendar;
 
 import org.ensembl.datamodel.Location;
 
-import de.unihamburg.zbh.fishoracle.client.data.CopyNumberChange;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 
 import jxl.*;
 import jxl.write.*; 
@@ -40,7 +40,7 @@ public class Export {
 	}
 
 	@SuppressWarnings({"deprecation"})
-	public String exportImageAsExcelDocument(CopyNumberChange[] cncs, 
+	public String exportImageAsExcelDocument(CnSegment[] segments, 
 			                                  Gen[] genes, 
 			                                  Location maxRange, 
 			                                  String servletPath) throws IOException, 
@@ -71,8 +71,8 @@ public class Export {
 		WritableFont textwidth = new WritableFont(WritableFont.ARIAL, 8);
 		WritableCellFormat text = new WritableCellFormat(textwidth);
 
-		if (cncs != null){
-			geneCol = cncs.length;
+		if (segments != null){
+			geneCol = segments.length;
 		} else {
 			geneCol = 0;
 		}
@@ -88,8 +88,8 @@ public class Export {
 			sheet.addCell(endlabel);
 		}
 
-		if (cncs!=null){
-			for(j = 0; j < cncs.length; j++){
+		if (segments!=null){
+			for(j = 0; j < segments.length; j++){
 
 				WritableCellFormat background = new WritableCellFormat(textwidth);
 				background.setWrap(true);
@@ -97,11 +97,11 @@ public class Export {
 
 				for(k = 0; k < genes.length; k++){
 
-					if((cncs[j].getStart() < genes[k].getEnd() && cncs[j].getEnd() > genes[k].getStart() ||
-							(cncs[j].getEnd() > genes[k].getStart() && cncs[j].getStart() < genes[k].getEnd())) ||
-							(cncs[j].getStart() > genes[k].getStart() && cncs[j].getEnd() < genes[k].getEnd()))
+					if((segments[j].getStart() < genes[k].getEnd() && segments[j].getEnd() > genes[k].getStart() ||
+							(segments[j].getEnd() > genes[k].getStart() && segments[j].getStart() < genes[k].getEnd())) ||
+							(segments[j].getStart() > genes[k].getStart() && segments[j].getEnd() < genes[k].getEnd()))
 					{
-						Label label = new Label(j, k, cncs[j].getCncStableId(), background);
+						Label label = new Label(j, k, segments[j].getMicroarraystudyName(), background);
 						sheet.setColumnView(j, 10);
 						sheet.addCell(label);
 					}
@@ -114,8 +114,6 @@ public class Export {
 		workbook.write();
 		workbook.close();
 		
-		return url;
-		
-	}
-	
+		return url;	
+	}	
 }
