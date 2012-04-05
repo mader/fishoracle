@@ -244,8 +244,18 @@ public class CenterPanel extends VLayout{
 
 	    	try {
 	    		if(((String) trackItem.getValue()).equals("Global threshold")){
-	    			imgInfo.getQuery().setGlobalLowerTh(newLowerTh);
-	    			imgInfo.getQuery().setGlobalUpperTh(newUpperTh);
+	    			
+	    			if(newLowerTh.equals("")){
+	    				imgInfo.getQuery().setGlobalLowerTh(null);
+	    			} else {
+	    				imgInfo.getQuery().setGlobalLowerTh(newLowerTh);
+	    			}
+	    			if(newUpperTh.equals("")){
+	    				imgInfo.getQuery().setGlobalUpperTh(null);
+	    			} else {
+	    				imgInfo.getQuery().setGlobalUpperTh(newUpperTh);
+	    			}
+	    			
 	    		} else {
 	    			int trackNumber = Integer.parseInt((String) trackItem.getValue());
 	    			if(newLowerTh.equals("")){
