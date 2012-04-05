@@ -569,15 +569,15 @@ public class DBInterface {
 		
 	}
 	
-	public FoMicroarraystudy[] getMicroarraystudiesForProject(int[] projectId){
+	public FoMicroarraystudy[] getMicroarraystudiesForProject(int[] projectId, boolean withChildren){
 		
 		FODriver driver = getFoDriver();
 		
 		MicroarraystudyAdaptor ma = driver.getMicroarraystudyAdaptor();
 		
-		Microarraystudy[] m = ma.fetchMicroarraystudiesForProject(projectId, false);
+		Microarraystudy[] m = ma.fetchMicroarraystudiesForProject(projectId, withChildren);
 		
-		return mstudiesToFoMstudies(m, false);
+		return mstudiesToFoMstudies(m, withChildren);
 	}
 	
 	public FoProject[] getProjectsForUser(FoUser user,boolean withChildren, boolean writeOnly) throws Exception {

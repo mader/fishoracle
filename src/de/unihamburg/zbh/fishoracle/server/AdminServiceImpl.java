@@ -200,7 +200,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 			
 		}
 				
-		return db.getMicroarraystudiesForProject(projectIds);
+		return db.getMicroarraystudiesForProject(projectIds, false);
 	}
 	
 	@Override
@@ -210,7 +210,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.getMicroarraystudiesForProject(pId);
+		return db.getMicroarraystudiesForProject(pId, true);
 	}
 	
 	@Override
