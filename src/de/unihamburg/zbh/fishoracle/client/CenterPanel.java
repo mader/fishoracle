@@ -303,6 +303,10 @@ public class CenterPanel extends VLayout{
 				spaceImg.setWidth(southeast_x - northwest_x);
 			}
 			
+			if(spaceImg.getWidth() <= 0){
+				spaceImg.setWidth(1);
+			}
+			
 			int southeast_y = (int) imgInfo.getRecmapinfo().get(rmc).getSoutheastY();
 			
 			int northwest_y = (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestY();
