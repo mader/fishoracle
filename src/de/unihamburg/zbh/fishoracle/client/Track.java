@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.DynamicForm;
@@ -19,6 +20,7 @@ import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
+import de.unihamburg.zbh.fishoracle.client.data.ProjectDS;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 
@@ -105,7 +107,13 @@ public class Track {
 		selectItemProjects.setTitle("Project Filter");
 		selectItemProjects.setMultiple(true);
 		selectItemProjects.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		getProjects();
+		selectItemProjects.setDisplayField("projectName");
+		selectItemProjects.setValueField("projectId");
+		
+		ProjectDS pDS = new ProjectDS();
+		selectItemProjects.setOptionDataSource(pDS);
+		
+		//getProjects();
 		selectItemProjects.setDefaultToFirstOption(true);
 		selectItemProjects.setVisible(false);
 		

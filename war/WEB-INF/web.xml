@@ -22,6 +22,16 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>ProjectService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.ProjectServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>ProjectService</servlet-name>
+    <url-pattern>/fishoracle/ProjectService</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>userservice</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.UserServiceImpl</servlet-class>
   </servlet>
