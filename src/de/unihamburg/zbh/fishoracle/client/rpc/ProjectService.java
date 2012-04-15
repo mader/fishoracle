@@ -3,6 +3,7 @@ package de.unihamburg.zbh.fishoracle.client.rpc;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.smartgwt.client.data.Criteria;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 
@@ -10,7 +11,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 public interface ProjectService extends RemoteService {
 	
 	public void add(FoProject project);
-	public FoProject[] fetch() throws Exception;
+	public FoProject[] fetch(Criteria c) throws Exception;
 	public void update(FoProject project);
 	public void delete(int projectId);
 	

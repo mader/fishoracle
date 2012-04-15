@@ -3,6 +3,7 @@ package de.unihamburg.zbh.fishoracle.client.data;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSourceField;
@@ -44,14 +45,18 @@ public class ProjectDS extends FoDataSource {
 		final AsyncCallback<FoProject[]> callback = new AsyncCallback<FoProject[]>(){
 			
 			public void onSuccess(FoProject[] result){
+				
 				ListGridRecord[] list = new ListGridRecord[result.length];
+				
 				if (result.length > 0) {
 					for (int i = 0; i < result.length; i++) {
+						
 						ListGridRecord record = new ListGridRecord (); 
 						record.setAttribute("projectId", new Integer(result[i].getId()).toString());
 						record.setAttribute("projectName", result[i].getName());
 						record.setAttribute("projectDescription", result[i].getDescription());
 						list[i] = record;
+						
 					}
 				}
 				response.setData(list);
@@ -64,7 +69,9 @@ public class ProjectDS extends FoDataSource {
 				SC.say(caught.getMessage());
 			}
 		};
-		req.fetch(callback);
+		
+		Criteria criteria = request.getCriteria();
+		req.fetch(criteria, callback);
 	}
 
 	@Override

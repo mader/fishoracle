@@ -110,6 +110,9 @@ public class Track {
 		selectItemProjects.setDisplayField("projectName");
 		selectItemProjects.setValueField("projectId");
 		
+		//selectItemProjects.canEditCriterion(criterion)
+		//selectItemProjects.setCriterion(criterion)
+		
 		ProjectDS pDS = new ProjectDS();
 		selectItemProjects.setOptionDataSource(pDS);
 		

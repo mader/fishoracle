@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.smartgwt.client.data.AdvancedCriteria;
+import com.smartgwt.client.data.Criteria;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
@@ -46,13 +48,19 @@ public class ProjectServiceImpl extends RemoteServiceServlet implements ProjectS
 	}
 	
 	@Override
-	public FoProject[] fetch() throws Exception {
+	public FoProject[] fetch(Criteria c) throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
 		
 		FoUser u = getSessionUserObject();
+		
+		AdvancedCriteria d = c.asAdvancedCriteria();
+		
+		//d.getCriteria();
+		
+		//d.getOperator();
 		
 		FoProject[] projects = null;
 		 
