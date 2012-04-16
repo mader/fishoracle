@@ -353,6 +353,8 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 	}
 	
+	//TODO move...
+	
 	@Override
 	public FoProject[] getFoProjects() throws Exception {
 		String servletContext = this.getServletContext().getRealPath("/");

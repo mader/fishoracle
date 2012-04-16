@@ -1,70 +1,51 @@
 package de.unihamburg.zbh.fishoracle.server;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.smartgwt.client.data.AdvancedCriteria;
-import com.smartgwt.client.data.Criteria;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
+import de.unihamburg.zbh.fishoracle.client.data.OperationId;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle.client.rpc.ProjectService;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
+import de.unihamburg.zbh.fishoracle.server.data.SessionData;
 
 public class ProjectServiceImpl extends RemoteServiceServlet implements ProjectService {
 	
 	private static final long serialVersionUID = 1L;
-
-	public FoUser isAdmin() throws UserException{
-		HttpServletRequest request=this.getThreadLocalRequest();
-		HttpSession session=request.getSession();
-		
-		FoUser user = (FoUser) session.getAttribute("user");
-		
-		if(!user.getIsAdmin()){
-			
-			throw new UserException("Permission denied!");
-			
-		}
-		return user;
-	}
 	
-	public FoUser getSessionUserObject(){
-		
-		HttpServletRequest request=this.getThreadLocalRequest();
-		HttpSession session=request.getSession();
-		
-		FoUser user = (FoUser) session.getAttribute("user");
-		
-		return user;
+	private SessionData getSessionData(){
+		return new SessionData(this.getThreadLocalRequest());
 	}
 	
 	@Override
-	public void add(FoProject project) {
-		// TODO Auto-generated method stub
+	public FoProject add(FoProject foProject) throws UserException {
 		
-	}
-	
-	@Override
-	public FoProject[] fetch(Criteria c) throws Exception {
+		SessionData sessionData = getSessionData();
+		
+		sessionData.isAdmin();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		FoUser u = getSessionUserObject();
+		return db.addFoProject(foProject);
+	}
+	
+	@Override
+	public FoProject[] fetch(String operationId) throws Exception {
 		
-		AdvancedCriteria d = c.asAdvancedCriteria();
+		String servletContext = this.getServletContext().getRealPath("/");
 		
-		//d.getCriteria();
+		DBInterface db = new DBInterface(servletContext);
 		
-		//d.getOperator();
+		SessionData sessionData = getSessionData();
+		
+		FoUser u = sessionData.getSessionUserObject();
 		
 		FoProject[] projects = null;
-		 
-		if(u.getIsAdmin()){
+		
+		if(u.getIsAdmin() && operationId.equals(OperationId.PROJECT_FETCH_ALL)){
 			
 			projects = db.getAllProjects();
 		} else {
@@ -77,13 +58,19 @@ public class ProjectServiceImpl extends RemoteServiceServlet implements ProjectS
 	@Override
 	public void update(FoProject project) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
-	public void delete(int projectId) {
-		// TODO Auto-generated method stub
+	public void delete(int projectId) throws UserException {
 		
+		SessionData sessionData = getSessionData();
+		
+		sessionData.isAdmin();
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		db.removeProject(projectId);	
 	}
-
 }

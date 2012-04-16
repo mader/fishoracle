@@ -93,6 +93,8 @@ import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
+import de.unihamburg.zbh.fishoracle.client.data.OperationId;
+import de.unihamburg.zbh.fishoracle.client.data.ProjectDS;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.ImgCanvas;
@@ -1837,7 +1839,15 @@ public class CenterPanel extends VLayout{
 		projectSelectItem = new SelectItem();
 		projectSelectItem.setTitle("Project");
 		
-		getProjects();
+		projectSelectItem.setDisplayField("projectName");
+		projectSelectItem.setValueField("projectId");		
+		
+		projectSelectItem.setAutoFetchData(false);
+		
+		ProjectDS pDS = new ProjectDS();
+		
+		projectSelectItem.setOptionDataSource(pDS);
+		projectSelectItem.setOptionOperationId(OperationId.PROJECT_FETCH_ALL);
 		
 		projectSelectItem.setDefaultToFirstOption(true);
 		projectSelectItem.addChangedHandler(new ChangedHandler(){
@@ -1973,7 +1983,14 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				addProject(new FoProject(0, projectNameTextItem.getDisplayValue(), projectDescriptionItem.getDisplayValue()));
+				
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("projectId", 0);
+				lgr.setAttribute("projectName",projectNameTextItem.getDisplayValue());
+				lgr.setAttribute("projectDescription", projectDescriptionItem.getDisplayValue());
+				
+				projectGrid.addData(lgr);
+				
 				window.hide();
 			}
 			
@@ -2097,7 +2114,12 @@ public class CenterPanel extends VLayout{
 						public void execute(Boolean value) {
 							if(value != null && value){
 						
-								removeProject(lgr.getAttributeAsInt("projectId"));
+								projectGrid.removeData(lgr);
+								
+								projectAccessGrid.selectAllRecords();
+								projectAccessGrid.removeSelectedData();
+								projectMstudyGrid.selectAllRecords();
+								projectMstudyGrid.removeSelectedData();
 							}
 						}
 					});
@@ -2168,6 +2190,7 @@ public class CenterPanel extends VLayout{
 		projectGrid.setAlternateRecordStyles(true);
 		projectGrid.setWrapCells(true);
 		projectGrid.setFixedRecordHeights(false);
+		projectGrid.setAutoFetchData(false);
 		projectGrid.markForRedraw();
 		
 		ListGridField lgfProjectId = new ListGridField("projectId", "Project ID");
@@ -2176,7 +2199,12 @@ public class CenterPanel extends VLayout{
 		
 		projectGrid.setFields(lgfProjectId, lgfProjectName, lgfProjectActivated);
 		
-		showProjects(user);
+		ProjectDS pDS = new ProjectDS();
+		
+		projectGrid.setDataSource(pDS);
+		projectGrid.setFetchOperation(OperationId.PROJECT_FETCH_ALL);
+		
+		projectGrid.fetchData();
 		
 		gridContainer.addMember(projectGrid);
 		
@@ -2217,6 +2245,8 @@ public class CenterPanel extends VLayout{
 		
 			pane.addMember(projectAccessGrid);
 		}
+		
+		projectGrid.addRecordClickHandler(new MyProjectRecordClickHandler(projectMstudyGrid, projectAccessGrid, user, cp));
 		
 		projectAdminTab.setPane(pane);
 		
@@ -2310,7 +2340,7 @@ public class CenterPanel extends VLayout{
 		metaData.addMember(new LayoutSpacer());
 		
 		metaDataForm = new DynamicForm();
-		
+		//TODO exchange microarrayoption through DS services for different data sources...
 		studyName = new TextItem();
 		studyName.setTitle("study name");
 		
@@ -2322,6 +2352,13 @@ public class CenterPanel extends VLayout{
 		
 		project = new SelectItem();
 		project.setTitle("project");
+		//project.setDisplayField("projectName");
+		//project.setValueField("projectId");		
+		//project.setAutoFetchData(false);
+		//ProjectDS pDS = new ProjectDS();
+		
+		//project.setOptionDataSource(pDS);
+		//project.setOptionOperationId(OperationId.PROJECT_FETCH_ALL);
 		
 		descriptionItem = new TextAreaItem();
 		descriptionItem.setTitle("description");
@@ -3336,118 +3373,6 @@ public class CenterPanel extends VLayout{
 		req.removeUserFromFoGroup(groupId, userId, callback);
 	}
 	
-	public void getProjects(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoProject[]> callback = new AsyncCallback<FoProject[]>(){
-			
-			public void onSuccess(FoProject[] result){
-				
-				LinkedHashMap<String, String> projectValueMap = new LinkedHashMap<String, String>();
-				
-				for(int i=0; i < result.length; i++){
-					projectValueMap.put(new Integer(result[i].getId()).toString(), result[i].getName());
-				}
-				
-				projectSelectItem.setValueMap(projectValueMap);
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getFoProjects(callback);
-	}
-	
-	public void showProjects(final FoUser user){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoProject[]> callback = new AsyncCallback<FoProject[]>(){
-			
-			public void onSuccess(FoProject[] result){
-				
-				FoProject[] projects = result;
-				
-				projectGrid.addRecordClickHandler(new MyProjectRecordClickHandler(projectMstudyGrid, projectAccessGrid, user, cp));
-								
-				ListGridRecord[] lgr = new ListGridRecord[projects.length];
-				
-				for(int i=0; i < projects.length; i++){
-					lgr[i] = new ListGridRecord();
-					lgr[i].setAttribute("projectId", projects[i].getId());
-					lgr[i].setAttribute("projectName", projects[i].getName());
-					lgr[i].setAttribute("projectDescription", projects[i].getDescription());
-				}
-
-				projectGrid.setData(lgr);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getFoProjects(callback);
-	}
-	
-	public void addProject(FoProject foProject){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoProject> callback = new AsyncCallback<FoProject>(){
-			
-			public void onSuccess(FoProject result){
-				FoProject project = result;
-				
-				ListGridRecord lgr = new ListGridRecord();
-				lgr.setAttribute("projectId", project.getId());
-				lgr.setAttribute("projectName", project.getName());
-				lgr.setAttribute("projectDescription", project.getDescription());
-				
-				projectGrid.addData(lgr);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.addFoProject(foProject, callback);
-	}
-	
-	public void removeProject(int projectId){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
-			
-			public void onSuccess(Boolean result){
-
-				projectGrid.removeData(projectGrid.getSelectedRecord());
-				projectAccessGrid.selectAllRecords();
-				projectAccessGrid.removeSelectedData();
-				projectMstudyGrid.selectAllRecords();
-				projectMstudyGrid.removeSelectedData();
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.removeFoProject(projectId, callback);
-	}
-	
 	public void getAllGroupsExceptProject(FoProject foProject){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3692,6 +3617,8 @@ public class CenterPanel extends VLayout{
 	}
 	
 }
+
+//TODO
 
 class MyProjectRecordClickHandler implements RecordClickHandler {
 

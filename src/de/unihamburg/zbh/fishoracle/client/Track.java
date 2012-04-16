@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.DynamicForm;
@@ -19,7 +18,7 @@ import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
-import de.unihamburg.zbh.fishoracle.client.data.FoProject;
+import de.unihamburg.zbh.fishoracle.client.data.OperationId;
 import de.unihamburg.zbh.fishoracle.client.data.ProjectDS;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
@@ -108,15 +107,13 @@ public class Track {
 		selectItemProjects.setMultiple(true);
 		selectItemProjects.setMultipleAppearance(MultipleAppearance.PICKLIST);
 		selectItemProjects.setDisplayField("projectName");
-		selectItemProjects.setValueField("projectId");
-		
-		//selectItemProjects.canEditCriterion(criterion)
-		//selectItemProjects.setCriterion(criterion)
-		
+		selectItemProjects.setValueField("projectId");		
+		selectItemProjects.setAutoFetchData(false);
 		ProjectDS pDS = new ProjectDS();
-		selectItemProjects.setOptionDataSource(pDS);
 		
-		//getProjects();
+		selectItemProjects.setOptionDataSource(pDS);
+		selectItemProjects.setOptionOperationId(OperationId.PROJECT_FETCH_ALL);
+		
 		selectItemProjects.setDefaultToFirstOption(true);
 		selectItemProjects.setVisible(false);
 		
@@ -274,33 +271,6 @@ public class Track {
 	 *||                              RPC Calls                                  ||
 	 *=============================================================================
 	 * */
-	
-	public void getProjects(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoProject[]> callback = new AsyncCallback<FoProject[]>(){
-			
-			public void onSuccess(FoProject[] result){
-				
-				LinkedHashMap<String, String> projectValueMap = new LinkedHashMap<String, String>();
-				
-				for(int i=0; i < result.length; i++){
-					projectValueMap.put(new Integer(result[i].getId()).toString(), result[i].getName());
-				}
-				
-				selectItemProjects.setValueMap(projectValueMap);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getFoProjects(callback);
-	}
 	
 	public void showAllOrgans(){
 		
