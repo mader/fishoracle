@@ -16,8 +16,8 @@ import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
+import de.unihamburg.zbh.fishoracle.client.data.MicroarrayStudyDS;
 import de.unihamburg.zbh.fishoracle.client.data.OperationId;
 import de.unihamburg.zbh.fishoracle.client.data.ProjectDS;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
@@ -129,7 +129,15 @@ public class Track {
 		selectItemExperiments.setTitle("Experiment Filter");
 		selectItemExperiments.setMultiple(true);
 		selectItemExperiments.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		showAllMicroarrayStudiesForProject();
+		
+		selectItemExperiments.setDisplayField("mstudyName");
+		selectItemExperiments.setValueField("mstudyId");		
+		selectItemExperiments.setAutoFetchData(false);
+		MicroarrayStudyDS mDS = new MicroarrayStudyDS();
+		
+		selectItemExperiments.setOptionDataSource(mDS);
+		selectItemExperiments.setOptionOperationId(OperationId.MSTUDY_FETCH_ALL);
+		
 		selectItemExperiments.setDefaultToFirstOption(true);
 		selectItemExperiments.setVisible(false);
 		
@@ -298,34 +306,5 @@ public class Track {
 
 		};
 		req.getOrgans(callback);
-	}
-	
-	public void showAllMicroarrayStudiesForProject(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoMicroarraystudy[]> callback = new AsyncCallback<FoMicroarraystudy[]>(){
-			
-			public void onSuccess(FoMicroarraystudy[] result){
-				
-				LinkedHashMap<String, String> expValueMap = new LinkedHashMap<String, String>();
-				
-				for(int i=0; i < result.length; i++){
-					expValueMap.put(new Integer(result[i].getId()).toString(),
-							result[i].getName());
-				}
-				
-				selectItemExperiments.setValueMap(expValueMap);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		
-		req.getMicorarrayStudiesForProject(callback);
 	}
 }

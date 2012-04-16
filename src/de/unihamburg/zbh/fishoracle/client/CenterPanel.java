@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
+import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
@@ -93,6 +94,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
+import de.unihamburg.zbh.fishoracle.client.data.MicroarrayStudyDS;
 import de.unihamburg.zbh.fishoracle.client.data.OperationId;
 import de.unihamburg.zbh.fishoracle.client.data.ProjectDS;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
@@ -2215,6 +2217,8 @@ public class CenterPanel extends VLayout{
 		projectMstudyGrid.setAlternateRecordStyles(true);
 		projectMstudyGrid.setWrapCells(true);
 		projectMstudyGrid.setFixedRecordHeights(false);
+		projectMstudyGrid.setShowAllRecords(false);
+		projectMstudyGrid.setAutoFetchData(false);
 		projectMstudyGrid.markForRedraw();
 		
 		ListGridField lgfProjectMstudyId = new ListGridField("mstudyId", "Microarraystudy ID");
@@ -2222,6 +2226,11 @@ public class CenterPanel extends VLayout{
 		ListGridField lgfProjectMstudyDescription = new ListGridField("mstudyDescription", "Description");
 		
 		projectMstudyGrid.setFields(lgfProjectMstudyId, lgfProjectMstudyName, lgfProjectMstudyDescription);
+		
+		MicroarrayStudyDS mDS = new MicroarrayStudyDS();
+		//TODO
+		projectMstudyGrid.setDataSource(mDS);
+		projectMstudyGrid.setFetchOperation(OperationId.MSTUDY_FETCH_FOR_PROJECT);
 		
 		gridContainer.addMember(projectMstudyGrid);
 		
@@ -3636,15 +3645,20 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 	
 	@Override
 	public void onRecordClick(RecordClickEvent event) {
-		ListGridRecord[] oldMstudyRecords = projectMstudyGrid.getRecords();
+		//ListGridRecord[] oldMstudyRecords = projectMstudyGrid.getRecords();
 		
 		String projectId = event.getRecord().getAttribute("projectId");
-		
+		/*
 		for (int i= 0; i < oldMstudyRecords.length; i++){
 			projectMstudyGrid.removeData(oldMstudyRecords[i]);
+			
 		}
 		
 		cp.getMicroarrayStudiesForProject(projectId);
+		*/
+		
+		projectMstudyGrid.fetchData(new Criteria("projectId", projectId));
+		
 		
 		if(user.getIsAdmin()){
 			ListGridRecord[] oldAccessRecords = projectAccessGrid.getRecords();
