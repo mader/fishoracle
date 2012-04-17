@@ -98,6 +98,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.datasource.CnSegmentDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.MicroarrayStudyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
+import de.unihamburg.zbh.fishoracle.client.datasource.ProjectAccessDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectDS;
 import de.unihamburg.zbh.fishoracle.client.ImgCanvas;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
@@ -2250,14 +2251,20 @@ public class CenterPanel extends VLayout{
 			projectAccessGrid.setAlternateRecordStyles(true);
 			projectAccessGrid.setWrapCells(true);
 			projectAccessGrid.setFixedRecordHeights(false);
+			projectAccessGrid.setAutoFetchData(false);
+			projectAccessGrid.setShowAllRecords(false);
 			projectAccessGrid.markForRedraw();
 		
-			ListGridField lgfProjectAccessId = new ListGridField("accessId", "ID");
-			ListGridField lgfProjectAccessGroup = new ListGridField("accessGroup", "Group");
+			ListGridField lgfProjectAccessId = new ListGridField("projectAccessId", "ID");
+			ListGridField lgfProjectAccessGroup = new ListGridField("groupName", "Group");
 			ListGridField lgfProjectAccessRight = new ListGridField("accessRight", "Access Right");
 		
 			projectAccessGrid.setFields(lgfProjectAccessId, lgfProjectAccessGroup, lgfProjectAccessRight);
 		
+			ProjectAccessDS paDS = new ProjectAccessDS();
+			
+			projectAccessGrid.setDataSource(paDS);
+			
 			pane.addMember(projectAccessGrid);
 		}
 		
@@ -3521,20 +3528,16 @@ public class CenterPanel extends VLayout{
 	
 }
 
-//TODO
-
 class MyProjectRecordClickHandler implements RecordClickHandler {
 
 	private ListGrid projectMstudyGrid;
 	private ListGrid projectAccessGrid;
 	private FoUser user;
-	private CenterPanel cp;
 	
 	public MyProjectRecordClickHandler(ListGrid projectMstudyGrid, ListGrid projectAccessGrid, FoUser user, CenterPanel cp){
 		this.projectMstudyGrid = projectMstudyGrid;
 		this.projectAccessGrid = projectAccessGrid;
 		this.user = user;
-		this.cp = cp;
 	}
 	
 	@Override
@@ -3545,14 +3548,8 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 		projectMstudyGrid.fetchData(new Criteria("projectId", projectId));
 		
 		if(user.getIsAdmin()){
-			ListGridRecord[] oldAccessRecords = projectAccessGrid.getRecords();
-		
-			for (int i= 0; i < oldAccessRecords.length; i++){
-				projectAccessGrid.removeData(oldAccessRecords[i]);
-			}
-		
-			cp.getProjectAccessesForProject(Integer.parseInt(projectId));
 			
+			projectAccessGrid.fetchData(new Criteria("projectId", projectId));
 		}
 	}
 }

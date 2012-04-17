@@ -52,6 +52,16 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>ProjectAccessService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.ProjectAccessServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>ProjectAccessService</servlet-name>
+    <url-pattern>/fishoracle/ProjectAccessService</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>userservice</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.UserServiceImpl</servlet-class>
   </servlet>
