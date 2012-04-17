@@ -33,6 +33,15 @@ public class MicroarrayStudyDS extends FoDataSource {
         
         field = new DataSourceTextField("mstudyDescription", "Description");
         addField (field);
+        
+        field = new DataSourceTextField("chipName", "Chip");
+        addField (field);
+        
+        field = new DataSourceTextField("tissueName", "Tissue");
+        addField (field);
+        
+        field = new DataSourceTextField("date", "Date");
+        addField (field);
 	}
 	
 	@Override
@@ -56,6 +65,16 @@ public class MicroarrayStudyDS extends FoDataSource {
 						record.setAttribute("mstudyId", new Integer(result[i].getId()).toString());
 						record.setAttribute("mstudyName", result[i].getName());
 						record.setAttribute("mstudyDescription", result[i].getDescription());
+						record.setAttribute("date", result[i].getDate());
+						
+						if(result[i].getChip() != null){
+							record.setAttribute("chipName", result[i].getChip().getName());
+						}
+						
+						if(result[i].getTissue() != null){
+							record.setAttribute("tissueName", result[i].getTissue().getOrgan().getLabel());
+						}
+						
 						list[i] = record;
 						
 					}
@@ -105,7 +124,7 @@ public class MicroarrayStudyDS extends FoDataSource {
 		
 		final MicroarrayStudyServiceAsync req = (MicroarrayStudyServiceAsync) GWT.create(MicroarrayStudyService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "ProjectService";
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "MicroarrayStudyService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
 		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
 			
@@ -126,7 +145,7 @@ public class MicroarrayStudyDS extends FoDataSource {
 			}
 		};
 		
-		int mstudyId = Integer.parseInt(rec.getAttribute("microarraystudyId"));
+		int mstudyId = Integer.parseInt(rec.getAttribute("mstudyId"));
 		
 		req.delete(mstudyId, callback);
 	}

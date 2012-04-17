@@ -9,7 +9,6 @@ import de.unihamburg.zbh.fishoracle.client.data.OperationId;
 import de.unihamburg.zbh.fishoracle.client.rpc.MicroarrayStudyService;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 import de.unihamburg.zbh.fishoracle.server.data.SessionData;
-import de.unihamburg.zbh.fishoracle_db_api.data.Microarraystudy;
 
 public class MicroarrayStudyServiceImpl extends RemoteServiceServlet implements MicroarrayStudyService {
 	
@@ -22,6 +21,7 @@ public class MicroarrayStudyServiceImpl extends RemoteServiceServlet implements 
 	@Override
 	public FoMicroarraystudy add(FoMicroarraystudy foMicroarraystudy) {
 		return foMicroarraystudy;
+		// TODO Auto-generated method stub
 	}
 
 	@Override

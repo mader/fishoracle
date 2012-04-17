@@ -86,7 +86,6 @@ import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
-import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
@@ -1857,7 +1856,9 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onChanged(ChangedEvent event) {
 				
-				showAllMicroarrayStudiesForProject(projectSelectItem.getValueAsString());
+				String projectId = projectSelectItem.getValueAsString();
+				
+				msGrid.fetchData(new Criteria("projectId", projectId));
 			}
 			
 		});
@@ -1905,7 +1906,9 @@ public class CenterPanel extends VLayout{
 						public void execute(Boolean value) {
 							if(value != null && value){
 							
-								removeMstudy(lgr.getAttributeAsInt("id"));
+								//removeMstudy(lgr.getAttributeAsInt("id"));
+								msGrid.removeData(lgr);
+								
 							}
 						}
 					});
@@ -1934,16 +1937,24 @@ public class CenterPanel extends VLayout{
 		msGrid.setShowAllRecords(true);
 		msGrid.setAlternateRecordStyles(true);
 		msGrid.setWrapCells(true);
+		msGrid.setShowAllRecords(false);
+		msGrid.setAutoFetchData(false);
 		msGrid.setFixedRecordHeights(false);
 		
-		ListGridField lgfId = new ListGridField("id", "Microarraystudy ID");
-		ListGridField lgfChip = new ListGridField("chip", "Chip");
-		ListGridField lgfTissue = new ListGridField("tissue", "Tissue");
+		ListGridField lgfId = new ListGridField("mstudyId", "Microarraystudy ID");
+		ListGridField lgfChip = new ListGridField("chipName", "Chip");
+		ListGridField lgfTissue = new ListGridField("tissueName", "Tissue");
 		ListGridField lgfDate = new ListGridField("date", "Date");
-		ListGridField lgfName = new ListGridField("name", "Name");
-		ListGridField lgfDescription = new ListGridField("description", "Description");
+		ListGridField lgfName = new ListGridField("mstudyName", "Name");
+		ListGridField lgfDescription = new ListGridField("mstudyDescription", "Description");
 		
 		msGrid.setFields(lgfId, lgfChip, lgfTissue, lgfDate, lgfName, lgfDescription);
+		
+		//TODO make load the data for default option...
+		MicroarrayStudyDS mDS = new MicroarrayStudyDS();
+		
+		msGrid.setDataSource(mDS);
+		msGrid.setFetchOperation(OperationId.MSTUDY_FETCH_FOR_PROJECT);
 		
 		gridContainer.addMember(msGrid);
 		
@@ -2228,7 +2239,7 @@ public class CenterPanel extends VLayout{
 		projectMstudyGrid.setFields(lgfProjectMstudyId, lgfProjectMstudyName, lgfProjectMstudyDescription);
 		
 		MicroarrayStudyDS mDS = new MicroarrayStudyDS();
-		//TODO
+		
 		projectMstudyGrid.setDataSource(mDS);
 		projectMstudyGrid.setFetchOperation(OperationId.MSTUDY_FETCH_FOR_PROJECT);
 		
@@ -2820,78 +2831,6 @@ public class CenterPanel extends VLayout{
 			}
 		};
 		req.removeMstudy(mstudyId, callback);
-	}
-	
-	public void showAllMicroarrayStudiesForProject(String projectId){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoMicroarraystudy[]> callback = new AsyncCallback<FoMicroarraystudy[]>(){
-			
-			public void onSuccess(FoMicroarraystudy[] result){
-				
-				ListGridRecord[] lgr = new ListGridRecord[result.length];
-				
-				for(int i=0; i < result.length; i++){
-					lgr[i] = new ListGridRecord();
-					lgr[i].setAttribute("id", result[i].getId());
-					lgr[i].setAttribute("chip", result[i].getChip().getName());
-					lgr[i].setAttribute("tissue", result[i].getTissue().getOrgan().getLabel());
-					lgr[i].setAttribute("date", result[i].getDate());
-					lgr[i].setAttribute("name", result[i].getName());
-					lgr[i].setAttribute("description", result[i].getDescription());
-				}
-				msGrid.setData(lgr);
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		
-		int[] pId = {Integer.parseInt(projectId)};
-		
-		req.getMicorarrayStudiesForProject(pId, callback);
-	}
-	
-	public void getMicroarrayStudiesForProject(String projectId){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoMicroarraystudy[]> callback = new AsyncCallback<FoMicroarraystudy[]>(){
-			
-			public void onSuccess(FoMicroarraystudy[] result){
-				
-				FoMicroarraystudy[] mstudies = result;
-				if(mstudies != null){
-				
-					ListGridRecord[] mstudyLgr = new ListGridRecord[mstudies.length];
-				
-					for(int i=0; i < mstudies.length; i++){
-						mstudyLgr[i] = new ListGridRecord();
-						mstudyLgr[i].setAttribute("mstudyId", mstudies[i].getId());
-						mstudyLgr[i].setAttribute("mstudyName", mstudies[i].getName());
-						mstudyLgr[i].setAttribute("mstudyDescription", mstudies[i].getDescription());
-					}
-
-					projectMstudyGrid.setData(mstudyLgr);
-				
-				}
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		
-		int[] pId = {Integer.parseInt(projectId)};
-		
-		req.getMicorarrayStudiesForProject(pId, callback);
 	}
 	
 	public void showAllOrgans(){
@@ -3645,20 +3584,10 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 	
 	@Override
 	public void onRecordClick(RecordClickEvent event) {
-		//ListGridRecord[] oldMstudyRecords = projectMstudyGrid.getRecords();
 		
 		String projectId = event.getRecord().getAttribute("projectId");
-		/*
-		for (int i= 0; i < oldMstudyRecords.length; i++){
-			projectMstudyGrid.removeData(oldMstudyRecords[i]);
-			
-		}
-		
-		cp.getMicroarrayStudiesForProject(projectId);
-		*/
 		
 		projectMstudyGrid.fetchData(new Criteria("projectId", projectId));
-		
 		
 		if(user.getIsAdmin()){
 			ListGridRecord[] oldAccessRecords = projectAccessGrid.getRecords();
