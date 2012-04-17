@@ -22,6 +22,16 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>SegmentService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.SegmentServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>SegmentService</servlet-name>
+    <url-pattern>/fishoracle/SegmentService</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>MicroarrayStudyService</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.MicroarrayStudyServiceImpl</servlet-class>
   </servlet>

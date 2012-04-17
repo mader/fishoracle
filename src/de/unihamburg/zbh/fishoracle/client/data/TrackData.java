@@ -2,8 +2,6 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
-
 public class TrackData  implements IsSerializable {
 
 	private String trackName;

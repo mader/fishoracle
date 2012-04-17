@@ -70,7 +70,6 @@ public class MicroarrayStudyServiceImpl extends RemoteServiceServlet implements 
 	@Override
 	public void update(FoMicroarraystudy foMicroarraystudy) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

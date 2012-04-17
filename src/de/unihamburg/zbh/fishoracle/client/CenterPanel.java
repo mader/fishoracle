@@ -82,6 +82,7 @@ import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
+import de.unihamburg.zbh.fishoracle.client.data.CnSegmentDS;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
@@ -1760,7 +1761,7 @@ public class CenterPanel extends VLayout{
 		centerTabSet.selectTab(chipsAdminTab);
 	}
 	
-	public void openCnSegmentTab(FoCnSegment[] segments){
+	public void openCnSegmentTab(String mstudyId){
 		Tab segmentAdminTab = new Tab("Segments");
 		segmentAdminTab.setCanClose(true);
 		
@@ -1780,9 +1781,12 @@ public class CenterPanel extends VLayout{
 		segmentGrid.setAlternateRecordStyles(true);
 		segmentGrid.setWrapCells(true);
 		segmentGrid.setFixedRecordHeights(false);
+		segmentGrid.setAutoFetchData(false);
+		segmentGrid.setShowAllRecords(false);
 		
-		ListGridField lgfId = new ListGridField("id", "Segment Id");
+		ListGridField lgfId = new ListGridField("segmentId", "Segment Id");
 		ListGridField lgfChr = new ListGridField("chromosome", "Chromosome");
+		lgfChr.setCellAlign(Alignment.CENTER);
 		ListGridField lgfStart = new ListGridField("start", "Start");
 		ListGridField lgfEnd = new ListGridField("end", "End");
 		ListGridField lgfMean = new ListGridField("mean", "Segment Mean");
@@ -1790,19 +1794,11 @@ public class CenterPanel extends VLayout{
 		
 		segmentGrid.setFields(lgfId, lgfChr, lgfStart, lgfEnd, lgfMean, lgfMarkers);
 		
-		ListGridRecord[] lgr = new ListGridRecord[segments.length];
+		CnSegmentDS sDS = new CnSegmentDS();
 		
-		for(int i=0; i < segments.length; i++){
-			lgr[i] = new ListGridRecord();
-			lgr[i].setAttribute("id", segments[i].getId());
-			lgr[i].setAttribute("chromosome", segments[i].getChromosome());
-			lgr[i].setAttribute("start", segments[i].getStart());
-			lgr[i].setAttribute("end", segments[i].getEnd());
-			lgr[i].setAttribute("mean", segments[i].getMean());
-			lgr[i].setAttribute("markers", segments[i].getNumberOfMarkers());
-		}
-
-		segmentGrid.setData(lgr);
+		segmentGrid.setDataSource(sDS);
+		
+		segmentGrid.fetchData(new Criteria("mstudyId", mstudyId));
 		
 		gridContainer.addMember(segmentGrid);
 		
@@ -1876,7 +1872,7 @@ public class CenterPanel extends VLayout{
 				
 				if (lgr != null){
 				
-					getCnSegmentsForMstudyId(lgr.getAttributeAsInt("id"));
+					openCnSegmentTab(lgr.getAttributeAsString("mstudyId"));
 					
 				} else {
 					SC.say("Select a microarray study.");
@@ -1906,7 +1902,6 @@ public class CenterPanel extends VLayout{
 						public void execute(Boolean value) {
 							if(value != null && value){
 							
-								//removeMstudy(lgr.getAttributeAsInt("id"));
 								msGrid.removeData(lgr);
 								
 							}
@@ -2791,46 +2786,6 @@ public class CenterPanel extends VLayout{
 			}
 		};
 		req.getMicroarrayOptions(callback);
-	}
-	
-	public void getCnSegmentsForMstudyId(int mstudyId){
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoCnSegment[]> callback = new AsyncCallback<FoCnSegment[]>(){
-			
-			public void onSuccess(FoCnSegment[] result){
-				
-				openCnSegmentTab(result);
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getCnSegmentsForMstudyId(mstudyId, callback);
-	}
-	
-	public void removeMstudy(int mstudyId){
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
-			
-			public void onSuccess(Void result){
-				
-				msGrid.removeData(msGrid.getSelectedRecord());
-				msGrid.getRecords();
-				
-			}
-			
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-		};
-		req.removeMstudy(mstudyId, callback);
 	}
 	
 	public void showAllOrgans(){
