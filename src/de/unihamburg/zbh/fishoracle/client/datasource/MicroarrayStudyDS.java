@@ -1,4 +1,4 @@
-package de.unihamburg.zbh.fishoracle.client.data;
+package de.unihamburg.zbh.fishoracle.client.datasource;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -14,6 +14,7 @@ import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
+import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.rpc.MicroarrayStudyService;
 import de.unihamburg.zbh.fishoracle.client.rpc.MicroarrayStudyServiceAsync;
 

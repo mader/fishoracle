@@ -1,4 +1,4 @@
-package de.unihamburg.zbh.fishoracle.client.data;
+package de.unihamburg.zbh.fishoracle.client.datasource;
 
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;

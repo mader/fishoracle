@@ -17,9 +17,9 @@ import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
-import de.unihamburg.zbh.fishoracle.client.data.MicroarrayStudyDS;
-import de.unihamburg.zbh.fishoracle.client.data.OperationId;
-import de.unihamburg.zbh.fishoracle.client.data.ProjectDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.MicroarrayStudyDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
+import de.unihamburg.zbh.fishoracle.client.datasource.ProjectDS;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 
