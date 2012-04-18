@@ -1,12 +1,6 @@
 package de.unihamburg.zbh.fishoracle.client;
 
-import java.util.LinkedHashMap;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.types.MultipleAppearance;
-import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.CheckboxItem;
@@ -16,12 +10,10 @@ import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.datasource.MicroarrayStudyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
+import de.unihamburg.zbh.fishoracle.client.datasource.OrganDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectDS;
-import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
-import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 
 public class Track {
 
@@ -121,7 +113,15 @@ public class Track {
 		selectItemTissues.setTitle("Tissue Filter");
 		selectItemTissues.setMultiple(true);
 		selectItemTissues.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		showAllOrgans();
+		
+		selectItemTissues.setDisplayField("organName");
+		selectItemTissues.setValueField("organId");		
+		selectItemTissues.setAutoFetchData(false);
+		OrganDS oDS = new OrganDS();
+		
+		selectItemTissues.setOptionDataSource(oDS);
+		selectItemTissues.setOptionOperationId(OperationId.ORGAN_FETCH_ENABLED);
+		
 		selectItemTissues.setDefaultToFirstOption(true);
 		selectItemTissues.setVisible(false);
 		
@@ -273,38 +273,5 @@ public class Track {
 
 	public void setTrackNumber(int trackNumber) {
 		this.trackNumber = trackNumber;
-	}
-	
-	/*=============================================================================
-	 *||                              RPC Calls                                  ||
-	 *=============================================================================
-	 * */
-	
-	public void showAllOrgans(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoOrgan[]> callback = new AsyncCallback<FoOrgan[]>(){
-			
-			public void onSuccess(FoOrgan[] result){
-				
-				LinkedHashMap<String, String> tissueValueMap = new LinkedHashMap<String, String>();
-				
-				for(int i=0; i < result.length; i++){
-					tissueValueMap.put(new Integer(result[i].getId()).toString(),
-							result[i].getLabel() + " (" + result[i].getType() + ")");
-				}
-				
-				selectItemTissues.setValueMap(tissueValueMap);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getOrgans(callback);
 	}
 }

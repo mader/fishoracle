@@ -455,7 +455,9 @@ public class WestPanel extends SectionStack{
 					if(exists){
 						centerTabSet.selectTab(index);
 					} else {
-						mp.getCenterPanel().showAllOrgans();
+						
+						mp.getCenterPanel().openOrganAdminTab();
+						
 					}
 				}
 				if(event.getNode().getName().equals("Manage Properties")){

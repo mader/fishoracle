@@ -7,6 +7,9 @@ public class OperationId {
 	public static final String MSTUDY_FETCH_ALL = "getAllMicroarrayStudies";
 	public static final String MSTUDY_FETCH_FOR_PROJECT = "getAllMicroarrayStudiesForProject";
 	
+	public static final String ORGAN_FETCH_ALL = "getAllOrgans";
+	public static final String ORGAN_FETCH_ENABLED = "getAllEnabledOrgans";
+	
 	public OperationId() {
 	}
 

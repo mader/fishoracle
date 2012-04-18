@@ -86,9 +86,7 @@ import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
-import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
-import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
@@ -98,6 +96,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.datasource.CnSegmentDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.MicroarrayStudyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
+import de.unihamburg.zbh.fishoracle.client.datasource.OrganDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectAccessDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectDS;
 import de.unihamburg.zbh.fishoracle.client.ImgCanvas;
@@ -1425,7 +1424,13 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				addOrgan(new FoOrgan(0, organLabelTextItem.getDisplayValue(), organTypeCbItem.getDisplayValue(), "enabled"));
+				
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("organName", organLabelTextItem.getDisplayValue());
+				lgr.setAttribute("organType", organTypeCbItem.getDisplayValue());
+				
+				organGrid.addData(lgr);
+				
 				window.hide();
 			}
 		});
@@ -1437,7 +1442,7 @@ public class CenterPanel extends VLayout{
 		window.show();
 	}
 	
-	public void openOrganAdminTab(final FoOrgan[] organs){
+	public void openOrganAdminTab(){
 		
 		Tab organsAdminTab = new Tab("Organ Management");
 		organsAdminTab.setCanClose(true);
@@ -1483,29 +1488,25 @@ public class CenterPanel extends VLayout{
 		organGrid = new ListGrid();
 		organGrid.setWidth100();
 		organGrid.setHeight100();
-		organGrid.setShowAllRecords(true);
 		organGrid.setAlternateRecordStyles(true);
 		organGrid.setWrapCells(true);
 		organGrid.setFixedRecordHeights(false);
+		organGrid.setShowAllRecords(false);
+		organGrid.setAutoFetchData(false);
 		
-		ListGridField lgfId = new ListGridField("id", "Organ ID");
-		ListGridField lgfLabel = new ListGridField("organLabel", "Organ Label");
+		ListGridField lgfId = new ListGridField("organId", "Organ ID");
+		ListGridField lgfLabel = new ListGridField("organName", "Organ Name");
 		ListGridField lgfType = new ListGridField("organType", "Organ Type");
 		ListGridField lgfActivity = new ListGridField("organActivity", "enabled");
 		
 		organGrid.setFields(lgfId, lgfLabel, lgfType, lgfActivity);
 		
-		ListGridRecord[] lgr = new ListGridRecord[organs.length];
+		OrganDS oDS = new OrganDS();
 		
-		for(int i=0; i < organs.length; i++){
-			lgr[i] = new ListGridRecord();
-			lgr[i].setAttribute("id", organs[i].getId());
-			lgr[i].setAttribute("organLabel", organs[i].getLabel());
-			lgr[i].setAttribute("organType", organs[i].getType());
-			lgr[i].setAttribute("organActivity", organs[i].getActivty());
-		}
+		organGrid.setDataSource(oDS);
+		organGrid.setFetchOperation(OperationId.ORGAN_FETCH_ALL);
 		
-		organGrid.setData(lgr);
+		organGrid.fetchData();
 		
 		gridContainer.addMember(organGrid);
 		
@@ -2050,16 +2051,13 @@ public class CenterPanel extends VLayout{
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
 				
-				//FoProjectAccess pa = new FoProjectAccess(0, Integer.parseInt(groupSelectItem.getValueAsString()), accessRightSelectItem.getDisplayValue());
-				
 				ListGridRecord lgr = new ListGridRecord();
 				lgr.setAttribute("projectId", project.getId());
 				lgr.setAttribute("groupId", groupSelectItem.getValueAsString());
 				lgr.setAttribute("accessRight", accessRightSelectItem.getDisplayValue());
 				
 				projectAccessGrid.addData(lgr);
-				//addProjectAccess(pa, project.getId());
-				//projectAccessGrid.fetchData(new Criteria("projectId", new Integer(project.getId()).toString()));
+				
 				window.hide();
 			}
 			
@@ -2377,6 +2375,14 @@ public class CenterPanel extends VLayout{
 		
 		tissue = new SelectItem();
 		tissue.setTitle("tissue");
+		//tissue.setDisplayField("organName");
+		//tissue.setValueField("organId");		
+		//tissue.setAutoFetchData(false);
+		//OrganDS oDS = new OrganDS();
+		
+		//tissue.setOptionDataSource(oDS);
+		//tissue.setOptionOperationId(OperationId.ORGAN_FETCH_ENABLED);
+		
 		
 		project = new SelectItem();
 		project.setTitle("project");
@@ -2801,27 +2807,6 @@ public class CenterPanel extends VLayout{
 		req.getMicroarrayOptions(callback);
 	}
 	
-	public void showAllOrgans(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoOrgan[]> callback = new AsyncCallback<FoOrgan[]>(){
-			
-			public void onSuccess(FoOrgan[] result){
-				
-				openOrganAdminTab(result);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getAllFoOrgans(callback);
-	}
-	
 	public void getAllOrganTypes(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3025,32 +3010,6 @@ public class CenterPanel extends VLayout{
 
 		};
 		req.addGroup(foGroup, callback);
-	}
-	
-	public void addOrgan(FoOrgan foOrgan){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoOrgan> callback = new AsyncCallback<FoOrgan>(){
-			
-			public void onSuccess(FoOrgan result){
-				
-				ListGridRecord lgr = new ListGridRecord();
-				lgr.setAttribute("id", result.getId());
-				lgr.setAttribute("organLabel", result.getLabel());
-				lgr.setAttribute("organType", result.getType());
-				lgr.setAttribute("organActivity", result.getActivty());
-				
-				organGrid.addData(lgr);
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.addOrgan(foOrgan, callback);
 	}
 	
 	public void addProperty(FoProperty foProperty){
