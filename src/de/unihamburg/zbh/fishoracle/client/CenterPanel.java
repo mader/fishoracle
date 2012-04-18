@@ -2050,10 +2050,16 @@ public class CenterPanel extends VLayout{
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
 				
-				FoProjectAccess pa = new FoProjectAccess(0, Integer.parseInt(groupSelectItem.getValueAsString()), accessRightSelectItem.getDisplayValue());
+				//FoProjectAccess pa = new FoProjectAccess(0, Integer.parseInt(groupSelectItem.getValueAsString()), accessRightSelectItem.getDisplayValue());
 				
-				addProjectAccess(pa, project.getId());
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("projectId", project.getId());
+				lgr.setAttribute("groupId", groupSelectItem.getValueAsString());
+				lgr.setAttribute("accessRight", accessRightSelectItem.getDisplayValue());
 				
+				projectAccessGrid.addData(lgr);
+				//addProjectAccess(pa, project.getId());
+				//projectAccessGrid.fetchData(new Criteria("projectId", new Integer(project.getId()).toString()));
 				window.hide();
 			}
 			
@@ -2173,7 +2179,9 @@ public class CenterPanel extends VLayout{
 				ListGridRecord projectAccessLgr = projectAccessGrid.getSelectedRecord();
 
 				if (projectAccessLgr != null){
-					removeProjectAccess(projectAccessLgr.getAttributeAsInt("accessId"));
+					
+					projectAccessGrid.removeData(projectAccessLgr);
+					
 				} else {
 					SC.say("Select a group.");
 				}
@@ -2194,12 +2202,12 @@ public class CenterPanel extends VLayout{
 		
 		projectGrid = new ListGrid();
 		projectGrid.setWidth("50%");
-		projectGrid.setHeight100();
-		projectGrid.setShowAllRecords(true);  
+		projectGrid.setHeight100();  
 		projectGrid.setAlternateRecordStyles(true);
 		projectGrid.setWrapCells(true);
 		projectGrid.setFixedRecordHeights(false);
 		projectGrid.setAutoFetchData(false);
+		projectGrid.setShowAllRecords(false);
 		projectGrid.markForRedraw();
 		
 		ListGridField lgfProjectId = new ListGridField("projectId", "Project ID");
@@ -2220,7 +2228,6 @@ public class CenterPanel extends VLayout{
 		projectMstudyGrid = new ListGrid();
 		projectMstudyGrid.setWidth("50%");
 		projectMstudyGrid.setHeight100();
-		projectMstudyGrid.setShowAllRecords(true);
 		projectMstudyGrid.setAlternateRecordStyles(true);
 		projectMstudyGrid.setWrapCells(true);
 		projectMstudyGrid.setFixedRecordHeights(false);
@@ -2247,7 +2254,6 @@ public class CenterPanel extends VLayout{
 			projectAccessGrid = new ListGrid();
 			projectAccessGrid.setWidth100();
 			projectAccessGrid.setHeight("50%");
-			projectAccessGrid.setShowAllRecords(true);
 			projectAccessGrid.setAlternateRecordStyles(true);
 			projectAccessGrid.setWrapCells(true);
 			projectAccessGrid.setFixedRecordHeights(false);
@@ -3306,87 +3312,6 @@ public class CenterPanel extends VLayout{
 			}
 		};
 		req.getAllGroupsExceptFoProject(foProject, callback);
-	}
-	
-	public void addProjectAccess(FoProjectAccess foProjectAccess, int projectId){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoProjectAccess> callback = new AsyncCallback<FoProjectAccess>(){
-			
-			public void onSuccess(FoProjectAccess result){
-				
-				ListGridRecord lgr = new ListGridRecord();
-				lgr.setAttribute("accessId", result.getId());
-				lgr.setAttribute("accessGroup", result.getFoGroup().getName());
-				lgr.setAttribute("accessRight", result.getAccess());
-				
-				projectAccessGrid.addData(lgr);
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-		};
-		
-		req.addAccessToFoProject(foProjectAccess, projectId, callback);
-	}
-	
-	public void getProjectAccessesForProject(int projectId){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoProjectAccess[]> callback = new AsyncCallback<FoProjectAccess[]>(){
-			
-			public void onSuccess(FoProjectAccess[] result){
-				
-				FoProjectAccess[] accesses = result;
-				
-				if(accesses != null){
-					
-					ListGridRecord[] accessLgr = new ListGridRecord[accesses.length];
-			
-					for(int i=0; i < accesses.length; i++){
-						accessLgr[i] = new ListGridRecord();
-						accessLgr[i].setAttribute("accessId", accesses[i].getId());
-						accessLgr[i].setAttribute("accessGroup", accesses[i].getFoGroup().getName());
-						accessLgr[i].setAttribute("accessRight", accesses[i].getAccess());
-					}
-
-					projectAccessGrid.setData(accessLgr);
-				}
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-		};
-		
-		req.getProjectAccessesForProject(projectId, callback);
-	}
-	
-	public void removeProjectAccess(int projectAccessId){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
-			
-			public void onSuccess(Boolean result){
-				
-			projectAccessGrid.removeData(projectAccessGrid.getSelectedRecord());
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-		};
-		
-		req.removeAccessFromFoProject(projectAccessId, callback);
 	}
 	
 	public void importData(String fileName,

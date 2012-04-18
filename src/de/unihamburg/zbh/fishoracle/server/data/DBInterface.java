@@ -632,13 +632,13 @@ public class DBInterface {
 		return projectAccessesToFoProjectAccesses(pa.fetchProjectAccessForProject(projectId, true), true);
 	}
 	
-	public FoProjectAccess addAccessToProject(FoProjectAccess foProjectAccess, int projectId){
+	public FoProjectAccess addAccessToProject(FoProjectAccess foProjectAccess){
 		FODriver driver = getFoDriver();
 		ProjectAdaptor pa = driver.getProjectAdaptor();
 		
-		ProjectAccess projectAccess = pa.addGroupAccessToProject(foProjectAccess.getGroupId(), projectId, foProjectAccess.getAccess());
+		ProjectAccess projectAccess = pa.addGroupAccessToProject(foProjectAccess.getGroupId(), foProjectAccess.getFoProjectId(), foProjectAccess.getAccess());
 		
-		return projectAccessToFoProjectAccess(projectAccess, false);
+		return projectAccessToFoProjectAccess(projectAccess, true);
 	}
 	
 	public FoChip[] getAllChips(){

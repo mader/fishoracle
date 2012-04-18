@@ -440,7 +440,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.addAccessToProject(foProjectAccess, projectId);
+		return db.addAccessToProject(foProjectAccess);
 	}
 	
 	@Override

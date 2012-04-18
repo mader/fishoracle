@@ -1,6 +1,7 @@
 package de.unihamburg.zbh.fishoracle.client.datasource;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.data.Criteria;
@@ -25,6 +26,11 @@ public class ProjectAccessDS extends FoDataSource {
 		field.setPrimaryKey(true);
 		field.setRequired(true);
 		addField(field);
+		
+		field = new DataSourceIntegerField("groupId", "Group ID");
+		field.setHidden(true);
+		field.setRequired(true);
+        addField (field);
 		
 		field = new DataSourceTextField("groupName", "Group");
 		field.setRequired(true);
@@ -54,6 +60,7 @@ public class ProjectAccessDS extends FoDataSource {
 						
 						ListGridRecord record = new ListGridRecord ();
 						record.setAttribute("projectAccessId", new Integer(result[i].getId()).toString());
+						record.setAttribute("groupId", result[i].getFoGroup().getId());
 						record.setAttribute("groupName", result[i].getFoGroup().getName());
 						record.setAttribute("accessRight", result[i].getAccess());
 						
@@ -81,9 +88,47 @@ public class ProjectAccessDS extends FoDataSource {
 	}
 
 	@Override
-	protected void executeAdd(String requestId, DSRequest request,
-			DSResponse response) {
-		// TODO Auto-generated method stub
+	protected void executeAdd(final String requestId, final DSRequest request,
+			final DSResponse response) {
+		
+		final ProjectAccessServiceAsync req = (ProjectAccessServiceAsync) GWT.create(ProjectAccessService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "ProjectAccessService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoProjectAccess> callback = new AsyncCallback<FoProjectAccess>(){
+			
+			public void onSuccess(FoProjectAccess result){
+				
+				ListGridRecord[] list = new ListGridRecord[1];
+				
+				ListGridRecord record = new ListGridRecord ();
+				record.setAttribute("projectAccessId", new Integer(result.getId()).toString());
+				record.setAttribute("groupId", result.getFoGroup().getId());
+				record.setAttribute("groupName", result.getFoGroup().getName());
+				record.setAttribute("accessRight", result.getAccess());
+				
+				list[0] = record;
+				
+				response.setData(list);
+				processResponse(requestId, response);
+			}
+			
+			public void onFailure(Throwable caught){
+				response.setStatus(RPCResponse.STATUS_FAILURE);
+				processResponse(requestId, response);
+				SC.say(caught.getMessage());
+			}
+		};
+		
+		JavaScriptObject data = request.getData();
+		ListGridRecord rec = new ListGridRecord(data);
+        FoProjectAccess projectAccess = new FoProjectAccess();
+        
+        projectAccess.setFoProjectId(rec.getAttributeAsInt("projectId"));
+        projectAccess.setGroupId(Integer.parseInt(rec.getAttribute("groupId")));
+        projectAccess.setAccess(rec.getAttribute("accessRight"));
+        
+		req.add(projectAccess, callback);
 		
 	}
 
@@ -95,10 +140,37 @@ public class ProjectAccessDS extends FoDataSource {
 	}
 
 	@Override
-	protected void executeRemove(String requestId, DSRequest request,
-			DSResponse response) {
-		// TODO Auto-generated method stub
+	protected void executeRemove(final String requestId, final DSRequest request,
+			final DSResponse response) {
 		
+		JavaScriptObject data = request.getData();
+		final ListGridRecord rec = new ListGridRecord(data);
+		
+		final ProjectAccessServiceAsync req = (ProjectAccessServiceAsync) GWT.create(ProjectAccessService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "ProjectAccessService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
+			
+			public void onSuccess(Void v){
+				
+				ListGridRecord[] list = new ListGridRecord[1];
+				
+				list[0] = rec;
+				
+				response.setData(list);
+				processResponse(requestId, response);
+			}
+			
+			public void onFailure(Throwable caught){
+				response.setStatus(RPCResponse.STATUS_FAILURE);
+				processResponse(requestId, response);
+				SC.say(caught.getMessage());
+			}
+		};
+		
+		int projectAccessId = Integer.parseInt(rec.getAttribute("projectAccessId"));
+		
+		req.delete(projectAccessId, callback);
 	}
-
 }

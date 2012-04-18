@@ -3,6 +3,7 @@ package de.unihamburg.zbh.fishoracle.server;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
+import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle.client.rpc.ProjectAccessService;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 import de.unihamburg.zbh.fishoracle.server.data.SessionData;
@@ -16,9 +17,15 @@ public class ProjectAccessServiceImpl extends RemoteServiceServlet implements Pr
 	}
 	
 	@Override
-	public FoProjectAccess add(FoProjectAccess foProjectAccess) {
-		// TODO Auto-generated method stub
-		return null;
+	public FoProjectAccess add(FoProjectAccess foProjectAccess) throws UserException {
+		
+		getSessionData().isAdmin();
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.addAccessToProject(foProjectAccess);
 	}
 
 	@Override
@@ -40,11 +47,14 @@ public class ProjectAccessServiceImpl extends RemoteServiceServlet implements Pr
 	}
 
 	@Override
-	public void delete(int projectAccessId) {
-		// TODO Auto-generated method stub
+	public void delete(int projectAccessId) throws UserException {
 		
+		getSessionData().isAdmin();
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		db.removeAccessFromProject(projectAccessId);
 	}
-
-	
-	
 }
