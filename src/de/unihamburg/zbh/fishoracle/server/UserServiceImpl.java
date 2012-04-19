@@ -23,14 +23,21 @@ import javax.servlet.http.HttpSession;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
+import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
+import de.unihamburg.zbh.fishoracle.server.data.SessionData;
 
 public class UserServiceImpl extends RemoteServiceServlet implements UserService {
 
 	private static final long serialVersionUID = 1929980857354870885L;
 
-	public FoUser register(FoUser user) throws Exception{
+	private SessionData getSessionData(){
+		return new SessionData(this.getThreadLocalRequest());
+	}
+	
+	@Override
+	public FoUser add(FoUser user) throws Exception{
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -41,6 +48,31 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		return storedUser;
 	}
 	
+	@Override
+	public FoUser[] fetch() throws Exception{
+		
+		getSessionData().isAdmin();
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		FoUser[] users = db.getAllUsers();
+		
+		return users;
+	}
+	
+	public FoUser getSessionUserObject(){
+
+		HttpServletRequest request=this.getThreadLocalRequest();
+		HttpSession session=request.getSession();
+
+		FoUser user = (FoUser) session.getAttribute("user");
+
+		return user;
+	}
+	
+	@Override
 	public FoUser login(String userName, String password) throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
@@ -59,7 +91,7 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 	}
 	
 	@Override
-	public void updateUserProfile(FoUser user) throws Exception {
+	public FoUser update(String operationId, FoUser user) throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -67,34 +99,27 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		db.updateProfile(user, sessionUser);
-	}
-	
-	@Override
-	public void updateUserPassword(FoUser user) throws Exception {
-		String servletContext = this.getServletContext().getRealPath("/");
+		if(operationId.equals(OperationId.USER_UPDATE_PROFILE)){
 		
-		FoUser sessionUser = getSessionUserObject();
+			db.updateProfile(user, sessionUser);
+		}
 		
-		DBInterface db = new DBInterface(servletContext);
+		if(operationId.equals(OperationId.USER_UPDATE_ALL)){
+			db.updatePassword(user, sessionUser);
+		}
 		
-		db.updatePassword(user, sessionUser);
-		
-	}
-	
-	public FoUser getSessionUserObject(){
-		
-		HttpServletRequest request=this.getThreadLocalRequest();
-		HttpSession session=request.getSession();
-		
-		FoUser user = (FoUser) session.getAttribute("user");
-		
-		return user;
+		return sessionUser;
 	}
 
+	@Override
 	public void logout(){
 		HttpServletRequest request=this.getThreadLocalRequest();
 		HttpSession session=request.getSession();
 		session.invalidate();
+	}
+	
+	@Override
+	public FoUser remove(FoUser user) {
+		return null;
 	}
 }

@@ -92,12 +92,12 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>userservice</servlet-name>
+    <servlet-name>userService</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.UserServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
-    <servlet-name>userservice</servlet-name>
+    <servlet-name>userService</servlet-name>
     <url-pattern>/fishoracle/UserService</url-pattern>
   </servlet-mapping>
   

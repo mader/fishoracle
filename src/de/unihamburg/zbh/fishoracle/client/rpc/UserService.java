@@ -26,18 +26,19 @@ import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 @RemoteServiceRelativePath("user")
 public interface UserService extends RemoteService {
 	
-	public FoUser register(FoUser user) throws Exception;
-	public FoUser login(String email, String password) throws Exception;
-	void updateUserProfile(FoUser user) throws Exception;
-	void updateUserPassword(FoUser user) throws Exception;
+	FoUser add(FoUser user) throws Exception;
+	FoUser[] fetch() throws Exception;
 	FoUser getSessionUserObject();
+	public FoUser login(String email, String password) throws Exception;
+	FoUser update(String operationId, FoUser user) throws Exception;
 	public void logout();
+	FoUser remove(FoUser user);
 	
 	public static class Util {
 
-		public static SearchAsync getInstance() {
+		public static UserServiceAsync getInstance() {
 
 			return GWT.create(UserService.class);
 		}
-	}	
+	}
 }
