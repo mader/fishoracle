@@ -2157,10 +2157,16 @@ public class CenterPanel extends VLayout{
 			public void onClick(ClickEvent event) {
 				ListGridRecord lgr = projectGrid.getSelectedRecord();
 				
-				FoProject project = new FoProject(Integer.parseInt(lgr.getAttribute("projectId")),
-															lgr.getAttribute("projectName"),
-															lgr.getAttribute("projectDescription"));
-				loadProjectAccessManageWindow(project);
+				if (lgr != null){
+				
+					FoProject project = new FoProject(Integer.parseInt(lgr.getAttribute("projectId")),
+																		lgr.getAttribute("projectName"),
+																		lgr.getAttribute("projectDescription"));
+					loadProjectAccessManageWindow(project);
+					
+				} else {
+					SC.say("Select a project.");
+				}
 			}});
 		
 		projectToolStrip.addButton(addProjectAccessButton);
