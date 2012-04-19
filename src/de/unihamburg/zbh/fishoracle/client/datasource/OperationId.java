@@ -11,6 +11,9 @@ public class OperationId {
 	public static final String ORGAN_FETCH_ENABLED = "getAllEnabledOrgans";
 	public static final String ORGAN_FETCH_TYPES = "getAllOrganTypes";
 	
+	public static final String CHIP_FETCH_ALL = "getAllChips";
+	public static final String CHIP_FETCH_TYPES = "getAllChipTypes";
+	
 	public OperationId() {
 	}
 

@@ -495,7 +495,7 @@ public class WestPanel extends SectionStack{
 					if(exists){
 						centerTabSet.selectTab(index);
 					} else {
-						mp.getCenterPanel().showAllChips();
+						mp.getCenterPanel().openChipAdminTab();
 					}
 				}
 				if(event.getNode().getName().equals("Database Configuration")){

@@ -93,6 +93,7 @@ import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
+import de.unihamburg.zbh.fishoracle.client.datasource.ChipDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.CnSegmentDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.MicroarrayStudyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
@@ -1670,7 +1671,14 @@ public class CenterPanel extends VLayout{
 		chipTypeCbItem.setTitle("Type");
 		chipTypeCbItem.setType("comboBox");
 		
-	    getAllChipTypes();
+		chipTypeCbItem.setAutoFetchData(false);
+		
+		ChipDS cDS = new ChipDS();
+		
+		chipTypeCbItem.setOptionDataSource(cDS);
+		chipTypeCbItem.setOptionOperationId(OperationId.CHIP_FETCH_TYPES);
+		chipTypeCbItem.setDisplayField("typeName");
+		chipTypeCbItem.setValueField("typeId");
 		
 		ButtonItem addChipButton = new ButtonItem("Add");
 		addChipButton.setWidth(50);
@@ -1679,7 +1687,13 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				addChip(new FoChip(0, chipLabelTextItem.getDisplayValue(), chipTypeCbItem.getDisplayValue()));
+				
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("chipName", chipLabelTextItem.getDisplayValue());
+				lgr.setAttribute("chipType", chipTypeCbItem.getDisplayValue());
+				
+				chipGrid.addData(lgr);
+				
 				window.hide();
 			}
 		});
@@ -1691,7 +1705,7 @@ public class CenterPanel extends VLayout{
 		window.show();
 	}
 	
-	public void openChipAdminTab(final FoChip[] chips){
+	public void openChipAdminTab(){
 		
 		Tab chipsAdminTab = new Tab("Chip Management");
 		chipsAdminTab.setCanClose(true);
@@ -1737,27 +1751,23 @@ public class CenterPanel extends VLayout{
 		chipGrid = new ListGrid();
 		chipGrid.setWidth100();
 		chipGrid.setHeight100();
-		chipGrid.setShowAllRecords(true);
 		chipGrid.setAlternateRecordStyles(true);
 		chipGrid.setWrapCells(true);
 		chipGrid.setFixedRecordHeights(false);
+		chipGrid.setShowAllRecords(false);
+		chipGrid.setAutoFetchData(false);
 		
-		ListGridField lgfId = new ListGridField("id", "Chip ID");
-		ListGridField lgfLabel = new ListGridField("chipName", "Chip Label");
+		ListGridField lgfId = new ListGridField("chipId", "Chip ID");
+		ListGridField lgfLabel = new ListGridField("chipName", "Chip Name");
 		ListGridField lgfType = new ListGridField("chipType", "Chip Type");
 		
 		chipGrid.setFields(lgfId, lgfLabel, lgfType);
 		
-		ListGridRecord[] lgr = new ListGridRecord[chips.length];
+		ChipDS cDS = new ChipDS();
 		
-		for(int i=0; i < chips.length; i++){
-			lgr[i] = new ListGridRecord();
-			lgr[i].setAttribute("id", chips[i].getId());
-			lgr[i].setAttribute("chipName", chips[i].getName());
-			lgr[i].setAttribute("chipType", chips[i].getType());
-		}
-		
-		chipGrid.setData(lgr);
+		chipGrid.setDataSource(cDS);
+		chipGrid.setFetchOperation(OperationId.CHIP_FETCH_ALL);
+		chipGrid.fetchData();
 		
 		gridContainer.addMember(chipGrid);
 		
@@ -2385,6 +2395,15 @@ public class CenterPanel extends VLayout{
 		
 		chip = new SelectItem();
 		chip.setTitle("chip type");  
+		//chip.setDisplayField("chipName");
+		//chip.setValueField("chipId");	
+		//chip.setAutoFetchData(false);
+		
+		//ChipDS cDS = new ChipDS();
+		
+		//chip.setOptionDataSource(cDS);
+		//chip.setOptionOperationId(OperationId.CHIP_FETCH_ALL);
+		
 		
 		tissue = new SelectItem();
 		tissue.setTitle("tissue");
@@ -2866,54 +2885,6 @@ public class CenterPanel extends VLayout{
 
 		};
 		req.getAllFoProperties(callback);
-	}
-	
-	public void getAllChipTypes(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<String[]> callback = new AsyncCallback<String[]>(){
-			
-			public void onSuccess(String[] result){
-				
-				LinkedHashMap<String, String> chipTypeValueMap = new LinkedHashMap<String, String>();
-				
-				for(int i=0; i < result.length; i++){
-					chipTypeValueMap.put(new Integer(i).toString(), result[i]);
-				}
-				
-				chipTypeCbItem.setValueMap(chipTypeValueMap);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getAllChipTypes(callback);
-	}
-	
-	public void showAllChips(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoChip[]> callback = new AsyncCallback<FoChip[]>(){
-			
-			public void onSuccess(FoChip[] result){
-				
-				openChipAdminTab(result);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getAllFoChips(callback);
 	}
 	
 	public void showAllGroups(){

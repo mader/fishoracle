@@ -32,6 +32,16 @@
   </servlet-mapping>
 
  <servlet>
+    <servlet-name>ChipService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.ChipServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>ChipService</servlet-name>
+    <url-pattern>/fishoracle/ChipService</url-pattern>
+  </servlet-mapping>
+
+ <servlet>
     <servlet-name>OrganService</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.OrganServiceImpl</servlet-class>
   </servlet>

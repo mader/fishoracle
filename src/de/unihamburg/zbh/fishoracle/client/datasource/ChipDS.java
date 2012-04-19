@@ -13,27 +13,24 @@ import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
-import de.unihamburg.zbh.fishoracle.client.rpc.OrganService;
-import de.unihamburg.zbh.fishoracle.client.rpc.OrganServiceAsync;
+import de.unihamburg.zbh.fishoracle.client.data.FoChip;
+import de.unihamburg.zbh.fishoracle.client.rpc.ChipService;
+import de.unihamburg.zbh.fishoracle.client.rpc.ChipServiceAsync;
 
-public class OrganDS extends FoDataSource {
+public class ChipDS extends FoDataSource {
 
-	public OrganDS() {
+	public ChipDS() {
 		DataSourceField field;
-		field = new DataSourceIntegerField("organId", "Organ ID");
+		field = new DataSourceIntegerField("chipId", "Chip ID");
 		field.setPrimaryKey(true);
 		field.setRequired(true);
 		addField(field);
 		
-		field = new DataSourceTextField("organName", "Organ Name");
+		field = new DataSourceTextField("chipName", "Chip Name");
 		field.setRequired(true);
         addField (field);
         
-        field = new DataSourceTextField("organType", "Type");
-        addField (field);
-        
-        field = new DataSourceTextField("organActivity", "Enabled");
+        field = new DataSourceTextField("chipType", "Type");
         addField (field);
 	}
 
@@ -41,13 +38,13 @@ public class OrganDS extends FoDataSource {
 	protected void executeFetch(final String requestId, final DSRequest request,
 			final DSResponse response) {
 		
-		final OrganServiceAsync req = (OrganServiceAsync) GWT.create(OrganService.class);
+		final ChipServiceAsync req = (ChipServiceAsync) GWT.create(ChipService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "OrganService";
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "ChipService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoOrgan[]> organCallback = new AsyncCallback<FoOrgan[]>(){
+		final AsyncCallback<FoChip[]> ChipCallback = new AsyncCallback<FoChip[]>(){
 			
-			public void onSuccess(FoOrgan[] result){
+			public void onSuccess(FoChip[] result){
 				
 				ListGridRecord[] list = new ListGridRecord[result.length];
 				
@@ -55,10 +52,9 @@ public class OrganDS extends FoDataSource {
 					for (int i = 0; i < result.length; i++) {
 						
 						ListGridRecord record = new ListGridRecord (); 
-						record.setAttribute("organId", new Integer(result[i].getId()).toString());
-						record.setAttribute("organName", result[i].getLabel());
-						record.setAttribute("organType", result[i].getType());
-						record.setAttribute("organActivity", result[i].getActivty());
+						record.setAttribute("chipId", new Integer(result[i].getId()).toString());
+						record.setAttribute("chipName", result[i].getName());
+						record.setAttribute("chipType", result[i].getType());
 						list[i] = record;
 						
 					}
@@ -103,32 +99,31 @@ public class OrganDS extends FoDataSource {
 		
 		String operationId = request.getOperationId();
 		
-		if (operationId.equals(OperationId.ORGAN_FETCH_TYPES)) {
+		if (operationId.equals(OperationId.CHIP_FETCH_TYPES)) {
 			req.fetchTypes(typesCallback);
 		} else {
-			req.fetch(request.getOperationId(), organCallback);
+			req.fetch(ChipCallback);
 		}
 	}
 
 	@Override
-	protected void executeAdd(final String requestId, DSRequest request,
+	protected void executeAdd(final String requestId, final DSRequest request,
 			final DSResponse response) {
 		
-		final OrganServiceAsync req = (OrganServiceAsync) GWT.create(OrganService.class);
+		final ChipServiceAsync req = (ChipServiceAsync) GWT.create(ChipService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "OrganService";
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "ChipService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoOrgan> callback = new AsyncCallback<FoOrgan>(){
+		final AsyncCallback<FoChip> callback = new AsyncCallback<FoChip>(){
 			
-			public void onSuccess(FoOrgan result){
+			public void onSuccess(FoChip result){
 				
 				ListGridRecord[] list = new ListGridRecord[1];
 				
 				ListGridRecord record = new ListGridRecord (); 
-				record.setAttribute("organId", new Integer(result.getId()).toString());
-				record.setAttribute("organName", result.getLabel());
-				record.setAttribute("organType", result.getType());
-				record.setAttribute("organActivity", result.getActivty());
+				record.setAttribute("chipId", new Integer(result.getId()).toString());
+				record.setAttribute("chipName", result.getName());
+				record.setAttribute("chipType", result.getType());
 				list[0] = record;
 				
 				response.setData(list);
@@ -144,13 +139,12 @@ public class OrganDS extends FoDataSource {
 		
 		JavaScriptObject data = request.getData();
 		ListGridRecord rec = new ListGridRecord(data);
-        FoOrgan organ = new FoOrgan();
+        FoChip chip = new FoChip();
         
-        organ.setLabel(rec.getAttribute("organName"));
-        organ.setType(rec.getAttribute("organType"));
-        organ.setActivty("enabled");
+        chip.setName(rec.getAttribute("chipName"));
+        chip.setType(rec.getAttribute("chipType"));
         
-		req.add(organ, callback);
+		req.add(chip, callback);
 	}
 
 	@Override
