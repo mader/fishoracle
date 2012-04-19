@@ -20,7 +20,5 @@ public interface OrganService extends RemoteService {
 
 			return GWT.create(OrganService.class);
 		}
-	}
-
-	
+	}	
 }

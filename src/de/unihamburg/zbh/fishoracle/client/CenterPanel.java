@@ -87,7 +87,6 @@ import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
-import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
@@ -100,6 +99,7 @@ import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.datasource.OrganDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectAccessDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.PropertyDS;
 import de.unihamburg.zbh.fishoracle.client.ImgCanvas;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
@@ -1548,7 +1548,15 @@ public class CenterPanel extends VLayout{
 		propertyTypeCbItem.setTitle("Type");
 		propertyTypeCbItem.setType("comboBox");
 		
-	    getAllPropertyTypes();
+		propertyTypeCbItem.setDisplayField("typeName");
+		propertyTypeCbItem.setValueField("typeId");
+		
+		propertyTypeCbItem.setAutoFetchData(false);
+		
+		PropertyDS pDS = new PropertyDS();
+		
+		propertyTypeCbItem.setOptionDataSource(pDS);
+		propertyTypeCbItem.setOptionOperationId(OperationId.PROPERTY_FETCH_TYPES);
 		
 		ButtonItem addPropertyButton = new ButtonItem("Add");
 		addPropertyButton.setWidth(50);
@@ -1557,7 +1565,15 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				addProperty(new FoProperty(0, propertyLabelTextItem.getDisplayValue(), propertyTypeCbItem.getDisplayValue(), "enabled"));
+				
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("propertyName", propertyLabelTextItem.getDisplayValue());
+				lgr.setAttribute("propertyType", propertyTypeCbItem.getDisplayValue());
+				
+				propertyGrid.addData(lgr);
+				
+				window.hide();
+				
 				window.hide();
 			}
 		});
@@ -1569,7 +1585,7 @@ public class CenterPanel extends VLayout{
 		window.show();
 	}
 	
-	public void openPropertyAdminTab(final FoProperty[] properties){
+	public void openPropertyAdminTab(){
 		
 		Tab propertiesAdminTab = new Tab("Property Management");
 		propertiesAdminTab.setCanClose(true);
@@ -1615,29 +1631,27 @@ public class CenterPanel extends VLayout{
 		propertyGrid = new ListGrid();
 		propertyGrid.setWidth100();
 		propertyGrid.setHeight100();
-		propertyGrid.setShowAllRecords(true);
 		propertyGrid.setAlternateRecordStyles(true);
 		propertyGrid.setWrapCells(true);
 		propertyGrid.setFixedRecordHeights(false);
+		propertyGrid.setShowAllRecords(false);
+		propertyGrid.setAutoFetchData(false);
 		
-		ListGridField lgfId = new ListGridField("id", "Property ID");
-		ListGridField lgfLabel = new ListGridField("propertyLabel", "Property Label");
+		ListGridField lgfId = new ListGridField("propertyId", "Property ID");
+		ListGridField lgfLabel = new ListGridField("propertyName", "Property Name");
 		ListGridField lgfType = new ListGridField("propertyType", "Property Type");
 		ListGridField lgfActivity = new ListGridField("propertyActivity", "enabled");
 		
 		propertyGrid.setFields(lgfId, lgfLabel, lgfType, lgfActivity);
 		
-		ListGridRecord[] lgr = new ListGridRecord[properties.length];
+		propertyGrid.setFields(lgfId, lgfLabel, lgfType, lgfActivity);
 		
-		for(int i=0; i < properties.length; i++){
-			lgr[i] = new ListGridRecord();
-			lgr[i].setAttribute("id", properties[i].getId());
-			lgr[i].setAttribute("propertyLabel", properties[i].getLabel());
-			lgr[i].setAttribute("propertyType", properties[i].getType());
-			lgr[i].setAttribute("propertyActivity", properties[i].getActivty());
-		}
+		PropertyDS pDS = new PropertyDS();
 		
-		propertyGrid.setData(lgr);
+		propertyGrid.setDataSource(pDS);
+		propertyGrid.setFetchOperation(OperationId.PROPERTY_FETCH_ALL);
+		
+		propertyGrid.fetchData();
 		
 		gridContainer.addMember(propertyGrid);
 		
@@ -2429,6 +2443,16 @@ public class CenterPanel extends VLayout{
 		descriptionItem = new TextAreaItem();
 		descriptionItem.setTitle("description");
 		
+		//property.setDisplayField("typeName");
+		//property.setValueField("typeId");
+		
+		//property.setAutoFetchData(false);
+		
+		//PropertyDS pDS = new PropertyDS();
+		
+		//property.setOptionDataSource(pDS);
+		//property.setOptionOperationId(OperationId.PROPERTY_FETCH_ALL);
+		
 		submitNewMstudyButton = new ButtonItem("submit");
 		submitNewMstudyButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
 
@@ -2839,54 +2863,6 @@ public class CenterPanel extends VLayout{
 		req.getMicroarrayOptions(callback);
 	}
 	
-	public void getAllPropertyTypes(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<String[]> callback = new AsyncCallback<String[]>(){
-			
-			public void onSuccess(String[] result){
-				
-				LinkedHashMap<String, String> propertyTypeValueMap = new LinkedHashMap<String, String>();
-				
-				for(int i=0; i < result.length; i++){
-					propertyTypeValueMap.put(new Integer(i).toString(), result[i]);
-				}
-				
-				propertyTypeCbItem.setValueMap(propertyTypeValueMap);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getAllPropertyTypes(callback);
-	}
-	
-	public void showAllProperties(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoProperty[]> callback = new AsyncCallback<FoProperty[]>(){
-			
-			public void onSuccess(FoProperty[] result){
-				
-				openPropertyAdminTab(result);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getAllFoProperties(callback);
-	}
-	
 	public void showAllGroups(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -2967,32 +2943,6 @@ public class CenterPanel extends VLayout{
 
 		};
 		req.addGroup(foGroup, callback);
-	}
-	
-	public void addProperty(FoProperty foProperty){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoProperty> callback = new AsyncCallback<FoProperty>(){
-			
-			public void onSuccess(FoProperty result){
-				
-				ListGridRecord lgr = new ListGridRecord();
-				lgr.setAttribute("id", result.getId());
-				lgr.setAttribute("propertyLabel", result.getLabel());
-				lgr.setAttribute("propertyType", result.getType());
-				lgr.setAttribute("propertyActivity", result.getActivty());
-				
-				propertyGrid.addData(lgr);
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.addProperty(foProperty, callback);
 	}
 	
 	public void addChip(FoChip foChip){

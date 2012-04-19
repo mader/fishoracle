@@ -42,6 +42,16 @@
   </servlet-mapping>
 
  <servlet>
+    <servlet-name>PropertyService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.PropertyServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>PropertyService</servlet-name>
+    <url-pattern>/fishoracle/PropertyService</url-pattern>
+  </servlet-mapping>
+
+ <servlet>
     <servlet-name>OrganService</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.OrganServiceImpl</servlet-class>
   </servlet>
