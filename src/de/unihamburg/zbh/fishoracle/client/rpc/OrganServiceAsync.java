@@ -12,5 +12,7 @@ public interface OrganServiceAsync {
 
 	void fetch(String operationId, AsyncCallback<FoOrgan[]> callback);
 
-	void update(FoOrgan foOrgan, AsyncCallback<Void> callback);
+	void fetchTypes(AsyncCallback<String[]> callback);
+	
+	void update(FoOrgan foOrgan, AsyncCallback<Void> callback);	
 }

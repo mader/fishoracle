@@ -49,6 +49,16 @@ public class OrganServiceImpl extends RemoteServiceServlet implements OrganServi
 		
 		return organs;
 	}
+	
+	@Override
+	public String[] fetchTypes() throws Exception {
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getOrganTypes();
+	}
 
 	@Override
 	public void update(FoOrgan foOrgan) {

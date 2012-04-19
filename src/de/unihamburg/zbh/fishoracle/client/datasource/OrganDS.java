@@ -45,7 +45,7 @@ public class OrganDS extends FoDataSource {
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "OrganService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoOrgan[]> callback = new AsyncCallback<FoOrgan[]>(){
+		final AsyncCallback<FoOrgan[]> organCallback = new AsyncCallback<FoOrgan[]>(){
 			
 			public void onSuccess(FoOrgan[] result){
 				
@@ -74,8 +74,42 @@ public class OrganDS extends FoDataSource {
 			}
 		};
 		
-		req.fetch(request.getOperationId(), callback);
 		
+		final AsyncCallback<String[]> typesCallback = new AsyncCallback<String[]>(){
+			
+			public void onSuccess(String[] result){
+			
+				ListGridRecord[] list = new ListGridRecord[result.length];
+				
+				if (result.length > 0) {
+					for (int i = 0; i < result.length; i++) {
+						
+						ListGridRecord record = new ListGridRecord (); 
+						record.setAttribute("typeId", new Integer(i).toString());
+						record.setAttribute("typeName", result[i]);
+						list[i] = record;
+						
+					}
+				}
+				response.setData(list);
+				processResponse(requestId, response);
+			}
+			
+			public void onFailure(Throwable caught){
+				response.setStatus(RPCResponse.STATUS_FAILURE);
+				processResponse(requestId, response);
+				SC.say(caught.getMessage());
+			}
+		};
+		
+		
+		String operationId = request.getOperationId();
+		
+		if (operationId.equals(OperationId.ORGAN_FETCH_TYPES)) {
+			req.fetchTypes(typesCallback);
+		} else {
+			req.fetch(request.getOperationId(), organCallback);
+		}
 	}
 
 	@Override

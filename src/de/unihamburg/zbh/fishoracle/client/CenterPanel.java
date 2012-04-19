@@ -1415,7 +1415,14 @@ public class CenterPanel extends VLayout{
 		organTypeCbItem.setTitle("Type");
 		organTypeCbItem.setType("comboBox");
 		
-	    getAllOrganTypes();
+		organTypeCbItem.setAutoFetchData(false);
+		
+		OrganDS oDS = new OrganDS();
+		
+		organTypeCbItem.setOptionDataSource(oDS);
+		organTypeCbItem.setOptionOperationId(OperationId.ORGAN_FETCH_TYPES);
+		organTypeCbItem.setDisplayField("typeName");
+		organTypeCbItem.setValueField("typeId");
 		
 		ButtonItem addOrganButton = new ButtonItem("Add");
 		addOrganButton.setWidth(50);
@@ -2811,33 +2818,6 @@ public class CenterPanel extends VLayout{
 			}
 		};
 		req.getMicroarrayOptions(callback);
-	}
-	
-	public void getAllOrganTypes(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<String[]> callback = new AsyncCallback<String[]>(){
-			
-			public void onSuccess(String[] result){
-				
-				LinkedHashMap<String, String> organTypeValueMap = new LinkedHashMap<String, String>();
-				
-				for(int i=0; i < result.length; i++){
-					organTypeValueMap.put(new Integer(i).toString(), result[i]);
-				}
-				
-				organTypeCbItem.setValueMap(organTypeValueMap);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getAllOrganTypes(callback);
 	}
 	
 	public void getAllPropertyTypes(){

@@ -10,6 +10,7 @@ public interface OrganService extends RemoteService {
 
 	FoOrgan add(FoOrgan foOrgan) throws UserException;
 	FoOrgan[] fetch(String operationId) throws Exception;
+	String[] fetchTypes() throws Exception;
 	public void update(FoOrgan foOrgan);
 	public void delete(int organId);
 	
@@ -20,4 +21,6 @@ public interface OrganService extends RemoteService {
 			return GWT.create(OrganService.class);
 		}
 	}
+
+	
 }
