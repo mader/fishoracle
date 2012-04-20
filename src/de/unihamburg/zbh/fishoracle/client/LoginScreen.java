@@ -33,10 +33,12 @@ import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
+import com.smartgwt.client.widgets.form.validator.MatchesFieldValidator;
 import com.smartgwt.client.widgets.layout.LayoutSpacer;
 import com.smartgwt.client.widgets.layout.VLayout;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
+import de.unihamburg.zbh.fishoracle.client.datasource.UserDS;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
@@ -124,66 +126,70 @@ public class LoginScreen extends VLayout{
 		
 		loginForm.setItems(userTextItem, passwordItem, logInButton, registerLink);
 		
+		UserDS uDS = new UserDS();
+		
 		registerForm = new DynamicForm();
+		registerForm.setDataSource(uDS);
+		registerForm.setUseAllDataSourceFields(true);
 		registerForm.setWidth(300);
 		registerForm.setGroupTitle("Register");
 		registerForm.setIsGroup(true);
 		registerForm.hide();
 		
 		userRegTextItem = new TextItem();
-		userRegTextItem.setTitle("Username");
-		userRegTextItem.setRequired(true);
-		
-		emailRegTextItem = new TextItem();
-		emailRegTextItem.setTitle("E-Mail");
-		emailRegTextItem.setRequired(true);
+		userRegTextItem.setName("userName");
 		
 		firstNameRegTextItem = new TextItem();
-		firstNameRegTextItem.setTitle("First Name");
-		firstNameRegTextItem.setRequired(true);
+		firstNameRegTextItem.setName("firstName");
 		
 		lastNameRegTextItem = new TextItem();
-		lastNameRegTextItem.setTitle("Last Name");
-		lastNameRegTextItem.setRequired(true);
+		lastNameRegTextItem.setName("lastName");
+		
+		emailRegTextItem = new TextItem();
+		emailRegTextItem.setName("email");
 		
 		passwordRegItem = new PasswordItem();
-		passwordRegItem.setTitle("Password");
-		passwordRegItem.setRequired(true);
+		passwordRegItem.setName("pw");
 		
 		passwordReRegItem = new PasswordItem();
-		passwordReRegItem.setTitle("Retype Password");
+		passwordReRegItem.setTitle("Confirm Password");
 		passwordReRegItem.setRequired(true);
+		
+		MatchesFieldValidator matchesValidator = new MatchesFieldValidator();  
+		matchesValidator.setOtherField("pw");
+		matchesValidator.setErrorMessage("Passwords do not match!");
+		passwordReRegItem.setValidators(matchesValidator);  
 		
 		ButtonItem registerButton = new ButtonItem("register");
 		registerButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if(passwordRegItem.getDisplayValue().equals(passwordReRegItem.getDisplayValue())){
-					FoUser user = new FoUser(firstNameRegTextItem.getDisplayValue(),
-											lastNameRegTextItem.getDisplayValue(),
-											userRegTextItem.getDisplayValue(),
-											emailRegTextItem.getDisplayValue(),
-											passwordRegItem.getDisplayValue(),
-											false,
-											false);
-					registerUser(user);
-				} else {
-					passwordRegItem.setValue("");
-					passwordReRegItem.setValue("");
-					SC.say("Your password confirmation did not match with the given password!");
+				
+				if(registerForm.validate()){
+				
+					registerForm.saveData();
+				
+					registerForm.animateHide(AnimationEffect.SLIDE);
+					
+					String msg = "Registered! Before you can login with your user name " + userRegTextItem.getDisplayValue() + " your account has to be verified." +
+								" We will try to do that as fast as possible.";
+			
+					SC.say(msg);
+					
+					registerForm.clearValues();
 				}
 			}
 		});
 		
-		
-		registerForm.setItems(userRegTextItem,
+		registerForm.setFields(userRegTextItem,
 								emailRegTextItem,
 								firstNameRegTextItem,
 								lastNameRegTextItem,
 								passwordRegItem,
 								passwordReRegItem,
 								registerButton);
+		
 		
 		formContainer.addMember(loginForm);
 		formContainer.addMember(registerForm);
@@ -221,7 +227,6 @@ public class LoginScreen extends VLayout{
 						ls.hide();
 					}
 				});
-				
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
@@ -230,36 +235,4 @@ public class LoginScreen extends VLayout{
 		};
 		req.login(userName, password, callback);
 	}	
-
-	public void registerUser(FoUser user){
-	
-		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoUser> callback = new AsyncCallback<FoUser>(){
-			public void onSuccess(FoUser result){
-		
-				userRegTextItem.setValue("");
-				emailRegTextItem.setValue("");
-				firstNameRegTextItem.setValue("");
-				lastNameRegTextItem.setValue("");
-				passwordRegItem.setValue("");
-				passwordReRegItem.setValue("");
-				
-				registerForm.animateHide(AnimationEffect.SLIDE);
-				
-				String msg = "Registered! Before you can login with your user name " + result.getUserName() + " your account has to be verified." +
-							" We will try to do that as fast as possible.";
-			
-				SC.say(msg);
-
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());
-			}
-		};
-		req.register(user, callback);
-	}
 }

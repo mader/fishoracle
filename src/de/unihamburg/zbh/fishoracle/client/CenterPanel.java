@@ -100,6 +100,7 @@ import de.unihamburg.zbh.fishoracle.client.datasource.OrganDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectAccessDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.PropertyDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.UserDS;
 import de.unihamburg.zbh.fishoracle.client.ImgCanvas;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
@@ -1071,6 +1072,12 @@ public class CenterPanel extends VLayout{
 		userProfileForm.setWidth(250);
 		userProfileForm.setHeight(260);
 		userProfileForm.setAlign(Alignment.CENTER);
+		
+		//TODO
+		//UserDS uDS = new UserDS();
+		
+		//userProfileForm.setDataSource(uDS);
+		//userProfileForm.saveData();
 		
 		useIdTextItem = new TextItem();
 		useIdTextItem.setTitle("User Id");
@@ -2970,6 +2977,8 @@ public class CenterPanel extends VLayout{
 		req.addChip(foChip, callback);
 	}
 	
+	//TODO
+	
 	public void updateUserProfile(FoUser user){
 		
 		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
@@ -2987,7 +2996,7 @@ public class CenterPanel extends VLayout{
 				SC.say(caught.getMessage());
 			}
 		};
-		req.updateUserProfile(user, callback);
+		//req.updateUserProfile(user, callback);
 	}
 	
 	public void updateUserPassword(FoUser user){
@@ -3007,7 +3016,7 @@ public class CenterPanel extends VLayout{
 				SC.say(caught.getMessage());
 			}
 		};
-		req.updateUserPassword(user, callback);
+		//req.updateUserPassword(user, callback);
 	}
 	
 	public void setPassword(int userId, String pw){
