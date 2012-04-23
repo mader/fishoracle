@@ -32,4 +32,8 @@ public class SessionData {
 		}
 		return user;
 	}
+
+	public HttpSession getSession() {
+		return session;
+	}
 }

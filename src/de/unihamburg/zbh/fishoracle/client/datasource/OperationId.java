@@ -18,8 +18,10 @@ public class OperationId {
 	public static final String CHIP_FETCH_ALL = "getAllChips";
 	public static final String CHIP_FETCH_TYPES = "getAllChipTypes";
 	
-	public static final String USER_UPDATE_ALL = "getAllUsers";
-	public static final String USER_UPDATE_PROFILE = "getRegisterUser";
+	public static final String USER_FETCH_ALL = "getAllUsers";
+	public static final String USER_FETCH_PROFILE = "getUserProfile";
+	public static final String USER_UPDATE_PASSWORD = "getUpdateUserPw";
+	public static final String USER_UPDATE_PROFILE = "getUpdateUserProfile";
 	
 	
 	public OperationId() {

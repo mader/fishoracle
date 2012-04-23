@@ -28,7 +28,7 @@ public interface UserService extends RemoteService {
 	
 	FoUser add(FoUser user) throws Exception;
 	FoUser[] fetch() throws Exception;
-	FoUser getSessionUserObject();
+	FoUser[] getSessionUserObject();
 	public FoUser login(String email, String password) throws Exception;
 	FoUser update(String operationId, FoUser user) throws Exception;
 	public void logout();

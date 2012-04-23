@@ -61,6 +61,7 @@ import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
+import com.smartgwt.client.widgets.form.validator.MatchesFieldValidator;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
@@ -122,8 +123,10 @@ public class CenterPanel extends VLayout{
 	private SelectItem userSelectItem;
 	private SelectItem projectSelectItem;
 	
-	private TextItem useIdTextItem;
-	private TextItem useNameTextItem;
+	private DynamicForm userProfileForm;
+	private DynamicForm userPwForm;
+	private TextItem userIdTextItem;
+	private TextItem userNameTextItem;
 	private TextItem userFirstNameTextItem;
 	private TextItem userLastNameTextItem;
 	private TextItem userEmailTextItem;
@@ -1048,7 +1051,7 @@ public class CenterPanel extends VLayout{
 		
 	}
 	
-	public void openUserProfileTab(FoUser user){
+	public void openUserProfileTab(){
 		
 		Tab userProfileTab = new Tab("Profile");
 		userProfileTab.setCanClose(true);
@@ -1062,44 +1065,44 @@ public class CenterPanel extends VLayout{
 		header.setAutoWidth();
 		header.setAutoHeight();
 		
-		Label headerLbl = new Label("<h2>" + user.getUserName() + "s Profile</h2>");
+		Label headerLbl = new Label("<h2>Profile</h2>");
 		headerLbl.setWrap(false);
 		header.addMember(headerLbl);
 		
 		pane.addMember(header);
 		
-		DynamicForm userProfileForm = new DynamicForm();
+		UserDS uDS = new UserDS();
+		uDS.getField("userId").setHidden(false);
+		
+		userProfileForm = new DynamicForm();
 		userProfileForm.setWidth(250);
 		userProfileForm.setHeight(260);
 		userProfileForm.setAlign(Alignment.CENTER);
+
+		userProfileForm.setDataSource(uDS);
 		
-		//TODO
-		//UserDS uDS = new UserDS();
+		userIdTextItem = new TextItem();
+		userIdTextItem.setName("userId");
+		userIdTextItem.setRequired(false);
+		userIdTextItem.setDisabled(true);
 		
-		//userProfileForm.setDataSource(uDS);
-		//userProfileForm.saveData();
-		
-		useIdTextItem = new TextItem();
-		useIdTextItem.setTitle("User Id");
-		useIdTextItem.setValue(user.getId());
-		useIdTextItem.setDisabled(true);
-		
-		useNameTextItem = new TextItem();
-		useNameTextItem.setTitle("Username");
-		useNameTextItem.setValue(user.getUserName());
-		useNameTextItem.setDisabled(true);
+		userNameTextItem = new TextItem();
+		userNameTextItem.setName("userName");
+		userNameTextItem.setRequired(false);
+		userNameTextItem.setDisabled(true);
 		
 		userFirstNameTextItem = new TextItem();
-		userFirstNameTextItem.setTitle("First Name");
-		userFirstNameTextItem.setValue(user.getFirstName());
+		userFirstNameTextItem.setName("firstName");
 		
 		userLastNameTextItem = new TextItem();
-		userLastNameTextItem.setTitle("Last Name");
-		userLastNameTextItem.setValue(user.getLastName());
+		userLastNameTextItem.setName("lastName");
 		
 		userEmailTextItem = new TextItem();
-		userEmailTextItem.setTitle("E-Mail");
-		userEmailTextItem.setValue(user.getEmail());
+		userEmailTextItem.setName("email");
+		
+		
+		userProfileForm.setFetchOperation(OperationId.USER_FETCH_PROFILE);
+		userProfileForm.fetchData();
 		
 		ButtonItem updateProfile = new ButtonItem();
 		updateProfile.setTitle("Update Profile");
@@ -1108,20 +1111,48 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				updateUserProfile(new FoUser(Integer.parseInt(useIdTextItem.getDisplayValue()),
-									userFirstNameTextItem.getDisplayValue(), 
-									userLastNameTextItem.getDisplayValue(),
-									useNameTextItem.getDisplayValue(),
-									userEmailTextItem.getDisplayValue(),
-									false,
-									false));
+				
+				if(userFirstNameTextItem.validate() && userLastNameTextItem.validate() && userEmailTextItem.validate()){
+					
+					userProfileForm.setUpdateOperation(OperationId.USER_UPDATE_PROFILE);
+					userProfileForm.saveData();
+				}
 			}});
 		
+		
+		userProfileForm.setItems(userIdTextItem,
+								userNameTextItem,
+								userFirstNameTextItem,
+								userLastNameTextItem,
+								userEmailTextItem,
+								updateProfile);
+		
+		userPwForm = new DynamicForm();
+		userPwForm.setWidth(250);
+		userPwForm.setHeight(260);
+		userPwForm.setAlign(Alignment.CENTER);
+		userPwForm.setUseAllDataSourceFields(true);
+		userPwForm.setDataSource(uDS);
+		uDS.getField("userId").setHidden(true);
+		uDS.getField("userName").setHidden(true);
+		uDS.getField("firstName").setHidden(true);
+		uDS.getField("lastName").setHidden(true);
+		uDS.getField("email").setHidden(true);
+		
 		userPwItem = new PasswordItem();
-		userPwItem.setTitle("Password");
+		userPwItem.setName("pw");
 		
 		userPwConfirmItem = new PasswordItem();
 		userPwConfirmItem.setTitle("Confirm Password");
+		userPwConfirmItem.setRequired(true);
+		
+		MatchesFieldValidator matchesValidator = new MatchesFieldValidator();  
+		matchesValidator.setOtherField("pw");
+		matchesValidator.setErrorMessage("Passwords do not match!");
+		userPwConfirmItem.setValidators(matchesValidator);  
+		
+		userPwForm.setFetchOperation(OperationId.USER_FETCH_PROFILE);
+		userPwForm.fetchData();
 		
 		ButtonItem updatePassword = new ButtonItem();
 		updatePassword.setTitle("Set Password");
@@ -1131,36 +1162,21 @@ public class CenterPanel extends VLayout{
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
 				
-				if(userPwItem.getDisplayValue().equals(userPwConfirmItem.getDisplayValue())){
-					
-					FoUser user = new FoUser(Integer.parseInt(useIdTextItem.getDisplayValue()),
-												userFirstNameTextItem.getDisplayValue(), 
-												userLastNameTextItem.getDisplayValue(),
-												useNameTextItem.getDisplayValue(),
-												userEmailTextItem.getDisplayValue(),
-												false,
-												false);
-					user.setPw(userPwItem.getDisplayValue());
 				
-					updateUserPassword(user);
+				if(userPwConfirmItem.validate()){
 					
-				} else {
-					SC.say("Password does not match!");
+					userPwForm.setUpdateOperation(OperationId.USER_UPDATE_PASSWORD);
+					userPwForm.saveData();
 				}
-				
 			}});
 		
-		userProfileForm.setItems(useIdTextItem,
-								useNameTextItem,
-								userFirstNameTextItem,
-								userLastNameTextItem,
-								userEmailTextItem,
-								updateProfile, 
-								userPwItem,
-								userPwConfirmItem,
-								updatePassword);
+		userPwForm.setItems(userPwItem,
+							userPwConfirmItem,
+							updatePassword);
 		
 		pane.addMember(userProfileForm);
+		
+		pane.addMember(userPwForm);
 		
 		userProfileTab.setPane(pane);
 		
@@ -2979,46 +2995,6 @@ public class CenterPanel extends VLayout{
 	
 	//TODO
 	
-	public void updateUserProfile(FoUser user){
-		
-		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
-			
-			public void onSuccess(Void result){
-				
-				SC.say("Update successful!");
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-		};
-		//req.updateUserProfile(user, callback);
-	}
-	
-	public void updateUserPassword(FoUser user){
-		
-		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
-			
-			public void onSuccess(Void result){
-				
-				SC.say("Update successful!");
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-		};
-		//req.updateUserPassword(user, callback);
-	}
-	
 	public void setPassword(int userId, String pw){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3045,15 +3021,15 @@ public class CenterPanel extends VLayout{
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoUser> callback = new AsyncCallback<FoUser>(){
+		final AsyncCallback<FoUser[]> callback = new AsyncCallback<FoUser[]>(){
 			
-			public void onSuccess(FoUser result){
+			public void onSuccess(FoUser[] result){
 				
 				if(forWhat.equals("ProjectAdminTab")){
-					openProjectAdminTab(result);
+					openProjectAdminTab(result[0]);
 				}
 				if(forWhat.equals("MicroarraystudyAdminTab")){
-					openMicrorraystudyAdminTab(result);
+					openMicrorraystudyAdminTab(result[0]);
 				}
 				
 			}

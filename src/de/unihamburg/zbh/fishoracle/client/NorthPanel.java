@@ -38,7 +38,6 @@ import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
@@ -95,7 +94,7 @@ public class NorthPanel extends HLayout{
 				if(exists){
 					mp.getCenterPanel().getCenterTabSet().selectTab(index);
 				} else {
-					showUserProfile();
+					mp.getCenterPanel().openUserProfileTab();
 				}
 			}
 		});
@@ -160,27 +159,7 @@ public class NorthPanel extends HLayout{
 	/*=============================================================================
 	 *||                              RPC Calls                                  ||
 	 *=============================================================================
-	 * */	
-	
-	public void showUserProfile(){
-		
-		final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoUser> callback = new AsyncCallback<FoUser>(){
-			public void onSuccess(FoUser result){
-				
-				mp.getCenterPanel().openUserProfileTab(result);
-				
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());
-			}
-		};
-		req.getSessionUserObject(callback);
-	}	
+	 * */
 	
 	public void userLogout(){
 		
@@ -214,11 +193,9 @@ public class NorthPanel extends HLayout{
 				}
 				
 				mp.getLoginScreen().show();
-				mp.getLoginScreen().animateFade(100);
-				
-				//MessageBox.hide();
-				
+				mp.getLoginScreen().animateFade(100);	
 			}
+			
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
 				SC.say(caught.getMessage());

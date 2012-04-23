@@ -51,8 +51,6 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 	@Override
 	public FoUser[] fetch() throws Exception{
 		
-		getSessionData().isAdmin();
-		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
@@ -62,14 +60,14 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		return users;
 	}
 	
-	public FoUser getSessionUserObject(){
+	public FoUser[] getSessionUserObject(){
 
 		HttpServletRequest request=this.getThreadLocalRequest();
 		HttpSession session=request.getSession();
 
 		FoUser user = (FoUser) session.getAttribute("user");
 
-		return user;
+		return new FoUser[]{user};
 	}
 	
 	@Override
@@ -95,20 +93,24 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
-		FoUser sessionUser = getSessionUserObject();
+		FoUser[] sessionUser = getSessionUserObject();
 		
 		DBInterface db = new DBInterface(servletContext);
 		
 		if(operationId.equals(OperationId.USER_UPDATE_PROFILE)){
 		
-			db.updateProfile(user, sessionUser);
+			db.updateProfile(user, sessionUser[0]);
+			
+			getSessionData().getSession().setAttribute("user", user);
 		}
 		
-		if(operationId.equals(OperationId.USER_UPDATE_ALL)){
-			db.updatePassword(user, sessionUser);
+		if(operationId.equals(OperationId.USER_UPDATE_PASSWORD)){
+			db.updatePassword(user, sessionUser[0]);
 		}
 		
-		return sessionUser;
+		user.setPw("");
+		
+		return user;
 	}
 
 	@Override

@@ -86,7 +86,6 @@ public class UserDS extends FoDataSource {
 						record.setAttribute("isActive", result[i].getIsActive());
 						record.setAttribute("isAdmin", result[i].getIsAdmin());
 						list[i] = record;
-						
 					}
 				}
 				response.setData(list);
@@ -100,7 +99,17 @@ public class UserDS extends FoDataSource {
 			}
 		};
 		
-		req.fetch(callback);	
+		
+		String operationId = request.getOperationId();
+		
+		if (operationId.equals(OperationId.USER_FETCH_PROFILE)) {
+			req.getSessionUserObject(callback);
+		}
+		if(operationId.equals(OperationId.USER_FETCH_ALL)){
+			req.fetch(callback);
+		}
+		
+			
 	}
 
 	@Override
@@ -160,7 +169,7 @@ public class UserDS extends FoDataSource {
 		
         final UserServiceAsync req = (UserServiceAsync) GWT.create(UserService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "ProjectService";
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "UserService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
 		final AsyncCallback<FoUser> callback = new AsyncCallback<FoUser>(){
 			
@@ -180,6 +189,8 @@ public class UserDS extends FoDataSource {
 				
 				response.setData(list);
 				processResponse(requestId, response);
+				
+				SC.say("Update successful!");
 			}
 			
 			public void onFailure(Throwable caught){
@@ -189,30 +200,38 @@ public class UserDS extends FoDataSource {
 			}
 		};
 		
-		//TODO
-		JavaScriptObject oldValues = request.getAttributeAsJavaScriptObject ("oldValues");
+		JavaScriptObject oldValues = request.getAttributeAsJavaScriptObject("oldValues");
         // Creating new record for combining old values with changes
-        ListGridRecord newRecord = new ListGridRecord ();
+        ListGridRecord newRecord = new ListGridRecord();
         // Copying properties from old record
-        JSOHelper.apply (oldValues, newRecord.getJsObj ());
+        JSOHelper.apply(oldValues, newRecord.getJsObj());
         // Retrieving changed values
-        JavaScriptObject data = request.getData ();
+        JavaScriptObject data = request.getData();
         // Apply changes
-        JSOHelper.apply (data, newRecord.getJsObj ());
+        JSOHelper.apply(data, newRecord.getJsObj());
+        
+		String operationId = request.getOperationId();
 		
 		ListGridRecord rec = newRecord;
         FoUser user = new FoUser();
         
-        user.setId(rec.getAttributeAsInt("userId"));
-        user.setUserName(rec.getAttribute("userName"));
-        user.setFirstName(rec.getAttribute("firstName"));
-        user.setLastName(rec.getAttribute("LastName"));
-        user.setEmail(rec.getAttribute("email"));
-        user.setPw(rec.getAttribute("pw"));
-        user.setIsActive(rec.getAttributeAsBoolean("isActive"));
-        user.setIsAdmin(rec.getAttributeAsBoolean("isAdmin"));
-       
-        String operationId = request.getOperationId();
+        if(operationId.equals(OperationId.USER_UPDATE_PROFILE)){
+        
+        	user.setId(rec.getAttributeAsInt("userId"));
+        	user.setUserName(rec.getAttribute("userName"));
+        	user.setFirstName(rec.getAttribute("firstName"));
+        	user.setLastName(rec.getAttribute("lastName"));
+        	user.setEmail(rec.getAttribute("email"));
+        
+        }
+        
+        if(operationId.equals(OperationId.USER_UPDATE_PASSWORD)){
+        	
+        	user.setId(Integer.parseInt(rec.getAttribute("userId")));
+        	user.setUserName(rec.getAttribute("userName"));
+        	user.setPw(rec.getAttribute("pw"));
+        	
+        }
         
         req.update(operationId, user, callback);
 	}
