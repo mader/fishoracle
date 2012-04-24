@@ -106,9 +106,26 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		
 		if(operationId.equals(OperationId.USER_UPDATE_PASSWORD)){
 			db.updatePassword(user, sessionUser[0]);
+			user.setPw("");
 		}
 		
-		user.setPw("");
+		if(operationId.equals(OperationId.USER_UPDATE_PASSWORD_ADMIN)){
+			getSessionData().isAdmin();
+			db.setPassword(user.getId(), user.getPw());
+			user.setPw("");
+		}
+		
+		if(operationId.equals(OperationId.USER_UPDATE_ISADMIN)){
+			getSessionData().isAdmin();
+			boolean bool = (1 == db.setAdminStatus(user.getId(), user.getIsAdmin())) ? true : false;
+			user.setIsAdmin(bool);
+		}
+		
+		if(operationId.equals(OperationId.USER_UPDATE_ISACTIVE)){
+			getSessionData().isAdmin();
+			boolean bool = (1 == db.setActiveStatus(user.getId(), user.getIsActive())) ? true : false;
+			user.setIsActive(bool);
+		}
 		
 		return user;
 	}

@@ -99,7 +99,6 @@ public class UserDS extends FoDataSource {
 			}
 		};
 		
-		
 		String operationId = request.getOperationId();
 		
 		if (operationId.equals(OperationId.USER_FETCH_PROFILE)) {
@@ -108,8 +107,6 @@ public class UserDS extends FoDataSource {
 		if(operationId.equals(OperationId.USER_FETCH_ALL)){
 			req.fetch(callback);
 		}
-		
-			
 	}
 
 	@Override
@@ -214,23 +211,18 @@ public class UserDS extends FoDataSource {
 		
 		ListGridRecord rec = newRecord;
         FoUser user = new FoUser();
-        
-        if(operationId.equals(OperationId.USER_UPDATE_PROFILE)){
-        
-        	user.setId(rec.getAttributeAsInt("userId"));
-        	user.setUserName(rec.getAttribute("userName"));
-        	user.setFirstName(rec.getAttribute("firstName"));
-        	user.setLastName(rec.getAttribute("lastName"));
-        	user.setEmail(rec.getAttribute("email"));
-        
-        }
-        
-        if(operationId.equals(OperationId.USER_UPDATE_PASSWORD)){
         	
-        	user.setId(Integer.parseInt(rec.getAttribute("userId")));
-        	user.setUserName(rec.getAttribute("userName"));
+        user.setId(Integer.parseInt(rec.getAttribute("userId")));
+        user.setUserName(rec.getAttribute("userName"));
+        user.setFirstName(rec.getAttribute("firstName"));
+        user.setLastName(rec.getAttribute("lastName"));
+        user.setEmail(rec.getAttribute("email"));
+        user.setIsActive(rec.getAttributeAsBoolean("isActive"));
+        user.setIsAdmin(rec.getAttributeAsBoolean("isAdmin"));
+        
+        if(operationId.equals(OperationId.USER_UPDATE_PASSWORD_ADMIN) || 
+        		operationId.equals(OperationId.USER_UPDATE_PASSWORD)){
         	user.setPw(rec.getAttribute("pw"));
-        	
         }
         
         req.update(operationId, user, callback);

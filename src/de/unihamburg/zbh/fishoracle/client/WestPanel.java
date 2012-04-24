@@ -49,7 +49,6 @@ import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
 import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.TrackData;
@@ -417,7 +416,8 @@ public class WestPanel extends SectionStack{
 					if(exists){
 						centerTabSet.selectTab(index);
 					} else {
-						showAllUsers();
+						
+						mp.getCenterPanel().openUserAdminTab();
 					}
 				}
 				if(event.getNode().getName().equals("Manage Groups")){
@@ -696,29 +696,7 @@ public class WestPanel extends SectionStack{
 				}
 			};
 			req.generateImage(q, callback);
-		}
-	
-	public void showAllUsers(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoUser[]> callback = new AsyncCallback<FoUser[]>(){
-			
-			public void onSuccess(FoUser[] result){
-				
-				mp.getCenterPanel().openUserAdminTab(result);
-				
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getAllUsers(callback);
-	}	
+	}
 	
 	public void checkImportData(){
 

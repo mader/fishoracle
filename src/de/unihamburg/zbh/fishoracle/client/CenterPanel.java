@@ -28,7 +28,6 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 import com.smartgwt.client.data.Criteria;
-import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.types.ListGridEditEvent;
@@ -65,8 +64,6 @@ import com.smartgwt.client.widgets.form.validator.MatchesFieldValidator;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
-import com.smartgwt.client.widgets.grid.events.CellClickEvent;
-import com.smartgwt.client.widgets.grid.events.CellClickHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
@@ -84,7 +81,6 @@ import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
@@ -124,6 +120,7 @@ public class CenterPanel extends VLayout{
 	private SelectItem projectSelectItem;
 	
 	private DynamicForm userProfileForm;
+	private DynamicForm pwForm;
 	private DynamicForm userPwForm;
 	private TextItem userIdTextItem;
 	private TextItem userNameTextItem;
@@ -892,7 +889,7 @@ public class CenterPanel extends VLayout{
 		window.show();
 	}
 	
-	public void loadSetPwWindow(final int userId, String username){
+	public void loadSetPwWindow(final int userId, String username, UserDS uDS){
 		
 		final Window window = new Window();
 
@@ -903,11 +900,23 @@ public class CenterPanel extends VLayout{
 		
 		window.setAutoCenter(true);
 		window.setIsModal(true);
-		window.setShowModalMask(true); 
+		window.setShowModalMask(true);
 		
-		DynamicForm pwForm = new DynamicForm();
+		pwForm = new DynamicForm();
+		pwForm.setUseAllDataSourceFields(true);
+		pwForm.setDataSource(uDS);
+		
+		uDS.getField("userId").setHidden(true);
+		uDS.getField("userName").setHidden(true);
+		uDS.getField("firstName").setHidden(true);
+		uDS.getField("lastName").setHidden(true);
+		uDS.getField("email").setHidden(true);
+		
+		
+		pwForm.editSelectedData(userGrid);
+		
 		newPwPasswordItem = new PasswordItem();
-		newPwPasswordItem.setTitle("New Password");
+		newPwPasswordItem.setName("pw");
 		
 		ButtonItem submitPwButton = new ButtonItem("submit");
 		submitPwButton.setWidth(50);
@@ -917,7 +926,10 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				setPassword(userId, newPwPasswordItem.getDisplayValue());
+				
+				pwForm.setUpdateOperation(OperationId.USER_UPDATE_PASSWORD_ADMIN);
+				pwForm.saveData();
+				
 				window.hide();
 			}
 			
@@ -931,7 +943,7 @@ public class CenterPanel extends VLayout{
 		
 	}
 	
-	public void openUserAdminTab(final FoUser[] users){
+	public void openUserAdminTab(){
 	
 		Tab usersAdminTab = new Tab("Users");
 		usersAdminTab.setCanClose(true);
@@ -953,6 +965,8 @@ public class CenterPanel extends VLayout{
 		ToolStrip userToolStrip = new ToolStrip();
 		userToolStrip.setWidth100();
 		
+		UserDS uDS = new UserDS();
+		
 		ToolStripButton changePwButton = new ToolStripButton();  
 		changePwButton.setTitle("Change Password");
 		changePwButton.addClickHandler(new ClickHandler(){
@@ -962,10 +976,12 @@ public class CenterPanel extends VLayout{
 				
 				ListGridRecord lgr = userGrid.getSelectedRecord();
 				
+				UserDS uDS = (UserDS) userGrid.getDataSource();
+				
 				if (lgr != null){
 				
-					loadSetPwWindow(userGrid.getSelectedRecord().getAttributeAsInt("id"),
-						userGrid.getSelectedRecord().getAttribute("userName"));
+					loadSetPwWindow(Integer.parseInt(userGrid.getSelectedRecord().getAttribute("userId")),
+						userGrid.getSelectedRecord().getAttribute("userName"), uDS);
 					
 				} else {
 					SC.say("Select a user.");
@@ -987,57 +1003,59 @@ public class CenterPanel extends VLayout{
 		userGrid = new ListGrid();
 		userGrid.setWidth100();
 		userGrid.setHeight100();
-		userGrid.setShowAllRecords(true);  
 		userGrid.setAlternateRecordStyles(true);
 		userGrid.setWrapCells(true);
 		userGrid.setFixedRecordHeights(false);
-		userGrid.markForRedraw();
-		userGrid.addCellClickHandler(new CellClickHandler() {  
-			
-			@Override
-			public void onCellClick(CellClickEvent event) {  
-			 
-				ListGridRecord record =  event.getRecord();
-				int id = Integer.parseInt(record.getAttribute("id"));
-				
-				int colNum = event.getColNum();  
-				String fieldName = userGrid.getFieldName(colNum);
-				
-				if(fieldName.equals("isAdmin")){
-					String flag = record.getAttributeAsString("isAdmin");
-					toggleIsActiveOrIsAdmin(id, flag, "isAdmin", event.getRowNum(), event.getRowNum());
-				} else if (fieldName.equals("isActive")){
-					String flag = record.getAttributeAsString("isActive");
-					toggleIsActiveOrIsAdmin(id, flag, "isActive", event.getRowNum(), event.getRowNum());
-				}
-			}
-		}); 
+		userGrid.setEditByCell(true);
+		userGrid.setAutoSaveEdits(false);
 		
+		userGrid.setShowAllRecords(false);
+		userGrid.setAutoFetchData(false);
 		
-		ListGridField lgfId = new ListGridField("id", "user ID");
+		userGrid.setDataSource(uDS);
+		userGrid.setFetchOperation(OperationId.USER_FETCH_ALL);
+		userGrid.fetchData();
+		
+		ListGridField lgfId = new ListGridField("userId", "User ID");
+		lgfId.setCanEdit(false);
 		ListGridField lgfFirstName = new ListGridField("firstName", "First Name");
+		lgfFirstName.setCanEdit(false);
 		ListGridField lgfLastName = new ListGridField("lastName", "Last Name");
+		lgfFirstName.setCanEdit(false);
 		ListGridField lgfUserName = new ListGridField("userName", "Username");
+		lgfUserName.setCanEdit(false);
 		ListGridField lgfEmail = new ListGridField("email", "E-Mail");
+		lgfEmail.setCanEdit(false);
 		ListGridField lgfIsActive = new ListGridField("isActive", "Activated");
+		lgfIsActive.setCanEdit(true);
+		
+		lgfIsActive.addChangedHandler(new com.smartgwt.client.widgets.grid.events.ChangedHandler(){
+
+			@Override
+			public void onChanged(
+					com.smartgwt.client.widgets.grid.events.ChangedEvent event) {
+				
+				ListGridRecord lgr = userGrid.getSelectedRecord();
+				userGrid.setUpdateOperation(OperationId.USER_UPDATE_ISACTIVE);
+				userGrid.updateData(lgr);
+			}
+		});
+		
 		ListGridField lgfisAdmin = new ListGridField("isAdmin", "Administator");
+		lgfisAdmin.setCanEdit(true);
+		lgfisAdmin.addChangedHandler(new com.smartgwt.client.widgets.grid.events.ChangedHandler(){
+
+			@Override
+			public void onChanged(
+					com.smartgwt.client.widgets.grid.events.ChangedEvent event) {
+				
+				ListGridRecord lgr = userGrid.getSelectedRecord();
+				userGrid.setUpdateOperation(OperationId.USER_UPDATE_ISADMIN);
+				userGrid.updateData(lgr);
+			}
+		});
 		
 		userGrid.setFields(lgfId, lgfFirstName, lgfLastName, lgfUserName, lgfEmail, lgfIsActive, lgfisAdmin);
-		
-		ListGridRecord[] lgr = new ListGridRecord[users.length];
-		
-		for(int i=0; i < users.length; i++){
-			lgr[i] = new ListGridRecord();
-			lgr[i].setAttribute("id", users[i].getId());
-			lgr[i].setAttribute("firstName", users[i].getFirstName());
-			lgr[i].setAttribute("lastName", users[i].getLastName());
-			lgr[i].setAttribute("userName", users[i].getUserName());
-			lgr[i].setAttribute("email", users[i].getEmail());
-			lgr[i].setAttribute("isActive", users[i].getIsActive());
-			lgr[i].setAttribute("isAdmin", users[i].getIsAdmin());
-		}
-		
-		userGrid.setData(lgr);
 		
 		gridContainer.addMember(userGrid);
 		
@@ -2635,7 +2653,6 @@ public class CenterPanel extends VLayout{
 	    
 	    pane.addMember(dataForm);
 	    
-	    
 	    DatabaseConfigTab.setPane(pane);
 	    
 	    centerTabSet.addTab(DatabaseConfigTab);
@@ -2790,31 +2807,6 @@ public class CenterPanel extends VLayout{
 		req.writeConfigData(data, callback);
 	}
 	
-	public void toggleIsActiveOrIsAdmin(int id, String flag, String type, int rowNum, int colNum){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<String[]> callback = new AsyncCallback<String[]>(){
-			@Override
-			public void onSuccess(String[] result){
-				
-				Record userRecord = userGrid.getRecord(Integer.parseInt(result[2]));				
-				
-				userRecord.setAttribute(result[0], result[1]);
-				
-				userGrid.redraw();
-				
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());
-			}
-		};
-		req.toggleFlag(id, flag, type, rowNum, colNum, callback);
-	}
-	
 	public void getMicroarrayOptions(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -2966,53 +2958,6 @@ public class CenterPanel extends VLayout{
 
 		};
 		req.addGroup(foGroup, callback);
-	}
-	
-	public void addChip(FoChip foChip){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoChip> callback = new AsyncCallback<FoChip>(){
-			
-			public void onSuccess(FoChip result){
-				
-				ListGridRecord lgr = new ListGridRecord();
-				lgr.setAttribute("id", result.getId());
-				lgr.setAttribute("chipName", result.getName());
-				lgr.setAttribute("chipType", result.getType());
-				
-				chipGrid.addData(lgr);
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.addChip(foChip, callback);
-	}
-	
-	//TODO
-	
-	public void setPassword(int userId, String pw){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
-			
-			public void onSuccess(Void result){
-				
-				SC.say("Update successful!");
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-		};
-		req.setPassword(userId, pw, callback);
 	}
 	
 	public void getUserObject(final String forWhat){
