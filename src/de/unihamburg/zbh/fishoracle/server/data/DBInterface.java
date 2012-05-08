@@ -31,6 +31,10 @@ import org.ensembl.driver.CoreDriver;
 import org.ensembl.driver.CoreDriverFactory;
 import org.ensembl.driver.KaryotypeBandAdaptor;
 
+import core.Range;
+
+import annotationsketch.FeatureIndex;
+
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
@@ -66,6 +70,10 @@ import de.unihamburg.zbh.fishoracle_db_api.driver.OrganAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.ProjectAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.PropertyAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.UserAdaptor;
+import extended.AnnoDBEnsembl;
+import extended.AnnoDBSchema;
+import extended.RDB;
+import extended.RDBMysql;
 
 /**
  * Fetches various information from the fish oracle database and gene
@@ -135,33 +143,17 @@ public class DBInterface {
 	 * @throws DBQueryException 
 	 * 
 	 * */
-	public Location getLocationForKaryoband(String chr, String band) throws DBQueryException{
-		CoordinateSystem coordSys = null;
-		KaryotypeBand k = null;
-		CoreDriver coreDriver;
-		try {
-			coreDriver = CoreDriverFactory.createCoreDriver(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
-			coreDriver.getConnection();
-			
-			KaryotypeBandAdaptor kband = coreDriver.getKaryotypeBandAdaptor();
-			
-			coordSys = coreDriver.getCoordinateSystemAdaptor().fetch("chromosome", null);
-			
-			k = (KaryotypeBand) kband.fetch(coordSys, chr, band).get(0);
-			
-			coreDriver.closeAllConnections();
+	public de.unihamburg.zbh.fishoracle_db_api.data.Location getLocationForKaryoband(String chr, String band) throws DBQueryException{
 		
-		} catch (AdaptorException e) {
-			e.printStackTrace();
-			System.out.println("Error: " + e.getMessage());
-			System.out.println(e.getCause());
-		} catch (Exception e) {
-			
-			if(e instanceof IndexOutOfBoundsException){
-				throw new DBQueryException("Couldn't find karyoband " + chr + band, e.getCause());
-			}
-		}
-		return k.getLocation();
+		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
+		AnnoDBEnsembl adb = new AnnoDBEnsembl();
+		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index(rdb);
+		
+		Range r = adb.getRangeForKaryoband(fi, chr, band);
+		
+		de.unihamburg.zbh.fishoracle_db_api.data.Location l = new de.unihamburg.zbh.fishoracle_db_api.data.Location(chr, r.get_end(), r.get_end());
+		
+		return l;
 	}
 	
 	/**

@@ -119,7 +119,11 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				if(chrStr == null || bandStr == null){
 					throw new SearchException("The input for a karyoband has to look like 4q13.3!");
 				} else {
-					featuresLoc = db.getLocationForKaryoband(chrStr, bandStr);
+					de.unihamburg.zbh.fishoracle_db_api.data.Location l = db.getLocationForKaryoband(chrStr, bandStr);
+					
+					String loc = "chromosome:" + l.getChrosmome() + ":" + l.getStart() + "-" + l.getEnd();
+					
+					featuresLoc = new Location(loc);
 				}
 				
 			} else if(query.getSearchType().equals("Region")){
