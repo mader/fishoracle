@@ -31,8 +31,12 @@ import org.ensembl.driver.CoreDriver;
 import org.ensembl.driver.CoreDriverFactory;
 import org.ensembl.driver.KaryotypeBandAdaptor;
 
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.PointerByReference;
+
 import core.Range;
 
+import annotationsketch.FeatureCollection;
 import annotationsketch.FeatureIndex;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
@@ -71,7 +75,9 @@ import de.unihamburg.zbh.fishoracle_db_api.driver.ProjectAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.PropertyAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.UserAdaptor;
 import extended.AnnoDBEnsembl;
+import extended.AnnoDBFo;
 import extended.AnnoDBSchema;
+import extended.FeatureNode;
 import extended.RDB;
 import extended.RDBMysql;
 
@@ -110,28 +116,18 @@ public class DBInterface {
 	 * @throws DBQueryException 
 	 * 
 	 * */
-	public Location getLocationForGene(String symbol) throws DBQueryException{
-		Gene gene = null;
-		CoreDriver coreDriver;
-		try {
-			coreDriver = CoreDriverFactory.createCoreDriver(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
-			coreDriver.getConnection();
+	public de.unihamburg.zbh.fishoracle_db_api.data.Location getLocationForGene(String symbol) throws DBQueryException{
 		
-			gene = (Gene) coreDriver.getGeneAdaptor().fetchBySynonym(symbol).get(0);
-			
-			coreDriver.closeAllConnections();
+		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
+		AnnoDBEnsembl adb = new AnnoDBEnsembl();
+		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
-		} catch (AdaptorException e) {
-			e.printStackTrace();
-			System.out.println("Error: " + e.getMessage());
-			System.out.println(e.getCause());
-		} catch (Exception e) {
-			
-			if(e instanceof IndexOutOfBoundsException){
-				throw new DBQueryException("Couldn't find gene with gene symbol " + symbol, e.getCause());
-			}
-		}
-		return gene.getLocation();
+		FeatureNode fn = adb.getFeatureForGeneName(fi, symbol);
+		
+		de.unihamburg.zbh.fishoracle_db_api.data.Location l = 
+				new de.unihamburg.zbh.fishoracle_db_api.data.Location(fn.get_seqid(), fn.get_range().get_start(), fn.get_range().get_end());
+
+		return l;
 	}
 	
 	/** 
@@ -147,11 +143,11 @@ public class DBInterface {
 		
 		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
-		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index(rdb);
+		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
 		Range r = adb.getRangeForKaryoband(fi, chr, band);
 		
-		de.unihamburg.zbh.fishoracle_db_api.data.Location l = new de.unihamburg.zbh.fishoracle_db_api.data.Location(chr, r.get_end(), r.get_end());
+		de.unihamburg.zbh.fishoracle_db_api.data.Location l = new de.unihamburg.zbh.fishoracle_db_api.data.Location(chr, r.get_start(), r.get_end());
 		
 		return l;
 	}
@@ -215,50 +211,17 @@ public class DBInterface {
 	 * @return 		Array containing gen objects
 	 * 
 	 * */
-	public Gen[] getEnsembleGenes(String chr, int start, int end){
+	public void getEnsembleGenes(String chr, int start, int end, FeatureCollection features){
 		
-		Gen[] genes = null;
+		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
+		AnnoDBEnsembl adb = new AnnoDBEnsembl();
+		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
-		String loc = "chromosome:" + chr + ":" + Integer.toString(start) + "-" + Integer.toString(end);
+		Range r = new Range(start, end);
 		
-		try {
-			
-			CoreDriver coreDriver =
-				CoreDriverFactory.createCoreDriver(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
-
-			coreDriver.getConnection();
-			
-			List<?> ensGenes;
-			try {
-				ensGenes = coreDriver.getGeneAdaptor().fetch(new Location(loc));
-				
-				genes = new Gen[ensGenes.size()];
-				for (int j = 0; j < ensGenes.size(); j++) {
-					Gene g = (Gene) ensGenes.get(j);
-					
-					genes[j] = new Gen(g.getDisplayName(), 
-							           g.getLocation().getSeqRegionName(),
-							           g.getLocation().getStart(),
-							           g.getLocation().getEnd(),
-							           Integer.toString(g.getLocation().getStrand()));
-					
-					genes[j].setAccessionID(g.getAccessionID());
-					
-				}
-			} catch (ParseException e) {
-				e.printStackTrace();
-				System.out.println("Error: " + e.getMessage());
-				System.out.println(e.getCause());
-			}
-			
-			coreDriver.closeAllConnections();
-
-		} catch (AdaptorException e) {
-			e.printStackTrace();
-			System.out.println("Error: " + e.getMessage());
-			System.out.println(e.getCause());
-		}
-		return genes;
+		core.Array arr = adb.getFeaturesForRange(fi, chr, r);
+		
+		features.addArray(arr);
 	}
 	
 	/**
@@ -270,43 +233,17 @@ public class DBInterface {
 	 * @return 		Array containing karyoband objects.
 	 * 
 	 * */
-	public Karyoband[] getEnsemblKaryotypes(String chr, int start, int end){
+	public void getEnsemblKaryotypes(String chr, int start, int end, FeatureCollection features){
 
-	        Karyoband[] karyoband = null;
+		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
+		AnnoDBEnsembl adb = new AnnoDBEnsembl();
+		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
-			CoreDriver coreDriver;
-			try {
-				coreDriver = CoreDriverFactory.createCoreDriver(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
-
-				coreDriver.getConnection();
-			
-				String loc = "chromosome:" + chr + ":" + Long.toString(start) + "-" + Long.toString(end);
-				
-				KaryotypeBandAdaptor ktba = coreDriver.getKaryotypeBandAdaptor();
-				
-				List<?> ensChrs; 
-				
-				ensChrs = ktba.fetch(loc);
-			
-				karyoband = new Karyoband[ensChrs.size()];
-				for (int i = 0; i < ensChrs.size(); i++) {
-				
-					KaryotypeBand k = (KaryotypeBand) ensChrs.get(i);
-								
-					karyoband[i] = new Karyoband(k.getLocation().getSeqRegionName(),
-												k.getBand(), 
-												k.getLocation().getStart(), 
-												k.getLocation().getEnd());
-				}
-				
-				coreDriver.closeAllConnections();
-			
-			} catch (AdaptorException e) {
-				e.printStackTrace();
-				System.out.println("Error: " + e.getMessage());
-				System.out.println(e.getCause());
-			}			
-			return karyoband;
+		Range r = new Range(start, end);
+		
+		core.Array arr = adb.getKaryobandFeaturesForRange(fi, chr, r);
+		
+		features.addArray(arr);
 	}
 	
 	/* FISH ORACLE INTERFACE */
@@ -324,7 +261,7 @@ public class DBInterface {
 	 * @param end Ending postion on the chromosome.
 	 * @param tracks Track data
 	 **/
-	public Location getMaxSegmentRange(String chr, int start, int end, QueryInfo query){
+	public de.unihamburg.zbh.fishoracle_db_api.data.Location getMaxSegmentRange(String chr, int start, int end, QueryInfo query){
 		
 		FODriver driver = getFoDriver();
 		CnSegmentAdaptor sa = driver.getCnSegmentAdaptor();
@@ -367,51 +304,99 @@ public class DBInterface {
 			}
 		}
 		
-		Location loc = null;
-		try {
-			loc = new Location("chromosome:" + maxLoc.getChrosmome() + ":" + maxLoc.getStart() + "-" + maxLoc.getEnd());
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		
-		return loc;
+		return maxLoc;
 	}
 	
-	public void getSegmentsForTracks(String chr, int start, int end, QueryInfo query){
+	public FeatureCollection getSegmentsForTracks(String chr, int start, int end, QueryInfo query){
 		
-		FODriver driver = getFoDriver();
-		CnSegmentAdaptor sa = driver.getCnSegmentAdaptor();
+		FeatureCollection features = new FeatureCollection();
 		
-		CnSegment[] segments;
+		Range r = new Range(start, end);
+		core.Array segments;
 		
+		
+		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
+		AnnoDBFo adb = new AnnoDBFo();
+		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
 		for(int i = 0; i < query.getTracks().length; i++){
 			
+			segments = new core.Array(Pointer.SIZE);
+			
 			if(query.isGlobalTh()){
 				
-				segments = sa.fetchCnSegments(chr,
-										start,
-										end,
-										query.getGlobalLowerThAsDouble(),
-										query.getGlobalUpperThAsDouble(),
-										query.getTracks()[i].getProjectIds(),
-										query.getTracks()[i].getTissueIds(),
-										query.getTracks()[i].getExperimentIds());
+				int[] pIds;
+				int[] tIds;
+				int[] eIds;
 				
-				query.getTracks()[i].setTrackSegments(cnSegmentsToFoCnSegments(segments));
+				
+				if(query.getTracks()[i].getProjectIds() != null){
+					pIds = query.getTracks()[i].getProjectIds();
+				} else {
+					pIds = new int[0];
+				}
+				
+				if(query.getTracks()[i].getTissueIds() != null){
+					tIds = query.getTracks()[i].getTissueIds();
+				} else {
+					tIds = new int[0];
+				}
+				
+				if(query.getTracks()[i].getExperimentIds() != null){
+					eIds = query.getTracks()[i].getExperimentIds();
+				} else {
+					eIds = new int[0];
+				}
+				
+				Double glth;
+				Double guth;
+				
+				if(query.getGlobalLowerThAsDouble() != null){
+					glth = query.getGlobalLowerThAsDouble();
+				} else {
+					glth = 99999.0;
+				}
+				
+				if(query.getGlobalUpperThAsDouble() != null){
+					guth = query.getGlobalUpperThAsDouble();
+				} else {
+					guth = 99999.0;
+				}
+				
+				adb.gt_feature_index_fo_get_segments_for_range(fi,
+						segments,
+						query.getTracks()[i].getTrackName(),
+						chr, 
+						r,
+						glth,
+						guth,
+						pIds,
+						1,
+						tIds,
+						2,
+						eIds,
+						3);
 				
 			} else {
-				segments = sa.fetchCnSegments(chr,
-										start,
-										end,
-										query.getTracks()[i].getLowerThAsDouble(),
-										query.getTracks()[i].getUpperThasDouble(),
-										query.getTracks()[i].getProjectIds(),
-										query.getTracks()[i].getTissueIds(),
-										query.getTracks()[i].getExperimentIds());
-				query.getTracks()[i].setTrackSegments(cnSegmentsToFoCnSegments(segments));
+				
+				adb.gt_feature_index_fo_get_segments_for_range(fi,
+						segments,
+						query.getTracks()[i].getTrackName(),
+						chr,
+						r,
+						query.getTracks()[i].getLowerThAsDouble(),
+						query.getTracks()[i].getUpperThasDouble(),
+						query.getTracks()[i].getProjectIds(),
+						0,
+						query.getTracks()[i].getTissueIds(),
+						0,
+						query.getTracks()[i].getExperimentIds(),
+						0);
 			}
+			
+			features.addArray(segments);
 		}
+		return features;
 	}
 	
 	public FoCnSegment getSegmentInfos(int segmentId) {

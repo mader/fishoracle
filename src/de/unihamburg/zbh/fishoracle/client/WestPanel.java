@@ -568,8 +568,8 @@ public class WestPanel extends SectionStack{
 		
 			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Region")){
 				typeStr = "Region";
-				qryStr = "chromosome:" + chrTextItem.getDisplayValue() + ":" 
-							+ startTextItem.getDisplayValue() + "-" + endTextItem.getDisplayValue();
+				qryStr = chrTextItem.getDisplayValue() + ":" 
+							+ startTextItem.getDisplayValue() + ":" + endTextItem.getDisplayValue();
 			}
 			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Gene")){
 				typeStr = "Gene Search";

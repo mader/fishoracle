@@ -245,7 +245,7 @@ style =
     max_capt_show_width= 10000,
   },
 --------------------------------------
-  chromosome = {
+  karyoband = {
     fill               = {red=0.1, green=0.8, blue=0.8},
     max_show_width     = nil,
     max_num_lines      = 10,

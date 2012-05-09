@@ -25,6 +25,8 @@ import javax.servlet.http.HttpSession;
 
 import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
+import annotationsketch.FeatureCollection;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.server.data.*;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
@@ -79,11 +81,11 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			DBInterface db = new DBInterface(servletContext);
 			
-			Location maxSegmentRange = null;
+			de.unihamburg.zbh.fishoracle_db_api.data.Location maxSegmentRange = null;
 			
 			CnSegment[][] segments = null;
 			
-			Location featuresLoc = null;
+			de.unihamburg.zbh.fishoracle_db_api.data.Location featuresLoc = null;
 			
 			Date dt = new Date();
 			
@@ -119,17 +121,18 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				if(chrStr == null || bandStr == null){
 					throw new SearchException("The input for a karyoband has to look like 4q13.3!");
 				} else {
-					de.unihamburg.zbh.fishoracle_db_api.data.Location l = db.getLocationForKaryoband(chrStr, bandStr);
-					
-					String loc = "chromosome:" + l.getChrosmome() + ":" + l.getStart() + "-" + l.getEnd();
-					
-					featuresLoc = new Location(loc);
+					featuresLoc  = db.getLocationForKaryoband(chrStr, bandStr);
 				}
 				
 			} else if(query.getSearchType().equals("Region")){
 
 				try{
-				featuresLoc = new Location(query.getQueryString());
+				
+				String[] region = query.getQueryString().split(":");
+					
+				featuresLoc = new de.unihamburg.zbh.fishoracle_db_api.data.Location(
+						region[0], Integer.parseInt(region[1]), Integer.parseInt(region[2]));
+				
 				} catch (Exception e){
 					e.printStackTrace();
 					System.out.println("Error: " + e.getMessage());
@@ -145,7 +148,8 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			if(query.getSearchType().equals("Region")){
 				maxSegmentRange = featuresLoc;
 			} else {
-			maxSegmentRange = db.getMaxSegmentRange(featuresLoc.getSeqRegionName(), 
+				
+			maxSegmentRange = db.getMaxSegmentRange(featuresLoc.getChrosmome(), 
 											featuresLoc.getStart(), 
 											featuresLoc.getEnd(), 
 											query);
@@ -153,30 +157,38 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			maxSegmentRange = adjustMaxSegmentRange(maxSegmentRange, featuresLoc, query.getSearchType());
 			}
 			
-			db.getSegmentsForTracks(maxSegmentRange.getSeqRegionName(), 
+			FeatureCollection features = new FeatureCollection();
+			
+			/*
+			features = db.getSegmentsForTracks(maxSegmentRange.getChrosmome(), 
 												maxSegmentRange.getStart(),
 												maxSegmentRange.getEnd(),
 												query);
+			*/
+			//System.out.println(features.size());
 			
-			Gen[] genes = null;
+			//blubb
 			
-			if(maxSegmentRange.getEnd() - maxSegmentRange.getStart() < 10000000){
-				genes = db.getEnsembleGenes(maxSegmentRange.getSeqRegionName(), maxSegmentRange.getStart(), maxSegmentRange.getEnd());
-			}
 			
-			Karyoband[] band = null;
-			band = db.getEnsemblKaryotypes(maxSegmentRange.getSeqRegionName(), maxSegmentRange.getStart(), maxSegmentRange.getEnd());
+			//if(maxSegmentRange.getEnd() - maxSegmentRange.getStart() < 10000000){
+				db.getEnsembleGenes(maxSegmentRange.getChrosmome(), maxSegmentRange.getStart(), maxSegmentRange.getEnd(), features);
+			//}
+			
+			System.out.println(features.size());
+
+			db.getEnsemblKaryotypes(maxSegmentRange.getChrosmome(), maxSegmentRange.getStart(), maxSegmentRange.getEnd(), features);
+			
+			System.out.println(features.size());
+			
 			
 			SketchTool sketch = new SketchTool();
 			
-			imgInfo = sketch.generateImage(segments,
-										genes,
-										band,
+			imgInfo = sketch.generateImage(features,
 										maxSegmentRange,
 										query,
 										servletContext);
 			
-			imgInfo.setChromosome(maxSegmentRange.getSeqRegionName());
+			imgInfo.setChromosome(maxSegmentRange.getChrosmome());
 			imgInfo.setStart(maxSegmentRange.getStart());
 			imgInfo.setEnd(maxSegmentRange.getEnd());
 			imgInfo.setQuery(query);
@@ -184,9 +196,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		return imgInfo;
 	}
 
-	private Location adjustMaxSegmentRange(Location maxCNCRange, Location featuresLoc, String searchType){
+	private de.unihamburg.zbh.fishoracle_db_api.data.Location adjustMaxSegmentRange(de.unihamburg.zbh.fishoracle_db_api.data.Location maxCNCRange,
+			de.unihamburg.zbh.fishoracle_db_api.data.Location featuresLoc, String searchType){
 		
-		Location loc = maxCNCRange; 
+		de.unihamburg.zbh.fishoracle_db_api.data.Location loc = maxCNCRange; 
 			
 			if(searchType.equals("Gene Search") && 
 				maxCNCRange.getStart() == featuresLoc.getStart() && 
@@ -215,7 +228,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 					newEnd = end + percRange/2;
 				}
 				
-					loc.setSeqRegionName(featuresLoc.getSeqRegionName());
+					loc.setChrosmome(featuresLoc.getChrosmome());
 					loc.setStart(newStart);
 					loc.setEnd(newEnd);
 			}
@@ -264,12 +277,12 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		CnSegment[][] segments = null;
+		FeatureCollection features =  new FeatureCollection();
 		
-		Location maxRange = null;
+		de.unihamburg.zbh.fishoracle_db_api.data.Location maxRange = null;
 		
 		try {
-			maxRange = new Location("chromosome:" + chr + ":" + start + "-" + end);
+			maxRange = new de.unihamburg.zbh.fishoracle_db_api.data.Location(chr, start, end);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getMessage());
@@ -277,32 +290,24 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			throw e;
 		}
 		
-		db.getSegmentsForTracks(chr, 
-										start, 
-										end,
-										imageInfo.getQuery());
+		//db.getSegmentsForTracks(chr, start, end, imageInfo.getQuery());
 		
-		Gen[] genes = null;
+		//if(end - start < 10000000){
+			db.getEnsembleGenes(chr, start, end, features);
+		//}
 		
-		if(end - start < 10000000){
-			genes = db.getEnsembleGenes(chr, start, end);
-		}
-		
-		Karyoband[] band = null;
-		band = db.getEnsemblKaryotypes(chr, start, end);
+		db.getEnsemblKaryotypes(chr, start, end, features);
 		
 		SketchTool sketch = new SketchTool();
 		
 		imageInfo.getQuery().setWinWidth(imageInfo.getWidth());
 		
-		imgInfo = sketch.generateImage(segments,
-									genes,
-									band,
+		imgInfo = sketch.generateImage(features,
 									maxRange,
 									imageInfo.getQuery(),
 									servletContext);
 		
-		imgInfo.setChromosome(maxRange.getSeqRegionName());
+		imgInfo.setChromosome(maxRange.getChrosmome());
 		imgInfo.setStart(maxRange.getStart());
 		imgInfo.setEnd(maxRange.getEnd());
 		imgInfo.setQuery(imageInfo.getQuery());
