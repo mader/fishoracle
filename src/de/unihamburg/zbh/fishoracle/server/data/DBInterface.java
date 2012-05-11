@@ -307,15 +307,13 @@ public class DBInterface {
 		return maxLoc;
 	}
 	
-	public FeatureCollection getSegmentsForTracks(String chr, int start, int end, QueryInfo query){
-		
-		FeatureCollection features = new FeatureCollection();
+	public void getSegmentsForTracks(String chr, int start, int end, QueryInfo query, FeatureCollection features){
 		
 		Range r = new Range(start, end);
 		core.Array segments;
 		
 		
-		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
+		RDBMysql rdb = new RDBMysql(connectionData.getFhost(), connectionData.getEport(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 		AnnoDBFo adb = new AnnoDBFo();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
@@ -323,44 +321,43 @@ public class DBInterface {
 			
 			segments = new core.Array(Pointer.SIZE);
 			
+			int[] pIds;
+			int[] tIds;
+			int[] eIds;
+			
+			Double lth;
+			Double uth;
+			
+			if(query.getTracks()[i].getProjectIds() != null){
+				pIds = query.getTracks()[i].getProjectIds();
+			} else {
+				pIds = new int[0];
+			}
+				
+			if(query.getTracks()[i].getTissueIds() != null){
+				tIds = query.getTracks()[i].getTissueIds();
+			} else {
+				tIds = new int[0];
+			}
+				
+			if(query.getTracks()[i].getExperimentIds() != null){
+				eIds = query.getTracks()[i].getExperimentIds();
+			} else {
+				eIds = new int[0];
+			}
+			
 			if(query.isGlobalTh()){
 				
-				int[] pIds;
-				int[] tIds;
-				int[] eIds;
-				
-				
-				if(query.getTracks()[i].getProjectIds() != null){
-					pIds = query.getTracks()[i].getProjectIds();
-				} else {
-					pIds = new int[0];
-				}
-				
-				if(query.getTracks()[i].getTissueIds() != null){
-					tIds = query.getTracks()[i].getTissueIds();
-				} else {
-					tIds = new int[0];
-				}
-				
-				if(query.getTracks()[i].getExperimentIds() != null){
-					eIds = query.getTracks()[i].getExperimentIds();
-				} else {
-					eIds = new int[0];
-				}
-				
-				Double glth;
-				Double guth;
-				
 				if(query.getGlobalLowerThAsDouble() != null){
-					glth = query.getGlobalLowerThAsDouble();
+					lth = query.getGlobalLowerThAsDouble();
 				} else {
-					glth = 99999.0;
+					lth = 99999.0;
 				}
 				
 				if(query.getGlobalUpperThAsDouble() != null){
-					guth = query.getGlobalUpperThAsDouble();
+					uth = query.getGlobalUpperThAsDouble();
 				} else {
-					guth = 99999.0;
+					uth = 99999.0;
 				}
 				
 				adb.gt_feature_index_fo_get_segments_for_range(fi,
@@ -368,35 +365,46 @@ public class DBInterface {
 						query.getTracks()[i].getTrackName(),
 						chr, 
 						r,
-						glth,
-						guth,
+						lth,
+						uth,
 						pIds,
-						1,
+						pIds.length,
 						tIds,
-						2,
+						tIds.length,
 						eIds,
-						3);
+						eIds.length);
 				
 			} else {
+				
+				if(query.getGlobalLowerThAsDouble() != null){
+					lth = query.getTracks()[i].getLowerThAsDouble();
+				} else {
+					lth = 99999.0;
+				}
+				
+				if(query.getGlobalUpperThAsDouble() != null){
+					uth = query.getTracks()[i].getUpperThasDouble();
+				} else {
+					uth = 99999.0;
+				}
 				
 				adb.gt_feature_index_fo_get_segments_for_range(fi,
 						segments,
 						query.getTracks()[i].getTrackName(),
 						chr,
 						r,
-						query.getTracks()[i].getLowerThAsDouble(),
-						query.getTracks()[i].getUpperThasDouble(),
-						query.getTracks()[i].getProjectIds(),
-						0,
-						query.getTracks()[i].getTissueIds(),
-						0,
-						query.getTracks()[i].getExperimentIds(),
-						0);
+						lth,
+						uth,
+						pIds,
+						pIds.length,
+						tIds,
+						tIds.length,
+						eIds,
+						eIds.length);
 			}
 			
 			features.addArray(segments);
 		}
-		return features;
 	}
 	
 	public FoCnSegment getSegmentInfos(int segmentId) {
