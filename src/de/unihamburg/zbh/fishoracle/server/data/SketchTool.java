@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -23,19 +23,13 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
-import de.unihamburg.zbh.fishoracle.client.data.Gen;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
-
-import org.ensembl.datamodel.Location;
 
 import annotationsketch.*;
 import core.*;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
-import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
-import extended.*;
 
 /**
  *  Draws images visualizing the genomic data especially chromosome,
@@ -76,8 +70,6 @@ public class SketchTool {
 									de.unihamburg.zbh.fishoracle_db_api.data.Location loc,
 									final QueryInfo query,
 									String serverPath) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-			
-		String seqid;
 		
 		Range range;
 		Style style;
@@ -89,9 +81,6 @@ public class SketchTool {
 		String imgUrl = "";
 
 		GWTImageInfo imgInfo = null;
-				
-		seqid = loc.getChrosmome();
-		
 		
 		try {
 		
@@ -100,6 +89,9 @@ public class SketchTool {
 		style.load_file(serverPath + "config" + System.getProperty("file.separator") + "default.style");
 		
 		for(int l=0; l < query.getTracks().length; l++ ){
+			
+			style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,0.0));
+			style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
 			
 			style.set_bool(query.getTracks()[l].getTrackName() + "_segments", "collapse_to_parent", true);
 			style.set_color(query.getTracks()[l].getTrackName() + "_segments", "fill", new Color(0.0,0.0,1.0,0.7));

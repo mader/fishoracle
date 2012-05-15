@@ -85,7 +85,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
-import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
@@ -820,7 +820,7 @@ public class CenterPanel extends VLayout{
 		window.show();
 	}
 	
-	public void loadWindow(Gen gene){
+	public void loadWindow(EnsemblGene gene){
 		
 		Window window = new Window();
 
@@ -3351,8 +3351,8 @@ class RecMapClickHandler implements ClickHandler{
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Gen> callback = new AsyncCallback<Gen>(){
-			public void onSuccess(Gen gene){
+		final AsyncCallback<EnsemblGene> callback = new AsyncCallback<EnsemblGene>(){
+			public void onSuccess(EnsemblGene gene){
 				
 				cp.loadWindow(gene);
 				

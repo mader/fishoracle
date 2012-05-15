@@ -19,25 +19,25 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class Gen implements IsSerializable{
+public class EnsemblGene implements IsSerializable{
 
 	
-	private String accessionID = null;
+	private String stableId = null;
 	private String bioType = null;
 	private String description = null;
-	private String genName = null;
+	private String geneName = null;
 	private String chr = null;
 	private int start;
 	private int end;
 	private int length;
 	private String strand = null;
 	
-	public Gen() {
+	public EnsemblGene() {
 		
 	}
 
-	public Gen(String genName, String chr, int start, int end, String strand) {
-		this.genName = genName;
+	public EnsemblGene(String genName, String chr, int start, int end, String strand) {
+		this.geneName = genName;
 		this.chr = chr;
 		this.start = start;
 		this.end = end;
@@ -52,12 +52,12 @@ public class Gen implements IsSerializable{
 	}
 
 	public String getGenName() {
-		return genName;
+		return geneName;
 	}
 
 
 	public void setGenName(String genName) {
-		this.genName = genName;
+		this.geneName = genName;
 	}
 
 	
@@ -110,11 +110,11 @@ public class Gen implements IsSerializable{
 	
 	
 	public String getAccessionID() {
-		return accessionID;
+		return stableId;
 	}
 
 	public void setAccessionID(String accessionID) {
-		this.accessionID = accessionID;
+		this.stableId = accessionID;
 	}
 
 	public String getBioType() {

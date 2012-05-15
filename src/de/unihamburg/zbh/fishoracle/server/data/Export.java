@@ -23,10 +23,9 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import org.ensembl.datamodel.Location;
-
-import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
+import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 
 import jxl.*;
 import jxl.write.*; 
@@ -41,7 +40,7 @@ public class Export {
 
 	@SuppressWarnings({"deprecation"})
 	public String exportImageAsExcelDocument(CnSegment[] segments, 
-			                                  Gen[] genes, 
+			                                  EnsemblGene[] genes, 
 			                                  Location maxRange, 
 			                                  String servletPath) throws IOException, 
 			                                                              RowsExceededException, 
@@ -61,12 +60,12 @@ public class Export {
 	    
 	    shaStr = SimpleSHA.SHA1(dateStr);
 		
-		fileName = shaStr + "_" + maxRange.getSeqRegionName() + ":" + maxRange.getStart() + "-" + maxRange.getEnd() + ".xls";
+		fileName = shaStr + "_" + maxRange.getChrosmome() + ":" + maxRange.getStart() + "-" + maxRange.getEnd() + ".xls";
 		
 		String url = "excel_output" + System.getProperty("file.separator") + fileName;
 		
 		WritableWorkbook workbook = Workbook.createWorkbook(new File(servletPath + url));
-		WritableSheet sheet = workbook.createSheet(maxRange.getSeqRegionName() + "," + maxRange.getStart() + "-" + maxRange.getEnd(), 0); 
+		WritableSheet sheet = workbook.createSheet(maxRange.getChrosmome() + "," + maxRange.getStart() + "-" + maxRange.getEnd(), 0); 
 		
 		WritableFont textwidth = new WritableFont(WritableFont.ARIAL, 8);
 		WritableCellFormat text = new WritableCellFormat(textwidth);

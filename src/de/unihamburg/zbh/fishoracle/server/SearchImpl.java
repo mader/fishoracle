@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -23,7 +23,6 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.ensembl.datamodel.Location;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import annotationsketch.FeatureCollection;
 
@@ -31,12 +30,12 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.server.data.*;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
-import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
-import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
+import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
 
@@ -81,11 +80,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			DBInterface db = new DBInterface(servletContext);
 			
-			de.unihamburg.zbh.fishoracle_db_api.data.Location maxSegmentRange = null;
+			Location maxSegmentRange = null;
 			
-			CnSegment[][] segments = null;
-			
-			de.unihamburg.zbh.fishoracle_db_api.data.Location featuresLoc = null;
+			Location featuresLoc = null;
 			
 			Date dt = new Date();
 			
@@ -130,7 +127,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				
 				String[] region = query.getQueryString().split(":");
 					
-				featuresLoc = new de.unihamburg.zbh.fishoracle_db_api.data.Location(
+				featuresLoc = new Location(
 						region[0], Integer.parseInt(region[1]), Integer.parseInt(region[2]));
 				
 				} catch (Exception e){
@@ -194,10 +191,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		return imgInfo;
 	}
 
-	private de.unihamburg.zbh.fishoracle_db_api.data.Location adjustMaxSegmentRange(de.unihamburg.zbh.fishoracle_db_api.data.Location maxCNCRange,
-			de.unihamburg.zbh.fishoracle_db_api.data.Location featuresLoc, String searchType){
+	private de.unihamburg.zbh.fishoracle_db_api.data.Location adjustMaxSegmentRange(Location maxCNCRange,
+			Location featuresLoc, String searchType){
 		
-		de.unihamburg.zbh.fishoracle_db_api.data.Location loc = maxCNCRange; 
+		Location loc = maxCNCRange; 
 			
 			if(searchType.equals("Gene Search") && 
 				maxCNCRange.getStart() == featuresLoc.getStart() && 
@@ -277,10 +274,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		FeatureCollection features =  new FeatureCollection();
 		
-		de.unihamburg.zbh.fishoracle_db_api.data.Location maxRange = null;
+		Location maxRange = null;
 		
 		try {
-			maxRange = new de.unihamburg.zbh.fishoracle_db_api.data.Location(chr, start, end);
+			maxRange = new Location(chr, start, end);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getMessage());
@@ -347,7 +344,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * @return gene
 	 * @throws Exception 
 	 * */
-	public Gen getGeneInfo(String query) throws Exception {
+	public EnsemblGene getGeneInfo(String query) throws Exception {
 		
 		isActiveUser();
 		
@@ -358,7 +355,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		Gen  gene = db.getGeneInfos(query);
+		EnsemblGene  gene = db.getGeneInfos(query);
 		return gene;
 	}
 	

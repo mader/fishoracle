@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -18,22 +18,8 @@
 package de.unihamburg.zbh.fishoracle.server.data;
 
 import java.sql.*;
-import java.text.ParseException;
-import java.util.List;
-
-import org.ensembl.datamodel.CoordinateSystem;
-import org.ensembl.datamodel.Gene;
-import org.ensembl.datamodel.KaryotypeBand;
-import org.ensembl.datamodel.Location;
-
-import org.ensembl.driver.AdaptorException;
-import org.ensembl.driver.CoreDriver;
-import org.ensembl.driver.CoreDriverFactory;
-import org.ensembl.driver.KaryotypeBandAdaptor;
 
 import com.sun.jna.Pointer;
-import com.sun.jna.ptr.PointerByReference;
-
 import core.Range;
 
 import annotationsketch.FeatureCollection;
@@ -50,13 +36,14 @@ import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.FoTissueSample;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
-import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
 import de.unihamburg.zbh.fishoracle_db_api.data.Chip;
 import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Group;
+import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 import de.unihamburg.zbh.fishoracle_db_api.data.Microarraystudy;
 import de.unihamburg.zbh.fishoracle_db_api.data.Organ;
 import de.unihamburg.zbh.fishoracle_db_api.data.Project;
@@ -76,7 +63,6 @@ import de.unihamburg.zbh.fishoracle_db_api.driver.PropertyAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.UserAdaptor;
 import extended.AnnoDBEnsembl;
 import extended.AnnoDBFo;
-import extended.AnnoDBSchema;
 import extended.FeatureNode;
 import extended.RDB;
 import extended.RDBMysql;
@@ -116,7 +102,7 @@ public class DBInterface {
 	 * @throws DBQueryException 
 	 * 
 	 * */
-	public de.unihamburg.zbh.fishoracle_db_api.data.Location getLocationForGene(String symbol) throws DBQueryException{
+	public Location getLocationForGene(String symbol) throws DBQueryException{
 		
 		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
@@ -124,8 +110,7 @@ public class DBInterface {
 		
 		FeatureNode fn = adb.getFeatureForGeneName(fi, symbol);
 		
-		de.unihamburg.zbh.fishoracle_db_api.data.Location l = 
-				new de.unihamburg.zbh.fishoracle_db_api.data.Location(fn.get_seqid(), fn.get_range().get_start(), fn.get_range().get_end());
+		Location l = new Location(fn.get_seqid(), fn.get_range().get_start(), fn.get_range().get_end());
 
 		return l;
 	}
@@ -139,7 +124,7 @@ public class DBInterface {
 	 * @throws DBQueryException 
 	 * 
 	 * */
-	public de.unihamburg.zbh.fishoracle_db_api.data.Location getLocationForKaryoband(String chr, String band) throws DBQueryException{
+	public Location getLocationForKaryoband(String chr, String band) throws DBQueryException{
 		
 		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
@@ -147,7 +132,7 @@ public class DBInterface {
 		
 		Range r = adb.getRangeForKaryoband(fi, chr, band);
 		
-		de.unihamburg.zbh.fishoracle_db_api.data.Location l = new de.unihamburg.zbh.fishoracle_db_api.data.Location(chr, r.get_start(), r.get_end());
+		Location l = new Location(chr, r.get_start(), r.get_end());
 		
 		return l;
 	}
@@ -160,44 +145,33 @@ public class DBInterface {
 	 * @throws Exception 
 	 * 
 	 * */
-	public Gen getGeneInfos(String query) throws Exception {
+	public EnsemblGene getGeneInfos(String query) throws Exception {
 		
-		Gen gene = null;
+		EnsemblGene gene = null;
 		
-		CoreDriver coreDriver;
-		try {
-			coreDriver = CoreDriverFactory.createCoreDriver(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
+		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
+		AnnoDBEnsembl adb = new AnnoDBEnsembl();
+		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
-			coreDriver.getConnection();
-			
-			Gene ensGene =  coreDriver.getGeneAdaptor().fetch(query);
-
-			gene = new Gen();
-				
-				gene.setGenName(ensGene.getDisplayName());
-				gene.setChr(ensGene.getLocation().getSeqRegionName());
-				gene.setStart(ensGene.getLocation().getStart());
-				gene.setEnd(ensGene.getLocation().getEnd());
-				gene.setStrand(Integer.toString(ensGene.getLocation().getStrand()));
-				gene.setAccessionID(ensGene.getAccessionID());
-				gene.setBioType(ensGene.getBioType());
-				
-				if(ensGene.getDescription() == null){
-					gene.setDescription("not available");
-				} else {
-					gene.setDescription(ensGene.getDescription());
-				}
-				
-				gene.setLength(ensGene.getLocation().getLength());
-				
-	    coreDriver.closeAllConnections();
+		FeatureNode fn = adb.getFeatureForStableId(fi, query);
 		
-		} catch (AdaptorException e) {
-			e.printStackTrace();			
-			System.out.println("Error: " + e.getMessage());
-			System.out.println(e.getCause());
-			throw e;
-		}
+		Range rng = fn.get_range();
+		
+		gene = new EnsemblGene(fn.get_attribute("ID"),
+								fn.get_seqid(),
+								rng.get_start(),
+								rng.get_end(),
+								Character.toString(fn.get_strand()));
+		
+		gene.setBioType(fn.get_attribute("BIOTYPE"));
+		gene.setDescription(fn.get_attribute("DESCRIPTION"));
+		gene.setAccessionID(fn.get_attribute("NAME"));
+		gene.setLength(rng.get_end() - rng.get_start());
+		
+		fn.dispose();
+		fi.dispose();
+		adb.delete();
+		rdb.delete();
 
 		return gene;
 	}
@@ -261,16 +235,16 @@ public class DBInterface {
 	 * @param end Ending postion on the chromosome.
 	 * @param tracks Track data
 	 **/
-	public de.unihamburg.zbh.fishoracle_db_api.data.Location getMaxSegmentRange(String chr, int start, int end, QueryInfo query){
+	public Location getMaxSegmentRange(String chr, int start, int end, QueryInfo query){
 		
 		FODriver driver = getFoDriver();
 		CnSegmentAdaptor sa = driver.getCnSegmentAdaptor();
 		
-		de.unihamburg.zbh.fishoracle_db_api.data.Location maxLoc = null;
+		Location maxLoc = null;
 		
 		for(int i = 0; i < query.getTracks().length; i++){
 			
-			de.unihamburg.zbh.fishoracle_db_api.data. Location l;
+			Location l;
 			
 			if(query.isGlobalTh()){
 				

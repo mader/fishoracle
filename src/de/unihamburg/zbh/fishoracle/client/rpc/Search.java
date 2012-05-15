@@ -23,7 +23,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
-import de.unihamburg.zbh.fishoracle.client.data.Gen;
+import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 
 @RemoteServiceRelativePath("search")
@@ -33,7 +33,7 @@ public interface Search extends RemoteService {
 	public GWTImageInfo generateImage(QueryInfo q) throws Exception;
 	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) throws Exception;
 	public FoCnSegment getSegmentInfo(int segmentId) throws Exception;
-	public Gen getGeneInfo(String query) throws Exception;
+	public EnsemblGene getGeneInfo(String query) throws Exception;
 	public String exportData(GWTImageInfo imageInfo) throws Exception;
 	
 	public static class Util {
