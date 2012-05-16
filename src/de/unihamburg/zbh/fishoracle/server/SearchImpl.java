@@ -36,6 +36,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
+import extended.RDBMysql;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
 
@@ -88,7 +89,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			System.out.println(dt + " Search: " + query.getQueryString());
 			System.out.println(dt + " Search type: " + query.getSearchType());
-				
+			
+			RDBMysql rdbEnsembl = db.getEnsemblRDB();
+			RDBMysql rdbFishoracle = db.getFishoracleRDB();
+			
 			if(query.getSearchType().equals("Gene Search")){
 
 				featuresLoc = db.getLocationForGene(query.getQueryString());
@@ -116,9 +120,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 
 				}
 				if(chrStr == null || bandStr == null){
-					throw new SearchException("The input for a karyoband has to look like 4q13.3!");
+					throw new SearchException("The input for a karyoband has to look e.g. like 4q13.3 or 4q13!");
 				} else {
-					featuresLoc  = db.getLocationForKaryoband(chrStr, bandStr);
+					featuresLoc  = db.getLocationForKaryoband(rdbEnsembl, chrStr, bandStr);
 				}
 				
 			} else if(query.getSearchType().equals("Region")){
@@ -156,25 +160,16 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			FeatureCollection features = new FeatureCollection();
 			
-			
-			db.getSegmentsForTracks(maxSegmentRange.getChrosmome(),
+			db.getSegmentsForTracks(rdbFishoracle, maxSegmentRange.getChrosmome(),
 												maxSegmentRange.getStart(),
 												maxSegmentRange.getEnd(),
 												query, features);
 			
-			System.out.println(features.size());
-			
-			
 			if(maxSegmentRange.getEnd() - maxSegmentRange.getStart() < 10000000){
-				db.getEnsembleGenes(maxSegmentRange.getChrosmome(), maxSegmentRange.getStart(), maxSegmentRange.getEnd(), features);
+				db.getEnsembleGenes(rdbEnsembl, maxSegmentRange.getChrosmome(), maxSegmentRange.getStart(), maxSegmentRange.getEnd(), features);
 			}
-			
-			System.out.println(features.size());
 
-			db.getEnsemblKaryotypes(maxSegmentRange.getChrosmome(), maxSegmentRange.getStart(), maxSegmentRange.getEnd(), features);
-			
-			System.out.println(features.size());
-			
+			db.getEnsemblKaryotypes(rdbEnsembl, maxSegmentRange.getChrosmome(), maxSegmentRange.getStart(), maxSegmentRange.getEnd(), features);
 			
 			SketchTool sketch = new SketchTool();
 			
@@ -188,10 +183,14 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			imgInfo.setEnd(maxSegmentRange.getEnd());
 			imgInfo.setQuery(query);
 			
+			features.delete();
+			rdbEnsembl.delete();
+			rdbFishoracle.delete();
+			
 		return imgInfo;
 	}
 
-	private de.unihamburg.zbh.fishoracle_db_api.data.Location adjustMaxSegmentRange(Location maxCNCRange,
+	private Location adjustMaxSegmentRange(Location maxCNCRange,
 			Location featuresLoc, String searchType){
 		
 		Location loc = maxCNCRange; 
@@ -272,6 +271,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
+		RDBMysql rdbEnsembl = db.getEnsemblRDB();
+		RDBMysql rdbFishoracle = db.getFishoracleRDB();
+		
 		FeatureCollection features =  new FeatureCollection();
 		
 		Location maxRange = null;
@@ -285,13 +287,13 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			throw e;
 		}
 		
-		db.getSegmentsForTracks(chr, start, end, imageInfo.getQuery(), features);
+		db.getSegmentsForTracks(rdbFishoracle, chr, start, end, imageInfo.getQuery(), features);
 		
 		if(end - start < 10000000){
-			db.getEnsembleGenes(chr, start, end, features);
+			db.getEnsembleGenes(rdbEnsembl, chr, start, end, features);
 		}
 		
-		db.getEnsemblKaryotypes(chr, start, end, features);
+		db.getEnsemblKaryotypes(rdbEnsembl, chr, start, end, features);
 		
 		SketchTool sketch = new SketchTool();
 		
@@ -306,6 +308,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		imgInfo.setStart(maxRange.getStart());
 		imgInfo.setEnd(maxRange.getEnd());
 		imgInfo.setQuery(imageInfo.getQuery());
+		
+		features.delete();
+		rdbEnsembl.delete();
+		rdbFishoracle.delete();
 		
 		return imgInfo;
 	}
@@ -355,7 +361,12 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		EnsemblGene  gene = db.getGeneInfos(query);
+		RDBMysql rdb = db.getEnsemblRDB();
+		
+		EnsemblGene  gene = db.getGeneInfos(rdb, query);
+		
+		rdb.delete();
+		
 		return gene;
 	}
 	

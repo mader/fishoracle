@@ -94,6 +94,16 @@ public class DBInterface {
 	
 	/* ENSEMBL INTERFACE*/
 	
+	public RDBMysql getEnsemblRDB(){
+		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
+		return rdb;
+	}
+	
+	public RDBMysql getFishoracleRDB(){
+		RDBMysql rdb = new RDBMysql(connectionData.getFhost(), 3306, connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
+		return rdb;
+	}
+	
 	/**
 	 * Looks up location information (chromosome, start, end) for a gene symbol.
 	 * 
@@ -104,6 +114,7 @@ public class DBInterface {
 	 * */
 	public Location getLocationForGene(String symbol) throws DBQueryException{
 		
+		System.out.println("getLocationForGenes");
 		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
@@ -111,7 +122,11 @@ public class DBInterface {
 		FeatureNode fn = adb.getFeatureForGeneName(fi, symbol);
 		
 		Location l = new Location(fn.get_seqid(), fn.get_range().get_start(), fn.get_range().get_end());
-
+		
+		fn.dispose();
+		fi.dispose();
+		adb.delete();
+		
 		return l;
 	}
 	
@@ -124,15 +139,17 @@ public class DBInterface {
 	 * @throws DBQueryException 
 	 * 
 	 * */
-	public Location getLocationForKaryoband(String chr, String band) throws DBQueryException{
+	public Location getLocationForKaryoband(RDBMysql rdb, String chr, String band) throws DBQueryException{
 		
-		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
 		Range r = adb.getRangeForKaryoband(fi, chr, band);
 		
 		Location l = new Location(chr, r.get_start(), r.get_end());
+		
+		fi.dispose();
+		adb.delete();
 		
 		return l;
 	}
@@ -145,11 +162,10 @@ public class DBInterface {
 	 * @throws Exception 
 	 * 
 	 * */
-	public EnsemblGene getGeneInfos(String query) throws Exception {
+	public EnsemblGene getGeneInfos(RDBMysql rdb, String query) throws Exception {
 		
 		EnsemblGene gene = null;
 		
-		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
@@ -171,8 +187,7 @@ public class DBInterface {
 		fn.dispose();
 		fi.dispose();
 		adb.delete();
-		rdb.delete();
-
+		
 		return gene;
 	}
 	
@@ -185,9 +200,9 @@ public class DBInterface {
 	 * @return 		Array containing gen objects
 	 * 
 	 * */
-	public void getEnsembleGenes(String chr, int start, int end, FeatureCollection features){
+	public void getEnsembleGenes(RDBMysql rdb, String chr, int start, int end, FeatureCollection features){
 		
-		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
+		System.out.println("getEnsembleGenes");
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
@@ -196,6 +211,11 @@ public class DBInterface {
 		core.Array arr = adb.getFeaturesForRange(fi, chr, r);
 		
 		features.addArray(arr);
+		
+		arr.dispose();
+		fi.dispose();
+		adb.delete();
+		
 	}
 	
 	/**
@@ -207,9 +227,9 @@ public class DBInterface {
 	 * @return 		Array containing karyoband objects.
 	 * 
 	 * */
-	public void getEnsemblKaryotypes(String chr, int start, int end, FeatureCollection features){
+	public synchronized void getEnsemblKaryotypes(RDBMysql rdb, String chr, int start, int end, FeatureCollection features){
 
-		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
+		System.out.println("getEnsemblKaryotypes");
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
@@ -218,6 +238,10 @@ public class DBInterface {
 		core.Array arr = adb.getKaryobandFeaturesForRange(fi, chr, r);
 		
 		features.addArray(arr);
+		
+		arr.dispose();
+		fi.dispose();
+		adb.delete();
 	}
 	
 	/* FISH ORACLE INTERFACE */
@@ -281,13 +305,11 @@ public class DBInterface {
 		return maxLoc;
 	}
 	
-	public void getSegmentsForTracks(String chr, int start, int end, QueryInfo query, FeatureCollection features){
+	public void getSegmentsForTracks(RDBMysql rdb, String chr, int start, int end, QueryInfo query, FeatureCollection features){
 		
 		Range r = new Range(start, end);
 		core.Array segments;
 		
-		
-		RDBMysql rdb = new RDBMysql(connectionData.getFhost(), connectionData.getEport(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 		AnnoDBFo adb = new AnnoDBFo();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
