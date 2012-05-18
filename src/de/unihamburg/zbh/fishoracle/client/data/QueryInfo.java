@@ -28,6 +28,7 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 	private String imageType;
 	private TrackData[] tracks;
 	private int winWidth;
+	private boolean sorted;
 	private boolean globalTh;
 	
 	public QueryInfo() {
@@ -38,6 +39,7 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 						String searchType,
 						String globalLowerTh,
 						String globalUpperTh,
+						boolean sorted,
 						boolean globalTh,
 						String imageType,
 						TrackData[] tracks,
@@ -56,6 +58,7 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		} else {
 			this.globalUpperTh = null;
 		}
+		this.sorted = sorted;
 		this.globalTh = globalTh; 
 		this.imageType = imageType;
 		this.tracks = tracks;
@@ -153,6 +156,14 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 
 	public void setWinWidth(int winWidth) {
 		this.winWidth = winWidth;
+	}
+	
+	public boolean isSorted() {
+		return sorted;
+	}
+
+	public void setSorted(boolean sorted) {
+		this.sorted = sorted;
 	}
 
 	public boolean isGlobalTh() {

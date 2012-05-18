@@ -70,6 +70,7 @@ public class WestPanel extends SectionStack{
 	private TextItem endTextItem;
 	
 	private RadioGroupItem SearchRadioGroupItem;
+	private CheckboxItem sortedCheckbox;
 	private CheckboxItem globalThresholdCheckbox;
 	
 	private TextItem greaterTextItem;
@@ -193,6 +194,10 @@ public class WestPanel extends SectionStack{
 		lessTextItem.setTitle("less than");
 		lessTextItem.setValue("-0.5");
 		
+		sortedCheckbox = new CheckboxItem();
+		sortedCheckbox.setTitle("sort segments by experiment");
+		sortedCheckbox.setValue(true);
+		
 		globalThresholdCheckbox = new CheckboxItem();
 		globalThresholdCheckbox.setTitle("Global Intensity Threshold");
 		globalThresholdCheckbox.setValue(true);
@@ -275,6 +280,7 @@ public class WestPanel extends SectionStack{
 							startTextItem,
 							endTextItem,
 							SearchRadioGroupItem,
+							sortedCheckbox,
 							globalThresholdCheckbox,
 							cncDataSelectItem,
 							greaterTextItem,
@@ -659,6 +665,7 @@ public class WestPanel extends SectionStack{
 											typeStr,
 											globalLessThenThr,
 											globalGreaterThenThr,
+											sortedCheckbox.getValueAsBoolean(),
 											globalThresholdCheckbox.getValueAsBoolean(),
 											"png",
 											trackData,

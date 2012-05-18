@@ -114,7 +114,6 @@ public class DBInterface {
 	 * */
 	public Location getLocationForGene(String symbol) throws DBQueryException{
 		
-		System.out.println("getLocationForGenes");
 		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
@@ -202,7 +201,6 @@ public class DBInterface {
 	 * */
 	public void getEnsembleGenes(RDBMysql rdb, String chr, int start, int end, FeatureCollection features){
 		
-		System.out.println("getEnsembleGenes");
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
@@ -229,7 +227,6 @@ public class DBInterface {
 	 * */
 	public synchronized void getEnsemblKaryotypes(RDBMysql rdb, String chr, int start, int end, FeatureCollection features){
 
-		System.out.println("getEnsemblKaryotypes");
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
@@ -363,6 +360,7 @@ public class DBInterface {
 						r,
 						lth,
 						uth,
+						query.isSorted(),
 						pIds,
 						pIds.length,
 						tIds,
@@ -372,13 +370,13 @@ public class DBInterface {
 				
 			} else {
 				
-				if(query.getGlobalLowerThAsDouble() != null){
+				if(query.getTracks()[i].getLowerThAsDouble() != null){
 					lth = query.getTracks()[i].getLowerThAsDouble();
 				} else {
 					lth = 99999.0;
 				}
 				
-				if(query.getGlobalUpperThAsDouble() != null){
+				if(query.getTracks()[i].getUpperThasDouble() != null){
 					uth = query.getTracks()[i].getUpperThasDouble();
 				} else {
 					uth = 99999.0;
@@ -391,6 +389,7 @@ public class DBInterface {
 						r,
 						lth,
 						uth,
+						query.isSorted(),
 						pIds,
 						pIds.length,
 						tIds,
