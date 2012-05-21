@@ -20,6 +20,8 @@ package de.unihamburg.zbh.fishoracle.server.data;
 import java.sql.*;
 
 import com.sun.jna.Pointer;
+
+import core.GTerrorJava;
 import core.Range;
 
 import annotationsketch.FeatureCollection;
@@ -94,12 +96,12 @@ public class DBInterface {
 	
 	/* ENSEMBL INTERFACE*/
 	
-	public RDBMysql getEnsemblRDB(){
+	public RDBMysql getEnsemblRDB() throws GTerrorJava{
 		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 		return rdb;
 	}
 	
-	public RDBMysql getFishoracleRDB(){
+	public RDBMysql getFishoracleRDB() throws GTerrorJava{
 		RDBMysql rdb = new RDBMysql(connectionData.getFhost(), 3306, connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 		return rdb;
 	}
@@ -109,15 +111,20 @@ public class DBInterface {
 	 * 
 	 * @param symbol The gene symbol, that was specified in the search query.
 	 * @return		An ensembl API location object storing chromosome, start and end of a gene. 
-	 * @throws DBQueryException 
+	 * @throws Exception 
 	 * 
 	 * */
-	public Location getLocationForGene(RDBMysql rdb, String symbol) throws DBQueryException{
+	public Location getLocationForGene(RDBMysql rdb, String symbol) throws Exception{
 		
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
-		FeatureNode fn = adb.getFeatureForGeneName(fi, symbol);
+		FeatureNode fn;
+		try {
+			fn = adb.getFeatureForGeneName(fi, symbol);
+		} catch (Exception e) {
+			throw new Exception(e.getMessage());
+		}
 		
 		Location l = new Location(fn.get_seqid(), fn.get_range().get_start(), fn.get_range().get_end());
 		
@@ -135,9 +142,10 @@ public class DBInterface {
 	 * @param band The karyoband
 	 * @return		An ensembl API location object storing chromosome, start and end of a chromosome and karyoband. 
 	 * @throws DBQueryException 
+	 * @throws GTerrorJava 
 	 * 
 	 * */
-	public Location getLocationForKaryoband(RDBMysql rdb, String chr, String band) throws DBQueryException{
+	public Location getLocationForKaryoband(RDBMysql rdb, String chr, String band) throws DBQueryException, GTerrorJava{
 		
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
@@ -196,9 +204,10 @@ public class DBInterface {
 	 * @param start Starting position on the chromosome.
 	 * @param end ending postion on the chromosome.
 	 * @return 		Array containing gen objects
+	 * @throws GTerrorJava 
 	 * 
 	 * */
-	public void getEnsembleGenes(RDBMysql rdb, String chr, int start, int end, FeatureCollection features){
+	public void getEnsembleGenes(RDBMysql rdb, String chr, int start, int end, FeatureCollection features) throws GTerrorJava{
 		
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
@@ -222,9 +231,10 @@ public class DBInterface {
 	 * @param start Starting position on the chromosome.
 	 * @param end Ending postion on the chromosome.
 	 * @return 		Array containing karyoband objects.
+	 * @throws GTerrorJava 
 	 * 
 	 * */
-	public synchronized void getEnsemblKaryotypes(RDBMysql rdb, String chr, int start, int end, FeatureCollection features){
+	public synchronized void getEnsemblKaryotypes(RDBMysql rdb, String chr, int start, int end, FeatureCollection features) throws GTerrorJava{
 
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
@@ -301,7 +311,7 @@ public class DBInterface {
 		return maxLoc;
 	}
 	
-	public void getSegmentsForTracks(RDBMysql rdb, String chr, int start, int end, QueryInfo query, FeatureCollection features){
+	public void getSegmentsForTracks(RDBMysql rdb, String chr, int start, int end, QueryInfo query, FeatureCollection features) throws GTerrorJava{
 		
 		Range r = new Range(start, end);
 		core.Array segments;
