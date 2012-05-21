@@ -112,9 +112,8 @@ public class DBInterface {
 	 * @throws DBQueryException 
 	 * 
 	 * */
-	public Location getLocationForGene(String symbol) throws DBQueryException{
+	public Location getLocationForGene(RDBMysql rdb, String symbol) throws DBQueryException{
 		
-		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
@@ -399,7 +398,12 @@ public class DBInterface {
 			}
 			
 			features.addArray(segments);
+			segments.dispose();
 		}
+		
+		fi.dispose();
+		adb.delete();
+		
 	}
 	
 	public FoCnSegment getSegmentInfos(int segmentId) {

@@ -30,6 +30,7 @@ import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import annotationsketch.*;
 import core.*;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
+import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 
 /**
  *  Draws images visualizing the genomic data especially chromosome,
@@ -67,7 +68,7 @@ public class SketchTool {
 	 *          @see GWTImageInfo
  	 * */
 	public GWTImageInfo generateImage(FeatureCollection features,
-									de.unihamburg.zbh.fishoracle_db_api.data.Location loc,
+									Location loc,
 									final QueryInfo query,
 									String serverPath) throws NoSuchAlgorithmException, UnsupportedEncodingException {
 		

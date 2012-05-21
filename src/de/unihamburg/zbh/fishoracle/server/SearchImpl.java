@@ -95,7 +95,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			if(query.getSearchType().equals("Gene Search")){
 
-				featuresLoc = db.getLocationForGene(query.getQueryString());
+				featuresLoc = db.getLocationForGene(rdbEnsembl, query.getQueryString());
 				
 			} else if(query.getSearchType().equals("Band Search")){
 				
