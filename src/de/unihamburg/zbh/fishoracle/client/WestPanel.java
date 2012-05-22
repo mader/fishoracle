@@ -268,10 +268,14 @@ public class WestPanel extends SectionStack{
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
 				
+				if(tracks.size() > 1){
 					Track lastTrack = tracks.get(tracks.size() - 1);
 					tracks.remove(tracks.size() - 1);
 					numberOfTracks--;
 					searchContent.removeMember(lastTrack.getTrackForm());
+				} else {
+					SC.say("You need at least one track to visualize your data!");
+				}
 			}
 		});
 		

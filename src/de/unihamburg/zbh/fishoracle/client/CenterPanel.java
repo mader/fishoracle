@@ -192,13 +192,14 @@ public class CenterPanel extends VLayout{
 		VLayout welcomeLayout = new VLayout();
 		welcomeLayout.setContents("" +
         		"<center><h1>FISH Oracle</h1></center>" +
-        		"<p id=\"welcome\">You can search for copy number segments by giving a CNC (copy number change) stable ID" +
-        		" e.g. 'CNC100' or for a gene specified by a gene name e.g. 'kras'" +
-        		" or a karyoband giving the exact karyoband identifier e.g. '8q21.3'." +
+        		"<p id=\"welcome\">You can search for genomic Regions" +
+        		" or for a gene specified by a gene name e.g. 'kras'" +
+        		" or a karyoband." +
         		" By clicking on an element a window opens that shows additional information." +
         		"</p><p id=\"welcome\"><br>FISH Oracle uses:<br> " +
         		"<ul id=\"welcome\">" +
         		"<li> the Google Web Toolkit <a href=\"http://code.google.com/webtoolkit/\" target=_blank>http://code.google.com/webtoolkit/</a></li>" +
+        		"<li> the SmartGWT <a href=\"http://code.google.com/p/smartgwt/\" target=_blank>http://code.google.com/p/smartgwt/</a></li>" +
         		"<li> the Ensembl human core database <a href=\"http://www.ensembl.org\" target=_blank>http://www.ensembl.org</a></li>" +
         		"<li> AnnotationSketch of the GenomeTools <a href=\"http://www.genometools.org\" target=_blank>http://www.genometools.org</a></li>" +
         		"</ul></p>");
