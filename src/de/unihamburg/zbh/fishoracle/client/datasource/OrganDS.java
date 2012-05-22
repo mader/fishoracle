@@ -33,6 +33,9 @@ public class OrganDS extends FoDataSource {
         field = new DataSourceTextField("organType", "Type");
         addField (field);
         
+        field = new DataSourceTextField("organNamePlusType", "NameType");
+        addField (field);
+        
         field = new DataSourceTextField("organActivity", "Enabled");
         addField (field);
 	}
@@ -58,6 +61,7 @@ public class OrganDS extends FoDataSource {
 						record.setAttribute("organId", new Integer(result[i].getId()).toString());
 						record.setAttribute("organName", result[i].getLabel());
 						record.setAttribute("organType", result[i].getType());
+						record.setAttribute("organNamePlusType", result[i].getLabel() + " ("+ result[i].getType() + ")");
 						record.setAttribute("organActivity", result[i].getActivty());
 						list[i] = record;
 						

@@ -114,7 +114,7 @@ public class Track {
 		selectItemTissues.setMultiple(true);
 		selectItemTissues.setMultipleAppearance(MultipleAppearance.PICKLIST);
 		
-		selectItemTissues.setDisplayField("organName");
+		selectItemTissues.setDisplayField("organNamePlusType");
 		selectItemTissues.setValueField("organId");		
 		selectItemTissues.setAutoFetchData(false);
 		OrganDS oDS = new OrganDS();
