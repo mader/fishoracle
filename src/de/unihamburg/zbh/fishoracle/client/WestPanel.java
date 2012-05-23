@@ -37,6 +37,8 @@ import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -94,7 +96,7 @@ public class WestPanel extends SectionStack{
 	
 	public void addTrack(){
 		
-		Track t = new Track(numberOfTracks, globalThresholdCheckbox);
+		Track t = new Track(numberOfTracks, globalThresholdCheckbox, mp);
 		
 		tracks.add(t);
 		
@@ -120,18 +122,54 @@ public class WestPanel extends SectionStack{
 		
 		searchTextItem = new TextItem();
 		searchTextItem.setTitle("Search");
+		searchTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
 		
 		chrTextItem = new TextItem();
 		chrTextItem.setTitle("Chromosome");
 		chrTextItem.setVisible(false);
+		chrTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
 		
 		startTextItem = new TextItem();  
 		startTextItem.setTitle("Start");
 		startTextItem.setVisible(false);
+		startTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
 
 		endTextItem = new TextItem();  
 		endTextItem.setTitle("End");
 		endTextItem.setVisible(false);
+		endTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
 		
 		SearchRadioGroupItem = new RadioGroupItem();  
 		SearchRadioGroupItem.setTitle("Type");  
@@ -189,10 +227,28 @@ public class WestPanel extends SectionStack{
 		greaterTextItem = new TextItem();
 		greaterTextItem.setTitle("greater than");
 		greaterTextItem.setDisabled(true);
+		greaterTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
 		
 		lessTextItem = new TextItem();
 		lessTextItem.setTitle("less than");
 		lessTextItem.setValue("-0.5");
+		lessTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
 		
 		sortedCheckbox = new CheckboxItem();
 		sortedCheckbox.setTitle("sort segments by experiment");

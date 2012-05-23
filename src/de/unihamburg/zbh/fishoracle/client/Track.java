@@ -9,6 +9,8 @@ import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 
 import de.unihamburg.zbh.fishoracle.client.datasource.MicroarrayStudyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
@@ -17,6 +19,7 @@ import de.unihamburg.zbh.fishoracle.client.datasource.ProjectDS;
 
 public class Track {
 
+	private MainPanel mp = null;
 	private DynamicForm trackForm;
 	private TextItem trackNameItem;
 	private SelectItem selectItemFilter;
@@ -30,8 +33,9 @@ public class Track {
 	
 	private int trackNumber;
 
-	public Track(int numberOfTracks, CheckboxItem globalThresholdCheckbox){
+	public Track(int numberOfTracks, CheckboxItem globalThresholdCheckbox, MainPanel m){
 		
+		this.mp = m;
 		trackNumber = numberOfTracks;
 		
 		trackForm = new DynamicForm();
@@ -82,11 +86,29 @@ public class Track {
 		greaterTextItem.setTitle("greater than");
 		greaterTextItem.setDisabled(true);
 		greaterTextItem.setVisible(false);
+		greaterTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					mp.getWestPanel().startSearch();
+				}
+			}
+		});
 		
 		lessTextItem = new TextItem();
 		lessTextItem.setTitle("less than");
 		lessTextItem.setValue("-0.5");
 		lessTextItem.setVisible(false);
+		lessTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					mp.getWestPanel().startSearch();
+				}
+			}
+		});
 		
 		if(!(Boolean) globalThresholdCheckbox.getValue()){
 			segmentThresholdSelectItem.setVisible(true);
