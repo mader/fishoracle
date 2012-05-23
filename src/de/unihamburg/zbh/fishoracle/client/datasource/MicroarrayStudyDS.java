@@ -73,7 +73,8 @@ public class MicroarrayStudyDS extends FoDataSource {
 						}
 						
 						if(result[i].getTissue() != null){
-							record.setAttribute("tissueName", result[i].getTissue().getOrgan().getLabel());
+							record.setAttribute("tissueName", result[i].getTissue().getOrgan().getLabel() + 
+									" (" + result[i].getTissue().getOrgan().getType() + ")");
 						}
 						
 						list[i] = record;
