@@ -536,7 +536,7 @@ public class DBInterface {
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
-		ga.addUserToGroup(userId, foGroup.getId());
+		ga.addUserToGroup(foGroup.getId(), userId);
 		
 		User user = ua.fetchUserByID(userId);
 		

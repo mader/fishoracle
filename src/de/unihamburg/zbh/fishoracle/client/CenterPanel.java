@@ -192,7 +192,7 @@ public class CenterPanel extends VLayout{
 		VLayout welcomeLayout = new VLayout();
 		welcomeLayout.setContents("" +
         		"<center><h1>FISH Oracle</h1></center>" +
-        		"<p id=\"welcome\">You can search for genomic Regions" +
+        		"<p id=\"welcome\">You can search for genomic regions" +
         		" or for a gene specified by a gene name e.g. 'kras'" +
         		" or a karyoband." +
         		" By clicking on an element a window opens that shows additional information." +
@@ -1888,7 +1888,7 @@ public class CenterPanel extends VLayout{
 	
 	public void openMicrorraystudyAdminTab(FoUser user){
 		
-		Tab msAdminTab = new Tab("Microarraystudy Management");
+		Tab msAdminTab = new Tab("Manage Microarraystudies");
 		msAdminTab.setCanClose(true);
 		
 		VLayout pane = new VLayout();
@@ -2145,7 +2145,7 @@ public class CenterPanel extends VLayout{
 	
 	public void openProjectAdminTab(FoUser user){
 		Tab projectAdminTab;
-		projectAdminTab = new Tab("Project Management");
+		projectAdminTab = new Tab("Manage Projects");
 		
 		projectAdminTab.setCanClose(true);
 		
