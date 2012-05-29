@@ -145,7 +145,7 @@ public class DBInterface {
 	 * @throws GTerrorJava 
 	 * 
 	 * */
-	public Location getLocationForKaryoband(RDBMysql rdb, String chr, String band) throws DBQueryException, GTerrorJava{
+	public Location getLocationForKaryoband(RDBMysql rdb, String chr, String band) throws DBQueryException, GTerrorJava {
 		
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
@@ -207,14 +207,19 @@ public class DBInterface {
 	 * @throws GTerrorJava 
 	 * 
 	 * */
-	public void getEnsembleGenes(RDBMysql rdb, String chr, int start, int end, FeatureCollection features) throws GTerrorJava{
+	public void getEnsembleGenes(RDBMysql rdb,
+									String chr,
+									int start,
+									int end,
+									String[] biotype,
+									FeatureCollection features) throws GTerrorJava {
 		
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
 		Range r = new Range(start, end);
 		
-		core.Array arr = adb.getFeaturesForRange(fi, chr, r);
+		core.Array arr = adb.getGenesForRange(fi, chr, r, biotype);
 		
 		features.addArray(arr);
 		
@@ -234,7 +239,11 @@ public class DBInterface {
 	 * @throws GTerrorJava 
 	 * 
 	 * */
-	public synchronized void getEnsemblKaryotypes(RDBMysql rdb, String chr, int start, int end, FeatureCollection features) throws GTerrorJava{
+	public synchronized void getEnsemblKaryotypes(RDBMysql rdb,
+													String chr,
+													int start,
+													int end,
+													FeatureCollection features) throws GTerrorJava {
 
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
@@ -253,7 +262,11 @@ public class DBInterface {
 	/* FISH ORACLE INTERFACE */
 	
 	private FODriver getFoDriver(){
-		return new FODriverImpl(connectionData.getFhost(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw(), "3306");
+		return new FODriverImpl(connectionData.getFhost(),
+									connectionData.getFdb(),
+									connectionData.getFuser(),
+									connectionData.getFpw(),
+									"3306");
 	}
 	
 	/**

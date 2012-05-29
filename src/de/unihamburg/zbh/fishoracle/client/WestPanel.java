@@ -23,6 +23,7 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.TreeModelType;
 import com.smartgwt.client.util.SC;
@@ -74,6 +75,7 @@ public class WestPanel extends SectionStack{
 	private RadioGroupItem SearchRadioGroupItem;
 	private CheckboxItem sortedCheckbox;
 	private CheckboxItem globalThresholdCheckbox;
+	private SelectItem biotypeSelectItem;
 	
 	private TextItem greaterTextItem;
 	private TextItem lessTextItem;
@@ -193,6 +195,31 @@ public class WestPanel extends SectionStack{
 			}
 			
 		});
+		
+		biotypeSelectItem = new SelectItem();
+		biotypeSelectItem.setTitle("Gene Biotype Filter");
+		biotypeSelectItem.setMultiple(true);
+		biotypeSelectItem.setMultipleAppearance(MultipleAppearance.PICKLIST);
+		biotypeSelectItem.setValueMap("protein_coding",
+										"pseudogene",
+										"processed_transcript",
+										"polymorphic_pseudogene",
+										"lincRNA",
+										"antisense",
+										"sense_intronic",
+										"non_coding",
+										"sense_overlapping",
+										"3prime_overlapping_ncrna",
+										"ncrna_host",
+										"TR_gene",
+										"IG_gene",
+										"other RNA",
+										"LRG_gene");
+		biotypeSelectItem.setDefaultValues("protein_coding",
+				"pseudogene",
+				"processed_transcript",
+				"polymorphic_pseudogene");
+		
 		
 		final SelectItem cncDataSelectItem = new SelectItem();
 		cncDataSelectItem.setTitle("");
@@ -340,6 +367,7 @@ public class WestPanel extends SectionStack{
 							startTextItem,
 							endTextItem,
 							SearchRadioGroupItem,
+							biotypeSelectItem,
 							sortedCheckbox,
 							globalThresholdCheckbox,
 							cncDataSelectItem,
@@ -729,6 +757,7 @@ public class WestPanel extends SectionStack{
 											globalThresholdCheckbox.getValueAsBoolean(),
 											"png",
 											trackData,
+											biotypeSelectItem.getValues(),
 											mp.getCenterPanel().getWidth() - 30);
 			} catch (Exception e) {
 				SC.say(e.getMessage());
@@ -779,7 +808,7 @@ public class WestPanel extends SectionStack{
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());				
+				SC.say(caught.getMessage());
 			}
 		};
 		req.canAccessDataImport(callback);

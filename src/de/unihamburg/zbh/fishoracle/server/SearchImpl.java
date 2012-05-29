@@ -160,13 +160,19 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			
 			FeatureCollection features = new FeatureCollection();
 			
-			db.getSegmentsForTracks(rdbFishoracle, maxSegmentRange.getChrosmome(),
-												maxSegmentRange.getStart(),
-												maxSegmentRange.getEnd(),
-												query, features);
+			db.getSegmentsForTracks(rdbFishoracle, 
+									maxSegmentRange.getChrosmome(),
+									maxSegmentRange.getStart(),
+									maxSegmentRange.getEnd(),
+									query, features);
 			
 			if(maxSegmentRange.getEnd() - maxSegmentRange.getStart() < 10000000){
-				db.getEnsembleGenes(rdbEnsembl, maxSegmentRange.getChrosmome(), maxSegmentRange.getStart(), maxSegmentRange.getEnd(), features);
+				db.getEnsembleGenes(rdbEnsembl,
+									maxSegmentRange.getChrosmome(),
+									maxSegmentRange.getStart(),
+									maxSegmentRange.getEnd(),
+									query.getBiotypeFilter(),
+									features);
 			}
 
 			db.getEnsemblKaryotypes(rdbEnsembl, maxSegmentRange.getChrosmome(), maxSegmentRange.getStart(), maxSegmentRange.getEnd(), features);
@@ -290,7 +296,12 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		db.getSegmentsForTracks(rdbFishoracle, chr, start, end, imageInfo.getQuery(), features);
 		
 		if(end - start < 10000000){
-			db.getEnsembleGenes(rdbEnsembl, chr, start, end, features);
+			db.getEnsembleGenes(rdbEnsembl,
+								chr,
+								start,
+								end,
+								imageInfo.getQuery().getBiotypeFilter(),
+								features);
 		}
 		
 		db.getEnsemblKaryotypes(rdbEnsembl, chr, start, end, features);
