@@ -65,6 +65,8 @@ import de.unihamburg.zbh.fishoracle_db_api.driver.PropertyAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.UserAdaptor;
 import extended.AnnoDBEnsembl;
 import extended.AnnoDBFo;
+import extended.EnsemblGeneAdaptor;
+import extended.EnsemblKaryoAdaptor;
 import extended.FeatureNode;
 import extended.RDB;
 import extended.RDBMysql;
@@ -119,9 +121,16 @@ public class DBInterface {
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
+		int ensembl_version;
+		EnsemblGeneAdaptor ga = null;
+		
+		ensembl_version = adb.getFeatureIndexEnsemblVersion(fi);
+			
+		ga = new EnsemblGeneAdaptor(ensembl_version);
+		
 		FeatureNode fn;
 		try {
-			fn = adb.getFeatureForGeneName(fi, symbol);
+			fn = ga.fetchGeneForSymbol(fi, symbol);
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());
 		}
@@ -150,7 +159,14 @@ public class DBInterface {
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
-		Range r = adb.getRangeForKaryoband(fi, chr, band);
+		int ensembl_version;
+		EnsemblKaryoAdaptor ka = null;
+		
+		ensembl_version = adb.getFeatureIndexEnsemblVersion(fi);
+			
+		ka = new EnsemblKaryoAdaptor(ensembl_version);
+		
+		Range r = ka.fetchRangeForKaryoband(fi, chr, band);
 		
 		Location l = new Location(chr, r.get_start(), r.get_end());
 		
@@ -175,7 +191,14 @@ public class DBInterface {
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
-		FeatureNode fn = adb.getFeatureForStableId(fi, query);
+		int ensembl_version;
+		EnsemblGeneAdaptor ga = null;
+		
+		ensembl_version = adb.getFeatureIndexEnsemblVersion(fi);
+			
+		ga = new EnsemblGeneAdaptor(ensembl_version);
+		
+		FeatureNode fn = ga.fetchGeneForStableId(fi, query);
 		
 		Range rng = fn.get_range();
 		
@@ -217,9 +240,16 @@ public class DBInterface {
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
+		int ensembl_version;
+		EnsemblGeneAdaptor ga = null;
+		
+		ensembl_version = adb.getFeatureIndexEnsemblVersion(fi);
+			
+		ga = new EnsemblGeneAdaptor(ensembl_version);
+		
 		Range r = new Range(start, end);
 		
-		core.Array arr = adb.getGenesForRange(fi, chr, r, biotype);
+		core.Array arr = ga.fetchGenesForRange(fi, chr, r, biotype);
 		
 		features.addArray(arr);
 		
@@ -248,9 +278,16 @@ public class DBInterface {
 		AnnoDBEnsembl adb = new AnnoDBEnsembl();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
 		
+		int ensembl_version;
+		EnsemblKaryoAdaptor ka = null;
+		
+		ensembl_version = adb.getFeatureIndexEnsemblVersion(fi);
+			
+		ka = new EnsemblKaryoAdaptor(ensembl_version);
+		
 		Range r = new Range(start, end);
 		
-		core.Array arr = adb.getKaryobandFeaturesForRange(fi, chr, r);
+		core.Array arr = ka.fetchKaryobandsForRange(fi, chr, r);
 		
 		features.addArray(arr);
 		
