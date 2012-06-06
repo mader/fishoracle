@@ -29,7 +29,7 @@ public interface SearchAsync {
 	public void generateImage(QueryInfo q, AsyncCallback<GWTImageInfo> callback);
 	public void redrawImage(GWTImageInfo imageInfo, AsyncCallback<GWTImageInfo> callback);
 	public void getSegmentInfo(int segmentId, AsyncCallback<FoCnSegment> callback);
-	public void getGeneInfo(String query, AsyncCallback<EnsemblGene> callback);
+	public void getGeneInfo(String query, String ensemblDB, AsyncCallback<EnsemblGene> callback);
 	public void exportData(GWTImageInfo imageInfo, AsyncCallback<String> callback);
 	
 }

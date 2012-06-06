@@ -2,7 +2,7 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class FoCnSegment  implements IsSerializable {
+public class FoCnSegment implements IsSerializable {
 
 	private int id;
 	private String chromosome;

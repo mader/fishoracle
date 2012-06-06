@@ -30,6 +30,8 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 	private int winWidth;
 	private boolean sorted;
 	private boolean globalTh;
+	private String ensemblDBName;
+	private String ensemblDBLabel;
 	
 	private String[] biotypeFilter;
 	
@@ -45,6 +47,8 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 						boolean globalTh,
 						String imageType,
 						TrackData[] tracks,
+						String ensemblDBName,
+						String ensemblDBLabel,
 						String[] biotypeFilter,
 						int winWidth) throws Exception {
 		super();
@@ -65,6 +69,8 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		this.globalTh = globalTh; 
 		this.imageType = imageType;
 		this.tracks = tracks;
+		this.ensemblDBName = ensemblDBName;
+		this.ensemblDBLabel = ensemblDBLabel;
 		this.biotypeFilter = biotypeFilter;
 		this.winWidth = winWidth;
 	}
@@ -184,5 +190,21 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 
 	public void setBiotypeFilter(String[] biotypeFilter) {
 		this.biotypeFilter = biotypeFilter;
+	}
+
+	public String getEnsemblDBName() {
+		return ensemblDBName;
+	}
+
+	public void setEnsemblDBName(String ensemblDB) {
+		this.ensemblDBName = ensemblDB;
+	}
+
+	public String getEnsemblDBLabel() {
+		return ensemblDBLabel;
+	}
+
+	public void setEnsemblDBLabel(String ensemblDBLabel) {
+		this.ensemblDBLabel = ensemblDBLabel;
 	}
 }

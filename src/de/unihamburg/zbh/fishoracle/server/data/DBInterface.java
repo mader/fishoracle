@@ -30,6 +30,7 @@ import annotationsketch.FeatureIndex;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
+import de.unihamburg.zbh.fishoracle.client.data.FoEnsemblDBs;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
@@ -44,6 +45,7 @@ import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
 import de.unihamburg.zbh.fishoracle_db_api.data.Chip;
 import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
+import de.unihamburg.zbh.fishoracle_db_api.data.EnsemblDBs;
 import de.unihamburg.zbh.fishoracle_db_api.data.Group;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 import de.unihamburg.zbh.fishoracle_db_api.data.Microarraystudy;
@@ -55,6 +57,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.TissueSample;
 import de.unihamburg.zbh.fishoracle_db_api.data.User;
 import de.unihamburg.zbh.fishoracle_db_api.driver.ChipAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.CnSegmentAdaptor;
+import de.unihamburg.zbh.fishoracle_db_api.driver.EnsemblDBsAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriver;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriverImpl;
 import de.unihamburg.zbh.fishoracle_db_api.driver.GroupAdaptor;
@@ -98,12 +101,18 @@ public class DBInterface {
 	
 	/* ENSEMBL INTERFACE*/
 	
-	public RDBMysql getEnsemblRDB() throws GTerrorJava{
+	public RDBMysql getEnsemblRDB(String ensemblDB) throws GTerrorJava {
+		
+		if(ensemblDB != null){
+			
+			connectionData.setEdb(ensemblDB);
+		}
+		
 		RDBMysql rdb = new RDBMysql(connectionData.getEhost(), connectionData.getEport(), connectionData.getEdb(), connectionData.getEuser(), connectionData.getEpw());
 		return rdb;
 	}
 	
-	public RDBMysql getFishoracleRDB() throws GTerrorJava{
+	public RDBMysql getFishoracleRDB() throws GTerrorJava {
 		RDBMysql rdb = new RDBMysql(connectionData.getFhost(), 3306, connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 		return rdb;
 	}
@@ -476,15 +485,44 @@ public class DBInterface {
 		return cnSegmentToFoCnSegment(s);
 	}
 	
+	public FoEnsemblDBs addEDB(FoEnsemblDBs foEdbs) {
+		
+		FODriver driver = getFoDriver();
+		EnsemblDBsAdaptor ea = driver.getEnsemblDBsAdaptor();
+		
+		int id = ea.storeDB(foEdbsToEdbs(foEdbs));
+		
+		EnsemblDBs newEdbs = ea.fetchDBById(id);
+		
+		return edbsToFoEdbs(newEdbs);
+	}
 	
-	public int createNewStudy(Microarraystudy mstudy, int projectId){
+	public FoEnsemblDBs[] fetchEDBs() {
+		
+		FODriver driver = getFoDriver();
+		EnsemblDBsAdaptor ea = driver.getEnsemblDBsAdaptor();
+		
+		EnsemblDBs[] edbss = ea.fetchAllDBs();
+		
+		return edbssToFoEdbss(edbss);
+	}
+	
+	public void removeEDB(int edbsId) {
+		
+		FODriver driver = getFoDriver();
+		EnsemblDBsAdaptor ea = driver.getEnsemblDBsAdaptor();
+		
+		ea.deleteDB(edbsId);
+	}
+	
+	public int createNewStudy(Microarraystudy mstudy, int projectId) {
 		FODriver driver = getFoDriver();
 		MicroarraystudyAdaptor ma = driver.getMicroarraystudyAdaptor();
 	
 		return ma.storeMicroarraystudy(mstudy, projectId);
 	}
 	
-	public FoUser insertUser(FoUser user) throws Exception{
+	public FoUser insertUser(FoUser user) throws Exception {
 		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
@@ -501,7 +539,7 @@ public class DBInterface {
 		return userToFoUser(newUser);
 	}
 	
-	public FoUser getUser(String userName, String password) throws Exception{
+	public FoUser getUser(String userName, String password) throws Exception {
 		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
@@ -859,6 +897,40 @@ public class DBInterface {
 	}
 	
 	/* private methods */
+	
+	private EnsemblDBs[] foEdbssToEdbss(FoEnsemblDBs[] foEdbs){
+		EnsemblDBs[] edbs = new EnsemblDBs[foEdbs.length];
+		
+		for(int i=0; i < foEdbs.length; i++){
+			edbs[i] = foEdbsToEdbs(foEdbs[i]);
+		}
+		return edbs;
+	}
+	
+	private EnsemblDBs foEdbsToEdbs(FoEnsemblDBs foEdbs){
+		EnsemblDBs edbs = new EnsemblDBs(foEdbs.getId(),
+									foEdbs.getDBName(),
+									foEdbs.getLabel(),
+									foEdbs.getVersion());
+		return edbs;
+	}
+	
+	private FoEnsemblDBs[] edbssToFoEdbss(EnsemblDBs[] edbs){
+		FoEnsemblDBs[] foEdbs = new FoEnsemblDBs[edbs.length];
+		
+		for(int i=0; i < edbs.length; i++){
+			foEdbs[i] = edbsToFoEdbs(edbs[i]);
+		}
+		return foEdbs;
+	}
+	
+	private FoEnsemblDBs edbsToFoEdbs(EnsemblDBs edbs){
+		FoEnsemblDBs foEdbs = new FoEnsemblDBs(edbs.getId(),
+									edbs.getDBName(),
+									edbs.getLabel(),
+									edbs.getVersion());
+		return foEdbs;
+	}
 	
 	private FoProjectAccess[] projectAccessesToFoProjectAccesses(ProjectAccess[] projectAccess, boolean withChildren){
 		FoProjectAccess[] foProjectAccess = new FoProjectAccess[projectAccess.length];

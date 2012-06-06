@@ -21,6 +21,4 @@ public interface ChipService extends RemoteService {
 			return GWT.create(ChipService.class);
 		}
 	}
-
-	
 }

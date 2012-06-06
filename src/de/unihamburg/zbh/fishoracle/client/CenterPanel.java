@@ -91,6 +91,7 @@ import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.datasource.ChipDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.CnSegmentDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.EnsemblDBDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.MicroarrayStudyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.datasource.OrganDS;
@@ -118,6 +119,7 @@ public class CenterPanel extends VLayout{
 	private ListGrid segmentGrid;
 	private SelectItem userSelectItem;
 	private SelectItem projectSelectItem;
+	private ListGrid ensemblGrid;
 	
 	private DynamicForm userProfileForm;
 	private DynamicForm pwForm;
@@ -146,6 +148,9 @@ public class CenterPanel extends VLayout{
 	private ComboBoxItem propertyTypeCbItem;
 	private TextItem chipLabelTextItem;
 	private ComboBoxItem chipTypeCbItem;
+	private TextItem dbNameTextItem;
+	private TextItem dbLabelTextItem;
+	private TextItem dbVersionTextItem;
 	
 	private TabSet centerTabSet = null;
 	private TextItem chrTextItem;
@@ -298,7 +303,7 @@ public class CenterPanel extends VLayout{
 			
 			final Img spaceImg = new Img("1pximg.gif");
 			
-			spaceImg.addClickHandler(new RecMapClickHandler(imgInfo.getRecmapinfo().get(rmc), this));
+			spaceImg.addClickHandler(new RecMapClickHandler(imgInfo.getRecmapinfo().get(rmc), imgInfo, this));
 			
 			int southeast_x = (int) imgInfo.getRecmapinfo().get(rmc).getSoutheastX();
 			
@@ -335,7 +340,7 @@ public class CenterPanel extends VLayout{
 	
 	public void newImageTab(final GWTImageInfo imgInfo){
 		
-		Tab imgTab = new Tab(imgInfo.getQuery().getQueryString()); 
+		Tab imgTab = new Tab(imgInfo.getQuery().getQueryString() + " (" + imgInfo.getQuery().getEnsemblDBLabel() + ")"); 
 		imgTab.setCanClose(true);
 		
 		VLayout presentationLayer = new VLayout();
@@ -2553,6 +2558,163 @@ public class CenterPanel extends VLayout{
 		
 	}
 	
+	public void loadEnsemblManageWindow(){
+		
+		final Window window = new Window();
+
+		window.setTitle("Add Ensembl Database");
+		window.setWidth(250);
+		window.setHeight(150);
+		window.setAlign(Alignment.CENTER);
+		
+		window.setAutoCenter(true);
+		window.setIsModal(true);
+		window.setShowModalMask(true);
+		
+		DynamicForm ensemblForm = new DynamicForm();
+		
+		dbNameTextItem = new TextItem();
+		dbNameTextItem.setTitle("Database Name");
+		
+		dbLabelTextItem = new TextItem();
+		dbLabelTextItem.setTitle("Database Label");
+		
+		dbVersionTextItem = new TextItem();
+		dbVersionTextItem.setTitle("Database Version");
+		
+		ButtonItem addDBButton = new ButtonItem("Add");
+		addDBButton.setWidth(50);
+		
+		addDBButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("ensemblDBName", dbNameTextItem.getDisplayValue());
+				lgr.setAttribute("ensemblDBLabel", dbLabelTextItem.getDisplayValue());
+				lgr.setAttribute("ensemblDBVersion", dbVersionTextItem.getDisplayValue());
+				
+				ensemblGrid.addData(lgr);
+				
+				window.hide();
+			}
+		});
+
+		ensemblForm.setItems(dbNameTextItem, dbLabelTextItem, dbVersionTextItem, addDBButton);
+	
+		window.addItem(ensemblForm);
+		
+		window.show();
+	}
+	
+	public void openEnsemblConfigTab(){
+		
+		Tab ensemblConfigTab = new Tab("Ensembl Databases");
+		ensemblConfigTab.setCanClose(true);
+		
+		VLayout pane = new VLayout();
+		pane.setWidth100();
+		pane.setHeight100();
+		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		VLayout headerContainer = new VLayout();
+		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
+		headerContainer.setWidth100();
+		headerContainer.setAutoHeight();
+		
+		HLayout controlsPanel = new HLayout();
+		controlsPanel.setWidth100();
+		controlsPanel.setAutoHeight();
+		
+		ToolStrip ensemblToolStrip = new ToolStrip();
+		ensemblToolStrip.setWidth100();
+		
+		ToolStripButton addEDBButton = new ToolStripButton();
+		addEDBButton.setTitle("add Database");
+		addEDBButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				loadEnsemblManageWindow();
+			}});
+		
+		ensemblToolStrip.addButton(addEDBButton);
+		
+		ToolStripButton deleteEDBButton = new ToolStripButton();  
+		deleteEDBButton.setTitle("delete Database");
+		deleteEDBButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				final ListGridRecord lgr = ensemblGrid.getSelectedRecord();
+				
+				if (lgr != null) {
+				
+					SC.confirm("Do you really want to delete " + lgr.getAttribute("ensemblDBLabel") + "?", new BooleanCallback(){
+
+						@Override
+						public void execute(Boolean value) {
+							if(value != null && value){
+						
+								ensemblGrid.removeData(lgr);
+							}
+						}
+					});
+				
+				} else {
+					SC.say("Select a database.");
+				}
+			}});
+		
+		ensemblToolStrip.addButton(deleteEDBButton);
+		
+		
+		controlsPanel.addMember(ensemblToolStrip);
+		
+		headerContainer.addMember(controlsPanel);
+		
+		pane.addMember(headerContainer);
+		
+		HLayout gridContainer = new HLayout();
+		gridContainer.setWidth100();
+		gridContainer.setHeight100();
+		
+		ensemblGrid = new ListGrid();
+		ensemblGrid.setWidth100();
+		ensemblGrid.setHeight100();
+		ensemblGrid.setAlternateRecordStyles(true);
+		ensemblGrid.setWrapCells(true);
+		ensemblGrid.setFixedRecordHeights(false);
+		ensemblGrid.setShowAllRecords(false);
+		ensemblGrid.setAutoFetchData(false);
+		
+		/*
+		ListGridField lgfId = new ListGridField("ensemblDBId", "ID");
+		ListGridField lgfLabel = new ListGridField("ensemblDBName", "Name");
+		ListGridField lgfType = new ListGridField("ensemblDBLabel", "Label");
+		
+		ensemblGrid.setFields(lgfId, lgfLabel, lgfType);
+		*/
+		
+		EnsemblDBDS edbDS = new EnsemblDBDS();
+		
+		ensemblGrid.setDataSource(edbDS);
+		ensemblGrid.fetchData();
+		
+		gridContainer.addMember(ensemblGrid);
+		
+		pane.addMember(gridContainer);
+		
+		ensemblConfigTab.setPane(pane);
+		
+		centerTabSet.addTab(ensemblConfigTab);
+		
+		centerTabSet.selectTab(ensemblConfigTab);
+		
+	}
+	
 	public void openDatabaseConfigTab(DBConfigData dbdata){
 		Tab DatabaseConfigTab;
 		DatabaseConfigTab = new Tab("Database Configuration");
@@ -3304,17 +3466,20 @@ class RecMapClickHandler implements ClickHandler{
 	
 	private RecMapInfo recInfo;
 	private CenterPanel cp;
+	private GWTImageInfo imgInfo;
 	
-	public RecMapClickHandler(RecMapInfo recmapinfo, CenterPanel centerPanel){
+	
+	public RecMapClickHandler(RecMapInfo recmapinfo, GWTImageInfo imgInfo, CenterPanel centerPanel){
 		this.recInfo = recmapinfo;
+		this.imgInfo = imgInfo;
 		this.cp = centerPanel;
 	}
 	
 	public void onClick(ClickEvent event) {
 		
 		if(recInfo.getType().equals("gene")){
-
-			geneDetails(recInfo.getElementName());
+			
+			geneDetails(recInfo.getElementName(), imgInfo.getQuery().getEnsemblDBName());
 			
 		}
 		
@@ -3346,7 +3511,7 @@ class RecMapClickHandler implements ClickHandler{
 	}
 	
 	
-	public void geneDetails(String query){
+	public void geneDetails(String query, String ensemblDB){
 		
 		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
@@ -3363,7 +3528,7 @@ class RecMapClickHandler implements ClickHandler{
 				SC.say(caught.getMessage());
 			}
 		};
-		req.getGeneInfo(query, callback);
+		req.getGeneInfo(query, ensemblDB, callback);
 	}
 }
 

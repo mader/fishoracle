@@ -55,6 +55,7 @@ import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.TrackData;
+import de.unihamburg.zbh.fishoracle.client.datasource.EnsemblDBDS;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
@@ -75,6 +76,7 @@ public class WestPanel extends SectionStack{
 	private RadioGroupItem SearchRadioGroupItem;
 	private CheckboxItem sortedCheckbox;
 	private CheckboxItem globalThresholdCheckbox;
+	private SelectItem ensemblSelectItem;
 	private SelectItem biotypeSelectItem;
 	
 	private TextItem greaterTextItem;
@@ -195,6 +197,19 @@ public class WestPanel extends SectionStack{
 			}
 			
 		});
+		
+		ensemblSelectItem = new SelectItem();
+		ensemblSelectItem.setTitle("Ensembl Database");
+		
+		ensemblSelectItem.setDisplayField("ensemblDBLabel");
+		ensemblSelectItem.setValueField("ensemblDBName");
+		ensemblSelectItem.setAutoFetchData(false);
+		
+		EnsemblDBDS edbDS = new EnsemblDBDS();
+		
+		ensemblSelectItem.setOptionDataSource(edbDS);
+		
+		ensemblSelectItem.setDefaultToFirstOption(true);
 		
 		biotypeSelectItem = new SelectItem();
 		biotypeSelectItem.setTitle("Gene Biotype Filter");
@@ -367,6 +382,7 @@ public class WestPanel extends SectionStack{
 							startTextItem,
 							endTextItem,
 							SearchRadioGroupItem,
+							ensemblSelectItem,
 							biotypeSelectItem,
 							sortedCheckbox,
 							globalThresholdCheckbox,
@@ -592,6 +608,24 @@ public class WestPanel extends SectionStack{
 						mp.getCenterPanel().openChipAdminTab();
 					}
 				}
+				if(event.getNode().getName().equals("Ensembl Databases")){
+					boolean exists = false;
+					int index = 0;
+					
+					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
+					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
+					for(int i=0; i < tabs.length; i++){
+						if(tabs[i].getTitle().equals("Ensembl Databases")){
+							exists = true;
+							index = i;
+						}
+					}
+					if(exists){
+						centerTabSet.selectTab(index);
+					} else {
+						mp.getCenterPanel().openEnsemblConfigTab();
+					}
+				}
 				if(event.getNode().getName().equals("Database Configuration")){
 					boolean exists = false;
 					int index = 0;
@@ -622,6 +656,7 @@ public class WestPanel extends SectionStack{
 							new TreeNode("Manage Organs"),
 							new TreeNode("Manage Properties"),
 							new TreeNode("Manage Chips"),
+							new TreeNode("Ensembl Databases"),
 							new TreeNode("Database Configuration")
 							)); 
 		
@@ -757,6 +792,8 @@ public class WestPanel extends SectionStack{
 											globalThresholdCheckbox.getValueAsBoolean(),
 											"png",
 											trackData,
+											ensemblSelectItem.getValueAsString(),
+											ensemblSelectItem.getDisplayValue(),
 											biotypeSelectItem.getValues(),
 											mp.getCenterPanel().getWidth() - 30);
 			} catch (Exception e) {

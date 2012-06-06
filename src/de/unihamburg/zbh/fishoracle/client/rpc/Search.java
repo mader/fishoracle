@@ -33,7 +33,7 @@ public interface Search extends RemoteService {
 	public GWTImageInfo generateImage(QueryInfo q) throws Exception;
 	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) throws Exception;
 	public FoCnSegment getSegmentInfo(int segmentId) throws Exception;
-	public EnsemblGene getGeneInfo(String query) throws Exception;
+	public EnsemblGene getGeneInfo(String query, String ensemblDB) throws Exception;
 	public String exportData(GWTImageInfo imageInfo) throws Exception;
 	
 	public static class Util {

@@ -90,7 +90,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			System.out.println(dt + " Search: " + query.getQueryString());
 			System.out.println(dt + " Search type: " + query.getSearchType());
 			
-			RDBMysql rdbEnsembl = db.getEnsemblRDB();
+			RDBMysql rdbEnsembl = db.getEnsemblRDB(query.getEnsemblDBName());
 			RDBMysql rdbFishoracle = db.getFishoracleRDB();
 			
 			if(query.getSearchType().equals("Gene Search")){
@@ -277,7 +277,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		RDBMysql rdbEnsembl = db.getEnsemblRDB();
+		RDBMysql rdbEnsembl = db.getEnsemblRDB(imageInfo.getQuery().getEnsemblDBName());
 		RDBMysql rdbFishoracle = db.getFishoracleRDB();
 		
 		FeatureCollection features =  new FeatureCollection();
@@ -361,7 +361,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * @return gene
 	 * @throws Exception 
 	 * */
-	public EnsemblGene getGeneInfo(String query) throws Exception {
+	public EnsemblGene getGeneInfo(String query, String ensemblDB) throws Exception {
 		
 		isActiveUser();
 		
@@ -372,7 +372,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		RDBMysql rdb = db.getEnsemblRDB();
+		RDBMysql rdb = db.getEnsemblRDB(ensemblDB);
 		
 		EnsemblGene  gene = db.getGeneInfos(rdb, query);
 		
