@@ -78,13 +78,18 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 	public QueryInfo clone(){
 		
 		QueryInfo query = new QueryInfo();
-		query.setImageType(this.imageType);
-		query.setGlobalLowerTh(this.globalLowerTh);
 		query.setQueryString(this.queryString);
 		query.setSearchType(this.searchType);
+		query.setGlobalLowerTh(this.globalLowerTh);
 		query.setGlobalUpperTh(this.globalUpperTh);
+		query.setImageType(this.imageType);
 		query.setTracks(this.tracks);
 		query.setWinWidth(this.winWidth);
+		query.setSorted(this.sorted);
+		query.setGlobalTh(this.globalTh);
+		query.setEnsemblDBName(this.ensemblDBName);
+		query.setEnsemblDBLabel(this.ensemblDBLabel);
+		query.setBiotypeFilter(this.biotypeFilter);
 		
 		return query;
 	}
