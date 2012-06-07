@@ -32,6 +32,7 @@ import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.Overflow;
+import com.smartgwt.client.types.SelectionType;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.BooleanCallback;
@@ -109,6 +110,8 @@ import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
 public class CenterPanel extends VLayout{
 
+	private ToolStripButton selectButton;
+	
 	private ListGrid userGrid;
 	private ListGrid organGrid;
 	private ListGrid propertyGrid;
@@ -222,6 +225,10 @@ public class CenterPanel extends VLayout{
 		return centerTabSet;
 	}
 
+	public ToolStripButton getSelectButtion() {
+		return selectButton;
+	}
+	
 	private void refreshRange(){
 		ImgCanvas imgLayer = (ImgCanvas) cp.getCenterTabSet().getSelectedTab().getPane().getChildren()[1];
 		GWTImageInfo imgInfo = imgLayer.getImageInfo();
@@ -291,7 +298,7 @@ public class CenterPanel extends VLayout{
 	
 	public ImgCanvas createImageLayer(GWTImageInfo imgInfo){
 		
-		ImgCanvas image = new ImgCanvas(imgInfo);
+		ImgCanvas image = new ImgCanvas(imgInfo, this);
 		image.setOverflow(Overflow.HIDDEN);
         image.setWidth(imgInfo.getWidth());
         image.setHeight(imgInfo.getHeight());
@@ -741,13 +748,31 @@ public class CenterPanel extends VLayout{
 		
 		exportMenu.setItems(excelExportItem, pdfExportItem, psExportItem, svgExportItem, pngExportItem);
 		
+		final ImgCanvas image = createImageLayer(imgInfo);
+		
 		ToolStripMenuButton exportMenuButton = new ToolStripMenuButton("Export", exportMenu);
+		
+		selectButton = new ToolStripButton();
+		selectButton.setTitle("Select");
+		selectButton.setActionType(SelectionType.CHECKBOX);
+		selectButton.setSelected(false);
+		selectButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				ToolStripButton b = (ToolStripButton) event.getSource();
+				
+				if(!b.isSelected()){
+					image.hideRec();
+				}
+			}
+			
+		});
+		presentationToolStrip.addButton(selectButton);
 		
 		presentationToolStrip.addMenuButton(exportMenuButton);
 		
 		presentationLayer.addMember(presentationToolStrip);
-		
-		ImgCanvas image = createImageLayer(imgInfo);
 		
 		image.setChromosome(chrTextItem);
 		image.setStart(startTextItem);

@@ -20,13 +20,18 @@ package de.unihamburg.zbh.fishoracle.client;
 import com.smartgwt.client.types.Visibility;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Img;
+import com.smartgwt.client.widgets.events.MouseDownEvent;
+import com.smartgwt.client.widgets.events.MouseDownHandler;
 import com.smartgwt.client.widgets.events.MouseMoveEvent;
 import com.smartgwt.client.widgets.events.MouseMoveHandler;
 import com.smartgwt.client.widgets.events.MouseOutEvent;
 import com.smartgwt.client.widgets.events.MouseOutHandler;
 import com.smartgwt.client.widgets.events.MouseOverEvent;
 import com.smartgwt.client.widgets.events.MouseOverHandler;
+import com.smartgwt.client.widgets.events.MouseUpEvent;
+import com.smartgwt.client.widgets.events.MouseUpHandler;
 import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 
@@ -39,21 +44,71 @@ public class ImgCanvas extends Img {
 	private TextItem start;
 	private TextItem end;
 	private Canvas line;
-	
+	private Canvas rec;
+	private boolean mouseDown;
+	private ImgCanvas imgc;
+	private CenterPanel cp;
 	
 	public ImgCanvas() {
 		
 	}
 	
-	public ImgCanvas(GWTImageInfo imageInfo) {
+	public ImgCanvas(GWTImageInfo imageInfo, CenterPanel cp) {
 		this.imageInfo = imageInfo;
 		this.setSrc("[APP]/" + imageInfo.getImgUrl());
+		imgc = this;
+		this.cp = cp;
+		mouseDown = false;
 	}
 
 	@Override   
 	protected void onInit() {  
 	line = createLine();
+	Canvas canvas = new Canvas();
+	canvas.setVisibility(Visibility.HIDDEN);
+	rec = canvas;
 	addChild(line);
+	addChild(rec);
+	
+	this.addMouseDownHandler(new MouseDownHandler(){
+
+		@Override
+		public void onMouseDown(MouseDownEvent event) {
+			
+			ToolStripButton s = cp.getSelectButtion();
+			
+				if(s.isSelected()){
+			
+					if(!mouseDown){
+						imgc.removeChild(rec);
+			
+						Canvas canvas = new Canvas();
+			
+						canvas.setLeft(imgc.getOffsetX());
+						canvas.setTop(imgc.getOffsetY());
+						canvas.setWidth(1);
+						canvas.setHeight(1);
+						canvas.setBorder("2px solid #FF0000");
+			
+						rec = canvas;
+			
+						imgc.addChild(rec);
+						mouseDown = true;
+					} else {
+						mouseDown = false;
+					}
+				}
+		}
+	});
+	
+	this.addMouseUpHandler(new MouseUpHandler(){
+
+		@Override
+		public void onMouseUp(MouseUpEvent event) {
+			//mouseDown = false;
+			
+		}
+	});
 	
 	this.addMouseOverHandler(new MouseOverHandler() {
 		@Override
@@ -67,6 +122,18 @@ public class ImgCanvas extends Img {
 		@Override
 		public void onMouseMove(MouseMoveEvent event) {
 			updateLine();  
+			
+			if(mouseDown){
+				
+				int w = imgc.getOffsetX() - rec.getLeft();
+				int h = imgc.getOffsetY() - rec.getTop();
+				if(w > 0){
+					rec.setWidth(w);
+				}
+				if(h > 0){
+					rec.setHeight(h);
+				}
+			}
 		}
 	});
 	
@@ -77,6 +144,10 @@ public class ImgCanvas extends Img {
 		}
 	});
 	}  
+	
+	public void hideRec(){
+		rec.setVisibility(Visibility.HIDDEN);
+	}
 	
 	public GWTImageInfo getImageInfo() {
 		return imageInfo;
@@ -109,7 +180,7 @@ public class ImgCanvas extends Img {
 	public void setEnd(TextItem end) {
 		this.end = end;
 	}
-	
+
 	private Canvas createLine() {
 		Canvas canvas = new Canvas();
 		canvas.setWidth(this.getWidth() + 10);
