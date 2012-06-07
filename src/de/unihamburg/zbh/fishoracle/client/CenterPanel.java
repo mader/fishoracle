@@ -763,11 +763,13 @@ public class CenterPanel extends VLayout{
 				ToolStripButton b = (ToolStripButton) event.getSource();
 				
 				if(!b.isSelected()){
-					image.hideRec();
+					ImgCanvas imgLayer = (ImgCanvas) cp.getCenterTabSet().getSelectedTab().getPane().getChildren()[1];
+					imgLayer.hideRec();
 				}
 			}
 			
 		});
+		
 		presentationToolStrip.addButton(selectButton);
 		
 		presentationToolStrip.addMenuButton(exportMenuButton);

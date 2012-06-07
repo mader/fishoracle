@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -28,8 +28,6 @@ import com.smartgwt.client.widgets.events.MouseOutEvent;
 import com.smartgwt.client.widgets.events.MouseOutHandler;
 import com.smartgwt.client.widgets.events.MouseOverEvent;
 import com.smartgwt.client.widgets.events.MouseOverHandler;
-import com.smartgwt.client.widgets.events.MouseUpEvent;
-import com.smartgwt.client.widgets.events.MouseUpHandler;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 
@@ -64,9 +62,7 @@ public class ImgCanvas extends Img {
 	@Override   
 	protected void onInit() {  
 	line = createLine();
-	Canvas canvas = new Canvas();
-	canvas.setVisibility(Visibility.HIDDEN);
-	rec = canvas;
+	rec = createRec();
 	addChild(line);
 	addChild(rec);
 	
@@ -80,33 +76,19 @@ public class ImgCanvas extends Img {
 				if(s.isSelected()){
 			
 					if(!mouseDown){
-						imgc.removeChild(rec);
-			
-						Canvas canvas = new Canvas();
-			
-						canvas.setLeft(imgc.getOffsetX());
-						canvas.setTop(imgc.getOffsetY());
-						canvas.setWidth(1);
-						canvas.setHeight(1);
-						canvas.setBorder("2px solid #FF0000");
-			
-						rec = canvas;
-			
-						imgc.addChild(rec);
+						
+						rec.show();
+						
+						rec.setLeft(imgc.getOffsetX());
+						rec.setTop(imgc.getOffsetY());
+						rec.setWidth(1);
+						rec.setHeight(1);
+						
 						mouseDown = true;
 					} else {
 						mouseDown = false;
 					}
 				}
-		}
-	});
-	
-	this.addMouseUpHandler(new MouseUpHandler(){
-
-		@Override
-		public void onMouseUp(MouseUpEvent event) {
-			//mouseDown = false;
-			
 		}
 	});
 	
@@ -181,6 +163,14 @@ public class ImgCanvas extends Img {
 		this.end = end;
 	}
 
+	private Canvas createRec() {
+		
+		Canvas canvas = new Canvas();
+		canvas.setBorder("2px solid #FF0000");
+		canvas.setVisibility(Visibility.HIDDEN);
+		return canvas;
+	}
+	
 	private Canvas createLine() {
 		Canvas canvas = new Canvas();
 		canvas.setWidth(this.getWidth() + 10);
