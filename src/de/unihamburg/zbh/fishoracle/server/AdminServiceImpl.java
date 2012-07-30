@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -27,11 +27,11 @@ import com.csvreader.CsvReader;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
-import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
+import de.unihamburg.zbh.fishoracle.client.data.FoPlatform;
+import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
@@ -42,7 +42,8 @@ import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle.server.data.DBConfig;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
-import de.unihamburg.zbh.fishoracle_db_api.data.Microarraystudy;
+import de.unihamburg.zbh.fishoracle_db_api.data.Location;
+import de.unihamburg.zbh.fishoracle_db_api.data.Study;
 
 public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 
@@ -169,7 +170,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		DBInterface db = new DBInterface(servletContext); 
 		
-		return db.getCnSegmentsForMstudyId(mstudyId);
+		return db.getCnSegmentsForStudyId(mstudyId);
 	}
 	
 	@Override
@@ -180,11 +181,11 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		db.removeMstudy(mstudyId);
+		db.removeStudy(mstudyId);
 	}
 	
 	@Override
-	public FoMicroarraystudy[] getMicorarrayStudiesForProject() throws Exception {
+	public FoStudy[] getMicorarrayStudiesForProject() throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -200,17 +201,17 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 			
 		}
 				
-		return db.getMicroarraystudiesForProject(projectIds, false);
+		return db.getStudiesForProject(projectIds, false);
 	}
 	
 	@Override
-	public FoMicroarraystudy[] getMicorarrayStudiesForProject(int[] pId) {
+	public FoStudy[] getMicorarrayStudiesForProject(int[] pId) {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.getMicroarraystudiesForProject(pId, true);
+		return db.getStudiesForProject(pId, true);
 	}
 	
 	@Override
@@ -275,37 +276,6 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		DBInterface db = new DBInterface(servletContext);
 		
 		return db.getPropertyTypes();
-	}
-	
-	@Override
-	public FoChip addChip(FoChip foChip) throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.addChip(foChip);
-	}
-	
-	@Override
-	public String[] getAllChipTypes() {
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getChipTypes();
-	}
-	
-	@Override
-	public FoChip[] getAllFoChips() throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getAllChips();
 	}
 	
 	@Override
@@ -483,9 +453,9 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		MicroarrayOptions mo = new MicroarrayOptions();
 		
-	    FoChip[] chips = db.getAllChips();
+	    FoPlatform[] platforms = db.getAllPlatforms();
 	    
-	    mo.setChips(chips);
+	    mo.setPlatforms(platforms);
 	    
 	    FoOrgan[] organs = db.getOrgans(true);
 	    
@@ -516,7 +486,9 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	@Override
 	public boolean importData(String fileName,
 								String studyName,
-								int chipId,
+								String type,
+								String assembly,
+								int platformId,
 								int organId,
 								int projectId,
 								int[] propertyIds,
@@ -553,9 +525,9 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 			String markers = reader.get("markers");
 			String segmentMean = reader.get("segment mean");
 			
-			CnSegment segment = new CnSegment(0, chr, 
-												Integer.parseInt(start), 
-												Integer.parseInt(end), 
+			Location loc = new Location(0, chr, Integer.parseInt(start), Integer.parseInt(end));
+			
+			CnSegment segment = new CnSegment(0, loc,
 												Double.parseDouble(segmentMean), 
 												Integer.parseInt(markers));
 			segmentContainer.add(segment);
@@ -567,15 +539,17 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		segments = new CnSegment[segmentContainer.size()];
 		segmentContainer.toArray(segments);
 		
-		Microarraystudy mstudy = new Microarraystudy(segments,
-													studyName,
-													description,
-													chipId,
-													organId,
-													propertyIds,
-													user.getId());
+		Study study = new Study(segments,
+									studyName,
+									type,
+									assembly,
+									description,
+									platformId,
+									organId,
+									propertyIds,
+									user.getId());
 		
-		db.createNewStudy(mstudy, projectId);
+		db.createNewStudy(study, projectId);
 			
 	    File f = new File(servletContext + "tmp" + System.getProperty("file.separator") + fileName);
 

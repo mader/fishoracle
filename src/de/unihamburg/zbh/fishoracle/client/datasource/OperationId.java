@@ -4,8 +4,8 @@ public class OperationId {
 	
 	public static final String PROJECT_FETCH_ALL = "getAllProjects";
 	
-	public static final String MSTUDY_FETCH_ALL = "getAllMicroarrayStudies";
-	public static final String MSTUDY_FETCH_FOR_PROJECT = "getAllMicroarrayStudiesForProject";
+	public static final String STUDY_FETCH_ALL = "getAllStudies";
+	public static final String STUDY_FETCH_FOR_PROJECT = "getAllStudiesForProject";
 	
 	public static final String ORGAN_FETCH_ALL = "getAllOrgans";
 	public static final String ORGAN_FETCH_ENABLED = "getAllEnabledOrgans";
@@ -15,8 +15,8 @@ public class OperationId {
 	public static final String PROPERTY_FETCH_ENABLED = "getAllEnabledProperties";
 	public static final String PROPERTY_FETCH_TYPES = "getAllPropertyTypes";
 	
-	public static final String CHIP_FETCH_ALL = "getAllChips";
-	public static final String CHIP_FETCH_TYPES = "getAllChipTypes";
+	public static final String PLATFORM_FETCH_ALL = "getAllPlatforms";
+	public static final String PLATFORM_FETCH_TYPES = "getAllPlatformTypes";
 	
 	public static final String USER_FETCH_ALL = "getAllUsers";
 	public static final String USER_FETCH_PROFILE = "getUserProfile";

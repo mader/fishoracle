@@ -414,7 +414,7 @@ public class WestPanel extends SectionStack{
 		dataAdminTree.setRoot(new TreeNode("root", 
 							new TreeNode("Data Import"),
 							new TreeNode("Manage Projects"),
-							new TreeNode("Manage Microarraystudies")
+							new TreeNode("Manage Studies")
 							)); 
 		
 		dataAdminTreeGrid.addNodeClickHandler(new NodeClickHandler(){
@@ -461,14 +461,14 @@ public class WestPanel extends SectionStack{
 					}
 				}
 				
-				if(event.getNode().getName().equals("Manage Microarraystudies")){
+				if(event.getNode().getName().equals("Manage Studies")){
 					boolean exists = false;
 					int index = 0;
 					
 					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
 					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
 					for(int i=0; i < tabs.length; i++){
-						if(tabs[i].getTitle().equals("Manage Microarraystudies")){
+						if(tabs[i].getTitle().equals("Manage Studies")){
 							exists = true;
 							index = i;
 						}
@@ -477,7 +477,7 @@ public class WestPanel extends SectionStack{
 					if(exists){
 						centerTabSet.selectTab(index);
 					} else {
-						mp.getCenterPanel().getUserObject("MicroarraystudyAdminTab");
+						mp.getCenterPanel().getUserObject("StudyAdminTab");
 					}
 				}
 			}
@@ -537,7 +537,7 @@ public class WestPanel extends SectionStack{
 					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
 					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
 					for(int i=0; i < tabs.length; i++){
-						if(tabs[i].getTitle().equals("Group Management")){
+						if(tabs[i].getTitle().equals("Manage Groups")){
 							exists = true;
 							index = i;
 						}
@@ -556,7 +556,7 @@ public class WestPanel extends SectionStack{
 					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
 					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
 					for(int i=0; i < tabs.length; i++){
-						if(tabs[i].getTitle().equals("Organ Management")){
+						if(tabs[i].getTitle().equals("Manage Organs")){
 							exists = true;
 							index = i;
 						}
@@ -577,7 +577,7 @@ public class WestPanel extends SectionStack{
 					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
 					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
 					for(int i=0; i < tabs.length; i++){
-						if(tabs[i].getTitle().equals("Property Management")){
+						if(tabs[i].getTitle().equals("Manage Properties")){
 							exists = true;
 							index = i;
 						}
@@ -589,14 +589,14 @@ public class WestPanel extends SectionStack{
 						mp.getCenterPanel().openPropertyAdminTab();
 					}
 				}
-				if(event.getNode().getName().equals("Manage Chips")){
+				if(event.getNode().getName().equals("Manage Platforms")){
 					boolean exists = false;
 					int index = 0;
 					
 					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
 					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
 					for(int i=0; i < tabs.length; i++){
-						if(tabs[i].getTitle().equals("Chip Management")){
+						if(tabs[i].getTitle().equals("Management Platforms")){
 							exists = true;
 							index = i;
 						}
@@ -655,7 +655,7 @@ public class WestPanel extends SectionStack{
 							new TreeNode("Manage Groups"),
 							new TreeNode("Manage Organs"),
 							new TreeNode("Manage Properties"),
-							new TreeNode("Manage Chips"),
+							new TreeNode("Manage Platforms"),
 							new TreeNode("Ensembl Databases"),
 							new TreeNode("Database Configuration")
 							)); 

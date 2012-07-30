@@ -19,24 +19,23 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class MicroarrayOptions implements IsSerializable{
+public class MicroarrayOptions implements IsSerializable {
 
-	private FoChip[] chips;
+	private FoPlatform[] platforms;
 	private FoOrgan[] organs;
 	private FoProperty[] properties;
 	private String[] propertyTypes;
 	private FoProject[] projects;
 	
 	public MicroarrayOptions() {
-		
 	}
 
-	public FoChip[] getChips() {
-		return chips;
+	public FoPlatform[] getChips() {
+		return platforms;
 	}
 
-	public void setChips(FoChip[] chips) {
-		this.chips = chips;
+	public void setPlatforms(FoPlatform[] chips) {
+		this.platforms = chips;
 	}
 
 	public FoOrgan[] getOrgans() {
@@ -69,6 +68,5 @@ public class MicroarrayOptions implements IsSerializable{
 
 	public void setProjects(FoProject[] projects) {
 		this.projects = projects;
-	}
-	
+	}	
 }

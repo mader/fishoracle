@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -90,10 +90,10 @@ import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
-import de.unihamburg.zbh.fishoracle.client.datasource.ChipDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.PlatformDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.CnSegmentDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.EnsemblDBDS;
-import de.unihamburg.zbh.fishoracle.client.datasource.MicroarrayStudyDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.StudyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.datasource.OrganDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectAccessDS;
@@ -108,15 +108,15 @@ import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
-public class CenterPanel extends VLayout{
+public class CenterPanel extends VLayout {
 
 	private ToolStripButton selectButton;
 	
 	private ListGrid userGrid;
 	private ListGrid organGrid;
 	private ListGrid propertyGrid;
-	private ListGrid msGrid;
-	private ListGrid chipGrid;
+	private ListGrid studyGrid;
+	private ListGrid platformGrid;
 	private ListGrid groupGrid;
 	private ListGrid groupUserGrid;
 	private ListGrid segmentGrid;
@@ -137,7 +137,7 @@ public class CenterPanel extends VLayout{
 	private PasswordItem newPwPasswordItem;
 	
 	private ListGrid projectGrid;
-	private ListGrid projectMstudyGrid;
+	private ListGrid projectStudyGrid;
 	private TextItem projectNameTextItem;
 	private TextAreaItem projectDescriptionItem;
 	private ListGrid projectAccessGrid;
@@ -149,8 +149,8 @@ public class CenterPanel extends VLayout{
 	private ComboBoxItem organTypeCbItem;
 	private TextItem propertyLabelTextItem;
 	private ComboBoxItem propertyTypeCbItem;
-	private TextItem chipLabelTextItem;
-	private ComboBoxItem chipTypeCbItem;
+	private TextItem platformLabelTextItem;
+	private ComboBoxItem platformTypeCbItem;
 	private TextItem dbNameTextItem;
 	private TextItem dbLabelTextItem;
 	private TextItem dbVersionTextItem;
@@ -167,11 +167,11 @@ public class CenterPanel extends VLayout{
 	private FileUpload fu;
 	private DynamicForm metaDataForm;
 	private TextItem studyName;
-	private SelectItem chip;
+	private SelectItem platform;
 	private SelectItem tissue;
 	private SelectItem project;
 	private TextAreaItem descriptionItem;
-	private ButtonItem submitNewMstudyButton;
+	private ButtonItem submitNewStudyButton;
 	
 	private TextItem ensemblHost;
     private TextItem ensemblPort;
@@ -824,15 +824,15 @@ public class CenterPanel extends VLayout{
 		
 		lgr[1] = new ListGridRecord();
 		lgr[1].setAttribute("key", "Chromosome");
-		lgr[1].setAttribute("val", segmentData.getChromosome());
+		lgr[1].setAttribute("val", segmentData.getLocation().getChromosome());
 		
 		lgr[2] = new ListGridRecord();
 		lgr[2].setAttribute("key", "Start");
-		lgr[2].setAttribute("val", segmentData.getStart());
+		lgr[2].setAttribute("val", segmentData.getLocation().getStart());
 		
 		lgr[3] = new ListGridRecord();
 		lgr[3].setAttribute("key", "End");
-		lgr[3].setAttribute("val", segmentData.getEnd());
+		lgr[3].setAttribute("val", segmentData.getLocation().getEnd());
 		
 		lgr[4] = new ListGridRecord();
 		lgr[4].setAttribute("key", "Segment Mean");
@@ -844,7 +844,7 @@ public class CenterPanel extends VLayout{
 		
 		lgr[6] = new ListGridRecord();
 		lgr[6].setAttribute("key", "Study");
-		lgr[6].setAttribute("val", segmentData.getMicroarraystudyName());
+		lgr[6].setAttribute("val", segmentData.getStudyName());
 		
 		cncGrid.setData(lgr);
 		
@@ -1319,7 +1319,7 @@ public class CenterPanel extends VLayout{
 	
 	public void openGroupAdminTab(){
 		Tab groupAdminTab;
-		groupAdminTab = new Tab("Group Management");
+		groupAdminTab = new Tab("Manage Groups");
 		
 		groupAdminTab.setCanClose(true);
 		
@@ -1526,7 +1526,7 @@ public class CenterPanel extends VLayout{
 	
 	public void openOrganAdminTab(){
 		
-		Tab organsAdminTab = new Tab("Organ Management");
+		Tab organsAdminTab = new Tab("Manage Organs");
 		organsAdminTab.setCanClose(true);
 
 		VLayout pane = new VLayout();
@@ -1661,7 +1661,7 @@ public class CenterPanel extends VLayout{
 	
 	public void openPropertyAdminTab(){
 		
-		Tab propertiesAdminTab = new Tab("Property Management");
+		Tab propertiesAdminTab = new Tab("Manage Properties");
 		propertiesAdminTab.setCanClose(true);
 		
 		VLayout pane = new VLayout();
@@ -1738,11 +1738,11 @@ public class CenterPanel extends VLayout{
 		centerTabSet.selectTab(propertiesAdminTab);
 	}
 	
-	public void loadChipManageWindow(){
+	public void loadPlatformManageWindow(){
 		
 		final Window window = new Window();
 
-		window.setTitle("Add Chip");
+		window.setTitle("Add Platform");
 		window.setWidth(250);
 		window.setHeight(120);
 		window.setAlign(Alignment.CENTER);
@@ -1752,41 +1752,41 @@ public class CenterPanel extends VLayout{
 		window.setShowModalMask(true);
 		
 		DynamicForm chipForm = new DynamicForm();
-		chipLabelTextItem = new TextItem();
-		chipLabelTextItem.setTitle("Chip Label");
+		platformLabelTextItem = new TextItem();
+		platformLabelTextItem.setTitle("Platform Label");
 		
-		chipTypeCbItem = new ComboBoxItem(); 
-		chipTypeCbItem.setTitle("Type");
-		chipTypeCbItem.setType("comboBox");
+		platformTypeCbItem = new ComboBoxItem(); 
+		platformTypeCbItem.setTitle("Type");
+		platformTypeCbItem.setType("comboBox");
 		
-		chipTypeCbItem.setAutoFetchData(false);
+		platformTypeCbItem.setAutoFetchData(false);
 		
-		ChipDS cDS = new ChipDS();
+		PlatformDS pDS = new PlatformDS();
 		
-		chipTypeCbItem.setOptionDataSource(cDS);
-		chipTypeCbItem.setOptionOperationId(OperationId.CHIP_FETCH_TYPES);
-		chipTypeCbItem.setDisplayField("typeName");
-		chipTypeCbItem.setValueField("typeId");
+		platformTypeCbItem.setOptionDataSource(pDS);
+		platformTypeCbItem.setOptionOperationId(OperationId.PLATFORM_FETCH_TYPES);
+		platformTypeCbItem.setDisplayField("typeName");
+		platformTypeCbItem.setValueField("typeId");
 		
-		ButtonItem addChipButton = new ButtonItem("Add");
-		addChipButton.setWidth(50);
+		ButtonItem addPlatformButton = new ButtonItem("Add");
+		addPlatformButton.setWidth(50);
 		
-		addChipButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+		addPlatformButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
 				
 				ListGridRecord lgr = new ListGridRecord();
-				lgr.setAttribute("chipName", chipLabelTextItem.getDisplayValue());
-				lgr.setAttribute("chipType", chipTypeCbItem.getDisplayValue());
+				lgr.setAttribute("platformName", platformLabelTextItem.getDisplayValue());
+				lgr.setAttribute("platformType", platformTypeCbItem.getDisplayValue());
 				
-				chipGrid.addData(lgr);
+				platformGrid.addData(lgr);
 				
 				window.hide();
 			}
 		});
 
-		chipForm.setItems(chipLabelTextItem, chipTypeCbItem, addChipButton);
+		chipForm.setItems(platformLabelTextItem, platformTypeCbItem, addPlatformButton);
 	
 		window.addItem(chipForm);
 		
@@ -1795,8 +1795,8 @@ public class CenterPanel extends VLayout{
 	
 	public void openChipAdminTab(){
 		
-		Tab chipsAdminTab = new Tab("Chip Management");
-		chipsAdminTab.setCanClose(true);
+		Tab platformsAdminTab = new Tab("Manage Platforms");
+		platformsAdminTab.setCanClose(true);
 		
 		VLayout pane = new VLayout();
 		pane.setWidth100();
@@ -1812,21 +1812,21 @@ public class CenterPanel extends VLayout{
 		controlsPanel.setWidth100();
 		controlsPanel.setAutoHeight();
 		
-		ToolStrip chipToolStrip = new ToolStrip();
-		chipToolStrip.setWidth100();
+		ToolStrip platformToolStrip = new ToolStrip();
+		platformToolStrip.setWidth100();
 		
-		ToolStripButton addChipButton = new ToolStripButton();
-		addChipButton.setTitle("add Chip");
-		addChipButton.addClickHandler(new ClickHandler(){
+		ToolStripButton addPlatformButton = new ToolStripButton();
+		addPlatformButton.setTitle("add Platform");
+		addPlatformButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
-				loadChipManageWindow();
+				loadPlatformManageWindow();
 			}});
 		
-		chipToolStrip.addButton(addChipButton);
+		platformToolStrip.addButton(addPlatformButton);
 		
-		controlsPanel.addMember(chipToolStrip);
+		controlsPanel.addMember(platformToolStrip);
 		
 		headerContainer.addMember(controlsPanel);
 		
@@ -1836,39 +1836,39 @@ public class CenterPanel extends VLayout{
 		gridContainer.setWidth100();
 		gridContainer.setHeight100();
 		
-		chipGrid = new ListGrid();
-		chipGrid.setWidth100();
-		chipGrid.setHeight100();
-		chipGrid.setAlternateRecordStyles(true);
-		chipGrid.setWrapCells(true);
-		chipGrid.setFixedRecordHeights(false);
-		chipGrid.setShowAllRecords(false);
-		chipGrid.setAutoFetchData(false);
+		platformGrid = new ListGrid();
+		platformGrid.setWidth100();
+		platformGrid.setHeight100();
+		platformGrid.setAlternateRecordStyles(true);
+		platformGrid.setWrapCells(true);
+		platformGrid.setFixedRecordHeights(false);
+		platformGrid.setShowAllRecords(false);
+		platformGrid.setAutoFetchData(false);
 		
-		ListGridField lgfId = new ListGridField("chipId", "Chip ID");
-		ListGridField lgfLabel = new ListGridField("chipName", "Chip Name");
-		ListGridField lgfType = new ListGridField("chipType", "Chip Type");
+		ListGridField lgfId = new ListGridField("platformId", "Platform ID");
+		ListGridField lgfLabel = new ListGridField("platformName", "Platform Name");
+		ListGridField lgfType = new ListGridField("platformType", "Platform Type");
 		
-		chipGrid.setFields(lgfId, lgfLabel, lgfType);
+		platformGrid.setFields(lgfId, lgfLabel, lgfType);
 		
-		ChipDS cDS = new ChipDS();
+		PlatformDS pDS = new PlatformDS();
 		
-		chipGrid.setDataSource(cDS);
-		chipGrid.setFetchOperation(OperationId.CHIP_FETCH_ALL);
-		chipGrid.fetchData();
+		platformGrid.setDataSource(pDS);
+		platformGrid.setFetchOperation(OperationId.PLATFORM_FETCH_ALL);
+		platformGrid.fetchData();
 		
-		gridContainer.addMember(chipGrid);
+		gridContainer.addMember(platformGrid);
 		
 		pane.addMember(gridContainer);
 		
-		chipsAdminTab.setPane(pane);
+		platformsAdminTab.setPane(pane);
 		
-		centerTabSet.addTab(chipsAdminTab);
+		centerTabSet.addTab(platformsAdminTab);
 		
-		centerTabSet.selectTab(chipsAdminTab);
+		centerTabSet.selectTab(platformsAdminTab);
 	}
 	
-	public void openCnSegmentTab(String mstudyId){
+	public void openCnSegmentTab(String studyId){
 		Tab segmentAdminTab = new Tab("Segments");
 		segmentAdminTab.setCanClose(true);
 		
@@ -1905,7 +1905,7 @@ public class CenterPanel extends VLayout{
 		
 		segmentGrid.setDataSource(sDS);
 		
-		segmentGrid.fetchData(new Criteria("mstudyId", mstudyId));
+		segmentGrid.fetchData(new Criteria("studyId", studyId));
 		
 		gridContainer.addMember(segmentGrid);
 		
@@ -1918,10 +1918,10 @@ public class CenterPanel extends VLayout{
 		centerTabSet.selectTab(segmentAdminTab);
 	}
 	
-	public void openMicrorraystudyAdminTab(FoUser user){
+	public void openStudyAdminTab(FoUser user){
 		
-		Tab msAdminTab = new Tab("Manage Microarraystudies");
-		msAdminTab.setCanClose(true);
+		Tab studyAdminTab = new Tab("Manage Microarraystudies");
+		studyAdminTab.setCanClose(true);
 		
 		VLayout pane = new VLayout();
 		pane.setWidth100();
@@ -1937,8 +1937,8 @@ public class CenterPanel extends VLayout{
 		controlsPanel.setWidth100();
 		controlsPanel.setAutoHeight();
 		
-		ToolStrip msToolStrip = new ToolStrip();
-		msToolStrip.setWidth100();
+		ToolStrip sToolStrip = new ToolStrip();
+		sToolStrip.setWidth100();
 		
 		projectSelectItem = new SelectItem();
 		projectSelectItem.setTitle("Project");
@@ -1961,12 +1961,12 @@ public class CenterPanel extends VLayout{
 				
 				String projectId = projectSelectItem.getValueAsString();
 				
-				msGrid.fetchData(new Criteria("projectId", projectId));
+				studyGrid.fetchData(new Criteria("projectId", projectId));
 			}
 			
 		});
 		
-		msToolStrip.addFormItem(projectSelectItem);
+		sToolStrip.addFormItem(projectSelectItem);
 		
 		ToolStripButton showSegmentsButton = new ToolStripButton();
 		showSegmentsButton.setTitle("show segments");
@@ -1975,31 +1975,31 @@ public class CenterPanel extends VLayout{
 			@Override
 			public void onClick(ClickEvent event) {
 				
-				ListGridRecord lgr = msGrid.getSelectedRecord();
+				ListGridRecord lgr = studyGrid.getSelectedRecord();
 				
 				if (lgr != null){
 				
-					openCnSegmentTab(lgr.getAttributeAsString("mstudyId"));
+					openCnSegmentTab(lgr.getAttributeAsString("studyId"));
 					
 				} else {
-					SC.say("Select a microarray study.");
+					SC.say("Select a study.");
 				}
 				
 			}});
 		
-		msToolStrip.addButton(showSegmentsButton);
+		sToolStrip.addButton(showSegmentsButton);
 		
-		ToolStripButton removeMstudyButton = new ToolStripButton();
-		removeMstudyButton.setTitle("remove microarray study");
+		ToolStripButton removeStudyButton = new ToolStripButton();
+		removeStudyButton.setTitle("remove study");
 		if(!user.getIsAdmin()){
-			removeMstudyButton.setDisabled(true);
+			removeStudyButton.setDisabled(true);
 		}
-		removeMstudyButton.addClickHandler(new ClickHandler(){
+		removeStudyButton.addClickHandler(new ClickHandler(){
 		
 			@Override
 			public void onClick(ClickEvent event) {
 				
-				final ListGridRecord lgr = msGrid.getSelectedRecord();
+				final ListGridRecord lgr = studyGrid.getSelectedRecord();
 				
 				if(lgr != null) {
 				
@@ -2009,21 +2009,21 @@ public class CenterPanel extends VLayout{
 						public void execute(Boolean value) {
 							if(value != null && value){
 							
-								msGrid.removeData(lgr);
+								studyGrid.removeData(lgr);
 								
 							}
 						}
 					});
 					
 				} else {
-					SC.say("Select a microarray study.");
+					SC.say("Select a study.");
 				}
 				
 			}});
 		
-		msToolStrip.addButton(removeMstudyButton);
+		sToolStrip.addButton(removeStudyButton);
 		
-		controlsPanel.addMember(msToolStrip);
+		controlsPanel.addMember(sToolStrip);
 		
 		headerContainer.addMember(controlsPanel);
 		
@@ -2033,40 +2033,40 @@ public class CenterPanel extends VLayout{
 		gridContainer.setWidth100();
 		gridContainer.setHeight100();
 		
-		msGrid = new ListGrid();
-		msGrid.setWidth100();
-		msGrid.setHeight100();
-		msGrid.setShowAllRecords(true);
-		msGrid.setAlternateRecordStyles(true);
-		msGrid.setWrapCells(true);
-		msGrid.setShowAllRecords(false);
-		msGrid.setAutoFetchData(false);
-		msGrid.setFixedRecordHeights(false);
+		studyGrid = new ListGrid();
+		studyGrid.setWidth100();
+		studyGrid.setHeight100();
+		studyGrid.setShowAllRecords(true);
+		studyGrid.setAlternateRecordStyles(true);
+		studyGrid.setWrapCells(true);
+		studyGrid.setShowAllRecords(false);
+		studyGrid.setAutoFetchData(false);
+		studyGrid.setFixedRecordHeights(false);
 		
-		ListGridField lgfId = new ListGridField("mstudyId", "Microarraystudy ID");
-		ListGridField lgfChip = new ListGridField("chipName", "Chip");
+		ListGridField lgfId = new ListGridField("studyId", "Study ID");
+		ListGridField lgfChip = new ListGridField("platformName", "Platform");
 		ListGridField lgfTissue = new ListGridField("tissueName", "Tissue");
 		ListGridField lgfDate = new ListGridField("date", "Date");
-		ListGridField lgfName = new ListGridField("mstudyName", "Name");
-		ListGridField lgfDescription = new ListGridField("mstudyDescription", "Description");
+		ListGridField lgfName = new ListGridField("studyName", "Name");
+		ListGridField lgfDescription = new ListGridField("studyDescription", "Description");
 		
-		msGrid.setFields(lgfId, lgfChip, lgfTissue, lgfDate, lgfName, lgfDescription);
+		studyGrid.setFields(lgfId, lgfChip, lgfTissue, lgfDate, lgfName, lgfDescription);
 		
 		//TODO make load the data for default option...
-		MicroarrayStudyDS mDS = new MicroarrayStudyDS();
+		StudyDS mDS = new StudyDS();
 		
-		msGrid.setDataSource(mDS);
-		msGrid.setFetchOperation(OperationId.MSTUDY_FETCH_FOR_PROJECT);
+		studyGrid.setDataSource(mDS);
+		studyGrid.setFetchOperation(OperationId.STUDY_FETCH_FOR_PROJECT);
 		
-		gridContainer.addMember(msGrid);
+		gridContainer.addMember(studyGrid);
 		
 		pane.addMember(gridContainer);
 		
-		msAdminTab.setPane(pane);
+		studyAdminTab.setPane(pane);
 		
-		centerTabSet.addTab(msAdminTab);
+		centerTabSet.addTab(studyAdminTab);
 		
-		centerTabSet.selectTab(msAdminTab);
+		centerTabSet.selectTab(studyAdminTab);
 	}
 	
 	public void loadProjectManageWindow(){
@@ -2236,8 +2236,8 @@ public class CenterPanel extends VLayout{
 								
 								projectAccessGrid.selectAllRecords();
 								projectAccessGrid.removeSelectedData();
-								projectMstudyGrid.selectAllRecords();
-								projectMstudyGrid.removeSelectedData();
+								projectStudyGrid.selectAllRecords();
+								projectStudyGrid.removeSelectedData();
 							}
 						}
 					});
@@ -2334,28 +2334,28 @@ public class CenterPanel extends VLayout{
 		
 		gridContainer.addMember(projectGrid);
 		
-		projectMstudyGrid = new ListGrid();
-		projectMstudyGrid.setWidth("50%");
-		projectMstudyGrid.setHeight100();
-		projectMstudyGrid.setAlternateRecordStyles(true);
-		projectMstudyGrid.setWrapCells(true);
-		projectMstudyGrid.setFixedRecordHeights(false);
-		projectMstudyGrid.setShowAllRecords(false);
-		projectMstudyGrid.setAutoFetchData(false);
-		projectMstudyGrid.markForRedraw();
+		projectStudyGrid = new ListGrid();
+		projectStudyGrid.setWidth("50%");
+		projectStudyGrid.setHeight100();
+		projectStudyGrid.setAlternateRecordStyles(true);
+		projectStudyGrid.setWrapCells(true);
+		projectStudyGrid.setFixedRecordHeights(false);
+		projectStudyGrid.setShowAllRecords(false);
+		projectStudyGrid.setAutoFetchData(false);
+		projectStudyGrid.markForRedraw();
 		
-		ListGridField lgfProjectMstudyId = new ListGridField("mstudyId", "Microarraystudy ID");
-		ListGridField lgfProjectMstudyName = new ListGridField("mstudyName", "Name");
-		ListGridField lgfProjectMstudyDescription = new ListGridField("mstudyDescription", "Description");
+		ListGridField lgfProjectStudyId = new ListGridField("studyId", "Study ID");
+		ListGridField lgfProjectStudyName = new ListGridField("studyName", "Name");
+		ListGridField lgfProjectStudyDescription = new ListGridField("studyDescription", "Description");
 		
-		projectMstudyGrid.setFields(lgfProjectMstudyId, lgfProjectMstudyName, lgfProjectMstudyDescription);
+		projectStudyGrid.setFields(lgfProjectStudyId, lgfProjectStudyName, lgfProjectStudyDescription);
 		
-		MicroarrayStudyDS mDS = new MicroarrayStudyDS();
+		StudyDS mDS = new StudyDS();
 		
-		projectMstudyGrid.setDataSource(mDS);
-		projectMstudyGrid.setFetchOperation(OperationId.MSTUDY_FETCH_FOR_PROJECT);
+		projectStudyGrid.setDataSource(mDS);
+		projectStudyGrid.setFetchOperation(OperationId.STUDY_FETCH_FOR_PROJECT);
 		
-		gridContainer.addMember(projectMstudyGrid);
+		gridContainer.addMember(projectStudyGrid);
 		
 		pane.addMember(gridContainer);
 		
@@ -2383,7 +2383,7 @@ public class CenterPanel extends VLayout{
 			pane.addMember(projectAccessGrid);
 		}
 		
-		projectGrid.addRecordClickHandler(new MyProjectRecordClickHandler(projectMstudyGrid, projectAccessGrid, user, cp));
+		projectGrid.addRecordClickHandler(new MyProjectRecordClickHandler(projectStudyGrid, projectAccessGrid, user, cp));
 		
 		projectAdminTab.setPane(pane);
 		
@@ -2481,8 +2481,8 @@ public class CenterPanel extends VLayout{
 		studyName = new TextItem();
 		studyName.setTitle("study name");
 		
-		chip = new SelectItem();
-		chip.setTitle("chip type");  
+		platform = new SelectItem();
+		platform.setTitle("chip type");  
 		//chip.setDisplayField("chipName");
 		//chip.setValueField("chipId");	
 		//chip.setAutoFetchData(false);
@@ -2527,8 +2527,8 @@ public class CenterPanel extends VLayout{
 		//property.setOptionDataSource(pDS);
 		//property.setOptionOperationId(OperationId.PROPERTY_FETCH_ALL);
 		
-		submitNewMstudyButton = new ButtonItem("submit");
-		submitNewMstudyButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+		submitNewStudyButton = new ButtonItem("submit");
+		submitNewStudyButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
 
 			@Override
 			public void onClick(
@@ -2582,7 +2582,6 @@ public class CenterPanel extends VLayout{
 				}
 			}
 		});
-		
 	}
 	
 	public void loadEnsemblManageWindow(){
@@ -2716,14 +2715,6 @@ public class CenterPanel extends VLayout{
 		ensemblGrid.setFixedRecordHeights(false);
 		ensemblGrid.setShowAllRecords(false);
 		ensemblGrid.setAutoFetchData(false);
-		
-		/*
-		ListGridField lgfId = new ListGridField("ensemblDBId", "ID");
-		ListGridField lgfLabel = new ListGridField("ensemblDBName", "Name");
-		ListGridField lgfType = new ListGridField("ensemblDBLabel", "Label");
-		
-		ensemblGrid.setFields(lgfId, lgfLabel, lgfType);
-		*/
 		
 		EnsemblDBDS edbDS = new EnsemblDBDS();
 		
@@ -3013,7 +3004,7 @@ public class CenterPanel extends VLayout{
 					chipValueMap.put(new Integer(result.getChips()[i].getId()).toString(), result.getChips()[i].getName());
 				}
 				
-				chip.setValueMap(chipValueMap);
+				platform.setValueMap(chipValueMap);
 				
 				LinkedHashMap<String, String> tissueValueMap = new LinkedHashMap<String, String>();
 				
@@ -3033,7 +3024,7 @@ public class CenterPanel extends VLayout{
 				
 				FormItem[] fi = new FormItem[(result.getPropertyTypes().length + 6)];
 				fi[0] = studyName;
-				fi[1] = chip;
+				fi[1] = platform;
 				fi[2] = tissue;
 				fi[3] = project;
 				fi[4] = descriptionItem; 
@@ -3056,7 +3047,7 @@ public class CenterPanel extends VLayout{
 					fi[(i+5)] = item;
 				}
 				
-				fi[fi.length -1] = submitNewMstudyButton;
+				fi[fi.length -1] = submitNewStudyButton;
 
 				metaDataForm.setFields(fi);
 			}
@@ -3163,8 +3154,8 @@ public class CenterPanel extends VLayout{
 				if(forWhat.equals("ProjectAdminTab")){
 					openProjectAdminTab(result[0]);
 				}
-				if(forWhat.equals("MicroarraystudyAdminTab")){
-					openMicrorraystudyAdminTab(result[0]);
+				if(forWhat.equals("StudyAdminTab")){
+					openStudyAdminTab(result[0]);
 				}
 				
 			}
@@ -3302,7 +3293,7 @@ public class CenterPanel extends VLayout{
 	
 	public void importData(String fileName,
 							String studyName,
-							int chipId,
+							int platformId,
 							int organId,
 							int projectId,
 							int[] propertyIds,
@@ -3324,9 +3315,13 @@ public class CenterPanel extends VLayout{
 				SC.say(caught.getMessage());
 			}
 		};
+		
+		//TODO Add type and assembly!
 		req.importData(fileName,
 						studyName,
-						chipId,
+						"",
+						"",
+						platformId,
 						organId,
 						projectId,
 						propertyIds,
@@ -3393,7 +3388,7 @@ public class CenterPanel extends VLayout{
 					FormItem[] newData = metaDataForm.getFields();
 					
 					String sName = null;
-					int chipId = 0;
+					int platformId = 0;
 					int organId = 0;
 					int projectId = 0;
 					String description = null;
@@ -3404,8 +3399,8 @@ public class CenterPanel extends VLayout{
 						
 						if(newData[i].getTitle().equals("study name")){
 							sName = newData[i].getDisplayValue();
-						}  else if(newData[i].getTitle().equals("chip type")){
-							chipId = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
+						}  else if(newData[i].getTitle().equals("platform type")){
+							platformId = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
 						} else if(newData[i].getTitle().equals("tissue")){
 							organId = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
 						} else if(newData[i].getTitle().equals("project")){
@@ -3423,7 +3418,7 @@ public class CenterPanel extends VLayout{
 					
 					}
 					
-					importData(fu.getFilename(), sName, chipId, organId, projectId, propertyIds, description);
+					importData(fu.getFilename(), sName, platformId, organId, projectId, propertyIds, description);
 							
 				} else {
 					SC.say("Page currently locked by another user.");
@@ -3441,12 +3436,12 @@ public class CenterPanel extends VLayout{
 
 class MyProjectRecordClickHandler implements RecordClickHandler {
 
-	private ListGrid projectMstudyGrid;
+	private ListGrid projectStudyGrid;
 	private ListGrid projectAccessGrid;
 	private FoUser user;
 	
-	public MyProjectRecordClickHandler(ListGrid projectMstudyGrid, ListGrid projectAccessGrid, FoUser user, CenterPanel cp){
-		this.projectMstudyGrid = projectMstudyGrid;
+	public MyProjectRecordClickHandler(ListGrid projectStudyGrid, ListGrid projectAccessGrid, FoUser user, CenterPanel cp){
+		this.projectStudyGrid = projectStudyGrid;
 		this.projectAccessGrid = projectAccessGrid;
 		this.user = user;
 	}
@@ -3456,7 +3451,7 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 		
 		String projectId = event.getRecord().getAttribute("projectId");
 		
-		projectMstudyGrid.fetchData(new Criteria("projectId", projectId));
+		projectStudyGrid.fetchData(new Criteria("projectId", projectId));
 		
 		if(user.getIsAdmin()){
 			

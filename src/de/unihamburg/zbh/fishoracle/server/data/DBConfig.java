@@ -235,5 +235,4 @@ public class DBConfig implements IsSerializable {
 	public void setServerPath(String serverPath) {
 		this.serverPath = serverPath;
 	}
-	
 }

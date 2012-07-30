@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -19,16 +19,27 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class FoChip implements IsSerializable{
+/**
+ * @author Malte Mader
+ *
+ * Stores imformation about microarray or sequencing platforms.
+ */
+public class FoPlatform implements IsSerializable {
 
 	private int id;
 	private String name;
 	private String type;
 	
-	public FoChip() {
+	public FoPlatform() {
 	}
 
-	public FoChip(int id, String name, String type) {
+	/**
+	 * 
+	 * @param id The ID for the database entry.
+	 * @param name The name of the platform. E.g. "Affymetrix Human SNP Array 6.0" or "Agilent Human 244K".  
+	 * @param type The platform type corresponding to the analysis. E.g. "Expression" or "SNP".
+	 */
+	public FoPlatform(int id, String name, String type) {
 		this.id = id;
 		this.name = name;
 		this.type = type;

@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -22,10 +22,9 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
-import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
+import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
@@ -44,7 +43,9 @@ public interface Admin extends RemoteService  {
 	public MicroarrayOptions getMicroarrayOptions() throws Exception;
 	boolean importData(String fileName,
 						String studyName,
-						int chipId,
+						String type,
+						String assembly,
+						int platformId,
 						int organId,
 						int projectId,
 						int[] propertyIds,
@@ -58,17 +59,14 @@ public interface Admin extends RemoteService  {
 	FoOrgan addOrgan(FoOrgan foOrgan) throws UserException;
 	FoCnSegment[] getCnSegmentsForMstudyId(int mstudyId);
 	void removeMstudy(int mstudyId);
-	FoMicroarraystudy[] getMicorarrayStudiesForProject() throws Exception;
-	FoMicroarraystudy[] getMicorarrayStudiesForProject(int[] pId);
+	FoStudy[] getMicorarrayStudiesForProject() throws Exception;
+	FoStudy[] getMicorarrayStudiesForProject(int[] pId);
 	FoOrgan[] getOrgans();
 	FoOrgan[] getAllFoOrgans() throws UserException;
 	String[] getAllOrganTypes();
 	FoProperty addProperty(FoProperty foProperty) throws UserException;
 	FoProperty[] getAllFoProperties() throws UserException;
 	String[] getAllPropertyTypes();
-	FoChip addChip(FoChip foChip) throws UserException;
-	String[] getAllChipTypes();
-	FoChip[] getAllFoChips() throws UserException;
 	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
 	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
 	void setPassword(int userId, String pw) throws UserException;

@@ -8,7 +8,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 public interface SegmentService extends RemoteService {
 	
 	FoCnSegment add(FoCnSegment foCnSegment);
-	FoCnSegment[] fetch(int mstudyId) throws Exception;
+	FoCnSegment[] fetch(int studyId) throws Exception;
 	public void update(FoCnSegment CnSegment);
 	public void delete(int segmentId);
 	

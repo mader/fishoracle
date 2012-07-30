@@ -12,7 +12,7 @@ import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 
-import de.unihamburg.zbh.fishoracle.client.datasource.MicroarrayStudyDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.StudyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.datasource.OrganDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectDS;
@@ -152,13 +152,13 @@ public class Track {
 		selectItemExperiments.setMultiple(true);
 		selectItemExperiments.setMultipleAppearance(MultipleAppearance.PICKLIST);
 		
-		selectItemExperiments.setDisplayField("mstudyName");
-		selectItemExperiments.setValueField("mstudyId");		
+		selectItemExperiments.setDisplayField("studyName");
+		selectItemExperiments.setValueField("studyId");		
 		selectItemExperiments.setAutoFetchData(false);
-		MicroarrayStudyDS mDS = new MicroarrayStudyDS();
+		StudyDS mDS = new StudyDS();
 		
 		selectItemExperiments.setOptionDataSource(mDS);
-		selectItemExperiments.setOptionOperationId(OperationId.MSTUDY_FETCH_ALL);
+		selectItemExperiments.setOptionOperationId(OperationId.STUDY_FETCH_ALL);
 		
 		selectItemExperiments.setDefaultToFirstOption(true);
 		selectItemExperiments.setVisible(false);

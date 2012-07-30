@@ -131,7 +131,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				
 				String[] region = query.getQueryString().split(":");
 					
-				featuresLoc = new Location(
+				featuresLoc = new Location(0,
 						region[0], Integer.parseInt(region[1]), Integer.parseInt(region[2]));
 				
 				} catch (Exception e){
@@ -150,7 +150,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				maxSegmentRange = featuresLoc;
 			} else {
 				
-			maxSegmentRange = db.getMaxSegmentRange(featuresLoc.getChrosmome(), 
+			maxSegmentRange = db.getMaxSegmentRange(featuresLoc.getChromosome(), 
 											featuresLoc.getStart(), 
 											featuresLoc.getEnd(), 
 											query);
@@ -161,21 +161,21 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			FeatureCollection features = new FeatureCollection();
 			
 			db.getSegmentsForTracks(rdbFishoracle, 
-									maxSegmentRange.getChrosmome(),
+									maxSegmentRange.getChromosome(),
 									maxSegmentRange.getStart(),
 									maxSegmentRange.getEnd(),
 									query, features);
 			
 			if(maxSegmentRange.getEnd() - maxSegmentRange.getStart() < 10000000){
 				db.getEnsembleGenes(rdbEnsembl,
-									maxSegmentRange.getChrosmome(),
+									maxSegmentRange.getChromosome(),
 									maxSegmentRange.getStart(),
 									maxSegmentRange.getEnd(),
 									query.getBiotypeFilter(),
 									features);
 			}
 
-			db.getEnsemblKaryotypes(rdbEnsembl, maxSegmentRange.getChrosmome(), maxSegmentRange.getStart(), maxSegmentRange.getEnd(), features);
+			db.getEnsemblKaryotypes(rdbEnsembl, maxSegmentRange.getChromosome(), maxSegmentRange.getStart(), maxSegmentRange.getEnd(), features);
 			
 			SketchTool sketch = new SketchTool();
 			
@@ -184,7 +184,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 										query,
 										servletContext);
 			
-			imgInfo.setChromosome(maxSegmentRange.getChrosmome());
+			imgInfo.setChromosome(maxSegmentRange.getChromosome());
 			imgInfo.setStart(maxSegmentRange.getStart());
 			imgInfo.setEnd(maxSegmentRange.getEnd());
 			imgInfo.setQuery(query);
@@ -228,7 +228,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 					newEnd = end + percRange/2;
 				}
 				
-					loc.setChrosmome(featuresLoc.getChrosmome());
+					loc.setChrosmome(featuresLoc.getChromosome());
 					loc.setStart(newStart);
 					loc.setEnd(newEnd);
 			}
@@ -285,7 +285,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		Location maxRange = null;
 		
 		try {
-			maxRange = new Location(chr, start, end);
+			maxRange = new Location(0, chr, start, end);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getMessage());
@@ -315,7 +315,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 									imageInfo.getQuery(),
 									servletContext);
 		
-		imgInfo.setChromosome(maxRange.getChrosmome());
+		imgInfo.setChromosome(maxRange.getChromosome());
 		imgInfo.setStart(maxRange.getStart());
 		imgInfo.setEnd(maxRange.getEnd());
 		imgInfo.setQuery(imageInfo.getQuery());

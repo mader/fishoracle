@@ -43,13 +43,13 @@
   </servlet-mapping>
 
  <servlet>
-    <servlet-name>ChipService</servlet-name>
-    <servlet-class>de.unihamburg.zbh.fishoracle.server.ChipServiceImpl</servlet-class>
+    <servlet-name>PlatformService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.PlatformServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
-    <servlet-name>ChipService</servlet-name>
-    <url-pattern>/fishoracle/ChipService</url-pattern>
+    <servlet-name>PlatformService</servlet-name>
+    <url-pattern>/fishoracle/PlatformService</url-pattern>
   </servlet-mapping>
 
  <servlet>
@@ -73,13 +73,13 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>MicroarrayStudyService</servlet-name>
-    <servlet-class>de.unihamburg.zbh.fishoracle.server.MicroarrayStudyServiceImpl</servlet-class>
+    <servlet-name>StudyService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.StudyServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
-    <servlet-name>MicroarrayStudyService</servlet-name>
-    <url-pattern>/fishoracle/MicroarrayStudyService</url-pattern>
+    <servlet-name>StudyService</servlet-name>
+    <url-pattern>/fishoracle/StudyService</url-pattern>
   </servlet-mapping>
 
   <servlet>

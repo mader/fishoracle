@@ -171,7 +171,7 @@ public class SketchTool {
 		@SuppressWarnings("unused")
 		File file;
 
-		String fileName = shaStr + "_" + loc.getChrosmome() + ":" + loc.getStart() + "-" + loc.getEnd() + "_" + query;
+		String fileName = shaStr + "_" + loc.getChromosome() + ":" + loc.getStart() + "-" + loc.getEnd() + "_" + query;
 		
 		imgUrl = "as_output" + System.getProperty("file.separator") + fileName + "." + query.getImageType();
 		

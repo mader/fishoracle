@@ -16,7 +16,7 @@ public interface EnsemblDBsService extends RemoteService {
 
 		public static EnsemblDBsServiceAsync getInstance() {
 
-			return GWT.create(ChipService.class);
+			return GWT.create(PlatformService.class);
 		}
 	}
 }

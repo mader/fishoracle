@@ -67,5 +67,4 @@ public class Karyoband {
 	public void setEnd(int end) {
 		this.end = end;
 	}
-
 }

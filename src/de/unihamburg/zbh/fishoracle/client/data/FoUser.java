@@ -31,7 +31,6 @@ public class FoUser implements IsSerializable {
 	private Boolean isAdmin;
 	
 	public FoUser() {
-		
 	}
 
 	public FoUser(int id, String firstName, String lastName, String userName,
@@ -135,6 +134,5 @@ public class FoUser implements IsSerializable {
 		return "ID: " + id + ", First Name: " + firstName + ", " +
 				"Last Name: " + lastName + ", Username: " + userName + ", " +
 				"E-Mail: " + email + ", Active?: " + isActive + ", Admin?: " + isAdmin;
-	}
-	
+	}	
 }

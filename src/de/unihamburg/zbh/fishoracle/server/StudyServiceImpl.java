@@ -2,15 +2,15 @@ package de.unihamburg.zbh.fishoracle.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
+import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
-import de.unihamburg.zbh.fishoracle.client.rpc.MicroarrayStudyService;
+import de.unihamburg.zbh.fishoracle.client.rpc.StudyService;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 import de.unihamburg.zbh.fishoracle.server.data.SessionData;
 
-public class MicroarrayStudyServiceImpl extends RemoteServiceServlet implements MicroarrayStudyService {
+public class StudyServiceImpl extends RemoteServiceServlet implements StudyService {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -19,15 +19,15 @@ public class MicroarrayStudyServiceImpl extends RemoteServiceServlet implements 
 	}
 	
 	@Override
-	public FoMicroarraystudy add(FoMicroarraystudy foMicroarraystudy) {
-		return foMicroarraystudy;
+	public FoStudy add(FoStudy foStudy) {
+		return foStudy;
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public FoMicroarraystudy[] fetch(String operationId, int projectId) throws Exception {
+	public FoStudy[] fetch(String operationId, int projectId) throws Exception {
 		
-		FoMicroarraystudy[] mstudies = null;
+		FoStudy[] studies = null;
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -39,7 +39,7 @@ public class MicroarrayStudyServiceImpl extends RemoteServiceServlet implements 
 		
 		FoProject[] projects = null;
 		
-		if(operationId.equals(OperationId.MSTUDY_FETCH_ALL)){
+		if(operationId.equals(OperationId.STUDY_FETCH_ALL)){
 		
 			if(u.getIsAdmin()){
 			
@@ -55,30 +55,30 @@ public class MicroarrayStudyServiceImpl extends RemoteServiceServlet implements 
 				projectIds[i] = projects[i].getId();
 			}
 			
-			mstudies =  db.getMicroarraystudiesForProject(projectIds, false);
+			studies =  db.getStudiesForProject(projectIds, false);
 		
 		}
 		
-		if(operationId.equals(OperationId.MSTUDY_FETCH_FOR_PROJECT)){
+		if(operationId.equals(OperationId.STUDY_FETCH_FOR_PROJECT)){
 			
-			mstudies = db.getMicroarraystudiesForProject(new int[]{projectId}, true);
+			studies = db.getStudiesForProject(new int[]{projectId}, true);
 		
 		}
-		return mstudies;
+		return studies;
 	}
 
 	@Override
-	public void update(FoMicroarraystudy foMicroarraystudy) {
+	public void update(FoStudy foStudy) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public void delete(int mstudyId) {
+	public void delete(int studyId) {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		db.removeMstudy(mstudyId);
+		db.removeStudy(studyId);
 	}
 }

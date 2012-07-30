@@ -66,6 +66,5 @@ public class FoOrgan implements IsSerializable{
 
 	public void setActivty(String activty) {
 		this.activty = activty;
-	}
-	
+	}	
 }

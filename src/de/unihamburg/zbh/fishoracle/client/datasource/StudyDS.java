@@ -14,28 +14,28 @@ import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
-import de.unihamburg.zbh.fishoracle.client.rpc.MicroarrayStudyService;
-import de.unihamburg.zbh.fishoracle.client.rpc.MicroarrayStudyServiceAsync;
+import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
+import de.unihamburg.zbh.fishoracle.client.rpc.StudyService;
+import de.unihamburg.zbh.fishoracle.client.rpc.StudyServiceAsync;
 
-public class MicroarrayStudyDS extends FoDataSource {
+public class StudyDS extends FoDataSource {
 	
-	public MicroarrayStudyDS() {
+	public StudyDS() {
 		
 		DataSourceField field;
-		field = new DataSourceIntegerField("mstudyId", "Microarraystudy ID");
+		field = new DataSourceIntegerField("studyId", "Study ID");
 		field.setPrimaryKey(true);
 		field.setRequired(true);
 		addField(field);
 		
-		field = new DataSourceTextField("mstudyName", "Name");
+		field = new DataSourceTextField("studyName", "Name");
 		field.setRequired(true);
         addField (field);
         
-        field = new DataSourceTextField("mstudyDescription", "Description");
+        field = new DataSourceTextField("studyDescription", "Description");
         addField (field);
         
-        field = new DataSourceTextField("chipName", "Chip");
+        field = new DataSourceTextField("platformName", "Platform");
         addField (field);
         
         field = new DataSourceTextField("tissueName", "Tissue");
@@ -49,13 +49,13 @@ public class MicroarrayStudyDS extends FoDataSource {
 	protected void executeFetch(final String requestId, final DSRequest request,
 			final DSResponse response) {
 		
-		final MicroarrayStudyServiceAsync req = (MicroarrayStudyServiceAsync) GWT.create(MicroarrayStudyService.class);
+		final StudyServiceAsync req = (StudyServiceAsync) GWT.create(StudyService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "MicroarrayStudyService";
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "StudyService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoMicroarraystudy[]> callback = new AsyncCallback<FoMicroarraystudy[]>(){
+		final AsyncCallback<FoStudy[]> callback = new AsyncCallback<FoStudy[]>(){
 			
-			public void onSuccess(FoMicroarraystudy[] result){
+			public void onSuccess(FoStudy[] result){
 				
 				ListGridRecord[] list = new ListGridRecord[result.length];
 				
@@ -63,13 +63,13 @@ public class MicroarrayStudyDS extends FoDataSource {
 					for (int i = 0; i < result.length; i++) {
 						
 						ListGridRecord record = new ListGridRecord (); 
-						record.setAttribute("mstudyId", new Integer(result[i].getId()).toString());
-						record.setAttribute("mstudyName", result[i].getName());
-						record.setAttribute("mstudyDescription", result[i].getDescription());
+						record.setAttribute("studyId", new Integer(result[i].getId()).toString());
+						record.setAttribute("studyName", result[i].getName());
+						record.setAttribute("studyDescription", result[i].getDescription());
 						record.setAttribute("date", result[i].getDate());
 						
-						if(result[i].getChip() != null){
-							record.setAttribute("chipName", result[i].getChip().getName());
+						if(result[i].getPlatform() != null){
+							record.setAttribute("platformName", result[i].getPlatform().getName());
 						}
 						
 						if(result[i].getTissue() != null){
@@ -94,7 +94,7 @@ public class MicroarrayStudyDS extends FoDataSource {
 		
 		int projectId = 0;
 		
-		if(request.getOperationId().equals(OperationId.MSTUDY_FETCH_FOR_PROJECT)){
+		if(request.getOperationId().equals(OperationId.STUDY_FETCH_FOR_PROJECT)){
 			Criteria c = request.getCriteria();
 			projectId = Integer.parseInt(c.getAttribute("projectId"));
 		}
@@ -106,15 +106,13 @@ public class MicroarrayStudyDS extends FoDataSource {
 	@Override
 	protected void executeAdd(final String requestId, final DSRequest request,
 			final DSResponse response) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	@Override
 	protected void executeUpdate(final String requestId, final DSRequest request,
 			final DSResponse response) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -124,9 +122,9 @@ public class MicroarrayStudyDS extends FoDataSource {
 		JavaScriptObject data = request.getData();
 		final ListGridRecord rec = new ListGridRecord(data);
 		
-		final MicroarrayStudyServiceAsync req = (MicroarrayStudyServiceAsync) GWT.create(MicroarrayStudyService.class);
+		final StudyServiceAsync req = (StudyServiceAsync) GWT.create(StudyService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "MicroarrayStudyService";
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "StudyService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
 		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
 			
@@ -147,8 +145,8 @@ public class MicroarrayStudyDS extends FoDataSource {
 			}
 		};
 		
-		int mstudyId = Integer.parseInt(rec.getAttribute("mstudyId"));
+		int studyId = Integer.parseInt(rec.getAttribute("studyId"));
 		
-		req.delete(mstudyId, callback);
+		req.delete(studyId, callback);
 	}
 }

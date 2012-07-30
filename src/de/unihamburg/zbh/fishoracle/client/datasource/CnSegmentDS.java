@@ -65,9 +65,9 @@ public class CnSegmentDS extends FoDataSource {
 						
 						ListGridRecord record = new ListGridRecord ();
 						record.setAttribute("segmentId", new Integer(result[i].getId()).toString());
-						record.setAttribute("chromosome", result[i].getChromosome());
-						record.setAttribute("start", result[i].getStart());
-						record.setAttribute("end", result[i].getEnd());
+						record.setAttribute("chromosome", result[i].getLocation().getChromosome());
+						record.setAttribute("start", result[i].getLocation().getStart());
+						record.setAttribute("end", result[i].getLocation().getEnd());
 						record.setAttribute("mean", result[i].getMean());
 						record.setAttribute("markers", result[i].getNumberOfMarkers());
 						
@@ -89,7 +89,7 @@ public class CnSegmentDS extends FoDataSource {
 		int mstudyId = 0;
 		
 		Criteria c = request.getCriteria();
-		mstudyId = Integer.parseInt(c.getAttribute("mstudyId"));
+		mstudyId = Integer.parseInt(c.getAttribute("studyId"));
 		
 		req.fetch(mstudyId, callback);
 	}

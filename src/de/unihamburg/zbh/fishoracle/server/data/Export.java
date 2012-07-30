@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -60,12 +60,12 @@ public class Export {
 	    
 	    shaStr = SimpleSHA.SHA1(dateStr);
 		
-		fileName = shaStr + "_" + maxRange.getChrosmome() + ":" + maxRange.getStart() + "-" + maxRange.getEnd() + ".xls";
+		fileName = shaStr + "_" + maxRange.getChromosome() + ":" + maxRange.getStart() + "-" + maxRange.getEnd() + ".xls";
 		
 		String url = "excel_output" + System.getProperty("file.separator") + fileName;
 		
 		WritableWorkbook workbook = Workbook.createWorkbook(new File(servletPath + url));
-		WritableSheet sheet = workbook.createSheet(maxRange.getChrosmome() + "," + maxRange.getStart() + "-" + maxRange.getEnd(), 0); 
+		WritableSheet sheet = workbook.createSheet(maxRange.getChromosome() + "," + maxRange.getStart() + "-" + maxRange.getEnd(), 0); 
 		
 		WritableFont textwidth = new WritableFont(WritableFont.ARIAL, 8);
 		WritableCellFormat text = new WritableCellFormat(textwidth);
@@ -96,11 +96,11 @@ public class Export {
 
 				for(k = 0; k < genes.length; k++){
 
-					if((segments[j].getStart() < genes[k].getEnd() && segments[j].getEnd() > genes[k].getStart() ||
-							(segments[j].getEnd() > genes[k].getStart() && segments[j].getStart() < genes[k].getEnd())) ||
-							(segments[j].getStart() > genes[k].getStart() && segments[j].getEnd() < genes[k].getEnd()))
+					if((segments[j].getLocation().getStart() < genes[k].getEnd() && segments[j].getLocation().getEnd() > genes[k].getStart() ||
+							(segments[j].getLocation().getEnd() > genes[k].getStart() && segments[j].getLocation().getStart() < genes[k].getEnd())) ||
+							(segments[j].getLocation().getStart() > genes[k].getStart() && segments[j].getLocation().getEnd() < genes[k].getEnd()))
 					{
-						Label label = new Label(j, k, segments[j].getMicroarraystudyName(), background);
+						Label label = new Label(j, k, segments[j].getStudyName(), background);
 						sheet.setColumnView(j, 10);
 						sheet.addCell(label);
 					}

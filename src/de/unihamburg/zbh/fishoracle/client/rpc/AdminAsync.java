@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -20,10 +20,9 @@ package de.unihamburg.zbh.fishoracle.client.rpc;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
-import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
+import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
@@ -45,7 +44,9 @@ public interface AdminAsync {
 
 	void importData(String fileName,
 					String studyName,
-					int chipId,
+					String type,
+					String assembly,
+					int platformId,
 					int OrganId,
 					int projectId,
 					int[] propertyIds,
@@ -68,10 +69,10 @@ public interface AdminAsync {
 	void removeMstudy(int mstudyId, AsyncCallback<Void> callback);
 	
 	void getMicorarrayStudiesForProject(
-			AsyncCallback<FoMicroarraystudy[]> callback);
+			AsyncCallback<FoStudy[]> callback);
 	
 	void getMicorarrayStudiesForProject(
-			int[] pId, AsyncCallback<FoMicroarraystudy[]> callback);
+			int[] pId, AsyncCallback<FoStudy[]> callback);
 	
 	void getOrgans(AsyncCallback<FoOrgan[]> callback);
 	
@@ -84,12 +85,6 @@ public interface AdminAsync {
 	void getAllFoProperties(AsyncCallback<FoProperty[]> callback);
 	
 	void getAllPropertyTypes(AsyncCallback<String[]> callback);
-	
-	void addChip(FoChip foChip, AsyncCallback<FoChip> callback);
-	
-	void getAllChipTypes(AsyncCallback<String[]> callback);
-	
-	void getAllFoChips(AsyncCallback<FoChip[]> callback);
 	
 	void addUserToFoGroup(FoGroup foGroup, int userId,
 			AsyncCallback<FoUser> callback);

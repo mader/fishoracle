@@ -28,11 +28,12 @@ import annotationsketch.FeatureCollection;
 import annotationsketch.FeatureIndex;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoChip;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoEnsemblDBs;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
-import de.unihamburg.zbh.fishoracle.client.data.FoMicroarraystudy;
+import de.unihamburg.zbh.fishoracle.client.data.FoLocation;
+import de.unihamburg.zbh.fishoracle.client.data.FoPlatform;
+import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
@@ -43,28 +44,28 @@ import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
-import de.unihamburg.zbh.fishoracle_db_api.data.Chip;
 import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 import de.unihamburg.zbh.fishoracle_db_api.data.EnsemblDBs;
 import de.unihamburg.zbh.fishoracle_db_api.data.Group;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
-import de.unihamburg.zbh.fishoracle_db_api.data.Microarraystudy;
 import de.unihamburg.zbh.fishoracle_db_api.data.Organ;
+import de.unihamburg.zbh.fishoracle_db_api.data.Platform;
 import de.unihamburg.zbh.fishoracle_db_api.data.Project;
 import de.unihamburg.zbh.fishoracle_db_api.data.ProjectAccess;
 import de.unihamburg.zbh.fishoracle_db_api.data.Property;
+import de.unihamburg.zbh.fishoracle_db_api.data.Study;
 import de.unihamburg.zbh.fishoracle_db_api.data.TissueSample;
 import de.unihamburg.zbh.fishoracle_db_api.data.User;
-import de.unihamburg.zbh.fishoracle_db_api.driver.ChipAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.CnSegmentAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.EnsemblDBsAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriver;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriverImpl;
 import de.unihamburg.zbh.fishoracle_db_api.driver.GroupAdaptor;
-import de.unihamburg.zbh.fishoracle_db_api.driver.MicroarraystudyAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.OrganAdaptor;
+import de.unihamburg.zbh.fishoracle_db_api.driver.PlatformAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.ProjectAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.PropertyAdaptor;
+import de.unihamburg.zbh.fishoracle_db_api.driver.StudyAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.UserAdaptor;
 import extended.AnnoDBEnsembl;
 import extended.AnnoDBFo;
@@ -76,7 +77,7 @@ import extended.RDBMysql;
 
 /**
  * Fetches various information from the fish oracle database and gene
- * information from the ensembl database using the ensembl Java API.
+ * information from the ensembl database using the ensembl GenomeTools API.
  * 
  * */
 public class DBInterface {
@@ -144,7 +145,7 @@ public class DBInterface {
 			throw new Exception(e.getMessage());
 		}
 		
-		Location l = new Location(fn.get_seqid(), fn.get_range().get_start(), fn.get_range().get_end());
+		Location l = new Location(0, fn.get_seqid(), fn.get_range().get_start(), fn.get_range().get_end());
 		
 		fn.dispose();
 		fi.dispose();
@@ -177,7 +178,7 @@ public class DBInterface {
 		
 		Range r = ka.fetchRangeForKaryoband(fi, chr, band);
 		
-		Location l = new Location(chr, r.get_start(), r.get_end());
+		Location l = new Location(0, chr, r.get_start(), r.get_end());
 		
 		fi.dispose();
 		adb.delete();
@@ -515,11 +516,11 @@ public class DBInterface {
 		ea.deleteDB(edbsId);
 	}
 	
-	public int createNewStudy(Microarraystudy mstudy, int projectId) {
+	public int createNewStudy(Study study, int projectId) {
 		FODriver driver = getFoDriver();
-		MicroarraystudyAdaptor ma = driver.getMicroarraystudyAdaptor();
+		StudyAdaptor sa = driver.getStudyAdaptor();
 	
-		return ma.storeMicroarraystudy(mstudy, projectId);
+		return sa.storeStudy(study, projectId);
 	}
 	
 	public FoUser insertUser(FoUser user) throws Exception {
@@ -609,7 +610,6 @@ public class DBInterface {
 		ga.deleteGroup(g);
 	}
 	
-	
 	public FoUser[] getAllUserExceptGroup(FoGroup foGroup){
 		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
@@ -632,34 +632,34 @@ public class DBInterface {
 		
 	}
 	
-	public FoCnSegment[] getCnSegmentsForMstudyId(int mstudyId){
+	public FoCnSegment[] getCnSegmentsForStudyId(int studyId){
 		
 		FODriver driver = getFoDriver();
 		CnSegmentAdaptor ca = driver.getCnSegmentAdaptor();
 		
-		CnSegment[] segments = ca.fetchCnSegmentsForMicroarraystudyId(mstudyId);
+		CnSegment[] segments = ca.fetchCnSegmentsForStudyId(studyId);
 		
 		return cnSegmentsToFoCnSegments(segments);
 	}
 	
-	public void removeMstudy(int mstudyId){
+	public void removeStudy(int studyId){
 		
 		FODriver driver = getFoDriver();
-		MicroarraystudyAdaptor ma = driver.getMicroarraystudyAdaptor();
+		StudyAdaptor sa = driver.getStudyAdaptor();
 		
-		ma.deleteMicroarraystudy(mstudyId);
+		sa.deleteStudy(studyId);
 		
 	}
 	
-	public FoMicroarraystudy[] getMicroarraystudiesForProject(int[] projectId, boolean withChildren){
+	public FoStudy[] getStudiesForProject(int[] projectId, boolean withChildren){
 		
 		FODriver driver = getFoDriver();
 		
-		MicroarraystudyAdaptor ma = driver.getMicroarraystudyAdaptor();
+		StudyAdaptor sa = driver.getStudyAdaptor();
 		
-		Microarraystudy[] m = ma.fetchMicroarraystudiesForProject(projectId, withChildren);
+		Study[] s = sa.fetchStudiesForProject(projectId, withChildren);
 		
-		return mstudiesToFoMstudies(m, withChildren);
+		return studiesToFostudies(s, withChildren);
 	}
 	
 	public FoProject[] getProjectsForUser(FoUser user,boolean withChildren, boolean writeOnly) throws Exception {
@@ -723,13 +723,13 @@ public class DBInterface {
 		return projectAccessToFoProjectAccess(projectAccess, true);
 	}
 	
-	public FoChip[] getAllChips(){
+	public FoPlatform[] getAllPlatforms(){
 		FODriver driver = getFoDriver();
-		ChipAdaptor ca = driver.getChipAdaptor();
+		PlatformAdaptor pa = driver.getPlatformAdaptor();
 		
-		Chip[] chips = ca.fetchAllChips();
+		Platform[] platforms = pa.fetchAllPlatforms();
 		
-		return chipsToFoChips(chips);
+		return platformsToFoPlatforms(platforms);
 	}
 	
 	public FoOrgan addOrgan(FoOrgan foOrgan){
@@ -809,24 +809,24 @@ public class DBInterface {
 		return propertyTypes;
 	}
 	
-	public FoChip addChip(FoChip foChip){
+	public FoPlatform addPlatform(FoPlatform foPlatform){
 		FODriver driver = getFoDriver();
-		ChipAdaptor ca = driver.getChipAdaptor();
+		PlatformAdaptor pa = driver.getPlatformAdaptor();
+	
+		int id = pa.storePlatform(foPlatformToPlatform(foPlatform));
 		
-		int id = ca.storeChip(foChipToChip(foChip));
+		Platform p = pa.fetchPlatformById(id);
 		
-		Chip c = ca.fetchChipById(id);
-		
-		return chipToFoChip(c);
+		return platformToFoPlatform(p);
 	}
 	
-	public String[] getChipTypes(){
+	public String[] getPlatformTypes(){
 		FODriver driver = getFoDriver();
-		ChipAdaptor ca = driver.getChipAdaptor();
+		PlatformAdaptor pa = driver.getPlatformAdaptor();
 		
-		String[] chipTypes = ca.fetchAllTypes();
+		String[] platformTypes = pa.fetchAllTypes();
 		
-		return chipTypes;
+		return platformTypes;
 	}
 	
 	public void removeAccessFromProject(int projectAccessId){
@@ -963,6 +963,23 @@ public class DBInterface {
 		return foProjectAccess;
 	}
 	
+	private FoLocation locationToFoLocation(Location loc){
+		FoLocation foLocation = new FoLocation(loc.getId(),
+												loc.getChromosome(),
+												loc.getStart(),
+												loc.getEnd());
+		return foLocation;
+	}
+	
+	
+	private Location foLocationToLocation(FoLocation foLoc){
+		Location loc = new Location(foLoc.getId(),
+										foLoc.getChromosome(),
+										foLoc.getStart(),
+										foLoc.getEnd());
+		return loc;
+	}
+	
 	private FoCnSegment[] cnSegmentsToFoCnSegments(CnSegment[] segments){
 		FoCnSegment[] foSegments = new FoCnSegment[segments.length];
 		
@@ -974,13 +991,11 @@ public class DBInterface {
 	
 	private FoCnSegment cnSegmentToFoCnSegment(CnSegment segment){
 		FoCnSegment foSegment = new FoCnSegment(segment.getId(),
-											segment.getChromosome(),
-											segment.getStart(),
-											segment.getEnd(),
+											locationToFoLocation(segment.getLocation()),
 											segment.getMean(),
 											segment.getNumberOfMarkers());
-		if(segment.getMicroarraystudyName() != null){
-			foSegment.setMicroarraystudyName(segment.getMicroarraystudyName());
+		if(segment.getStudyName() != null){
+			foSegment.setStudyName(segment.getStudyName());
 		}
 		return foSegment;
 	}
@@ -1075,66 +1090,67 @@ public class DBInterface {
 		return foOrgan;
 	}
 	
-	private Chip[] foChipsToChips(FoChip[] foChips){
-		Chip[] chips = new Chip[foChips.length];
+	private Platform[] foPlatformsToPlatforms(FoPlatform[] foPlatforms){
+		Platform[] platforms = new Platform[foPlatforms.length];
 		
-		for(int i=0; i < chips.length; i++){
-			chips[i] = foChipToChip(foChips[i]);
+		for(int i=0; i < platforms.length; i++){
+			platforms[i] = foPlatformToPlatform(foPlatforms[i]);
 		}
-		return chips;
+		return platforms;
 	}
 	
-	private Chip foChipToChip(FoChip foChip){
-		Chip chip = new Chip(foChip.getId(),
-								foChip.getName(),
-								foChip.getType());
-		return chip;
+	private Platform foPlatformToPlatform(FoPlatform foPlatform){
+		Platform platform = new Platform(foPlatform.getId(),
+											foPlatform.getName(),
+											foPlatform.getType());
+		return platform;
 	}
 	
-	private FoChip[] chipsToFoChips(Chip[] chips){
-		FoChip[] foChips = new FoChip[chips.length];
+	private FoPlatform[] platformsToFoPlatforms(Platform[] platforms){
+		FoPlatform[] foPlatforms = new FoPlatform[platforms.length];
 		
-		for(int i=0; i < chips.length; i++){
-			foChips[i] = chipToFoChip(chips[i]);
+		for(int i=0; i < platforms.length; i++){
+			foPlatforms[i] = platformToFoPlatform(platforms[i]);
 		}
-		return foChips;
+		return foPlatforms;
 	}
 	
-	private FoChip chipToFoChip(Chip chip){
-		FoChip foChip = new FoChip(chip.getId(),
-								chip.getName(),
-								chip.getType());
-		return foChip;
+	private FoPlatform platformToFoPlatform(Platform platform){
+		FoPlatform foPlatform = new FoPlatform(platform.getId(),
+												platform.getName(),
+												platform.getType());
+		return foPlatform;
 	}
 	
-	private FoMicroarraystudy[] mstudiesToFoMstudies(Microarraystudy[] mstudies, boolean withChildren){
-		FoMicroarraystudy[] foMstudies = new FoMicroarraystudy[mstudies.length];
+	private FoStudy[] studiesToFostudies(Study[] studies, boolean withChildren){
+		FoStudy[] foStudies = new FoStudy[studies.length];
 		
-		for(int i=0; i < mstudies.length; i++){
-			foMstudies[i] = mstudyToFoMstudy(mstudies[i], withChildren);
+		for(int i=0; i < studies.length; i++){
+			foStudies[i] = studyToFoStudy(studies[i], withChildren);
 		}
-		return foMstudies;
+		return foStudies;
 		
 	}
 	
-	private FoMicroarraystudy mstudyToFoMstudy(Microarraystudy mstudy, boolean withChildren){
+	private FoStudy studyToFoStudy(Study study, boolean withChildren){
 		
-		FoMicroarraystudy foMstudy = new FoMicroarraystudy(mstudy.getId(),
-														mstudy.getDate(),
-														mstudy.getName(),
-														mstudy.getDescription(),
-														mstudy.getUserId());
+		FoStudy foStudy = new FoStudy(study.getId(),
+										study.getDate(),
+										study.getName(),
+										study.getType(),
+										study.getAssembly(),
+										study.getDescription(),
+										study.getUserId());
 		
 		if(withChildren){
-			foMstudy.setChip(chipToFoChip(mstudy.getChip()));
-			//foMstudy.setSegments(cnSegmentsToFoCnSegments(mstudy.getSegments()));
-			foMstudy.setTissue(tissueSampleToFoTissueSample(mstudy.getTissue()));
+			foStudy.setPlatform(platformToFoPlatform(study.getPlatform()));
+			foStudy.setTissue(tissueSampleToFoTissueSample(study.getTissue()));
 		} else {
-			foMstudy.setChipId(mstudy.getChipId());
-			foMstudy.setOrgan_id(mstudy.getOrgan_id());
-			foMstudy.setPropertyIds(mstudy.getPropertyIds());
+			foStudy.setPlatformId(study.getPlatformId());
+			foStudy.setOrganId(study.getOrganId());
+			foStudy.setPropertyIds(study.getPropertyIds());
 		}
-		return foMstudy;
+		return foStudy;
 	}
 	
 	private FoProject[] projectsToFoProjects(Project[] projects){
@@ -1152,8 +1168,8 @@ public class DBInterface {
 											project.getName(),
 											project.getDescription());
 		
-		if(project.getMstudies() != null){
-			foProject.setMstudies(mstudiesToFoMstudies(project.getMstudies(), false));
+		if(project.getStudies() != null){
+			foProject.setStudies(studiesToFostudies(project.getStudies(), false));
 		}
 		
 		if(project.getProjectAccess() != null){

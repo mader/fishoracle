@@ -2,13 +2,13 @@ package de.unihamburg.zbh.fishoracle.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoChip;
+import de.unihamburg.zbh.fishoracle.client.data.FoPlatform;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
-import de.unihamburg.zbh.fishoracle.client.rpc.ChipService;
+import de.unihamburg.zbh.fishoracle.client.rpc.PlatformService;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 import de.unihamburg.zbh.fishoracle.server.data.SessionData;
 
-public class ChipServiceImpl extends RemoteServiceServlet implements ChipService {
+public class PlatformServiceImpl extends RemoteServiceServlet implements PlatformService {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -17,7 +17,7 @@ public class ChipServiceImpl extends RemoteServiceServlet implements ChipService
 	}
 	
 	@Override
-	public FoChip add(FoChip foChip) throws UserException {
+	public FoPlatform add(FoPlatform foPlatform) throws UserException {
 		
 		getSessionData().isAdmin();
 		
@@ -25,18 +25,18 @@ public class ChipServiceImpl extends RemoteServiceServlet implements ChipService
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.addChip(foChip);
+		return db.addPlatform(foPlatform);
 		
 	}
 
 	@Override
-	public FoChip[] fetch() {
+	public FoPlatform[] fetch() {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.getAllChips();
+		return db.getAllPlatforms();
 		
 	}
 
@@ -47,19 +47,17 @@ public class ChipServiceImpl extends RemoteServiceServlet implements ChipService
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.getChipTypes();
+		return db.getPlatformTypes();
 		
 	}
 	
 	@Override
-	public void update(FoChip foChip) {
+	public void update(FoPlatform foPlatform) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
-	public void delete(int chipId) {
+	public void delete(int platformId) {
 		// TODO Auto-generated method stub
-		
 	}
 }

@@ -35,7 +35,6 @@ public class GWTImageInfo implements IsSerializable, Cloneable{
 	
 	
 	public GWTImageInfo() {
-		
 	}
 
 	public GWTImageInfo(String imgUrl, int height, int width, String chromosome, int start, int end,
