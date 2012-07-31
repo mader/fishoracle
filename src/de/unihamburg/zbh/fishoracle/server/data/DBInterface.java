@@ -26,6 +26,7 @@ import core.Range;
 
 import annotationsketch.FeatureCollection;
 import annotationsketch.FeatureIndex;
+import annotationsketch.FeatureIndexFo;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
@@ -148,7 +149,7 @@ public class DBInterface {
 		Location l = new Location(0, fn.get_seqid(), fn.get_range().get_start(), fn.get_range().get_end());
 		
 		fn.dispose();
-		fi.dispose();
+		fi.delete();
 		adb.delete();
 		
 		return l;
@@ -180,7 +181,7 @@ public class DBInterface {
 		
 		Location l = new Location(0, chr, r.get_start(), r.get_end());
 		
-		fi.dispose();
+		fi.delete();
 		adb.delete();
 		
 		return l;
@@ -224,7 +225,7 @@ public class DBInterface {
 		gene.setLength(rng.get_end() - rng.get_start());
 		
 		fn.dispose();
-		fi.dispose();
+		fi.delete();
 		adb.delete();
 		
 		return gene;
@@ -264,7 +265,7 @@ public class DBInterface {
 		features.addArray(arr);
 		
 		arr.dispose();
-		fi.dispose();
+		fi.delete();
 		adb.delete();
 		
 	}
@@ -302,7 +303,7 @@ public class DBInterface {
 		features.addArray(arr);
 		
 		arr.dispose();
-		fi.dispose();
+		fi.delete();
 		adb.delete();
 	}
 	
@@ -371,24 +372,29 @@ public class DBInterface {
 		return maxLoc;
 	}
 	
-	public void getSegmentsForTracks(RDBMysql rdb, String chr, int start, int end, QueryInfo query, FeatureCollection features) throws GTerrorJava{
+	public void getSegmentsForTracks(RDBMysql rdb,
+										String chr,
+										int start,
+										int end,
+										QueryInfo query,
+										FeatureCollection features) throws GTerrorJava{
 		
 		Range r = new Range(start, end);
 		core.Array segments;
 		
 		AnnoDBFo adb = new AnnoDBFo();
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdb);
+		FeatureIndexFo fifo = new FeatureIndexFo(fi.to_ptr());
+		adb.segmentOnly(fifo);
+		
+		int[] pIds;
+		int[] tIds;
+		int[] eIds;
+			
+		Double lth;
+		Double uth;
 		
 		for(int i = 0; i < query.getTracks().length; i++){
-			
-			segments = new core.Array(Pointer.SIZE);
-			
-			int[] pIds;
-			int[] tIds;
-			int[] eIds;
-			
-			Double lth;
-			Double uth;
 			
 			if(query.getTracks()[i].getProjectIds() != null){
 				pIds = query.getTracks()[i].getProjectIds();
@@ -421,22 +427,6 @@ public class DBInterface {
 				} else {
 					uth = 99999.0;
 				}
-				
-				adb.gt_feature_index_fo_get_segments_for_range(fi,
-						segments,
-						query.getTracks()[i].getTrackName(),
-						chr, 
-						r,
-						lth,
-						uth,
-						query.isSorted(),
-						pIds,
-						pIds.length,
-						tIds,
-						tIds.length,
-						eIds,
-						eIds.length);
-				
 			} else {
 				
 				if(query.getTracks()[i].getLowerThAsDouble() != null){
@@ -450,28 +440,25 @@ public class DBInterface {
 				} else {
 					uth = 99999.0;
 				}
-				
-				adb.gt_feature_index_fo_get_segments_for_range(fi,
-						segments,
-						query.getTracks()[i].getTrackName(),
-						chr,
-						r,
-						lth,
-						uth,
-						query.isSorted(),
-						pIds,
-						pIds.length,
-						tIds,
-						tIds.length,
-						eIds,
-						eIds.length);
 			}
+			
+			adb.setTrackId(fifo, query.getTracks()[i].getTrackName());
+			adb.setSegmentsLowerTh(fifo, lth);
+			adb.setSegmentsUpperTh(fifo, uth);
+			adb.setSegmentsSorted(fifo, query.isSorted());
+			adb.addProjectFilter(fifo, pIds, pIds.length);
+			adb.addTissueFilter(fifo, tIds, tIds.length);
+			adb.setAdditionalExperimentFilter(fifo, eIds, eIds.length);
+			
+			segments = adb.getFeatures(fifo,
+										chr,
+										r);
 			
 			features.addArray(segments);
 			segments.dispose();
 		}
 		
-		fi.dispose();
+		fifo.delete();
 		adb.delete();
 		
 	}
