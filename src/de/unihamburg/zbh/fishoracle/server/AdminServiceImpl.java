@@ -519,11 +519,11 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		while (reader.readRecord())
 		{
-			String chr = reader.get("chr");
-			String start = reader.get("start");
-			String end = reader.get("end loc");
-			String markers = reader.get("markers");
-			String segmentMean = reader.get("segment mean");
+			String chr = reader.get("chrom");
+			String start = reader.get("loc.start");
+			String end = reader.get("loc.end");
+			String markers = reader.get("num.mark");
+			String segmentMean = reader.get("seg.mean");
 			
 			Location loc = new Location(0, chr, Integer.parseInt(start), Integer.parseInt(end));
 			

@@ -1920,7 +1920,7 @@ public class CenterPanel extends VLayout {
 	
 	public void openStudyAdminTab(FoUser user){
 		
-		Tab studyAdminTab = new Tab("Manage Microarraystudies");
+		Tab studyAdminTab = new Tab("Manage Studies");
 		studyAdminTab.setCanClose(true);
 		
 		VLayout pane = new VLayout();
@@ -3320,7 +3320,7 @@ public class CenterPanel extends VLayout {
 		req.importData(fileName,
 						studyName,
 						"",
-						"",
+						"GrCh37",
 						platformId,
 						organId,
 						projectId,
