@@ -213,15 +213,15 @@ public class DBInterface {
 		
 		Range rng = fn.get_range();
 		
-		gene = new EnsemblGene(fn.get_attribute("ID"),
+		gene = new EnsemblGene(fn.get_attribute(GFF3Constants.ID),
 								fn.get_seqid(),
 								rng.get_start(),
 								rng.get_end(),
 								Character.toString(fn.get_strand()));
 		
-		gene.setBioType(fn.get_attribute("BIOTYPE"));
-		gene.setDescription(fn.get_attribute("DESCRIPTION"));
-		gene.setAccessionID(fn.get_attribute("NAME"));
+		gene.setBioType(fn.get_attribute(GFF3Constants.BIOTYPE));
+		gene.setDescription(fn.get_attribute(GFF3Constants.DESCRIPTION));
+		gene.setAccessionID(fn.get_attribute(GFF3Constants.NAME));
 		gene.setLength(rng.get_end() - rng.get_start());
 		
 		fn.dispose();

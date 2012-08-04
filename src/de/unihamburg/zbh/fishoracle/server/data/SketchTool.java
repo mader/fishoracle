@@ -41,7 +41,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.Location;
  * 
  * */
 public class SketchTool {
-
+	
 	public SketchTool() {
 		
 	}
@@ -214,20 +214,20 @@ public class SketchTool {
 			// for genes we need to set an unique identifier like the ensembl stable id
 			if(info.get_rec_map(i).get_genome_feature().get_type().equals("gene")){
 				
-				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("NAME");
+				identifier = info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.ID);
 				
 			// the same applies to the segments but here we use the segment id
 			} else if (!info.get_rec_map(i).get_genome_feature().get_type().equals("gene") &&
 					!info.get_rec_map(i).get_genome_feature().get_type().equals("karyoband") && 
-					!info.get_rec_map(i).get_genome_feature().get_attribute("ROOT").equals("YES")){
+					!info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.ROOT).equals("YES")){
 				
-				identifier = info.get_rec_map(i).get_genome_feature().get_attribute("NAME");
+				identifier = info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.ID);
 				
 			}
 			
 			// we don't need reqmap information for the karyoband
 			if(!info.get_rec_map(i).get_genome_feature().get_type().equals("karyoband") &&
-				info.get_rec_map(i).get_genome_feature().get_attribute("ROOT").equals("NO")){
+				info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.ROOT).equals("NO")){
 				
 				RecMapInfo recmapinfo = new RecMapInfo(info.get_rec_map(i).get_northwest_x(),
 														info.get_rec_map(i).get_northwest_y(),
