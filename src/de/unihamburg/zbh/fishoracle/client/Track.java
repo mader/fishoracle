@@ -8,6 +8,8 @@ import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
@@ -23,6 +25,7 @@ public class Track {
 	private DynamicForm trackForm;
 	private TextItem trackNameItem;
 	private SelectItem selectItemFilter;
+	private SelectItem selectItemFilterType;
 	private SelectItem selectItemProjects;
 	private SelectItem selectItemTissues;
 	private SelectItem segmentThresholdSelectItem;
@@ -30,6 +33,11 @@ public class Track {
 	private TextItem lessTextItem;
 	
 	private SelectItem selectItemExperiments;
+	
+	private TextItem textItemQuality;
+	private SelectItem selectItemSomatic;
+	private SelectItem selectItemConfidence;
+	private SelectItem selectItemSNPTool;
 	
 	private int trackNumber;
 
@@ -45,6 +53,44 @@ public class Track {
 		trackNameItem = new TextItem();
 		trackNameItem.setTitle("Track Title");
 		trackNameItem.setValue("Track" + numberOfTracks);
+		
+		selectItemFilterType = new SelectItem();
+		selectItemFilterType.setTitle("Filter Type");
+		selectItemFilterType.setValueMap("Segments","Mutations");
+		selectItemFilterType.setDefaultToFirstOption(true);
+		selectItemFilterType.addChangedHandler(new ChangedHandler(){
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				String val =  event.getValue().toString();
+				if(val.equals("Segments")){
+					selectItemFilter.setValueMap("Project","Tissue","Experiments");
+					selectItemFilter.setValue("Project");
+					if(!(Boolean) mp.getWestPanel().getGlobalThresholdCheckbox().getValue()){
+						segmentThresholdSelectItem.show();
+						greaterTextItem.show();
+						lessTextItem.show();
+					}
+					textItemQuality.hide();
+					selectItemSomatic.hide();
+					selectItemConfidence.hide();
+					selectItemSNPTool.hide();
+				}
+				if(val.equals("Mutations")){
+					selectItemFilter.setValueMap("Project",
+							"Tissue",
+							"Experiments",
+							"Quality",
+							"Somatic",
+							"Confidence",
+							"SNP Tool");
+					selectItemFilter.setValue("Project");
+					segmentThresholdSelectItem.hide();
+					greaterTextItem.hide();
+					lessTextItem.hide();
+				}	
+			}
+		});
 		
 		selectItemFilter = new SelectItem();
 		selectItemFilter.setTitle("Filter");
@@ -163,6 +209,38 @@ public class Track {
 		selectItemExperiments.setDefaultToFirstOption(true);
 		selectItemExperiments.setVisible(false);
 		
+		textItemQuality = new TextItem();
+		textItemQuality.setTitle("Quality Filter");
+		textItemQuality.setValue(20.0);
+		textItemQuality.setVisible(false);
+		
+		//fetch filter options from database...
+		selectItemSomatic = new SelectItem();
+		selectItemSomatic.setTitle("Somatic Filter");
+		selectItemSomatic.setMultiple(true);
+		selectItemSomatic.setMultipleAppearance(MultipleAppearance.PICKLIST);
+		selectItemSomatic.setValueMap("somatic", "germline");
+		selectItemSomatic.setDefaultToFirstOption(true);
+		selectItemSomatic.setVisible(false);
+		
+		//fetch filter options from database...
+		selectItemConfidence = new SelectItem();
+		selectItemConfidence.setTitle("Confidence Filter");
+		selectItemConfidence.setMultiple(true);
+		selectItemConfidence.setMultipleAppearance(MultipleAppearance.PICKLIST);
+		selectItemConfidence.setValueMap("High", "moderate", "low");
+		selectItemConfidence.setDefaultToFirstOption(true);
+		selectItemConfidence.setVisible(false);
+		
+		//fetch filter options from database...
+		selectItemSNPTool = new SelectItem();
+		selectItemSNPTool.setTitle("SNP Tool Filter");
+		selectItemSNPTool.setMultiple(true);
+		selectItemSNPTool.setMultipleAppearance(MultipleAppearance.PICKLIST);
+		selectItemSNPTool.setValueMap("gatk", "varscan", "snvmix", "samtools");
+		selectItemSNPTool.setDefaultToFirstOption(true);
+		selectItemSNPTool.setVisible(false);
+		
 		ButtonItem addFilterButton = new ButtonItem();
 		addFilterButton.setTitle("add Filter");
 		addFilterButton.setEndRow(false);
@@ -180,6 +258,18 @@ public class Track {
 					}
 					if(selectItemFilter.getValue().equals("Experiments")){
 						selectItemExperiments.show();
+					}
+					if(selectItemFilter.getValue().equals("Quality")){
+						textItemQuality.show();
+					}
+					if(selectItemFilter.getValue().equals("Somatic")){
+						selectItemSomatic.show();
+					}
+					if(selectItemFilter.getValue().equals("Confidence")){
+						selectItemConfidence.show();
+					}
+					if(selectItemFilter.getValue().equals("SNP Tool")){
+						selectItemSNPTool.show();
 					}
 			}
 		});
@@ -202,10 +292,23 @@ public class Track {
 					if(selectItemFilter.getValue().equals("Experiments")){
 						selectItemExperiments.hide();
 					}
+					if(selectItemFilter.getValue().equals("Quality")){
+						textItemQuality.hide();
+					}
+					if(selectItemFilter.getValue().equals("Somatic")){
+						selectItemSomatic.hide();
+					}
+					if(selectItemFilter.getValue().equals("Confidence")){
+						selectItemConfidence.hide();
+					}
+					if(selectItemFilter.getValue().equals("SNP Tool")){
+						selectItemSNPTool.hide();
+					}
 			}
 		});
 		
 		trackForm.setItems(trackNameItem, 
+							selectItemFilterType,
 							selectItemFilter,
 							segmentThresholdSelectItem,
 							greaterTextItem,
@@ -213,6 +316,10 @@ public class Track {
 							selectItemProjects,
 							selectItemTissues,
 							selectItemExperiments,
+							textItemQuality,
+							selectItemSomatic,
+							selectItemConfidence,
+							selectItemSNPTool,
 							addFilterButton,
 							removeFilterButton);
 	}
@@ -231,6 +338,14 @@ public class Track {
 
 	public void setTrackNameItem(TextItem trackNameItem) {
 		this.trackNameItem = trackNameItem;
+	}
+	
+	public SelectItem getSelectItemFilterType() {
+		return selectItemFilterType;
+	}
+
+	public void setSelectItemFilterType(SelectItem selectItemFilterType) {
+		this.selectItemFilterType = selectItemFilterType;
 	}
 
 	public SelectItem getSelectItemFilter() {
@@ -287,6 +402,38 @@ public class Track {
 
 	public void setSelectItemExperiments(SelectItem selectItemExperiments) {
 		this.selectItemExperiments = selectItemExperiments;
+	}
+	
+	public TextItem getTextItemQuality() {
+		return textItemQuality;
+	}
+
+	public void setTextItemQuality(TextItem textItemQuality) {
+		this.textItemQuality = textItemQuality;
+	}
+
+	public SelectItem getSelectItemSomatic() {
+		return selectItemSomatic;
+	}
+
+	public void setSelectItemSomatic(SelectItem selectItemSomatic) {
+		this.selectItemSomatic = selectItemSomatic;
+	}
+
+	public SelectItem getSelectItemConfidence() {
+		return selectItemConfidence;
+	}
+
+	public void setSelectItemConfidence(SelectItem selectItemConfidence) {
+		this.selectItemConfidence = selectItemConfidence;
+	}
+
+	public SelectItem getSelectItemSNPTool() {
+		return selectItemSNPTool;
+	}
+
+	public void setSelectItemSNPTool(SelectItem selectItemSNPTool) {
+		this.selectItemSNPTool = selectItemSNPTool;
 	}
 
 	public int getTrackNumber() {

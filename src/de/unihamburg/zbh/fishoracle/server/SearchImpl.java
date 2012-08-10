@@ -149,7 +149,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			if(query.getSearchType().equals("Region")){
 				maxSegmentRange = featuresLoc;
 			} else {
-				
+			
 			maxSegmentRange = db.getMaxSegmentRange(featuresLoc.getChromosome(), 
 											featuresLoc.getStart(), 
 											featuresLoc.getEnd(), 
@@ -159,8 +159,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			}
 			
 			FeatureCollection features = new FeatureCollection();
-			
-			db.getSegmentsForTracks(rdbFishoracle, 
+			//here
+			db.getFeaturesForTracks(rdbFishoracle,
+									rdbEnsembl,
 									maxSegmentRange.getChromosome(),
 									maxSegmentRange.getStart(),
 									maxSegmentRange.getEnd(),
@@ -293,7 +294,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			throw e;
 		}
 		
-		db.getSegmentsForTracks(rdbFishoracle, chr, start, end, imageInfo.getQuery(), features);
+		db.getFeaturesForTracks(rdbFishoracle, rdbEnsembl, chr, start, end, imageInfo.getQuery(), features);
 		
 		if(end - start < 10000000){
 			db.getEnsembleGenes(rdbEnsembl,

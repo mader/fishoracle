@@ -19,13 +19,19 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class TrackData  implements IsSerializable {
+public class TrackData implements IsSerializable {
 
+	private String dataType;
 	private String trackName;
 	private int trackNumber;
 	private int[] ProjectIds;
 	private int[] tissueIds;
 	private int[] experimentIds;
+	
+	private double qualityScore;
+	private String[] somatic;
+	private String[] confidence;
+	private String[] snpTool;
 	
 	private String lowerTh;
 	private String upperTh;
@@ -38,6 +44,14 @@ public class TrackData  implements IsSerializable {
 	public TrackData(String trackName, int trackNumber) {
 		this.trackName = trackName;
 		this.trackNumber = trackNumber;
+	}
+	
+	public String getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
 	}
 
 	public String getTrackName() {
@@ -78,6 +92,38 @@ public class TrackData  implements IsSerializable {
 
 	public void setExperimentIds(int[] experimentIds) {
 		this.experimentIds = experimentIds;
+	}
+	
+	public double getQualityScore() {
+		return qualityScore;
+	}
+
+	public void setQualityScore(double qualityScore) {
+		this.qualityScore = qualityScore;
+	}
+
+	public String[] getSomatic() {
+		return somatic;
+	}
+
+	public void setSomatic(String[] somatic) {
+		this.somatic = somatic;
+	}
+
+	public String[] getConfidence() {
+		return confidence;
+	}
+
+	public void setConfidence(String[] confidence) {
+		this.confidence = confidence;
+	}
+
+	public String[] getSnpTool() {
+		return snpTool;
+	}
+
+	public void setSnpTool(String[] snpTool) {
+		this.snpTool = snpTool;
 	}
 
 	public String getLowerTh() {

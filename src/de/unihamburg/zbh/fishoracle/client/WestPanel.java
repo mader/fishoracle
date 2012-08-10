@@ -98,6 +98,10 @@ public class WestPanel extends SectionStack{
 		}
 	}
 	
+	public CheckboxItem getGlobalThresholdCheckbox() {
+		return globalThresholdCheckbox;
+	}
+
 	public void addTrack(){
 		
 		Track t = new Track(numberOfTracks, globalThresholdCheckbox, mp);
@@ -312,9 +316,11 @@ public class WestPanel extends SectionStack{
 					for(int i = 0; i < tracks.size(); i++){
 						
 						Track t = tracks.get(i);
-						t.getSegmentThresholdSelectItem().show();
-						t.getGreaterTextItem().show();
-						t.getLessTextItem().show();
+						if(t.getSelectItemFilterType().getValueAsString().equals("Segments")){
+							t.getSegmentThresholdSelectItem().show();
+							t.getGreaterTextItem().show();
+							t.getLessTextItem().show();
+						}
 					}
 				}
 				
@@ -735,6 +741,7 @@ public class WestPanel extends SectionStack{
 				
 				for(int i = 0; i < tracks.size(); i++){
 					trackData[i] = new TrackData();
+					trackData[i].setDataType(tracks.get(i).getSelectItemFilterType().getValueAsString());
 					trackData[i].setTrackNumber(tracks.get(i).getTrackNumber());
 					trackData[i].setTrackName(tracks.get(i).getTrackNameItem().getDisplayValue());
 					if(globalThresholdCheckbox.getValueAsBoolean()){
@@ -780,6 +787,42 @@ public class WestPanel extends SectionStack{
 						
 					} else {
 						trackData[i].setExperimentIds(null);
+					}
+					if(tracks.get(i).getSelectItemFilterType().getValueAsString().equals("Mutations")){
+						if(tracks.get(i).getTextItemQuality().getVisible()){
+							
+							trackData[i].setQualityScore((double) Double.parseDouble(tracks.get(i).getTextItemQuality().getValueAsString()));
+							
+						} else {
+							trackData[i].setQualityScore(99999.0);
+						}
+						if(tracks.get(i).getSelectItemSomatic().getVisible()){
+							
+							String[] strArr = tracks.get(i).getSelectItemSomatic().getValues();
+							
+							trackData[i].setSomatic(strArr);
+							
+						} else {
+							trackData[i].setSomatic(null);
+						}
+						if(tracks.get(i).getSelectItemConfidence().getVisible()){
+							
+							String[] strArr = tracks.get(i).getSelectItemConfidence().getValues();
+							
+							trackData[i].setConfidence(strArr);
+							
+						} else {
+							trackData[i].setConfidence(null);
+						}
+						if(tracks.get(i).getSelectItemSNPTool().getVisible()){
+							
+							String[] strArr = tracks.get(i).getSelectItemSNPTool().getValues();
+							
+							trackData[i].setSnpTool(strArr);
+							
+						} else {
+							trackData[i].setSnpTool(null);
+						}
 					}
 					
 				}
