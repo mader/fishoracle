@@ -109,8 +109,11 @@ public class SketchTool {
 			}
 			if(query.getTracks()[l].getDataType().equals("Mutations")){
 				
-				style.set_bool(query.getTracks()[l].getTrackName(), "collapse_to_parent", true);
-				style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(1.0,0.0,0.0,1.0));
+				style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
+				style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
+				
+				style.set_bool(query.getTracks()[l].getTrackName() + "_mutations", "collapse_to_parent", true);
+				style.set_color(query.getTracks()[l].getTrackName() + "_mutations", "stroke", new Color(1.0,0.0,0.0,1.0));
 			}
 		}
 		
@@ -205,6 +208,18 @@ public class SketchTool {
 	    return imgInfo;
 	}
 	
+	private RecMapInfo setRecMapInfo(ImageInfo info, String identifier, int index){
+		
+		RecMapInfo recmapinfo = new RecMapInfo(info.get_rec_map(index).get_northwest_x(),
+												info.get_rec_map(index).get_northwest_y(),
+												info.get_rec_map(index).get_southeast_x(),
+												info.get_rec_map(index).get_southeast_y(),
+												info.get_rec_map(index).get_genome_feature().get_type(),
+												identifier);
+		
+		return recmapinfo;
+	}
+	
 	/*
 	 * Copies the GTReqMap object into the custom ReqMapInfo object
 	 * and stores additional information in it.
@@ -214,37 +229,32 @@ public class SketchTool {
 		
 		ArrayList<RecMapInfo> recmapinfoArray = new ArrayList<RecMapInfo>();
 		String identifier = null;
+		RecMapInfo recmapinfo;
+		
 		
 		for(int i=0; i < info.num_of_rec_maps(); i++){
 		
+			// we don't need reqmap information for the karyoband
+			if(info.get_rec_map(i).get_genome_feature().get_type().equals("karyoband")){
+				continue;
+			}
 			// for genes we need to set an unique identifier like the ensembl stable id
 			if(info.get_rec_map(i).get_genome_feature().get_type().equals("gene")){
 				
 				identifier = info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.ID);
-				
-			// the same applies to the segments but here we use the segment id
-			} else if (!info.get_rec_map(i).get_genome_feature().get_type().equals("gene") &&
-					!info.get_rec_map(i).get_genome_feature().get_type().equals("karyoband") && 
-					!info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.ROOT).equals("YES")){
+				recmapinfo = setRecMapInfo(info, identifier, i);
+				recmapinfoArray.add(recmapinfo);
+				continue;
+			}
+			// the same applies to other elements but here we use the element id
+			if (info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.FEATURE_TYPE).equals("segment")){
 				
 				identifier = info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.ID);
-				
-			}
-			
-			// we don't need reqmap information for the karyoband
-			if(!info.get_rec_map(i).get_genome_feature().get_type().equals("karyoband") &&
-				info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.ROOT).equals("NO")){
-				
-				RecMapInfo recmapinfo = new RecMapInfo(info.get_rec_map(i).get_northwest_x(),
-														info.get_rec_map(i).get_northwest_y(),
-														info.get_rec_map(i).get_southeast_x(),
-														info.get_rec_map(i).get_southeast_y(),
-														info.get_rec_map(i).get_genome_feature().get_type(),
-														identifier);
-			
+				recmapinfo = setRecMapInfo(info, identifier, i);
 				recmapinfoArray.add(recmapinfo);
+				
 			}
-		}		
+		}
 		return recmapinfoArray;
 	}
 }

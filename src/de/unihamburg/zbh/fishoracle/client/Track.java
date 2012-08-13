@@ -228,7 +228,7 @@ public class Track {
 		selectItemConfidence.setTitle("Confidence Filter");
 		selectItemConfidence.setMultiple(true);
 		selectItemConfidence.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		selectItemConfidence.setValueMap("High", "moderate", "low");
+		selectItemConfidence.setValueMap("high confidence", "moderate confidence", "low confidence");
 		selectItemConfidence.setDefaultToFirstOption(true);
 		selectItemConfidence.setVisible(false);
 		

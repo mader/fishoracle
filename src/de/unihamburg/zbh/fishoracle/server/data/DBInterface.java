@@ -471,16 +471,14 @@ public class DBInterface {
 				
 				if(query.getTracks()[i].getConfidence() != null){
 					confidence = query.getTracks()[i].getConfidence();
-					adb.addSomaticFilter(fifo, confidence);
+					adb.addConfidenceFilter(fifo, confidence);
 				}
 				
 				if(query.getTracks()[i].getSnpTool() != null){
 					snpTool = query.getTracks()[i].getSnpTool();
-					adb.addSomaticFilter(fifo, snpTool);
+					adb.addSnptoolFilter(fifo, snpTool);
 				}
 			}
-			
-			
 			
 			feats = adb.getFeatures(fifo,
 									chr,
@@ -493,7 +491,7 @@ public class DBInterface {
 				features.addArray(procFeats);
 				procFeats.dispose();
 			}
-			if(query.getTracks()[i].getDataType().equals("Mutations")){
+			if(query.getTracks()[i].getDataType().equals("Segments")){
 				features.addArray(feats);
 			}
 			feats.dispose();
