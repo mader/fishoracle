@@ -159,7 +159,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			}
 			
 			FeatureCollection features = new FeatureCollection();
-			//here
+			
 			db.getFeaturesForTracks(rdbFishoracle,
 									rdbEnsembl,
 									maxSegmentRange.getChromosome(),
@@ -271,6 +271,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		String chr = imageInfo.getChromosome();
 		int start = imageInfo.getStart();
 		int end = imageInfo.getEnd();
+		
+		if(start < 0 || end < 0 || start > end){
+			throw new Exception("0 < Start < End required!");
+		}
 		
 		Date dt = new Date();
 		
