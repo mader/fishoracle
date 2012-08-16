@@ -106,6 +106,10 @@ public class SketchTool {
 					style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,1.0,0.7));
 				
 				}
+				if(!query.isCnvCaptions()){
+					style.set_num(query.getTracks()[l].getTrackName(), "max_capt_show_width", 0);
+				}
+				
 			}
 			if(query.getTracks()[l].getDataType().equals("Mutations")){
 				
@@ -115,7 +119,12 @@ public class SketchTool {
 				style.set_bool(query.getTracks()[l].getTrackName() + "_mutations", "collapse_to_parent", true);
 				style.set_color(query.getTracks()[l].getTrackName() + "_mutations", "stroke", new Color(1.0,0.0,0.0,1.0));
 			}
+			
+			
 		}
+		
+		
+		
 		
 		range = new Range(loc.getStart(), loc.getEnd());
 		
