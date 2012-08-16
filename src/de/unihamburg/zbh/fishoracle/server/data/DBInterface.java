@@ -401,6 +401,10 @@ public class DBInterface {
 		
 		for(int i = 0; i < query.getTracks().length; i++){
 			
+			if(i > 0){
+				adb.unsetAllFilters(fifo);
+			}
+			
 			adb.setTrackId(fifo, query.getTracks()[i].getTrackName());
 			
 			if(query.getTracks()[i].getProjectIds() != null){
