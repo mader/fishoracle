@@ -15,6 +15,11 @@
 
   <!-- Other module inherits                                      -->
 
+  <!-- Include GWTUpload library -->
+  <inherits name="gwtupload.GWTUpload"/>
+  <!-- Load dinamically predefined styles in the library when the application starts -->
+  <stylesheet src="Upload.css"/>
+
   <!-- Specify the app entry point class.                         -->
   <entry-point class='de.unihamburg.zbh.fishoracle.client.FishOracle'/>
   <inherits name="de.unihamburg.zbh.fishoracle.fishoracle"/>

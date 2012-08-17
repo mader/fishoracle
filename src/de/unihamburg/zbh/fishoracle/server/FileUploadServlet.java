@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -18,80 +18,98 @@
 package de.unihamburg.zbh.fishoracle.server;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.FilenameUtils;
 
-public class FileUploadServlet extends HttpServlet{
+import gwtupload.server.UploadAction;
+import gwtupload.server.exceptions.UploadActionException;
+import gwtupload.shared.UConsts;
 
-	private static final long serialVersionUID = -7351031304166429877L;
+public class FileUploadServlet extends UploadAction {
 
-	public FileUploadServlet() {
-		// TODO Auto-generated constructor stub
-	}
-	 private static final String UPLOAD_DIRECTORY = "tmp" + System.getProperty("file.separator");
-	  
-	      @Override
-	      protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-	              throws ServletException, IOException {
-	          super.doGet(req, resp);
-	      }
-	  
-	      @Override
-	      protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-	              throws ServletException, IOException {
+	private static final long serialVersionUID = 1L;
+	
+	  Hashtable<String, String> receivedContentTypes = new Hashtable<String, String>();
+	  /**
+	   * Maintain a list with received files and their content types. 
+	   */
+	  Hashtable<String, File> receivedFiles = new Hashtable<String, File>();
+
+	  /**
+	   * Override executeAction to save the received files in a custom place
+	   * and delete this items from session.  
+	   */
+	  @Override
+	  public String executeAction(HttpServletRequest request, List<FileItem> sessionFiles) throws UploadActionException {
+		
+		  String servletContext = this.getServletContext().getRealPath("/");
+		  
+		  final String DIR = "tmp" + System.getProperty("file.separator");
+
+	    String response = "";
+	    for (FileItem item : sessionFiles) {
+	      if (false == item.isFormField()) {
+	        try {
+	          /// Create a new file based on the remote file name in the client
+	          String saveName = item.getName().replaceAll("[\\\\/><\\|\\s\"'{}()\\[\\]]+", "_");
 	          
-	    	  String servletContext = this.getServletContext().getRealPath("/");
-	    	  
-	          // process only multipart requests
-	          if (ServletFileUpload.isMultipartContent(req)) {
-	  
-	              // Create a factory for disk-based file items
-	              FileItemFactory factory = new DiskFileItemFactory();
-	  
-	              // Create a new file upload handler
-	              ServletFileUpload upload = new ServletFileUpload(factory);
-	  
-	              // Parse the request
-	              try {
-	                  List<FileItem> items = upload.parseRequest(req);
-	                  for (FileItem item : items) {
-	                      // process only file upload - discard other form item types
-	                      if (item.isFormField()) continue;
-	                      
-	                      String fileName = item.getName();
-	                      // get only the file name not whole path
-	                      if (fileName != null) {
-	                          fileName = FilenameUtils. getName(fileName);
-	                      }
-	  
-	                      File uploadedFile = new File(servletContext + UPLOAD_DIRECTORY, fileName);
-	                      if (uploadedFile.createNewFile()) {
-	                          item.write(uploadedFile);
-	                          resp.setStatus(HttpServletResponse.SC_CREATED);
-	                          resp.getWriter().print("The file was created successfully.");
-	                          resp.flushBuffer();
-	                      } else
-	                          throw new IOException("The file already exists in repository.");
-	                  }
-	              } catch (Exception e) {
-	                  resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-	                          "An error occurred while creating the file : " + e.getMessage());
-	              }
-	  
-	          } else {
-	              resp.sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
-	                              "Request contents type is not supported by the servlet.");
-	          }
+	          File file = new File(servletContext + DIR + System.getProperty("file.separator") + saveName);
+	          file.createNewFile();
+	          item.write(file);
+	          
+	          /// Save a list with the received files
+	          receivedFiles.put(item.getFieldName(), file);
+	          receivedContentTypes.put(item.getFieldName(), item.getContentType());
+	          
+	          /// Send a customized message to the client.
+	          response += "File saved as " + file.getAbsolutePath();
+
+	        } catch (Exception e) {
+	          throw new UploadActionException(e);
+	        }
 	      }
+	    }
+	    
+	    /// Remove files from session because we have a copy of them
+	    removeSessionFileItems(request);
+	    
+	    /// Send your customized message to the client.
+	    return response;
+	  }
+	  
+	  /**
+	   * Get the content of an uploaded file.
+	   */
+	  @Override
+	  public void getUploadedFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	    String fieldName = request.getParameter(UConsts.PARAM_SHOW);
+	    File f = receivedFiles.get(fieldName);
+	    if (f != null) {
+	      response.setContentType(receivedContentTypes.get(fieldName));
+	      FileInputStream is = new FileInputStream(f);
+	      copyFromInputStreamToOutputStream(is, response.getOutputStream());
+	    } else {
+	      renderXmlResponse(request, response, XML_ERROR_ITEM_NOT_FOUND);
+	   }
+	  }
+	  
+	  /**
+	   * Remove a file when the user sends a delete request.
+	   */
+	  @Override
+	  public void removeItem(HttpServletRequest request, String fieldName)  throws UploadActionException {
+	    File file = receivedFiles.get(fieldName);
+	    receivedFiles.remove(fieldName);
+	    receivedContentTypes.remove(fieldName);
+	    if (file != null) {
+	      file.delete();
+	    }
+	  }
 }

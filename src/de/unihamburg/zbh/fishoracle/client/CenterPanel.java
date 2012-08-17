@@ -17,6 +17,12 @@
 
 package de.unihamburg.zbh.fishoracle.client;
 
+import gwtupload.client.IUploadStatus.Status;
+import gwtupload.client.IUploader;
+import gwtupload.client.IUploader.OnFinishUploaderHandler;
+import gwtupload.client.IUploader.UploadedInfo;
+import gwtupload.client.MultiUploader;
+
 import java.util.LinkedHashMap;
 
 import com.google.gwt.core.client.GWT;
@@ -31,7 +37,9 @@ import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.types.ListGridEditEvent;
+import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.types.Overflow;
+import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.SelectionType;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.VerticalAlignment;
@@ -49,11 +57,13 @@ import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
+import com.smartgwt.client.widgets.form.fields.CheckboxItem;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.HeaderItem;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.PasswordItem;
+import com.smartgwt.client.widgets.form.fields.RadioGroupItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
@@ -167,6 +177,7 @@ public class CenterPanel extends VLayout {
 	private FileUpload fu;
 	private DynamicForm metaDataForm;
 	private TextItem studyName;
+	private ListGrid fileGrid;
 	private SelectItem platform;
 	private SelectItem tissue;
 	private SelectItem project;
@@ -2393,19 +2404,208 @@ public class CenterPanel extends VLayout {
 		
 	}
 	
-	public void openDataAdminTab(boolean unlock){
+	public void loadUploadWindow(){
+		
+		final Window window = new Window();
+
+		window.setTitle("Upload Files");
+		window.setWidth(400);
+		window.setHeight(300);
+		window.setAlign(Alignment.CENTER);
+		
+		window.setAutoCenter(true);
+		window.setIsModal(true);
+		window.setShowModalMask(true);
+		
+		MultiUploader defaultUploader = new MultiUploader();
+		defaultUploader.setHeight("100%");
+
+		defaultUploader.addOnFinishUploadHandler(new OnFinishUploaderHandler() {
+		    public void onFinish(IUploader uploader) {
+		      if (uploader.getStatus() == Status.SUCCESS) {
+		        UploadedInfo info = uploader.getServerInfo();
+		        System.out.println("File name " + info.name);
+		        System.out.println("File content-type " + info.ctype);
+		        System.out.println("File size " + info.size);
+
+		        // Here is the string returned in your servlet
+		        System.out.println("Server message " + info.message);
+		      }
+		    }
+		  });
+	
+		window.addItem(defaultUploader);
+		
+		window.show();
+	}
+	
+	public void openDataAdminTab(){
 		Tab dataAdminTab;
-		if(unlock){
-			dataAdminTab = new Tab("Data Import");
-		} else {
-			dataAdminTab = new Tab("Data Import (occupied)");
-		}
+		
+		dataAdminTab = new Tab("Data Import");
 		dataAdminTab.setCanClose(true);
 		
 		VLayout pane = new VLayout();
 		pane.setWidth100();
 		pane.setHeight100();
 		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		HLayout header = new HLayout();
+		header.setAutoWidth();
+		header.setAutoHeight();
+		
+		HLayout controlsPanel = new HLayout();
+		controlsPanel.setWidth100();
+		controlsPanel.setAutoHeight();
+		
+		ToolStrip importToolStrip = new ToolStrip();
+		importToolStrip.setWidth100();
+		
+		ToolStripButton addUploadButton = new ToolStripButton();  
+		addUploadButton.setTitle("Upload File");
+		addUploadButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				loadUploadWindow();
+				//SC.say("Open Upload Window");
+			}});
+		
+		importToolStrip.addButton(addUploadButton);
+		
+		controlsPanel.addMember(importToolStrip);
+		
+		HLayout body = new HLayout();
+		body.setWidth100();
+		body.setHeight100();
+		body.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		//Grid
+		fileGrid = new ListGrid();
+		fileGrid.setWidth("50%");
+		fileGrid.setHeight100();  
+		fileGrid.setAlternateRecordStyles(true);
+		fileGrid.setWrapCells(true);
+		fileGrid.setFixedRecordHeights(false);
+		fileGrid.setSelectionType(SelectionStyle.MULTIPLE);
+		fileGrid.setCanDragSelect(true);
+		//fileGrid.setAutoFetchData(false);
+		//fileGrid.setShowAllRecords(false);
+		
+		ListGridField fileField = new ListGridField("file", "File");
+		ListGridField nameField = new ListGridField("studyName", "Study Name");
+		
+		fileGrid.setFields(fileField, nameField);
+		
+		fileGrid.hideField("studyName");
+		
+		ListGridRecord[] lgr = new ListGridRecord[3];
+		lgr[0] = new ListGridRecord();
+		lgr[0].setAttribute("file", "icgc001.txt");
+		lgr[1] = new ListGridRecord();
+		lgr[1].setAttribute("file", "icgc002.txt");
+		lgr[2] = new ListGridRecord();
+		lgr[2].setAttribute("file", "icgc003.txt");
+		
+		fileGrid.setData(lgr);
+		
+		VLayout importOptions = new VLayout();
+		importOptions.setWidth100();
+		importOptions.setHeight100();
+		importOptions.setDefaultLayoutAlign(Alignment.CENTER);
+		
+		//dynamic form
+		DynamicForm importOptionsForm = new DynamicForm();
+		importOptionsForm.setWidth100();
+		importOptionsForm.setHeight100();
+		importOptionsForm.setAlign(Alignment.CENTER);
+		
+		SelectItem selectItemFilterType = new SelectItem();
+		selectItemFilterType.setTitle("Data Type");
+		selectItemFilterType.setValueMap("Segments","Mutations");
+		selectItemFilterType.setDefaultToFirstOption(true);
+		
+		RadioGroupItem createStudyItem = new RadioGroupItem();  
+		createStudyItem.setTitle("");  
+		createStudyItem.setValueMap("Create new study", "Import to existing study");
+		createStudyItem.setDefaultValue("Create new study");
+		
+		SelectItem selectItemProjects = new SelectItem();
+		selectItemProjects.setTitle("Project");
+		selectItemProjects.setDisplayField("projectName");
+		selectItemProjects.setValueField("projectId");
+		selectItemProjects.setAutoFetchData(false);
+		ProjectDS pDS = new ProjectDS();
+		
+		selectItemProjects.setOptionDataSource(pDS);
+		selectItemProjects.setOptionOperationId(OperationId.PROJECT_FETCH_ALL);
+		
+		selectItemProjects.setDefaultToFirstOption(true);
+		
+		SelectItem selectItemTissues = new SelectItem();
+		selectItemTissues.setTitle("Tissue");
+		selectItemTissues.setDisplayField("organNamePlusType");
+		selectItemTissues.setValueField("organId");
+		selectItemTissues.setAutoFetchData(false);
+		OrganDS oDS = new OrganDS();
+		
+		selectItemTissues.setOptionDataSource(oDS);
+		selectItemTissues.setOptionOperationId(OperationId.ORGAN_FETCH_ENABLED);
+		
+		selectItemTissues.setDefaultToFirstOption(true);
+		
+		platform = new SelectItem();
+		platform.setTitle("Platform");
+		platform.setDisplayField("platformName");
+		platform.setValueField("platformId");
+		platform.setAutoFetchData(false);
+		
+		PlatformDS plDS = new PlatformDS();
+		
+		platform.setOptionDataSource(plDS);
+		platform.setOptionOperationId(OperationId.PLATFORM_FETCH_ALL);
+		platform.setDefaultToFirstOption(true);
+		
+		CheckboxItem batchCheckbox = new CheckboxItem();
+		batchCheckbox.setTitle("Batch import");
+		batchCheckbox.setValue(false);
+		batchCheckbox.addChangedHandler(new ChangedHandler(){
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				if(((Boolean) event.getValue())){
+					fileGrid.showField("studyName");
+				}
+				if(!((Boolean) event.getValue())){
+					fileGrid.hideField("studyName");
+				}
+				
+			}
+			
+		});
+		
+		ButtonItem searchButton = new ButtonItem("Import");
+		
+		importOptionsForm.setFields(selectItemFilterType, createStudyItem, selectItemProjects, selectItemTissues,platform, batchCheckbox, searchButton);
+		
+		importOptions.addMember(importOptionsForm);
+		
+		body.addMember(fileGrid);
+		body.addMember(importOptions);
+		
+		header.addMember(controlsPanel);
+		
+		pane.addMember(header);	
+		
+		pane.addMember(body);
+		
+		dataAdminTab.setPane(pane);
+				
+		centerTabSet.addTab(dataAdminTab);
+		
+		centerTabSet.selectTab(dataAdminTab);
+		
+		/*
 		
 		HLayout header = new HLayout();
 		header.setAutoWidth();
@@ -2581,7 +2781,7 @@ public class CenterPanel extends VLayout {
 					}
 				}
 			}
-		});
+		});*/
 	}
 	
 	public void loadEnsemblManageWindow(){

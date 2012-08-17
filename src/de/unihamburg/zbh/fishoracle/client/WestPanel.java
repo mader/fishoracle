@@ -461,7 +461,7 @@ public class WestPanel extends SectionStack{
 					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
 					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
 					for(int i=0; i < tabs.length; i++){
-						if(tabs[i].getTitle().equals("Data Import") || tabs[i].getTitle().equals("Data Import (occupied)")){
+						if(tabs[i].getTitle().equals("Data Import")){
 							exists = true;
 							index = i;
 						}
@@ -469,7 +469,7 @@ public class WestPanel extends SectionStack{
 					if(exists){
 						centerTabSet.selectTab(index);
 					} else {
-						checkImportData();
+						mp.getCenterPanel().openDataAdminTab();
 					}
 				}
 				
@@ -881,6 +881,8 @@ public class WestPanel extends SectionStack{
 			req.generateImage(q, callback);
 	}
 	
+	
+	//TODO Remove...
 	public void checkImportData(){
 
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -891,7 +893,7 @@ public class WestPanel extends SectionStack{
 			@Override
 			public void onSuccess(Boolean result){
 
-				mp.getCenterPanel().openDataAdminTab(result);
+				//mp.getCenterPanel().openDataAdminTab(result);
 			}
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
