@@ -36,6 +36,7 @@ import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 @RemoteServiceRelativePath("admin")
 public interface Admin extends RemoteService  {
 
+	public String[] getUploadedFiles() throws Exception;
 	public FoUser[] getAllUsers() throws Exception;
 	public String[] toggleFlag(int id, String flag, String type, int rowNum, int colNum) throws Exception;
 	public DBConfigData fetchDBConfigData() throws Exception;

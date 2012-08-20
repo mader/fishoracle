@@ -52,6 +52,7 @@ import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.events.CloseClickEvent;
 
 import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
@@ -100,6 +101,7 @@ import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
+import de.unihamburg.zbh.fishoracle.client.datasource.FileImportDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.PlatformDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.CnSegmentDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.EnsemblDBDS;
@@ -2416,10 +2418,22 @@ public class CenterPanel extends VLayout {
 		window.setAutoCenter(true);
 		window.setIsModal(true);
 		window.setShowModalMask(true);
+			
+		window.addCloseClickHandler(new com.smartgwt.client.widgets.events.CloseClickHandler(){
+
+			@Override
+			public void onCloseClick(CloseClickEvent event) {
+				fileGrid.invalidateCache();
+				fileGrid.fetchData();
+				Window w = (Window) event.getSource();
+				w.clear();
+			}
+		});
+		
 		
 		MultiUploader defaultUploader = new MultiUploader();
 		defaultUploader.setHeight("100%");
-
+		
 		defaultUploader.addOnFinishUploadHandler(new OnFinishUploaderHandler() {
 		    public void onFinish(IUploader uploader) {
 		      if (uploader.getStatus() == Status.SUCCESS) {
@@ -2451,7 +2465,7 @@ public class CenterPanel extends VLayout {
 		pane.setDefaultLayoutAlign(Alignment.CENTER);
 		
 		HLayout header = new HLayout();
-		header.setAutoWidth();
+		header.setWidth100();
 		header.setAutoHeight();
 		
 		HLayout controlsPanel = new HLayout();
@@ -2468,7 +2482,6 @@ public class CenterPanel extends VLayout {
 			@Override
 			public void onClick(ClickEvent event) {
 				loadUploadWindow();
-				//SC.say("Open Upload Window");
 			}});
 		
 		importToolStrip.addButton(addUploadButton);
@@ -2489,25 +2502,20 @@ public class CenterPanel extends VLayout {
 		fileGrid.setFixedRecordHeights(false);
 		fileGrid.setSelectionType(SelectionStyle.MULTIPLE);
 		fileGrid.setCanDragSelect(true);
-		//fileGrid.setAutoFetchData(false);
-		//fileGrid.setShowAllRecords(false);
+		fileGrid.setShowAllRecords(false);
 		
-		ListGridField fileField = new ListGridField("file", "File");
-		ListGridField nameField = new ListGridField("studyName", "Study Name");
+		//ListGridField fileField = new ListGridField("file", "File");
+		//ListGridField nameField = new ListGridField("studyName", "Study Name");
+		//fileGrid.setFields(fileField, nameField);
+		// How do I hide this field? Is it even possible using a datasource?
+		// It's no problem at all without a datasource... -.-
+		//fileGrid.hideField("studyName");
+
+		FileImportDS fiDS = new FileImportDS();
 		
-		fileGrid.setFields(fileField, nameField);
+		fileGrid.setDataSource(fiDS);
 		
-		fileGrid.hideField("studyName");
-		
-		ListGridRecord[] lgr = new ListGridRecord[3];
-		lgr[0] = new ListGridRecord();
-		lgr[0].setAttribute("file", "icgc001.txt");
-		lgr[1] = new ListGridRecord();
-		lgr[1].setAttribute("file", "icgc002.txt");
-		lgr[2] = new ListGridRecord();
-		lgr[2].setAttribute("file", "icgc003.txt");
-		
-		fileGrid.setData(lgr);
+		fileGrid.fetchData();
 		
 		VLayout importOptions = new VLayout();
 		importOptions.setWidth100();
@@ -2574,10 +2582,12 @@ public class CenterPanel extends VLayout {
 			@Override
 			public void onChanged(ChangedEvent event) {
 				if(((Boolean) event.getValue())){
+					//fileGrid.getDataSource().getField("studyName").setHidden(false);
 					fileGrid.showField("studyName");
 				}
 				if(!((Boolean) event.getValue())){
-					fileGrid.hideField("studyName");
+					//fileGrid.getDataSource().getField("studyName").set
+					//fileGrid.hideField("studyName");
 				}
 				
 			}

@@ -73,6 +73,28 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		return user;
 	}
 	
+	public String[] getUploadedFiles() throws Exception {
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		File dir = new File(servletContext + System.getProperty("file.separator") + "tmp");
+
+		String[] children = dir.list();
+		String[] fileNames;
+		
+		if (children == null) {
+		    throw new Exception("Directory does not exist.");
+		} else {
+			fileNames = new String[children.length];
+			
+		    for (int i=0; i < children.length; i++) {
+		        fileNames[i] = children[i];
+		    }
+		}
+		
+		return fileNames;
+	}
+	
 	public FoUser[] getAllUsers() throws Exception {
 		
 		isAdmin();

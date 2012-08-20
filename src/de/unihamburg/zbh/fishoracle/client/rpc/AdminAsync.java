@@ -32,6 +32,8 @@ import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 
 public interface AdminAsync {
 
+	void getUploadedFiles(AsyncCallback<String[]> callback);
+	
 	void getAllUsers(AsyncCallback<FoUser[]> callback);
 
 	void toggleFlag(int id, String flag, String type, int rowNum, int colNum, AsyncCallback<String[]> callback);
