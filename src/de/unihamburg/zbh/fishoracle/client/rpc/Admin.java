@@ -29,7 +29,6 @@ import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
-import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
@@ -41,16 +40,13 @@ public interface Admin extends RemoteService  {
 	public String[] toggleFlag(int id, String flag, String type, int rowNum, int colNum) throws Exception;
 	public DBConfigData fetchDBConfigData() throws Exception;
 	public boolean writeConfigData(DBConfigData dbcdata) throws Exception;
-	public MicroarrayOptions getMicroarrayOptions() throws Exception;
-	boolean importData(String fileName,
-						String studyName,
-						String type,
-						String assembly,
-						int platformId,
-						int organId,
+	int[] importData(FoStudy foStudy,
+						String importType,
+						boolean createStudy,
 						int projectId,
-						int[] propertyIds,
-						String description) throws Exception;
+						String tool,
+						int importNumber,
+						int nofImports) throws Exception;
 	boolean canAccessDataImport() throws UserException;
 	void unlockDataImport() throws UserException;
 	FoGroup[] getAllFoGroups() throws Exception;

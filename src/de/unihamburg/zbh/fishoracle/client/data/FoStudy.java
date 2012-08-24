@@ -21,10 +21,13 @@ import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+import de.unihamburg.zbh.fishoracle_db_api.data.SNPMutation;
+
 public class FoStudy implements IsSerializable {
 	
 	private int id;
 	private FoCnSegment segments[];
+	private FoSNPMutation mutations[];
 	private FoPlatform platform;
 	private FoTissueSample tissue;
 	private Date date;
@@ -36,6 +39,7 @@ public class FoStudy implements IsSerializable {
 	private int organId;
 	private int[] propertyIds;
 	private int userId;
+	private String files[];
 	
 	public FoStudy() {
 	}
@@ -91,6 +95,14 @@ public class FoStudy implements IsSerializable {
 		this.name = name;
 		Description = description;
 	}
+	
+	public FoSNPMutation[] getMutations() {
+		return mutations;
+	}
+
+	public void setMutations(FoSNPMutation[] mutations) {
+		this.mutations = mutations;
+	}
 
 	public FoCnSegment[] getSegments() {
 		return segments;
@@ -104,6 +116,14 @@ public class FoStudy implements IsSerializable {
 		return platform;
 	}
 
+	public String[] getFiles() {
+		return files;
+	}
+
+	public void setFiles(String[] files) {
+		this.files = files;
+	}
+	
 	public void setPlatform(FoPlatform platform) {
 		this.platform = platform;
 	}

@@ -27,7 +27,6 @@ import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
-import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 
 public interface AdminAsync {
@@ -41,18 +40,14 @@ public interface AdminAsync {
 	void fetchDBConfigData(AsyncCallback<DBConfigData> callback);
 	
 	void writeConfigData(DBConfigData dbcdata, AsyncCallback<Boolean> callback);
-	
-	void getMicroarrayOptions(AsyncCallback<MicroarrayOptions> callback);
 
-	void importData(String fileName,
-					String studyName,
-					String type,
-					String assembly,
-					int platformId,
-					int OrganId,
+	void importData(FoStudy foStudy,
+					String importType,
+					boolean createStudy,
 					int projectId,
-					int[] propertyIds,
-					String description, AsyncCallback<Boolean> callback);
+					String tool,
+					int importNumber,
+					int nofImports, AsyncCallback<int[]> callback);
 
 	void canAccessDataImport(AsyncCallback<Boolean> callback);
 

@@ -1,13 +1,16 @@
 package de.unihamburg.zbh.fishoracle.client.datasource;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSourceField;
+import com.smartgwt.client.data.fields.DataSourceIntegerField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.rpc.RPCResponse;
+import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
@@ -26,8 +29,11 @@ public class FileImportDS extends FoDataSource {
         addField (field);
         
         field = new DataSourceTextField("studyName", "Study Name");
-        //field.setHidden(true);
         field.setCanEdit(true);
+        addField (field);
+        
+        field = new DataSourceIntegerField("studyId", "Study ID");
+        field.setHidden(true);
         addField (field);
 	}
 
@@ -48,10 +54,10 @@ public class FileImportDS extends FoDataSource {
 				if (result.length > 0) {
 					for (int i = 0; i < result.length; i++) {
 						
-						ListGridRecord record = new ListGridRecord ();
-						record.setAttribute("fileName", result[i]);
+						ListGridRecord record1 = new ListGridRecord ();
+						record1.setAttribute("fileName", result[i]);
 						
-						list[i] = record;
+						list[i] = record1;
 						
 					}
 				}
@@ -80,7 +86,19 @@ public class FileImportDS extends FoDataSource {
 	protected void executeUpdate(String requestId, DSRequest request,
 			DSResponse response) {
 		// We don't need this...
-		
+		//SC.say("Saving");
+		JavaScriptObject oldValues = request.getAttributeAsJavaScriptObject("oldValues");
+        // Creating new record for combining old values with changes
+        ListGridRecord newRecord = new ListGridRecord();
+        // Copying properties from old record
+        JSOHelper.apply(oldValues, newRecord.getJsObj());
+        // Retrieving changed values
+        JavaScriptObject data = request.getData();
+        // Apply changes
+        JSOHelper.apply(data, newRecord.getJsObj());
+        
+        response.setData(new ListGridRecord[]{newRecord});
+		processResponse(requestId, response);
 	}
 
 	@Override

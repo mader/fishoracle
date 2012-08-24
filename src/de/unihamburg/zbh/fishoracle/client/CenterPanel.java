@@ -30,14 +30,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.types.ListGridEditEvent;
-import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.SelectionType;
@@ -45,10 +42,10 @@ import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
-import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Img;
 import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.Progressbar;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
@@ -60,7 +57,6 @@ import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.CheckboxItem;
 import com.smartgwt.client.widgets.form.fields.ComboBoxItem;
-import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.HeaderItem;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.PasswordItem;
@@ -79,15 +75,12 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
-import com.smartgwt.client.widgets.layout.LayoutSpacer;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
-import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
-import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
 import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
@@ -96,9 +89,9 @@ import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
+import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
-import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.datasource.FileImportDS;
@@ -175,15 +168,21 @@ public class CenterPanel extends VLayout {
 	private TextItem lowerThTextItem;
 	private TextItem upperThTextItem;
 	
+	//TODO
 	private FormPanel uploadForm;
 	private FileUpload fu;
 	private DynamicForm metaDataForm;
 	private TextItem studyName;
 	private ListGrid fileGrid;
-	private SelectItem platform;
-	private SelectItem tissue;
-	private SelectItem project;
+	private RadioGroupItem createStudyItem;
+	private SelectItem selectItemFilterType;
+	private SelectItem selectItemProjects;
+	private SelectItem selectItemTissues;
+	private SelectItem selectItemPlatform;
+	private SelectItem selectItemGenomeAssembly;
+	private SelectItem selectItemMethod;
 	private TextAreaItem descriptionItem;
+	private CheckboxItem batchCheckbox;
 	private ButtonItem submitNewStudyButton;
 	
 	private TextItem ensemblHost;
@@ -196,6 +195,8 @@ public class CenterPanel extends VLayout {
     private TextItem fishoracleUser;
     private TextItem fishoraclePW;
 	
+    private ProgressWindow window;
+    
 	@SuppressWarnings("unused")
 	private MainPanel mp = null;
 	private CenterPanel cp = null;
@@ -1967,7 +1968,7 @@ public class CenterPanel extends VLayout {
 		projectSelectItem.setOptionOperationId(OperationId.PROJECT_FETCH_ALL);
 		
 		projectSelectItem.setDefaultToFirstOption(true);
-		projectSelectItem.addChangedHandler(new ChangedHandler(){
+		projectSelectItem.addChangedHandler(new ChangedHandler() {
 
 			@Override
 			public void onChanged(ChangedEvent event) {
@@ -1976,7 +1977,6 @@ public class CenterPanel extends VLayout {
 				
 				studyGrid.fetchData(new Criteria("projectId", projectId));
 			}
-			
 		});
 		
 		sToolStrip.addFormItem(projectSelectItem);
@@ -2438,17 +2438,143 @@ public class CenterPanel extends VLayout {
 		    public void onFinish(IUploader uploader) {
 		      if (uploader.getStatus() == Status.SUCCESS) {
 		        UploadedInfo info = uploader.getServerInfo();
-		        System.out.println("File name " + info.name);
-		        System.out.println("File content-type " + info.ctype);
-		        System.out.println("File size " + info.size);
-
-		        // Here is the string returned in your servlet
-		        System.out.println("Server message " + info.message);
 		      }
 		    }
 		  });
 	
 		window.addItem(defaultUploader);
+		
+		window.show();
+	}
+	
+	public void openManualImportWindow(FoStudy[] studies,
+											String importType,
+											int projectId,
+											boolean createStudy) {
+		
+		final Window window = new Window();
+
+		window.setTitle("Import file");
+		window.setWidth(400);
+		window.setHeight(300);
+		window.setAlign(Alignment.CENTER);
+		
+		window.setAutoCenter(true);
+		window.setIsModal(true);
+		window.setShowModalMask(true);
+		
+		DynamicForm importOptionsForm = new DynamicForm();
+		importOptionsForm.setWidth100();
+		importOptionsForm.setHeight100();
+		importOptionsForm.setAlign(Alignment.CENTER);
+		
+		SelectItem selectItemProjects = new SelectItem();
+		selectItemProjects.setTitle("Project");
+		selectItemProjects.setDisplayField("projectName");
+		selectItemProjects.setValueField("projectId");
+		selectItemProjects.setAutoFetchData(false);
+		ProjectDS pDS = new ProjectDS();
+		
+		selectItemProjects.setOptionDataSource(pDS);
+		selectItemProjects.setOptionOperationId(OperationId.PROJECT_FETCH_ALL);
+		
+		selectItemProjects.setDefaultValue(projectId);
+		
+		if(!createStudy){
+			selectItemProjects.setVisible(false);
+		}
+		
+		SelectItem selectItemTissues = new SelectItem();
+		selectItemTissues.setTitle("Tissue");
+		selectItemTissues.setDisplayField("organNamePlusType");
+		selectItemTissues.setValueField("organId");
+		selectItemTissues.setAutoFetchData(false);
+		OrganDS oDS = new OrganDS();
+		
+		selectItemTissues.setOptionDataSource(oDS);
+		selectItemTissues.setOptionOperationId(OperationId.ORGAN_FETCH_ENABLED);
+		
+		selectItemTissues.setDefaultValue(studies[0].getOrganId());
+		
+		if(!createStudy){
+			selectItemTissues.setVisible(false);
+		}
+		
+		SelectItem selectItemPlatform = new SelectItem();
+		selectItemPlatform.setTitle("Platform");
+		selectItemPlatform.setDisplayField("platformName");
+		selectItemPlatform.setValueField("platformId");
+		selectItemPlatform.setAutoFetchData(false);
+		
+		PlatformDS plDS = new PlatformDS();
+		
+		selectItemPlatform.setOptionDataSource(plDS);
+		selectItemPlatform.setOptionOperationId(OperationId.PLATFORM_FETCH_ALL);
+		selectItemPlatform.setDefaultValue(studies[0].getPlatformId());
+		
+		if(!createStudy){
+			selectItemPlatform.setVisible(false);
+		}
+		
+		SelectItem selectItemGenomeAssembly = new SelectItem();
+		selectItemGenomeAssembly.setTitle("Genome Assembly");
+		selectItemGenomeAssembly.setValueMap("GrCh37", "ncbi36");
+		selectItemGenomeAssembly.setDefaultToFirstOption(true);
+		
+		if(!createStudy){
+			selectItemGenomeAssembly.setVisible(false);
+		}
+		
+		SelectItem selectItemMethod = new SelectItem();
+		selectItemMethod.setTitle("Method");
+		selectItemMethod.setValueMap("Sequencing", "Microarray");
+		selectItemMethod.setDefaultValue(studies[0].getType());
+		
+		if(!createStudy){
+			selectItemMethod.setVisible(false);
+		}
+		
+		TextItem textItemDescription = new TextItem();
+		textItemDescription.setTitle("Description");
+		
+		if(!createStudy){
+			textItemDescription.setVisible(false);
+		}
+		
+		SelectItem selectItemSNPTool = new SelectItem();
+		selectItemSNPTool.setTitle("SNP Tool");
+		selectItemSNPTool.setValueMap("gatk", "varscan", "SNVMix", "samtools");
+		if(!importType.equals("Mutations")){
+			selectItemSNPTool.setVisible(false);
+		}
+		
+		SelectItem selectItemProperty = new SelectItem();
+		selectItemProperty.setTitle("Property");
+		selectItemProperty.setDisplayField("platformName");
+		selectItemProperty.setValueField("platformId");
+		selectItemProperty.setAutoFetchData(false);
+		
+		PropertyDS prlDS = new PropertyDS();
+		
+		selectItemProperty.setOptionDataSource(prlDS);
+		selectItemProperty.setOptionOperationId(OperationId.PROPERTY_FETCH_ENABLED);
+		
+		ButtonItem cancelButton = new ButtonItem("cancel");
+		
+		ButtonItem submitButton = new ButtonItem("next");
+		
+		importOptionsForm.setFields(
+				selectItemProjects,
+				selectItemTissues,
+				selectItemPlatform,
+				selectItemGenomeAssembly,
+				selectItemMethod,
+				textItemDescription,
+				selectItemProperty,
+				cancelButton,
+				submitButton);
+		
+		window.addItem(importOptionsForm);
 		
 		window.show();
 	}
@@ -2498,18 +2624,52 @@ public class CenterPanel extends VLayout {
 		fileGrid.setWidth("50%");
 		fileGrid.setHeight100();  
 		fileGrid.setAlternateRecordStyles(true);
+		fileGrid.setEditByCell(true);
+		fileGrid.setEditEvent(ListGridEditEvent.CLICK);
 		fileGrid.setWrapCells(true);
 		fileGrid.setFixedRecordHeights(false);
 		fileGrid.setSelectionType(SelectionStyle.MULTIPLE);
 		fileGrid.setCanDragSelect(true);
 		fileGrid.setShowAllRecords(false);
 		
+		/*
+		fileGrid.setEditorCustomizer(new ListGridEditorCustomizer(){
+			
+			@Override
+			public FormItem getEditor(final ListGridEditorContext context) {
+				
+				ListGridField field = context.getEditField();  
+				
+				//field.setDisplayField("studyName");
+				//field.setValueField("studyId");
+				
+				SelectItem selectItemExperiments = null;
+				
+				if (field.getName().equals("studyName")) {  
+				
+				selectItemExperiments = new SelectItem();
+				selectItemExperiments.setTitle("");
+				selectItemExperiments.setDisplayField("studyName");
+				selectItemExperiments.setValueField("studyId");
+				selectItemExperiments.setAutoFetchData(false);
+				StudyDS mDS = new StudyDS();
+				
+				selectItemExperiments.setOptionDataSource(mDS);
+				selectItemExperiments.setOptionOperationId(OperationId.STUDY_FETCH_FOR_PROJECT);
+				
+				selectItemExperiments.setDefaultToFirstOption(true);
+				
+				selectItemExperiments.setPickListCriteria(new Criteria("projectId", selectItemProjects.getValue().toString()));
+				
+				}
+				
+				return selectItemExperiments;
+			}
+		});
+		*/
 		//ListGridField fileField = new ListGridField("file", "File");
 		//ListGridField nameField = new ListGridField("studyName", "Study Name");
 		//fileGrid.setFields(fileField, nameField);
-		// How do I hide this field? Is it even possible using a datasource?
-		// It's no problem at all without a datasource... -.-
-		//fileGrid.hideField("studyName");
 
 		FileImportDS fiDS = new FileImportDS();
 		
@@ -2528,17 +2688,39 @@ public class CenterPanel extends VLayout {
 		importOptionsForm.setHeight100();
 		importOptionsForm.setAlign(Alignment.CENTER);
 		
-		SelectItem selectItemFilterType = new SelectItem();
+		selectItemFilterType = new SelectItem();
 		selectItemFilterType.setTitle("Data Type");
 		selectItemFilterType.setValueMap("Segments","Mutations");
 		selectItemFilterType.setDefaultToFirstOption(true);
 		
-		RadioGroupItem createStudyItem = new RadioGroupItem();  
-		createStudyItem.setTitle("");  
+		createStudyItem = new RadioGroupItem();
+		createStudyItem.setTitle("");
 		createStudyItem.setValueMap("Create new study", "Import to existing study");
 		createStudyItem.setDefaultValue("Create new study");
+		createStudyItem.addChangedHandler(new ChangedHandler(){
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				String val = event.getValue().toString();
+				
+				if(val.equals("Create new study")) {
+					selectItemProjects.show();
+					selectItemTissues.show();
+					selectItemPlatform.show();
+					selectItemGenomeAssembly.show();
+					selectItemMethod.show();
+				}
+				if(val.equals("Import to existing study")) {
+					selectItemProjects.hide();
+					selectItemTissues.hide();
+					selectItemPlatform.hide();
+					selectItemGenomeAssembly.hide();
+					selectItemMethod.hide();
+				}
+			}
+		});
 		
-		SelectItem selectItemProjects = new SelectItem();
+		selectItemProjects = new SelectItem();
 		selectItemProjects.setTitle("Project");
 		selectItemProjects.setDisplayField("projectName");
 		selectItemProjects.setValueField("projectId");
@@ -2550,7 +2732,7 @@ public class CenterPanel extends VLayout {
 		
 		selectItemProjects.setDefaultToFirstOption(true);
 		
-		SelectItem selectItemTissues = new SelectItem();
+		selectItemTissues = new SelectItem();
 		selectItemTissues.setTitle("Tissue");
 		selectItemTissues.setDisplayField("organNamePlusType");
 		selectItemTissues.setValueField("organId");
@@ -2562,41 +2744,110 @@ public class CenterPanel extends VLayout {
 		
 		selectItemTissues.setDefaultToFirstOption(true);
 		
-		platform = new SelectItem();
-		platform.setTitle("Platform");
-		platform.setDisplayField("platformName");
-		platform.setValueField("platformId");
-		platform.setAutoFetchData(false);
+		selectItemPlatform = new SelectItem();
+		selectItemPlatform.setTitle("Platform");
+		selectItemPlatform.setDisplayField("platformName");
+		selectItemPlatform.setValueField("platformId");
+		selectItemPlatform.setAutoFetchData(false);
 		
 		PlatformDS plDS = new PlatformDS();
 		
-		platform.setOptionDataSource(plDS);
-		platform.setOptionOperationId(OperationId.PLATFORM_FETCH_ALL);
-		platform.setDefaultToFirstOption(true);
+		selectItemPlatform.setOptionDataSource(plDS);
+		selectItemPlatform.setOptionOperationId(OperationId.PLATFORM_FETCH_ALL);
+		selectItemPlatform.setDefaultToFirstOption(true);
 		
-		CheckboxItem batchCheckbox = new CheckboxItem();
+		selectItemGenomeAssembly = new SelectItem();
+		selectItemGenomeAssembly.setTitle("Genome Assembly");
+		selectItemGenomeAssembly.setValueMap("GrCh37", "ncbi36");
+		selectItemGenomeAssembly.setDefaultToFirstOption(true);
+		
+		selectItemMethod = new SelectItem();
+		selectItemMethod.setTitle("Method");
+		selectItemMethod.setValueMap("Sequencing", "Microarray");
+		selectItemMethod.setDefaultToFirstOption(true);
+		
+		batchCheckbox = new CheckboxItem();
 		batchCheckbox.setTitle("Batch import");
 		batchCheckbox.setValue(false);
-		batchCheckbox.addChangedHandler(new ChangedHandler(){
+		
+		ButtonItem importButton = new ButtonItem("Import");
+		importButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
 
 			@Override
-			public void onChanged(ChangedEvent event) {
-				if(((Boolean) event.getValue())){
-					//fileGrid.getDataSource().getField("studyName").setHidden(false);
-					fileGrid.showField("studyName");
-				}
-				if(!((Boolean) event.getValue())){
-					//fileGrid.getDataSource().getField("studyName").set
-					//fileGrid.hideField("studyName");
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				
+				ListGridRecord[] lgrs = fileGrid.getSelectedRecords();
+				
+				FoStudy[] studies = new FoStudy[lgrs.length];
+				
+				for(int i = 0; i < lgrs.length; i++){
+					studies[i] = new FoStudy();
+					studies[i].setName(lgrs[i].getAttributeAsString("studyName"));
+					studies[i].setFiles(new String[]{lgrs[i].getAttributeAsString("fileName")});
+					
+					if(createStudyItem.getValueAsString().equals("Create new study")){
+						studies[i].setAssembly(selectItemGenomeAssembly.getValueAsString());
+						studies[i].setType(selectItemMethod.getValueAsString());
+						studies[i].setDescription("");
+						studies[i].setOrganId(Integer.parseInt(selectItemTissues.getValue().toString()));
+						studies[i].setPlatformId(Integer.parseInt(selectItemPlatform.getValue().toString()));
+						studies[i].setPropertyIds(new int[]{});
+					}
 				}
 				
+				if(batchCheckbox.getValueAsBoolean()) {
+					// Import automatically
+					for(int i = 0; i < studies.length; i++) {
+						if(createStudyItem.getValueAsString().equals("Create new study")) {
+							// create study and import data
+							importData(studies[i],
+										selectItemFilterType.getValueAsString(), 
+										true,
+										Integer.parseInt(selectItemProjects.getValue().toString()),
+										"",
+										i + 1, 
+										studies.length);
+						}
+						if(createStudyItem.getValueAsString().equals("Import to existing study")) {
+							// import data into existing study
+							importData(studies[i],
+									selectItemFilterType.getValueAsString(), 
+									false,
+									Integer.parseInt(selectItemProjects.getValue().toString()),
+									"",
+									i + 1, 
+									studies.length);
+						}
+					}
+					
+				} else {
+					if(createStudyItem.getValueAsString().equals("Create new study")) {
+						openManualImportWindow(studies,
+								selectItemFilterType.getValueAsString(),
+								Integer.parseInt(selectItemProjects.getValue().toString()),
+								true);
+					}
+					if(createStudyItem.getValueAsString().equals("Import to existing study")) {
+						openManualImportWindow(studies,
+							selectItemFilterType.getValueAsString(),
+							Integer.parseInt(selectItemProjects.getValue().toString()),
+							false);
+					}
+					
+				}
 			}
-			
 		});
 		
-		ButtonItem searchButton = new ButtonItem("Import");
-		
-		importOptionsForm.setFields(selectItemFilterType, createStudyItem, selectItemProjects, selectItemTissues,platform, batchCheckbox, searchButton);
+		importOptionsForm.setFields(selectItemFilterType,
+									createStudyItem,
+									selectItemProjects,
+									selectItemTissues,
+									selectItemPlatform,
+									selectItemGenomeAssembly,
+									selectItemMethod,
+									batchCheckbox,
+									importButton);
 		
 		importOptions.addMember(importOptionsForm);
 		
@@ -2614,184 +2865,6 @@ public class CenterPanel extends VLayout {
 		centerTabSet.addTab(dataAdminTab);
 		
 		centerTabSet.selectTab(dataAdminTab);
-		
-		/*
-		
-		HLayout header = new HLayout();
-		header.setAutoWidth();
-		header.setAutoHeight();
-		
-		Label headerLbl = new Label("<h2>Data Import</h2>");
-		header.addMember(headerLbl);
-		
-		pane.addMember(header);
-		
-		Label step1Lbl =  new Label("<h3>Step1: upload data</h3>");
-		step1Lbl.setAutoHeight();
-		pane.addMember(step1Lbl);
-		
-		HLayout uploadPanel = new HLayout();
-	    uploadPanel.setWidth100();
-	    uploadPanel.setAutoHeight();
-		uploadForm = new FormPanel();
-		uploadForm.setWidth("100");
-		uploadForm.setHeight("25");
-		uploadForm.setEncoding(FormPanel.ENCODING_MULTIPART);
-		uploadForm.setMethod(FormPanel.METHOD_POST);
-		uploadForm.setAction(GWT.getModuleBaseURL() + "FileUpload");
-		
-		fu = new FileUpload();
-		fu.setName("file");
-		uploadForm.add(fu);
-		
-		Button b = new Button("upload");
-		b.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				checkUploadData();
-			}
-		});
-		
-		uploadForm.addSubmitCompleteHandler(new SubmitCompleteHandler(){
-
-			@Override
-			public void onSubmitComplete(SubmitCompleteEvent event) {
-				SC.say(event.getResults());
-				studyName.setValue(fu.getFilename());
-			}
-			
-		});	
-		
-		
-		VLayout container = new VLayout();
-		container.setDefaultLayoutAlign(Alignment.CENTER);
-		container.setAutoHeight();
-		
-		container.addMember(uploadForm);
-		container.addMember(b);
-		
-		uploadPanel.addMember(container);
-		
-		pane.addMember(uploadPanel);
-		
-		Label step2Lbl = new Label("<h3>Step2: enter meta information</h3>");
-		step2Lbl.setAutoHeight();
-		pane.addMember(step2Lbl);
-		
-		HLayout metaData = new HLayout();
-		metaData.setWidth100();
-		metaData.setAutoHeight();
-		metaData.setDefaultLayoutAlign(Alignment.CENTER);
-		
-		metaData.addMember(new LayoutSpacer());
-		
-		metaDataForm = new DynamicForm();
-		//TODO exchange microarrayoption through DS services for different data sources...
-		studyName = new TextItem();
-		studyName.setTitle("study name");
-		
-		platform = new SelectItem();
-		platform.setTitle("chip type");  
-		//chip.setDisplayField("chipName");
-		//chip.setValueField("chipId");	
-		//chip.setAutoFetchData(false);
-		
-		//ChipDS cDS = new ChipDS();
-		
-		//chip.setOptionDataSource(cDS);
-		//chip.setOptionOperationId(OperationId.CHIP_FETCH_ALL);
-		
-		
-		tissue = new SelectItem();
-		tissue.setTitle("tissue");
-		//tissue.setDisplayField("organName");
-		//tissue.setValueField("organId");		
-		//tissue.setAutoFetchData(false);
-		//OrganDS oDS = new OrganDS();
-		
-		//tissue.setOptionDataSource(oDS);
-		//tissue.setOptionOperationId(OperationId.ORGAN_FETCH_ENABLED);
-		
-		
-		project = new SelectItem();
-		project.setTitle("project");
-		//project.setDisplayField("projectName");
-		//project.setValueField("projectId");		
-		//project.setAutoFetchData(false);
-		//ProjectDS pDS = new ProjectDS();
-		
-		//project.setOptionDataSource(pDS);
-		//project.setOptionOperationId(OperationId.PROJECT_FETCH_ALL);
-		
-		descriptionItem = new TextAreaItem();
-		descriptionItem.setTitle("description");
-		
-		//property.setDisplayField("typeName");
-		//property.setValueField("typeId");
-		
-		//property.setAutoFetchData(false);
-		
-		//PropertyDS pDS = new PropertyDS();
-		
-		//property.setOptionDataSource(pDS);
-		//property.setOptionOperationId(OperationId.PROPERTY_FETCH_ALL);
-		
-		submitNewStudyButton = new ButtonItem("submit");
-		submitNewStudyButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
-
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				checkImportData();
-			}
-			
-		});
-		
-		getMicroarrayOptions();
-		
-		metaData.addMember(metaDataForm);
-
-		metaData.addMember(new LayoutSpacer());
-		
-		pane.addMember(metaData);	
-		
-		//dataAdminTab.setPane(pane);
-		
-		VLayout lockPane = new VLayout();
-		lockPane.setWidth100();
-		lockPane.setHeight100();
-		lockPane.setDefaultLayoutAlign(Alignment.CENTER);
-
-		HLayout content = new HLayout();
-		content.setHeight(50);
-		content.setWidth(550);
-		
-		content.setContents("<h2>Page is locked due to usage of another user. Please try again later!</h2>");
-		
-		lockPane.addMember(content);
-		
-		if(unlock){
-			dataAdminTab.setPane(pane);
-		} else {
-			dataAdminTab.setPane(lockPane);
-		}
-				
-		centerTabSet.addTab(dataAdminTab);
-		
-		centerTabSet.selectTab(dataAdminTab);
-		
-		centerTabSet.addCloseClickHandler(new CloseClickHandler(){
-			@Override
-			public void onCloseClick(TabCloseClickEvent event) {
-				Tab[] tabs = centerTabSet.getTabs();
-				for(int i = 0; i < tabs.length; i++){
-					if(tabs[i].getTitle().equals("Data Import")){
-						freePage();
-					}
-				}
-			}
-		});*/
 	}
 	
 	public void loadEnsemblManageWindow(){
@@ -3197,7 +3270,8 @@ public class CenterPanel extends VLayout {
 		};
 		req.writeConfigData(data, callback);
 	}
-	
+	//TODO remove...
+	/*
 	public void getMicroarrayOptions(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3268,7 +3342,7 @@ public class CenterPanel extends VLayout {
 		};
 		req.getMicroarrayOptions(callback);
 	}
-	
+	*/
 	public void showAllGroups(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3501,23 +3575,25 @@ public class CenterPanel extends VLayout {
 		req.getAllGroupsExceptFoProject(foProject, callback);
 	}
 	
-	public void importData(String fileName,
-							String studyName,
-							int platformId,
-							int organId,
+	public void importData(FoStudy foStudy,
+							String importType,
+							boolean createStudy,
 							int projectId,
-							int[] propertyIds,
-							String description){
+							String tool,
+							int importNumber,
+							int nofImports){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
+		final AsyncCallback<int[]> callback = new AsyncCallback<int[]>(){
 			@Override
-			public void onSuccess(Boolean result){
+			public void onSuccess(int[] result){
 				
-				SC.say("Data import successful!");
+				if(window != null){
+					window.updateValues(result[0], result[1]);
+				}
 				
 			}
 			public void onFailure(Throwable caught){
@@ -3526,122 +3602,70 @@ public class CenterPanel extends VLayout {
 			}
 		};
 		
-		//TODO Add type and assembly!
-		req.importData(fileName,
-						studyName,
-						"",
-						"GrCh37",
-						platformId,
-						organId,
+		if(batchCheckbox.getValueAsBoolean()){
+			window = new ProgressWindow(0, nofImports);
+			window.addCloseClickHandler(new com.smartgwt.client.widgets.events.CloseClickHandler(){
+
+						@Override
+						public void onCloseClick(CloseClickEvent event) {
+							fileGrid.invalidateCache();
+							fileGrid.fetchData();
+							Window w = (Window) event.getSource();
+							w.clear();
+						}
+					});
+		
+			window.show();
+		}
+		
+		req.importData(foStudy,
+						importType,
+						createStudy,
 						projectId,
-						propertyIds,
-						description,
+						tool,
+						importNumber,
+						nofImports,
 						callback);
 	}
+}
+
+class ProgressWindow extends Window {
 	
-	public void freePage(){
-
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
-			@Override
-			public void onSuccess(Void result){
-
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.unlockDataImport(callback);
-	}
-
-	public void checkUploadData(){
-
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
-			@Override
-			public void onSuccess(Boolean result){
-
-				if(result){
-					uploadForm.submit();
-				} else {
-					SC.say("Page currently locked by another user.");
-				}
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());
-			}
-		};
-		req.canAccessDataImport(callback);
+	private Progressbar bar;
+	
+	public ProgressWindow(int imp, int nofi){
+		super();
+		
+		int per = getPercentage(imp, nofi);
+		
+		this.setTitle("Upload Files "+ per + "%");
+		this.setWidth(400);
+		this.setHeight(60);
+		this.setAlign(Alignment.CENTER);
+	
+		this.setAutoCenter(true);
+		this.setIsModal(true);
+		this.setShowModalMask(true);
+		
+		bar = new Progressbar(); 
+		bar.setVertical(false); 
+		bar.setHeight(24);
+		
+		this.addItem(bar);
+	
+		bar.setPercentDone(per);
 	}
 	
-	public void checkImportData(){
-
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
-			@Override
-			public void onSuccess(Boolean result){
-
-				if(result){
-					
-					FormItem[] newData = metaDataForm.getFields();
-					
-					String sName = null;
-					int platformId = 0;
-					int organId = 0;
-					int projectId = 0;
-					String description = null;
-					int[] propertyIds = new int[newData.length - 5 -1];
-					int j = 0;
-					
-					for(int i = 0; i< newData.length; i++){
-						
-						if(newData[i].getTitle().equals("study name")){
-							sName = newData[i].getDisplayValue();
-						}  else if(newData[i].getTitle().equals("platform type")){
-							platformId = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
-						} else if(newData[i].getTitle().equals("tissue")){
-							organId = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
-						} else if(newData[i].getTitle().equals("project")){
-							projectId = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
-						} else if(newData[i].getTitle().equals("description")){
-							description = newData[i].getDisplayValue();
-						} else if(newData[i].getTitle().equals("submit")){
-							//do nothing
-						} else {
-							if(((SelectItem) newData[i]).getValueAsString() != null){
-								propertyIds[j] = Integer.parseInt(((SelectItem) newData[i]).getValueAsString());
-								j++;
-							}
-						}
-					
-					}
-					
-					importData(fu.getFilename(), sName, platformId, organId, projectId, propertyIds, description);
-							
-				} else {
-					SC.say("Page currently locked by another user.");
-				}
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());				
-			}
-		};
-		req.canAccessDataImport(callback);
+	private int getPercentage(int x, int y){
+		return (x/y)*100;
 	}
 	
+	public void updateValues(int imp, int nofi){
+		
+		int per = getPercentage(imp, nofi);
+		this.setTitle("Upload Files "+ per + "%");
+		bar.setPercentDone(per);	
+	}
 }
 
 class MyProjectRecordClickHandler implements RecordClickHandler {

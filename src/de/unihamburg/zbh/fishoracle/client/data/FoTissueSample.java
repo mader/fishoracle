@@ -58,7 +58,7 @@ public class FoTissueSample implements IsSerializable {
 		this.organ = organ;
 	}
 
-	public FoProperty[] getFoProperties() {
+	public FoProperty[] getProperties() {
 		return properties;
 	}
 

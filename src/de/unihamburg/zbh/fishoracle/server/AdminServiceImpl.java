@@ -30,19 +30,19 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
-import de.unihamburg.zbh.fishoracle.client.data.FoPlatform;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
-import de.unihamburg.zbh.fishoracle.client.data.MicroarrayOptions;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle.server.data.DBConfig;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
+import de.unihamburg.zbh.fishoracle.server.data.DataTypeConverter;
 import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
+import de.unihamburg.zbh.fishoracle_db_api.data.SNPMutation;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
 
 public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
@@ -464,57 +464,15 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		dbconfig.writeConfigDataToFile();
 		return true;
 	}
-	
-	public MicroarrayOptions getMicroarrayOptions() throws Exception{
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		FoUser u = getSessionUserObject();
-		
-		MicroarrayOptions mo = new MicroarrayOptions();
-		
-	    FoPlatform[] platforms = db.getAllPlatforms();
-	    
-	    mo.setPlatforms(platforms);
-	    
-	    FoOrgan[] organs = db.getOrgans(true);
-	    
-	    mo.setOrgans(organs);
-	    
-	    FoProject[] projects;
-	    
-	    if(u.getIsAdmin()){
-			
-			projects = db.getAllProjects();
-		} else {
-			projects = db.getProjectsForUser(u, false, true);
-		}
-	    
-	    mo.setProjects(projects);
-	    
-	    FoProperty[] properties = db.getProperties(true);
-	    
-	    mo.setProperties(properties);
-	    
-	    String[] propertyTypes = db.getPropertyTypes();
-	    
-	    mo.setPropertyTypes(propertyTypes);
-	    
-		return mo;
-	}
 
 	@Override
-	public boolean importData(String fileName,
-								String studyName,
-								String type,
-								String assembly,
-								int platformId,
-								int organId,
+	public int[] importData(FoStudy foStudy,
+								String importType,
+								boolean createStudy,
 								int projectId,
-								int[] propertyIds,
-								String description) throws Exception {
+								String tool,
+								int importNumber,
+								int nofImports) throws Exception {
 
 		HttpServletRequest request=this.getThreadLocalRequest();
 		HttpSession session=request.getSession();
@@ -523,55 +481,95 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
+		String fileName =  foStudy.getFiles()[0];
+		
 		CsvReader reader = new CsvReader(servletContext + "tmp" + System.getProperty("file.separator")  + fileName);
 		reader.setDelimiter('\t');
 		reader.readHeaders();
 		
-		/*
-		if(!reader.getHeader(0).equals("") || !reader.getHeader(0).equals("ID")){
-			throw new Exception("Something is wrong! Check that your file is tab delimited and that " +
-					"the first collumn contains either a row index or ID numbering.");
-		}
-		*/
+		Study study = DataTypeConverter.foStudyToStudy(foStudy);
 		
 		DBInterface db = new DBInterface(servletContext);
 
-		CnSegment[] segments;
-		ArrayList<CnSegment> segmentContainer = new ArrayList<CnSegment>();
+		if(importType.equals("Segments")){
 		
-		while (reader.readRecord())
-		{
-			String chr = reader.get("chrom");
-			String start = reader.get("loc.start");
-			String end = reader.get("loc.end");
-			String markers = reader.get("num.mark");
-			String segmentMean = reader.get("seg.mean");
+			CnSegment[] segments;
+			ArrayList<CnSegment> segmentContainer = new ArrayList<CnSegment>();
+		
+			while (reader.readRecord())
+			{
+				String chr = reader.get("chrom");
+				String start = reader.get("loc.start");
+				String end = reader.get("loc.end");
+				String markers = reader.get("num.mark");
+				String segmentMean = reader.get("seg.mean");
 			
-			Location loc = new Location(0, chr, Integer.parseInt(start), Integer.parseInt(end));
+				Location loc = new Location(0, chr, Integer.parseInt(start), Integer.parseInt(end));
 			
-			CnSegment segment = new CnSegment(0, loc,
-												Double.parseDouble(segmentMean), 
-												Integer.parseInt(markers));
-			segmentContainer.add(segment);
+				CnSegment segment = new CnSegment(0,
+													loc,
+													Double.parseDouble(segmentMean),
+													Integer.parseInt(markers));
+				segmentContainer.add(segment);
+		
+			}
+
+			reader.close();
+
+			segments = new CnSegment[segmentContainer.size()];
+			segmentContainer.toArray(segments);
+			
+			study.setSegments(segments);
 		
 		}
-
-		reader.close();
-
-		segments = new CnSegment[segmentContainer.size()];
-		segmentContainer.toArray(segments);
 		
-		Study study = new Study(segments,
-									studyName,
-									type,
-									assembly,
-									description,
-									platformId,
-									organId,
-									propertyIds,
-									user.getId());
+		if(importType.equals("Mutations")){
+			
+			SNPMutation[] mutations;
+			ArrayList<SNPMutation> snpContainer = new ArrayList<SNPMutation>();
 		
-		db.createNewStudy(study, projectId);
+			while (reader.readRecord())
+			{
+				String chr = reader.get("#CHROM");
+				String pos = reader.get("POS");
+				String dbSnpId = reader.get("DBSNP_ID");
+				String ref = reader.get("REF");
+				String alt = reader.get("ALT");
+				String quality = reader.get("QUAL");
+				String somatic = reader.get("SOMATIC_GERMLINE_CLASSIFICATION");
+				String confidence = reader.get("CONFIDENCE");
+			
+				SNPMutation mut = new SNPMutation(0, new Location(0, chr,
+													Integer.parseInt(pos),
+													Integer.parseInt(pos)),
+													dbSnpId,
+													ref,
+													alt,
+													Double.parseDouble(quality),
+													somatic,
+													confidence,
+													tool);
+				
+				snpContainer.add(mut);
+		
+			}
+
+			reader.close();
+
+			mutations = new SNPMutation[snpContainer.size()];
+			snpContainer.toArray(mutations);
+			
+			study.setMutations(mutations);
+		
+		}
+		
+		study.setUserId(user.getId());
+	
+		if(createStudy){
+			db.createNewStudy(study, projectId);
+		} else {
+			db.importData(study, importType);
+		}
 			
 	    File f = new File(servletContext + "tmp" + System.getProperty("file.separator") + fileName);
 
@@ -589,7 +587,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	      throw new IllegalArgumentException("Delete: deletion failed");
 		}
 		
-		return true;
+		return new int[]{importNumber, nofImports};
 	}
 	
 	public boolean canAccessDataImport() throws UserException{

@@ -19,8 +19,6 @@ package de.unihamburg.zbh.fishoracle.server.data;
 
 import java.sql.*;
 
-import com.sun.jna.Pointer;
-
 import core.GTerrorJava;
 import core.Range;
 
@@ -32,14 +30,12 @@ import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoEnsemblDBs;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
-import de.unihamburg.zbh.fishoracle.client.data.FoLocation;
 import de.unihamburg.zbh.fishoracle.client.data.FoPlatform;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
-import de.unihamburg.zbh.fishoracle.client.data.FoTissueSample;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
@@ -55,7 +51,6 @@ import de.unihamburg.zbh.fishoracle_db_api.data.Project;
 import de.unihamburg.zbh.fishoracle_db_api.data.ProjectAccess;
 import de.unihamburg.zbh.fishoracle_db_api.data.Property;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
-import de.unihamburg.zbh.fishoracle_db_api.data.TissueSample;
 import de.unihamburg.zbh.fishoracle_db_api.data.User;
 import de.unihamburg.zbh.fishoracle_db_api.driver.CnSegmentAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.EnsemblDBsAdaptor;
@@ -66,6 +61,7 @@ import de.unihamburg.zbh.fishoracle_db_api.driver.OrganAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.PlatformAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.ProjectAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.PropertyAdaptor;
+import de.unihamburg.zbh.fishoracle_db_api.driver.SNPMutationAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.StudyAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.UserAdaptor;
 import extended.AnnoDBEnsembl;
@@ -513,7 +509,7 @@ public class DBInterface {
 		
 		CnSegment s = sa.fetchCnSegmentById(segmentId);
 		
-		return cnSegmentToFoCnSegment(s);
+		return DataTypeConverter.cnSegmentToFoCnSegment(s);
 	}
 	
 	public FoEnsemblDBs addEDB(FoEnsemblDBs foEdbs) {
@@ -521,11 +517,11 @@ public class DBInterface {
 		FODriver driver = getFoDriver();
 		EnsemblDBsAdaptor ea = driver.getEnsemblDBsAdaptor();
 		
-		int id = ea.storeDB(foEdbsToEdbs(foEdbs));
+		int id = ea.storeDB(DataTypeConverter.foEdbsToEdbs(foEdbs));
 		
 		EnsemblDBs newEdbs = ea.fetchDBById(id);
 		
-		return edbsToFoEdbs(newEdbs);
+		return DataTypeConverter.edbsToFoEdbs(newEdbs);
 	}
 	
 	public FoEnsemblDBs[] fetchEDBs() {
@@ -535,7 +531,7 @@ public class DBInterface {
 		
 		EnsemblDBs[] edbss = ea.fetchAllDBs();
 		
-		return edbssToFoEdbss(edbss);
+		return DataTypeConverter.edbssToFoEdbss(edbss);
 	}
 	
 	public void removeEDB(int edbsId) {
@@ -549,8 +545,27 @@ public class DBInterface {
 	public int createNewStudy(Study study, int projectId) {
 		FODriver driver = getFoDriver();
 		StudyAdaptor sa = driver.getStudyAdaptor();
-	
+		
 		return sa.storeStudy(study, projectId);
+	}
+	
+	public void importData(Study study, String importType) {
+		FODriver driver = getFoDriver();
+		
+		StudyAdaptor sa = driver.getStudyAdaptor();
+		
+		Study s = sa.fetchStudyForName(study.getName(), false);
+		
+		if(importType.equals("Segments")){
+			CnSegmentAdaptor ca = driver.getCnSegmentAdaptor();
+		
+			ca.storeCnSegments(study.getSegments(), s.getId());
+		}
+		if(importType.equals("Mutations")){
+			SNPMutationAdaptor ma = driver.getSNPMutationAdaptor();
+			
+			ma.storeSNPMutations(study.getMutations(), s.getId());
+		}
 	}
 	
 	public FoUser insertUser(FoUser user) throws Exception {
@@ -567,7 +582,7 @@ public class DBInterface {
 		
 		User newUser = ua.fetchUserByID(userId);
 		
-		return userToFoUser(newUser);
+		return DataTypeConverter.userToFoUser(newUser);
 	}
 	
 	public FoUser getUser(String userName, String password) throws Exception {
@@ -576,7 +591,7 @@ public class DBInterface {
 		
 		User user = ua.fetchUserForLogin(userName, password);
 
-		return userToFoUser(user);
+		return DataTypeConverter.userToFoUser(user);
 	}
 	
 	public FoUser[] getAllUsers(){
@@ -585,7 +600,7 @@ public class DBInterface {
 		
 		User[] users = ua.fetchAllUsers();
 		
-		return usersToFoUsers(users);
+		return DataTypeConverter.usersToFoUsers(users);
 	}
 	
 	public FoUser[] getUsersForGroup(int groupId){
@@ -593,7 +608,7 @@ public class DBInterface {
 		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 			
-		return usersToFoUsers(ua.fetchUsersForGroup(groupId));
+		return DataTypeConverter.usersToFoUsers(ua.fetchUsersForGroup(groupId));
 	}
 	
 	public int setActiveStatus(int userId, boolean activeFlag){
@@ -616,7 +631,7 @@ public class DBInterface {
 		
 		Group[] groups = ga.fetchAllGroups(false);
 		
-		return groupsToFoGroups(groups, false);
+		return DataTypeConverter.groupsToFoGroups(groups, false);
 	}
 	
 	public FoGroup addGroup(FoGroup foGroup){
@@ -627,7 +642,7 @@ public class DBInterface {
 		
 		Group newGroup = ga.fetchGroupById(newGroupId, false);
 		
-		return groupToFoGroup(newGroup, false);
+		return DataTypeConverter.groupToFoGroup(newGroup, false);
 		
 	}
 	
@@ -635,7 +650,7 @@ public class DBInterface {
 		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		
-		Group g = foGroupToGroup(foGroup);
+		Group g = DataTypeConverter.foGroupToGroup(foGroup);
 		
 		ga.deleteGroup(g);
 	}
@@ -646,7 +661,7 @@ public class DBInterface {
 		
 		User[] users = ua.fetchAllUsersNotInGroup(foGroup.getId());
 		
-		return usersToFoUsers(users);
+		return DataTypeConverter.usersToFoUsers(users);
 	}
 	
 	public FoUser addUserGroup(FoGroup foGroup, int userId){
@@ -658,7 +673,7 @@ public class DBInterface {
 		
 		User user = ua.fetchUserByID(userId);
 		
-		return userToFoUser(user);
+		return DataTypeConverter.userToFoUser(user);
 		
 	}
 	
@@ -669,7 +684,7 @@ public class DBInterface {
 		
 		CnSegment[] segments = ca.fetchCnSegmentsForStudyId(studyId);
 		
-		return cnSegmentsToFoCnSegments(segments);
+		return DataTypeConverter.cnSegmentsToFoCnSegments(segments);
 	}
 	
 	public void removeStudy(int studyId){
@@ -689,7 +704,7 @@ public class DBInterface {
 		
 		Study[] s = sa.fetchStudiesForProject(projectId, withChildren);
 		
-		return studiesToFostudies(s, withChildren);
+		return DataTypeConverter.studiesToFostudies(s);
 	}
 	
 	public FoProject[] getProjectsForUser(FoUser user,boolean withChildren, boolean writeOnly) throws Exception {
@@ -703,7 +718,7 @@ public class DBInterface {
 		
 		Project[] p = pa.fetchProjectsForProjectAccess(projectAccess, false);
 		
-		return projectsToFoProjects(p);
+		return DataTypeConverter.projectsToFoProjects(p);
 	}
 	
 	public FoProject[] getAllProjects() throws Exception {
@@ -712,7 +727,7 @@ public class DBInterface {
 		
 		Project[] projects = pa.fetchAllProjects(false);
 		
-		return projectsToFoProjects(projects);
+		return DataTypeConverter.projectsToFoProjects(projects);
 	}
 	
 	public FoProject addFoProject(FoProject foProject){
@@ -723,7 +738,7 @@ public class DBInterface {
 		
 		Project newProject = pa.fetchProjectById(newProjectId, false);
 		
-		return projectToFoProject(newProject);
+		return DataTypeConverter.projectToFoProject(newProject);
 		
 	}
 	
@@ -733,7 +748,7 @@ public class DBInterface {
 		
 		Group[] groups = ga.fetchGroupsNotInProject(foProject.getId(), false);
 		
-		return groupsToFoGroups(groups, false);
+		return DataTypeConverter.groupsToFoGroups(groups, false);
 	}
 	
 	public FoProjectAccess[] getProjectAccessForProject(int projectId){
@@ -741,7 +756,7 @@ public class DBInterface {
 		FODriver driver = getFoDriver();
 		ProjectAdaptor pa = driver.getProjectAdaptor();
 		
-		return projectAccessesToFoProjectAccesses(pa.fetchProjectAccessForProject(projectId, true), true);
+		return DataTypeConverter.projectAccessesToFoProjectAccesses(pa.fetchProjectAccessForProject(projectId, true), true);
 	}
 	
 	public FoProjectAccess addAccessToProject(FoProjectAccess foProjectAccess){
@@ -750,7 +765,7 @@ public class DBInterface {
 		
 		ProjectAccess projectAccess = pa.addGroupAccessToProject(foProjectAccess.getGroupId(), foProjectAccess.getFoProjectId(), foProjectAccess.getAccess());
 		
-		return projectAccessToFoProjectAccess(projectAccess, true);
+		return DataTypeConverter.projectAccessToFoProjectAccess(projectAccess, true);
 	}
 	
 	public FoPlatform[] getAllPlatforms(){
@@ -759,18 +774,18 @@ public class DBInterface {
 		
 		Platform[] platforms = pa.fetchAllPlatforms();
 		
-		return platformsToFoPlatforms(platforms);
+		return DataTypeConverter.platformsToFoPlatforms(platforms);
 	}
 	
 	public FoOrgan addOrgan(FoOrgan foOrgan){
 		FODriver driver = getFoDriver();
 		OrganAdaptor oa = driver.getOrganAdaptor();
 		
-		int id = oa.storeOrgan(foOrganToOrgan(foOrgan));
+		int id = oa.storeOrgan(DataTypeConverter.foOrganToOrgan(foOrgan));
 		
 		Organ o = oa.fetchOrganById(id);
 		
-		return organToFoOrgan(o);
+		return DataTypeConverter.organToFoOrgan(o);
 	}
 	
 	public FoOrgan[] getOrgans(boolean enabled){
@@ -779,7 +794,7 @@ public class DBInterface {
 		
 		Organ[] organs = oa.fetchOrgans(enabled);
 		
-		return organsToFoOrgans(organs);
+		return DataTypeConverter.organsToFoOrgans(organs);
 	}
 	
 	public FoOrgan[] getAllOrgans(){
@@ -789,7 +804,7 @@ public class DBInterface {
 		
 		Organ[] organs = oa.fetchAllOrgans();
 		
-		return organsToFoOrgans(organs);
+		return DataTypeConverter.organsToFoOrgans(organs);
 	}
 	
 	public String[] getOrganTypes(){
@@ -805,11 +820,11 @@ public class DBInterface {
 		FODriver driver = getFoDriver();
 		PropertyAdaptor pa = driver.getPropertyAdaptor();
 		
-		int id = pa.storeProperty(foPropertyToProperty(foProperty));
+		int id = pa.storeProperty(DataTypeConverter.foPropertyToProperty(foProperty));
 		
 		Property p = pa.fetchPropertyById(id);
 		
-		return propertyToFoProperty(p);
+		return DataTypeConverter.propertyToFoProperty(p);
 	}
 	
 	public FoProperty[] getProperties(boolean enabled){
@@ -818,7 +833,7 @@ public class DBInterface {
 		
 		Property[] properties = pa.fetchProperties(true);
 		
-		return propertiesToFoProperties(properties);
+		return DataTypeConverter.propertiesToFoProperties(properties);
 	}
 	
 	public FoProperty[] getAllProperties(){
@@ -827,7 +842,7 @@ public class DBInterface {
 		
 		Property[] properties = pa.fetchAllProperties();
 		
-		return propertiesToFoProperties(properties);
+		return DataTypeConverter.propertiesToFoProperties(properties);
 	}
 	
 	public String[] getPropertyTypes(){
@@ -843,11 +858,11 @@ public class DBInterface {
 		FODriver driver = getFoDriver();
 		PlatformAdaptor pa = driver.getPlatformAdaptor();
 	
-		int id = pa.storePlatform(foPlatformToPlatform(foPlatform));
+		int id = pa.storePlatform(DataTypeConverter.foPlatformToPlatform(foPlatform));
 		
 		Platform p = pa.fetchPlatformById(id);
 		
-		return platformToFoPlatform(p);
+		return DataTypeConverter.platformToFoPlatform(p);
 	}
 	
 	public String[] getPlatformTypes(){
@@ -896,9 +911,7 @@ public class DBInterface {
 		} else {
 			
 			throw new Exception("ID or Username not correct");
-			
 		}
-		
 	}
 	
 	public void updatePassword(FoUser updateUser, FoUser sessionUser) throws Exception{
@@ -913,9 +926,7 @@ public class DBInterface {
 		} else {
 			
 			throw new Exception("ID or Username not correct");
-			
 		}
-		
 	}
 	
 	public void setPassword(int userId, String pw){
@@ -924,384 +935,6 @@ public class DBInterface {
 		
 		ua.updateUserPassword(userId, pw);
 		
-	}
-	
-	/* private methods */
-	
-	private EnsemblDBs[] foEdbssToEdbss(FoEnsemblDBs[] foEdbs){
-		EnsemblDBs[] edbs = new EnsemblDBs[foEdbs.length];
-		
-		for(int i=0; i < foEdbs.length; i++){
-			edbs[i] = foEdbsToEdbs(foEdbs[i]);
-		}
-		return edbs;
-	}
-	
-	private EnsemblDBs foEdbsToEdbs(FoEnsemblDBs foEdbs){
-		EnsemblDBs edbs = new EnsemblDBs(foEdbs.getId(),
-									foEdbs.getDBName(),
-									foEdbs.getLabel(),
-									foEdbs.getVersion());
-		return edbs;
-	}
-	
-	private FoEnsemblDBs[] edbssToFoEdbss(EnsemblDBs[] edbs){
-		FoEnsemblDBs[] foEdbs = new FoEnsemblDBs[edbs.length];
-		
-		for(int i=0; i < edbs.length; i++){
-			foEdbs[i] = edbsToFoEdbs(edbs[i]);
-		}
-		return foEdbs;
-	}
-	
-	private FoEnsemblDBs edbsToFoEdbs(EnsemblDBs edbs){
-		FoEnsemblDBs foEdbs = new FoEnsemblDBs(edbs.getId(),
-									edbs.getDBName(),
-									edbs.getLabel(),
-									edbs.getVersion());
-		return foEdbs;
-	}
-	
-	private FoProjectAccess[] projectAccessesToFoProjectAccesses(ProjectAccess[] projectAccess, boolean withChildren){
-		FoProjectAccess[] foProjectAccess = new FoProjectAccess[projectAccess.length];
-		
-		for(int i=0; i < projectAccess.length; i++){
-			foProjectAccess[i] = projectAccessToFoProjectAccess(projectAccess[i], withChildren);
-		}
-		return foProjectAccess;
-	}
-	
-	private FoProjectAccess projectAccessToFoProjectAccess(ProjectAccess projectAccess, boolean withChildren){
-		
-		FoProjectAccess foProjectAccess;
-		
-		if(!withChildren){
-		
-			foProjectAccess = new FoProjectAccess(projectAccess.getId(),
-													projectAccess.getGroupId(),
-													projectAccess.getAccess());
-			
-		} else {
-			
-			FoGroup foGroup = groupToFoGroup(projectAccess.getGroup(), false);
-		
-			foProjectAccess = new FoProjectAccess(projectAccess.getId(),
-													foGroup,
-													projectAccess.getAccess());
-		}
-		
-		return foProjectAccess;
-	}
-	
-	private FoLocation locationToFoLocation(Location loc){
-		FoLocation foLocation = new FoLocation(loc.getId(),
-												loc.getChromosome(),
-												loc.getStart(),
-												loc.getEnd());
-		return foLocation;
-	}
-	
-	
-	private Location foLocationToLocation(FoLocation foLoc){
-		Location loc = new Location(foLoc.getId(),
-										foLoc.getChromosome(),
-										foLoc.getStart(),
-										foLoc.getEnd());
-		return loc;
-	}
-	
-	private FoCnSegment[] cnSegmentsToFoCnSegments(CnSegment[] segments){
-		FoCnSegment[] foSegments = new FoCnSegment[segments.length];
-		
-		for(int i=0; i < segments.length; i++){
-			foSegments[i] = cnSegmentToFoCnSegment(segments[i]);
-		}
-		return foSegments;
-	}
-	
-	private FoCnSegment cnSegmentToFoCnSegment(CnSegment segment){
-		FoCnSegment foSegment = new FoCnSegment(segment.getId(),
-											locationToFoLocation(segment.getLocation()),
-											segment.getMean(),
-											segment.getNumberOfMarkers());
-		if(segment.getStudyName() != null){
-			foSegment.setStudyName(segment.getStudyName());
-		}
-		return foSegment;
-	}
-	
-	private FoTissueSample[] tissueSamplesToFoTissueSamples(TissueSample[] tissues){
-	
-		FoTissueSample[] foTissues = new FoTissueSample[tissues.length];
-		
-		for(int i=0; i < tissues.length; i++){
-			foTissues[i] = tissueSampleToFoTissueSample(tissues[i]);
-		}
-		
-		return foTissues;
-	}
-	
-	private FoTissueSample tissueSampleToFoTissueSample(TissueSample tissue){
-		
-		FoOrgan foOrgan = organToFoOrgan(tissue.getOrgan());
-		FoProperty[] foProperties = propertiesToFoProperties(tissue.getProperties()); 
-		
-		FoTissueSample foTissue = new FoTissueSample(tissue.getId(),
-													foOrgan,
-													foProperties);
-		return foTissue;
-	}
-	
-	private Property[] foPropertiesToProperties(FoProperty[] foProperties){
-		Property[] properties = new Property[foProperties.length];
-		
-		for(int i=0; i < properties.length; i++){
-			properties[i] = foPropertyToProperty(foProperties[i]);
-		}
-		return properties;
-	}
-	
-	private Property foPropertyToProperty(FoProperty foProperty){
-		Property property = new Property(foProperty.getId(),
-											foProperty.getLabel(),
-											foProperty.getType(),
-											foProperty.getActivty());
-		return property;
-	}
-	
-	private FoProperty[] propertiesToFoProperties(Property[] properties){
-		FoProperty[] foProperties = new FoProperty[properties.length];
-		
-		for(int i=0; i < properties.length; i++){
-			foProperties[i] = propertyToFoProperty(properties[i]);
-		}
-		return foProperties;
-	}
-	
-	private FoProperty propertyToFoProperty(Property property){
-		FoProperty foProperty = new FoProperty(property.getId(),
-											property.getLabel(),
-											property.getType(),
-											property.getActivty());
-		return foProperty;
-	}
-	
-	private Organ[] foOrgansToOrgans(FoOrgan[] foOrgans){
-		Organ[] organs = new Organ[foOrgans.length];
-		
-		for(int i=0; i < foOrgans.length; i++){
-			organs[i] = foOrganToOrgan(foOrgans[i]);
-		}
-		return organs;
-	}
-	
-	private Organ foOrganToOrgan(FoOrgan foOrgan){
-		Organ organ = new Organ(foOrgan.getId(),
-									foOrgan.getLabel(),
-									foOrgan.getType(),
-									foOrgan.getActivty());
-		return organ;
-	}
-	
-	private FoOrgan[] organsToFoOrgans(Organ[] organs){
-		FoOrgan[] foOrgans = new FoOrgan[organs.length];
-		
-		for(int i=0; i < organs.length; i++){
-			foOrgans[i] = organToFoOrgan(organs[i]);
-		}
-		return foOrgans;
-	}
-	
-	private FoOrgan organToFoOrgan(Organ organ){
-		FoOrgan foOrgan = new FoOrgan(organ.getId(),
-									organ.getLabel(),
-									organ.getType(),
-									organ.getActivty());
-		return foOrgan;
-	}
-	
-	private Platform[] foPlatformsToPlatforms(FoPlatform[] foPlatforms){
-		Platform[] platforms = new Platform[foPlatforms.length];
-		
-		for(int i=0; i < platforms.length; i++){
-			platforms[i] = foPlatformToPlatform(foPlatforms[i]);
-		}
-		return platforms;
-	}
-	
-	private Platform foPlatformToPlatform(FoPlatform foPlatform){
-		Platform platform = new Platform(foPlatform.getId(),
-											foPlatform.getName(),
-											foPlatform.getType());
-		return platform;
-	}
-	
-	private FoPlatform[] platformsToFoPlatforms(Platform[] platforms){
-		FoPlatform[] foPlatforms = new FoPlatform[platforms.length];
-		
-		for(int i=0; i < platforms.length; i++){
-			foPlatforms[i] = platformToFoPlatform(platforms[i]);
-		}
-		return foPlatforms;
-	}
-	
-	private FoPlatform platformToFoPlatform(Platform platform){
-		FoPlatform foPlatform = new FoPlatform(platform.getId(),
-												platform.getName(),
-												platform.getType());
-		return foPlatform;
-	}
-	
-	private FoStudy[] studiesToFostudies(Study[] studies, boolean withChildren){
-		FoStudy[] foStudies = new FoStudy[studies.length];
-		
-		for(int i=0; i < studies.length; i++){
-			foStudies[i] = studyToFoStudy(studies[i], withChildren);
-		}
-		return foStudies;
-		
-	}
-	
-	private FoStudy studyToFoStudy(Study study, boolean withChildren){
-		
-		FoStudy foStudy = new FoStudy(study.getId(),
-										study.getDate(),
-										study.getName(),
-										study.getType(),
-										study.getAssembly(),
-										study.getDescription(),
-										study.getUserId());
-		
-		if(withChildren){
-			foStudy.setPlatform(platformToFoPlatform(study.getPlatform()));
-			foStudy.setTissue(tissueSampleToFoTissueSample(study.getTissue()));
-		} else {
-			foStudy.setPlatformId(study.getPlatformId());
-			foStudy.setOrganId(study.getOrganId());
-			foStudy.setPropertyIds(study.getPropertyIds());
-		}
-		return foStudy;
-	}
-	
-	private FoProject[] projectsToFoProjects(Project[] projects){
-		FoProject[] foProjects = new FoProject[projects.length];
-		
-		for(int i=0; i < projects.length; i++){
-			foProjects[i] = projectToFoProject(projects[i]);
-		}
-		return foProjects;
-	}
-	
-	private FoProject projectToFoProject(Project project){
-		
-		FoProject foProject = new FoProject(project.getId(),
-											project.getName(),
-											project.getDescription());
-		
-		if(project.getStudies() != null){
-			foProject.setStudies(studiesToFostudies(project.getStudies(), false));
-		}
-		
-		if(project.getProjectAccess() != null){
-			foProject.setProjectAccess(projectAccessesToFoProjectAccesses(project.getProjectAccess(),true));
-		}
-		return foProject;
-	}
-	
-	private Group[] foGroupsToGroups(FoGroup[] foGroups){
-		
-		Group[] groups = new Group[foGroups.length];
-		
-		for(int i=0; i < groups.length; i++){
-			groups[i] = foGroupToGroup(foGroups[i]);
-		}
-		
-		return groups;
-	}
-	
-	private Group foGroupToGroup(FoGroup foGroup){
-		
-		Group group = new Group(foGroup.getId(),
-								foGroup.getName(),
-								foGroup.isIsactive());
-		
-		if(foGroup.getUsers() != null){
-			group.setUsers(foUsersToUsers(foGroup.getUsers()));
-		}
-		
-		return group;
-	}
-	
-	private FoGroup[] groupsToFoGroups(Group[] groups, boolean withChildren){
-		
-		FoGroup[] foGroups = new FoGroup[groups.length];
-		
-		for(int i=0; i < groups.length; i++){
-			foGroups[i] = groupToFoGroup(groups[i], withChildren);
-		}
-		
-		return foGroups;
-	}
-	
-	private FoGroup groupToFoGroup(Group group, boolean withChildren){
-		
-		FoGroup foGroup = new FoGroup(group.getId(),
-								group.getName(),
-								group.isIsactive());
-		
-		if(withChildren){
-			foGroup.setUsers(usersToFoUsers(group.getUsers()));
-		}
-		return foGroup;
-	}
-	
-	private User[] foUsersToUsers(FoUser[] foUsers){
-		
-		User[] users = new User[foUsers.length];
-		
-		for(int i=0; i < users.length; i++){
-			users[i] = foUserToUser(foUsers[i]);
-		}
-		
-		return users;
-	}
-	
-	private User foUserToUser(FoUser foUser){
-		
-		User user = new User(foUser.getId(),
-				foUser.getFirstName(),
-				foUser.getLastName(),
-				foUser.getUserName(),
-				foUser.getEmail(),
-				foUser.getIsActive(),
-				foUser.getIsAdmin());
-		
-		return user;
-	}
-	
-	private FoUser[] usersToFoUsers(User[] users){
-		
-		FoUser[] foUsers = new FoUser[users.length];
-		
-		
-		for(int i=0; i < users.length; i++){
-			foUsers[i] = userToFoUser(users[i]);
-		}
-		
-		return foUsers;
-	}
-	
-	private FoUser userToFoUser(User user){
-		
-		FoUser foUser = new FoUser(user.getId(),
-				user.getFirstName(),
-				user.getLastName(),
-				user.getUserName(),
-				user.getEmail(),
-				user.getIsActive(),
-				user.getIsAdmin());
-		
-		return foUser;
 	}
 	
 	//TODO move to fishoracle_db_api

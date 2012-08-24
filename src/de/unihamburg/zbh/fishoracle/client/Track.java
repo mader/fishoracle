@@ -199,7 +199,7 @@ public class Track {
 		selectItemExperiments.setMultipleAppearance(MultipleAppearance.PICKLIST);
 		
 		selectItemExperiments.setDisplayField("studyName");
-		selectItemExperiments.setValueField("studyId");		
+		selectItemExperiments.setValueField("studyId");
 		selectItemExperiments.setAutoFetchData(false);
 		StudyDS mDS = new StudyDS();
 		
