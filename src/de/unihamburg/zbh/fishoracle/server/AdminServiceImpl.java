@@ -19,6 +19,8 @@ package de.unihamburg.zbh.fishoracle.server;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -82,11 +84,23 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		if (children == null) {
 		    throw new Exception("Directory does not exist.");
 		} else {
-			fileNames = new String[children.length];
+			
+			Pattern pHidden = Pattern.compile("^\\.");
+			
+			ArrayList<String> fileNamesContainer = new ArrayList<String>();
 			
 		    for (int i=0; i < children.length; i++) {
-		        fileNames[i] = children[i];
+		    	Matcher mHidden = pHidden.matcher(children[i]);
+		    	
+		    	if(!mHidden.find()){
+		    		fileNamesContainer.add(children[i]);
+		    	}
 		    }
+		    
+		    fileNames = new String[fileNamesContainer.size()];
+			
+		    fileNamesContainer.toArray(fileNames);
+		    
 		}
 		
 		return fileNames;
