@@ -28,13 +28,9 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
-import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
-import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
-import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle.server.data.DBConfig;
@@ -73,6 +69,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		return user;
 	}
 	
+	//TODO ignore hidden files...
 	public String[] getUploadedFiles() throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
@@ -93,53 +90,6 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		}
 		
 		return fileNames;
-	}
-	
-	public FoUser[] getAllUsers() throws Exception {
-		
-		isAdmin();
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		FoUser[] users = db.getAllUsers();
-		
-		return users;
-		
-	}
-	
-	public String[] toggleFlag(int id, String flag, String type, int rowNum, int colNum) throws Exception {
-	
-		isAdmin();
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		int isActivated = 0;
-		
-		if(type.equals("isAdmin")){
-			isActivated = db.setAdminStatus(id, Boolean.parseBoolean(flag));
-		}
-		if(type.equals("isActive")){
-			isActivated = db.setActiveStatus(id,Boolean.parseBoolean(flag));
-		}
-		
-		String isActivatedStr;
-		
-		if(isActivated == 0){
-			isActivatedStr = "false";
-		} else {
-			isActivatedStr = "true";
-		}
-		
-		String rowNumStr = new Integer(rowNum).toString();
-		
-		String[] toggeledUser = {type, isActivatedStr, rowNumStr};
-		
-		return toggeledUser;
-		
 	}
 	
 	@Override
@@ -172,132 +122,6 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		db.deleteGroup(foGroup);
 		
-	}
-	
-	@Override
-	public FoOrgan addOrgan(FoOrgan foOrgan) throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.addOrgan(foOrgan);
-	}
-	
-	@Override
-	public FoCnSegment[] getCnSegmentsForMstudyId(int mstudyId) {
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext); 
-		
-		return db.getCnSegmentsForStudyId(mstudyId);
-	}
-	
-	@Override
-	public void removeMstudy(int mstudyId) {
-		
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		db.removeStudy(mstudyId);
-	}
-	
-	@Override
-	public FoStudy[] getMicorarrayStudiesForProject() throws Exception {
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		FoProject[] projects = getFoProjects();
-		
-		int[] projectIds = new int[projects.length];
-				
-		for(int i = 0; i < projects.length; i++){
-			
-			projectIds[i] = projects[i].getId();
-			
-		}
-				
-		return db.getStudiesForProject(projectIds, false);
-	}
-	
-	@Override
-	public FoStudy[] getMicorarrayStudiesForProject(int[] pId) {
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getStudiesForProject(pId, true);
-	}
-	
-	@Override
-	public FoOrgan[] getOrgans() {
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		FoOrgan[] organs = db.getOrgans(true);
-		
-		return organs;
-	}
-	
-	@Override
-	public FoOrgan[] getAllFoOrgans() throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getAllOrgans();
-	}
-	
-	@Override
-	public String[] getAllOrganTypes() {
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getOrganTypes();
-	}
-	
-	@Override
-	public FoProperty addProperty(FoProperty foProperty) throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.addProperty(foProperty);
-	}
-	
-	@Override
-	public FoProperty[] getAllFoProperties() throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getAllProperties();
-	}
-	
-	@Override
-	public String[] getAllPropertyTypes() {
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getPropertyTypes();
 	}
 	
 	@Override
@@ -334,63 +158,6 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		return true;
 	}
 	
-	public void setPassword(int userId, String pw) throws UserException{
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		db.setPassword(userId, pw);
-		
-	}
-	
-	//TODO move...
-	
-	@Override
-	public FoProject[] getFoProjects() throws Exception {
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		FoUser u = getSessionUserObject();
-		
-		FoProject[] projects = null;
-		 
-		if(u.getIsAdmin()){
-			
-			projects = db.getAllProjects();
-		} else {
-			projects = db.getProjectsForUser(u, false, false);
-		}
-		
-		return projects;
-	}
-	
-	@Override
-	public FoProject addFoProject(FoProject foProject) throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.addFoProject(foProject);
-	}
-	
-	@Override
-	public boolean removeFoProject(int projectId) throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		db.removeProject(projectId);
-		
-		return true;
-	}
-	
 	@Override
 	public FoGroup[] getAllGroupsExceptFoProject(FoProject foProject) {
 		String servletContext = this.getServletContext().getRealPath("/");
@@ -409,43 +176,6 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		DBInterface db = new DBInterface(servletContext);
 		
 		return db.getUsersForGroup(groupId);
-	}
-	
-	@Override
-	public FoProjectAccess[] getProjectAccessesForProject(int projectId) throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		
-		return db.getProjectAccessForProject(projectId);
-	}
-	
-	@Override
-	public FoProjectAccess addAccessToFoProject(
-			FoProjectAccess foProjectAccess, int projectId) throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.addAccessToProject(foProjectAccess);
-	}
-	
-	@Override
-	public boolean removeAccessFromFoProject(int projectAccessId) throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		db.removeAccessFromProject(projectAccessId);
-		
-		return true;
 	}
 	
 	public DBConfigData fetchDBConfigData() throws Exception{
@@ -588,29 +318,5 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		}
 		
 		return new int[]{importNumber, nofImports};
-	}
-	
-	public boolean canAccessDataImport() throws UserException{
-		
-		FoUser user = getSessionUserObject();
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		boolean access = db.isAccessable("DataImport", user);
-		
-		return access;
-	}
-	
-	public void unlockDataImport() throws UserException{
-		
-		FoUser user = getSessionUserObject();
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		db.unlockPage("DataImport", user);
 	}
 }

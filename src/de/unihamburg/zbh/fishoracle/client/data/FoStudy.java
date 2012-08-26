@@ -21,8 +21,6 @@ import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-import de.unihamburg.zbh.fishoracle_db_api.data.SNPMutation;
-
 public class FoStudy implements IsSerializable {
 	
 	private int id;

@@ -20,22 +20,14 @@ package de.unihamburg.zbh.fishoracle.client.rpc;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
-import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
-import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
-import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 
 public interface AdminAsync {
 
 	void getUploadedFiles(AsyncCallback<String[]> callback);
-	
-	void getAllUsers(AsyncCallback<FoUser[]> callback);
-
-	void toggleFlag(int id, String flag, String type, int rowNum, int colNum, AsyncCallback<String[]> callback);
 
 	void fetchDBConfigData(AsyncCallback<DBConfigData> callback);
 	
@@ -49,48 +41,14 @@ public interface AdminAsync {
 					int importNumber,
 					int nofImports, AsyncCallback<int[]> callback);
 
-	void canAccessDataImport(AsyncCallback<Boolean> callback);
-
-	void unlockDataImport(AsyncCallback<Void> callback);
-
 	void getAllFoGroups(AsyncCallback<FoGroup[]> callback);
 
 	void addGroup(FoGroup foGroup, AsyncCallback<FoGroup> callback);
 
 	void deleteGroup(FoGroup foGroup, AsyncCallback<Void> callback);
 	
-	void addOrgan(FoOrgan foOrgan, AsyncCallback<FoOrgan> callback);
-	
-	void getCnSegmentsForMstudyId(int mstudyId, AsyncCallback<FoCnSegment[]> callback);
-	
-	void removeMstudy(int mstudyId, AsyncCallback<Void> callback);
-	
-	void getMicorarrayStudiesForProject(
-			AsyncCallback<FoStudy[]> callback);
-	
-	void getMicorarrayStudiesForProject(
-			int[] pId, AsyncCallback<FoStudy[]> callback);
-	
-	void getOrgans(AsyncCallback<FoOrgan[]> callback);
-	
-	void getAllFoOrgans(AsyncCallback<FoOrgan[]> callback);
-	
-	void getAllOrganTypes(AsyncCallback<String[]> callback);
-	
-	void addProperty(FoProperty foProperty, AsyncCallback<FoProperty> callback);
-	
-	void getAllFoProperties(AsyncCallback<FoProperty[]> callback);
-	
-	void getAllPropertyTypes(AsyncCallback<String[]> callback);
-	
 	void addUserToFoGroup(FoGroup foGroup, int userId,
 			AsyncCallback<FoUser> callback);
-	
-	void setPassword(int userId, String pw, AsyncCallback<Void> callback);
-	
-	void getFoProjects(AsyncCallback<FoProject[]> callback);
-
-	void addFoProject(FoProject foProject, AsyncCallback<FoProject> callback);
 
 	void getAllUsersExceptFoGroup(FoGroup foGroup,
 			AsyncCallback<FoUser[]> callback);
@@ -99,17 +57,6 @@ public interface AdminAsync {
 	
 	void getAllGroupsExceptFoProject(FoProject foProject,
 			AsyncCallback<FoGroup[]> callback);
-
-	void addAccessToFoProject(FoProjectAccess foProjectAccess, int projectId,
-			AsyncCallback<FoProjectAccess> callback);
-
-	void getProjectAccessesForProject(int projectId,
-			AsyncCallback<FoProjectAccess[]> callback);
-	
-	void removeAccessFromFoProject(int projectAccessId,
-			AsyncCallback<Boolean> callback);
-
-	void removeFoProject(int projectId, AsyncCallback<Boolean> callback);
 
 	void removeUserFromFoGroup(int groupId, int userId,
 			AsyncCallback<Boolean> callback);

@@ -881,28 +881,6 @@ public class WestPanel extends SectionStack{
 			req.generateImage(q, callback);
 	}
 	
-	
-	//TODO Remove...
-	public void checkImportData(){
-
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
-			@Override
-			public void onSuccess(Boolean result){
-
-				//mp.getCenterPanel().openDataAdminTab(result);
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());
-			}
-		};
-		req.canAccessDataImport(callback);
-	}
-	
 	public void getDatabaseConnectionData(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
