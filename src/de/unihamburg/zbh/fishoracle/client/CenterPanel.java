@@ -81,6 +81,8 @@ import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
+import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
+import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
 import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
@@ -1807,7 +1809,7 @@ public class CenterPanel extends VLayout {
 		window.show();
 	}
 	
-	public void openChipAdminTab(){
+	public void openPlatformAdminTab(){
 		
 		Tab platformsAdminTab = new Tab("Manage Platforms");
 		platformsAdminTab.setCanClose(true);
@@ -2057,13 +2059,13 @@ public class CenterPanel extends VLayout {
 		studyGrid.setFixedRecordHeights(false);
 		
 		ListGridField lgfId = new ListGridField("studyId", "Study ID");
-		ListGridField lgfChip = new ListGridField("platformName", "Platform");
+		ListGridField lgfPlatform = new ListGridField("platformName", "Platform");
 		ListGridField lgfTissue = new ListGridField("tissueName", "Tissue");
 		ListGridField lgfDate = new ListGridField("date", "Date");
 		ListGridField lgfName = new ListGridField("studyName", "Name");
 		ListGridField lgfDescription = new ListGridField("studyDescription", "Description");
 		
-		studyGrid.setFields(lgfId, lgfChip, lgfTissue, lgfDate, lgfName, lgfDescription);
+		studyGrid.setFields(lgfId, lgfPlatform, lgfTissue, lgfDate, lgfName, lgfDescription);
 		
 		//TODO make load the data for default option...
 		StudyDS mDS = new StudyDS();
@@ -2447,138 +2449,6 @@ public class CenterPanel extends VLayout {
 		window.show();
 	}
 	
-	public void openManualImportWindow(FoStudy[] studies,
-											String importType,
-											int projectId,
-											boolean createStudy) {
-		
-		final Window window = new Window();
-
-		window.setTitle("Import file");
-		window.setWidth(400);
-		window.setHeight(300);
-		window.setAlign(Alignment.CENTER);
-		
-		window.setAutoCenter(true);
-		window.setIsModal(true);
-		window.setShowModalMask(true);
-		
-		DynamicForm importOptionsForm = new DynamicForm();
-		importOptionsForm.setWidth100();
-		importOptionsForm.setHeight100();
-		importOptionsForm.setAlign(Alignment.CENTER);
-		
-		SelectItem selectItemProjects = new SelectItem();
-		selectItemProjects.setTitle("Project");
-		selectItemProjects.setDisplayField("projectName");
-		selectItemProjects.setValueField("projectId");
-		selectItemProjects.setAutoFetchData(false);
-		ProjectDS pDS = new ProjectDS();
-		
-		selectItemProjects.setOptionDataSource(pDS);
-		selectItemProjects.setOptionOperationId(OperationId.PROJECT_FETCH_ALL);
-		
-		selectItemProjects.setDefaultValue(projectId);
-		
-		if(!createStudy){
-			selectItemProjects.setVisible(false);
-		}
-		
-		SelectItem selectItemTissues = new SelectItem();
-		selectItemTissues.setTitle("Tissue");
-		selectItemTissues.setDisplayField("organNamePlusType");
-		selectItemTissues.setValueField("organId");
-		selectItemTissues.setAutoFetchData(false);
-		OrganDS oDS = new OrganDS();
-		
-		selectItemTissues.setOptionDataSource(oDS);
-		selectItemTissues.setOptionOperationId(OperationId.ORGAN_FETCH_ENABLED);
-		
-		selectItemTissues.setDefaultValue(studies[0].getOrganId());
-		
-		if(!createStudy){
-			selectItemTissues.setVisible(false);
-		}
-		
-		SelectItem selectItemPlatform = new SelectItem();
-		selectItemPlatform.setTitle("Platform");
-		selectItemPlatform.setDisplayField("platformName");
-		selectItemPlatform.setValueField("platformId");
-		selectItemPlatform.setAutoFetchData(false);
-		
-		PlatformDS plDS = new PlatformDS();
-		
-		selectItemPlatform.setOptionDataSource(plDS);
-		selectItemPlatform.setOptionOperationId(OperationId.PLATFORM_FETCH_ALL);
-		selectItemPlatform.setDefaultValue(studies[0].getPlatformId());
-		
-		if(!createStudy){
-			selectItemPlatform.setVisible(false);
-		}
-		
-		SelectItem selectItemGenomeAssembly = new SelectItem();
-		selectItemGenomeAssembly.setTitle("Genome Assembly");
-		selectItemGenomeAssembly.setValueMap("GrCh37", "ncbi36");
-		selectItemGenomeAssembly.setDefaultToFirstOption(true);
-		
-		if(!createStudy){
-			selectItemGenomeAssembly.setVisible(false);
-		}
-		
-		SelectItem selectItemMethod = new SelectItem();
-		selectItemMethod.setTitle("Method");
-		selectItemMethod.setValueMap("Sequencing", "Microarray");
-		selectItemMethod.setDefaultValue(studies[0].getType());
-		
-		if(!createStudy){
-			selectItemMethod.setVisible(false);
-		}
-		
-		TextItem textItemDescription = new TextItem();
-		textItemDescription.setTitle("Description");
-		
-		if(!createStudy){
-			textItemDescription.setVisible(false);
-		}
-		
-		SelectItem selectItemSNPTool = new SelectItem();
-		selectItemSNPTool.setTitle("SNP Tool");
-		selectItemSNPTool.setValueMap("gatk", "varscan", "SNVMix", "samtools");
-		if(!importType.equals("Mutations")){
-			selectItemSNPTool.setVisible(false);
-		}
-		
-		SelectItem selectItemProperty = new SelectItem();
-		selectItemProperty.setTitle("Property");
-		selectItemProperty.setDisplayField("platformName");
-		selectItemProperty.setValueField("platformId");
-		selectItemProperty.setAutoFetchData(false);
-		
-		PropertyDS prlDS = new PropertyDS();
-		
-		selectItemProperty.setOptionDataSource(prlDS);
-		selectItemProperty.setOptionOperationId(OperationId.PROPERTY_FETCH_ENABLED);
-		
-		ButtonItem cancelButton = new ButtonItem("cancel");
-		
-		ButtonItem submitButton = new ButtonItem("next");
-		
-		importOptionsForm.setFields(
-				selectItemProjects,
-				selectItemTissues,
-				selectItemPlatform,
-				selectItemGenomeAssembly,
-				selectItemMethod,
-				textItemDescription,
-				selectItemProperty,
-				cancelButton,
-				submitButton);
-		
-		window.addItem(importOptionsForm);
-		
-		window.show();
-	}
-	
 	public void openDataAdminTab(){
 		Tab dataAdminTab;
 		
@@ -2777,7 +2647,7 @@ public class CenterPanel extends VLayout {
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
 				
-				ListGridRecord[] lgrs = fileGrid.getSelectedRecords();
+				ListGridRecord[] lgrs = fileGrid.getRecords();
 				
 				FoStudy[] studies = new FoStudy[lgrs.length];
 				
@@ -2822,19 +2692,30 @@ public class CenterPanel extends VLayout {
 					}
 					
 				} else {
-					if(createStudyItem.getValueAsString().equals("Create new study")) {
-						openManualImportWindow(studies,
-								selectItemFilterType.getValueAsString(),
-								Integer.parseInt(selectItemProjects.getValue().toString()),
-								true);
+					// Manual import
+					if(studies.length > 0){
+						ManualImportWindow miw = null;
+						if(createStudyItem.getValueAsString().equals("Create new study")) {
+							miw = new ManualImportWindow(studies,
+										selectItemFilterType.getValueAsString(),
+										Integer.parseInt(selectItemProjects.getValue().toString()),
+										true,
+										fileGrid,
+										cp);
+							miw.show();
 					}
-					if(createStudyItem.getValueAsString().equals("Import to existing study")) {
-						openManualImportWindow(studies,
-							selectItemFilterType.getValueAsString(),
-							Integer.parseInt(selectItemProjects.getValue().toString()),
-							false);
+						if(createStudyItem.getValueAsString().equals("Import to existing study")) {
+							miw = new ManualImportWindow(studies,
+										selectItemFilterType.getValueAsString(),
+										Integer.parseInt(selectItemProjects.getValue().toString()),
+										false,
+										fileGrid,
+										cp);
+							miw.show();
+						}
+					} else {
+						SC.say("You need at least one file to import.");
 					}
-					
 				}
 			}
 		});
@@ -3270,79 +3151,7 @@ public class CenterPanel extends VLayout {
 		};
 		req.writeConfigData(data, callback);
 	}
-	//TODO remove...
-	/*
-	public void getMicroarrayOptions(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<MicroarrayOptions> callback = new AsyncCallback<MicroarrayOptions>(){
-			@Override
-			public void onSuccess(MicroarrayOptions result){
-				
-				LinkedHashMap<String, String> chipValueMap = new LinkedHashMap<String, String>();
-				
-				for(int i=0; i < result.getChips().length; i++){
-					chipValueMap.put(new Integer(result.getChips()[i].getId()).toString(), result.getChips()[i].getName());
-				}
-				
-				platform.setValueMap(chipValueMap);
-				
-				LinkedHashMap<String, String> tissueValueMap = new LinkedHashMap<String, String>();
-				
-				for(int i=0; i < result.getOrgans().length; i++){
-					tissueValueMap.put(new Integer(result.getOrgans()[i].getId()).toString(), result.getOrgans()[i].getLabel() + " (" + result.getOrgans()[i].getType() + ")");
-				}
-				
-				tissue.setValueMap(tissueValueMap);
-				
-				LinkedHashMap<String, String> projectValueMap = new LinkedHashMap<String, String>();
-				
-				for(int i=0; i < result.getProjects().length; i++){
-					projectValueMap.put(new Integer(result.getProjects()[i].getId()).toString(), result.getProjects()[i].getName());
-				}
-				
-				project.setValueMap(projectValueMap);
-				
-				FormItem[] fi = new FormItem[(result.getPropertyTypes().length + 6)];
-				fi[0] = studyName;
-				fi[1] = platform;
-				fi[2] = tissue;
-				fi[3] = project;
-				fi[4] = descriptionItem; 
-				
-				for(int i=0; i < result.getPropertyTypes().length; i++){
-					
-					SelectItem item = new SelectItem();
-					item.setTitle(result.getPropertyTypes()[i]);
-					LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
-					
-					for(int j=0; j < result.getProperties().length; j++){
-						
-						if(result.getProperties()[j].getType().equals(result.getPropertyTypes()[i])){
-							valueMap.put(new Integer(result.getProperties()[j].getId()).toString(), result.getProperties()[j].getLabel());
-						}
-						
-					}
-					
-					item.setValueMap(valueMap);
-					fi[(i+5)] = item;
-				}
-				
-				fi[fi.length -1] = submitNewStudyButton;
-
-				metaDataForm.setFields(fi);
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());
-			}
-		};
-		req.getMicroarrayOptions(callback);
-	}
-	*/
+	
 	public void showAllGroups(){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3626,6 +3435,272 @@ public class CenterPanel extends VLayout {
 						importNumber,
 						nofImports,
 						callback);
+	}
+}
+
+class ManualImportWindow extends Window {
+	
+	private TextItem textItemStudyName;
+	private SelectItem selectItemProjects;
+	private SelectItem selectItemTissues;
+	private SelectItem selectItemPlatform;
+	private SelectItem selectItemGenomeAssembly;
+	private SelectItem selectItemMethod;
+	private TextAreaItem textItemDescription;
+	private SelectItem selectItemSNPTool;
+	private SelectItem selectItemProperty;
+	private ButtonItem submitButton;
+	private int fileNumber;
+	private int nofFiles;
+	private ManualImportWindow self;
+	private ListGrid listGrid;
+	private CenterPanel cp;
+	
+	public ManualImportWindow(final FoStudy[] studies,
+							final String importType,
+							final int projectId,
+							final boolean createStudy,
+							ListGrid lg,
+							CenterPanel scp){
+		super();
+		self = this;
+		this.listGrid = lg;
+		this.cp = scp;
+		
+		fileNumber = 0;
+		nofFiles = studies.length;
+
+		this.setTitle("Import file " + (fileNumber + 1) + " of " + studies.length);
+		this.setWidth(300);
+		this.setHeight(400);
+		this.setAlign(Alignment.CENTER);
+		
+		this.setAutoCenter(true);
+		this.setIsModal(true);
+		this.setShowModalMask(true);
+		
+		DynamicForm importOptionsForm = new DynamicForm();
+		importOptionsForm.setWidth100();
+		importOptionsForm.setHeight100();
+		importOptionsForm.setAlign(Alignment.CENTER);
+		
+		textItemStudyName = new TextItem();
+		textItemStudyName.setTitle("Study Name");
+		textItemStudyName.setValue(studies[0].getName());
+		
+		
+		selectItemProjects = new SelectItem();
+		selectItemProjects.setTitle("Project");
+		selectItemProjects.setDisplayField("projectName");
+		selectItemProjects.setValueField("projectId");
+		selectItemProjects.setAutoFetchData(false);
+		ProjectDS pDS = new ProjectDS();
+		
+		selectItemProjects.setOptionDataSource(pDS);
+		selectItemProjects.setOptionOperationId(OperationId.PROJECT_FETCH_ALL);
+		
+		selectItemProjects.setDefaultValue(projectId);
+		
+		if(!createStudy){
+			selectItemProjects.setVisible(false);
+		}
+		
+		selectItemTissues = new SelectItem();
+		selectItemTissues.setTitle("Tissue");
+		selectItemTissues.setDisplayField("organNamePlusType");
+		selectItemTissues.setValueField("organId");
+		selectItemTissues.setAutoFetchData(false);
+		OrganDS oDS = new OrganDS();
+		
+		selectItemTissues.setOptionDataSource(oDS);
+		selectItemTissues.setOptionOperationId(OperationId.ORGAN_FETCH_ENABLED);
+		
+		selectItemTissues.setDefaultValue(studies[0].getOrganId());
+		
+		if(!createStudy){
+			selectItemTissues.setVisible(false);
+		}
+		
+		selectItemPlatform = new SelectItem();
+		selectItemPlatform.setTitle("Platform");
+		selectItemPlatform.setDisplayField("platformName");
+		selectItemPlatform.setValueField("platformId");
+		selectItemPlatform.setAutoFetchData(false);
+		
+		PlatformDS plDS = new PlatformDS();
+		
+		selectItemPlatform.setOptionDataSource(plDS);
+		selectItemPlatform.setOptionOperationId(OperationId.PLATFORM_FETCH_ALL);
+		selectItemPlatform.setDefaultValue(studies[0].getPlatformId());
+		
+		if(!createStudy){
+			selectItemPlatform.setVisible(false);
+		}
+		
+		selectItemGenomeAssembly = new SelectItem();
+		selectItemGenomeAssembly.setTitle("Genome Assembly");
+		selectItemGenomeAssembly.setValueMap("GrCh37", "ncbi36");
+		selectItemGenomeAssembly.setDefaultValue(studies[0].getAssembly());
+		
+		if(!createStudy){
+			selectItemGenomeAssembly.setVisible(false);
+		}
+		
+		selectItemMethod = new SelectItem();
+		selectItemMethod.setTitle("Method");
+		selectItemMethod.setValueMap("Sequencing", "Microarray");
+		selectItemMethod.setDefaultValue(studies[0].getType());
+		
+		if(!createStudy){
+			selectItemMethod.setVisible(false);
+		}
+		
+		textItemDescription = new TextAreaItem();
+		textItemDescription.setTitle("Description");
+		textItemDescription.setDefaultValue("");
+		
+		if(!createStudy){
+			textItemDescription.setVisible(false);
+		}
+		
+		selectItemSNPTool = new SelectItem();
+		selectItemSNPTool.setTitle("SNP Tool");
+		selectItemSNPTool.setValueMap("gatk", "varscan", "SNVMix", "samtools");
+		if(!importType.equals("Mutations")){
+			selectItemSNPTool.setVisible(false);
+		}
+		
+		selectItemProperty = new SelectItem();
+		selectItemProperty.setTitle("Property");
+		selectItemProperty.setDisplayField("propertyNamePlusType");
+		selectItemProperty.setValueField("propertyId");
+		selectItemProperty.setAutoFetchData(false);
+		
+		PropertyDS prlDS = new PropertyDS();
+		
+		selectItemProperty.setOptionDataSource(prlDS);
+		selectItemProperty.setOptionOperationId(OperationId.PROPERTY_FETCH_ENABLED);
+		
+		ButtonItem cancelButton = new ButtonItem("cancel");
+		cancelButton.setEndRow(false);
+		cancelButton.setAlign(Alignment.RIGHT);
+		cancelButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+			
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				
+				if(fileNumber + 1 < nofFiles){
+					
+					fileNumber++;
+					
+					self.setTitle("Import file " + (fileNumber + 1) + " of " + studies.length);
+					
+					textItemStudyName.setValue(studies[fileNumber].getName());
+					selectItemProjects.setValue(projectId);
+					selectItemTissues.setValue(studies[fileNumber].getOrganId());
+					selectItemPlatform.setValue(studies[fileNumber].getPlatformId());
+					selectItemGenomeAssembly.setValue(studies[fileNumber].getAssembly());
+					selectItemMethod.setValue(studies[fileNumber].getType());
+					textItemDescription.setValue("");
+					selectItemSNPTool.setValue("");
+					selectItemProperty.clearValue();
+					
+					if(fileNumber + 1 == nofFiles){
+						submitButton.setTitle("finish");
+					}
+					
+				} else {
+					listGrid.invalidateCache();
+					listGrid.fetchData();
+					self.clear();
+				}	
+			}
+		});
+		
+		submitButton = new ButtonItem("next");
+		submitButton.setStartRow(false);
+		
+		submitButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+			
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				
+				if(fileNumber < nofFiles){
+					
+					FoStudy s = new FoStudy();
+					s.setName(textItemStudyName.getValueAsString());
+					s.setFiles(studies[fileNumber].getFiles());
+					
+					if(createStudy){
+						s.setAssembly(selectItemGenomeAssembly.getValueAsString());
+						s.setType(selectItemMethod.getValueAsString());
+						s.setDescription(textItemDescription.getValueAsString());
+						s.setOrganId(Integer.parseInt(selectItemTissues.getValue().toString()));
+						s.setPlatformId(Integer.parseInt(selectItemPlatform.getValue().toString()));
+						String[] strPIds = selectItemProperty.getValues();
+						int[] intPIds = new int[strPIds.length];
+						for(int k=0; k < strPIds.length; k++){
+							intPIds[k] = Integer.parseInt(strPIds[k]);
+						}
+						s.setPropertyIds(intPIds);
+					}
+					
+					cp.importData(s,
+									importType,
+									createStudy,
+									Integer.parseInt(selectItemProjects.getValue().toString()),
+									selectItemSNPTool.getValueAsString(),
+									fileNumber + 1,
+									nofFiles);
+					
+					if(fileNumber + 1 == nofFiles){
+						listGrid.invalidateCache();
+						listGrid.fetchData();
+						self.clear();
+					}
+					
+					if(fileNumber + 1 < nofFiles) {
+						
+						fileNumber++;
+					
+						self.setTitle("Import file " + (fileNumber + 1) + " of " + studies.length);
+					
+						textItemStudyName.setValue(studies[fileNumber].getName());
+						selectItemProjects.setValue(projectId);
+						selectItemTissues.setValue(studies[fileNumber].getOrganId());
+						selectItemPlatform.setValue(studies[fileNumber].getPlatformId());
+						selectItemGenomeAssembly.setValue(studies[fileNumber].getAssembly());
+						selectItemMethod.setValue(studies[fileNumber].getType());
+						textItemDescription.setValue("");
+						selectItemSNPTool.setValue("");
+						selectItemProperty.clearValue();
+					
+					}
+					
+					if(fileNumber + 1 == nofFiles){
+						submitButton.setTitle("finish");
+					}
+				}
+			}
+		});
+		
+		importOptionsForm.setFields(
+				textItemStudyName,
+				selectItemProjects,
+				selectItemTissues,
+				selectItemPlatform,
+				selectItemGenomeAssembly,
+				selectItemMethod,
+				selectItemSNPTool,
+				textItemDescription,
+				selectItemProperty,
+				cancelButton,
+				submitButton);
+		
+		this.addItem(importOptionsForm);
+		
 	}
 }
 

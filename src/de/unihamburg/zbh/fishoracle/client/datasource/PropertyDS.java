@@ -34,6 +34,9 @@ public class PropertyDS extends FoDataSource  {
         field = new DataSourceTextField("propertyType", "Type");
         addField (field);
         
+        field = new DataSourceTextField("propertyNamePlusType", "NameType");
+        addField (field);
+        
         field = new DataSourceTextField("propertyActivity", "Enabled");
         addField (field);
 		
@@ -60,6 +63,7 @@ public class PropertyDS extends FoDataSource  {
 						record.setAttribute("propertyId", new Integer(result[i].getId()).toString());
 						record.setAttribute("propertyName", result[i].getLabel());
 						record.setAttribute("propertyType", result[i].getType());
+						record.setAttribute("propertyNamePlusType", result[i].getLabel() + " ("+ result[i].getType() + ")");
 						record.setAttribute("propertyActivity", result[i].getActivty());
 						list[i] = record;
 						

@@ -71,7 +71,6 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		return user;
 	}
 	
-	//TODO ignore hidden files...
 	public String[] getUploadedFiles() throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");

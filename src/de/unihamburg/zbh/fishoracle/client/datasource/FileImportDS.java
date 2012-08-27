@@ -54,10 +54,24 @@ public class FileImportDS extends FoDataSource {
 				if (result.length > 0) {
 					for (int i = 0; i < result.length; i++) {
 						
-						ListGridRecord record1 = new ListGridRecord ();
-						record1.setAttribute("fileName", result[i]);
+						ListGridRecord record = new ListGridRecord ();
+						record.setAttribute("fileName", result[i]);
 						
-						list[i] = record1;
+						String[] split = result[i].split("\\.");
+						String studyName = "";
+						
+						
+						for(int j = 0; j < split.length - 1; j++){
+							if(j > 0){
+								studyName += "." + split[j];
+							} else {
+								studyName += split[j];
+							}
+						}
+						
+						record.setAttribute("studyName", studyName);
+						
+						list[i] = record;
 						
 					}
 				}
