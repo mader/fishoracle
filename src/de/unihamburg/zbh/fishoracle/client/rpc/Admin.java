@@ -34,7 +34,7 @@ public interface Admin extends RemoteService  {
 	public String[] getUploadedFiles() throws Exception;
 	public DBConfigData fetchDBConfigData() throws Exception;
 	public boolean writeConfigData(DBConfigData dbcdata) throws Exception;
-	int[] importData(FoStudy foStudy,
+	int[] importData(FoStudy[] foStudy,
 						String importType,
 						boolean createStudy,
 						int projectId,

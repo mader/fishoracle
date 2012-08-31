@@ -33,7 +33,7 @@ public interface AdminAsync {
 	
 	void writeConfigData(DBConfigData dbcdata, AsyncCallback<Boolean> callback);
 
-	void importData(FoStudy foStudy,
+	void importData(FoStudy[] foStudy,
 					String importType,
 					boolean createStudy,
 					int projectId,

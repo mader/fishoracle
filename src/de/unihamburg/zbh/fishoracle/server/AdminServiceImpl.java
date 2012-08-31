@@ -209,7 +209,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 
 	@Override
-	public int[] importData(FoStudy foStudy,
+	public int[] importData(FoStudy[] foStudy,
 								String importType,
 								boolean createStudy,
 								int projectId,
@@ -224,112 +224,119 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
-		String fileName =  foStudy.getFiles()[0];
+		for(int i = 0; i < foStudy.length; i++){
 		
-		CsvReader reader = new CsvReader(servletContext + "tmp" + System.getProperty("file.separator")  + fileName);
-		reader.setDelimiter('\t');
-		reader.readHeaders();
+			String fileName =  foStudy[i].getFiles()[0];
 		
-		Study study = DataTypeConverter.foStudyToStudy(foStudy);
+			CsvReader reader = new CsvReader(servletContext + "tmp" + System.getProperty("file.separator")  + fileName);
+			reader.setDelimiter('\t');
+			reader.readHeaders();
 		
-		DBInterface db = new DBInterface(servletContext);
+			Study study = DataTypeConverter.foStudyToStudy(foStudy[i]);
+		
+			DBInterface db = new DBInterface(servletContext);
 
-		if(importType.equals("Segments")){
+			if(importType.equals("Segments")){
 		
-			CnSegment[] segments;
-			ArrayList<CnSegment> segmentContainer = new ArrayList<CnSegment>();
+				CnSegment[] segments;
+				ArrayList<CnSegment> segmentContainer = new ArrayList<CnSegment>();
 		
-			while (reader.readRecord())
-			{
-				String chr = reader.get("chrom");
-				String start = reader.get("loc.start");
-				String end = reader.get("loc.end");
-				String markers = reader.get("num.mark");
-				String segmentMean = reader.get("seg.mean");
+				while (reader.readRecord())
+				{
+					String chr = reader.get("chrom");
+					String start = reader.get("loc.start");
+					String end = reader.get("loc.end");
+					String markers = reader.get("num.mark");
+					String segmentMean = reader.get("seg.mean");
 			
-				Location loc = new Location(0, chr, Integer.parseInt(start), Integer.parseInt(end));
+					Location loc = new Location(0, chr, Integer.parseInt(start), Integer.parseInt(end));
 			
-				CnSegment segment = new CnSegment(0,
-													loc,
-													Double.parseDouble(segmentMean),
-													Integer.parseInt(markers));
-				segmentContainer.add(segment);
+					CnSegment segment = new CnSegment(0,
+														loc,
+														Double.parseDouble(segmentMean),
+														Integer.parseInt(markers));
+					segmentContainer.add(segment);
+		
+				}
+
+				reader.close();
+
+				segments = new CnSegment[segmentContainer.size()];
+				segmentContainer.toArray(segments);
+			
+				study.setSegments(segments);
 		
 			}
-
-			reader.close();
-
-			segments = new CnSegment[segmentContainer.size()];
-			segmentContainer.toArray(segments);
-			
-			study.setSegments(segments);
 		
-		}
-		
-		if(importType.equals("Mutations")){
+			if(importType.equals("Mutations")){
 			
-			SNPMutation[] mutations;
-			ArrayList<SNPMutation> snpContainer = new ArrayList<SNPMutation>();
+				SNPMutation[] mutations;
+				ArrayList<SNPMutation> snpContainer = new ArrayList<SNPMutation>();
 		
-			while (reader.readRecord())
-			{
-				String chr = reader.get("#CHROM");
-				String pos = reader.get("POS");
-				String dbSnpId = reader.get("DBSNP_ID");
-				String ref = reader.get("REF");
-				String alt = reader.get("ALT");
-				String quality = reader.get("QUAL");
-				String somatic = reader.get("SOMATIC_GERMLINE_CLASSIFICATION");
-				String confidence = reader.get("CONFIDENCE");
-			
-				SNPMutation mut = new SNPMutation(0, new Location(0, chr,
-													Integer.parseInt(pos),
-													Integer.parseInt(pos)),
-													dbSnpId,
-													ref,
-													alt,
-													Double.parseDouble(quality),
-													somatic,
-													confidence,
-													tool);
+				while (reader.readRecord())
+				{
+					String chr = reader.get("#CHROM");
+					String pos = reader.get("POS");
+					String dbSnpId = reader.get("DBSNP_ID");
+					String ref = reader.get("REF");
+					String alt = reader.get("ALT");
+					String quality = reader.get("QUAL");
+					String somatic = reader.get("SOMATIC_GERMLINE_CLASSIFICATION");
+					String confidence = reader.get("CONFIDENCE");
+					
+					if(quality.equals("")){
+						quality = "100.0";
+					}
+					
+					SNPMutation mut = new SNPMutation(0, new Location(0, chr,
+														Integer.parseInt(pos),
+														Integer.parseInt(pos)),
+														dbSnpId,
+														ref,
+														alt,
+														Double.parseDouble(quality),
+														somatic,
+														confidence,
+														tool);
 				
-				snpContainer.add(mut);
+					snpContainer.add(mut);
+		
+				}
+
+				reader.close();
+
+				mutations = new SNPMutation[snpContainer.size()];
+				snpContainer.toArray(mutations);
+			
+				study.setMutations(mutations);
 		
 			}
-
-			reader.close();
-
-			mutations = new SNPMutation[snpContainer.size()];
-			snpContainer.toArray(mutations);
-			
-			study.setMutations(mutations);
 		
-		}
-		
-		study.setUserId(user.getId());
+			study.setUserId(user.getId());
 	
-		if(createStudy){
-			db.createNewStudy(study, projectId);
-		} else {
-			db.importData(study, importType);
-		}
+			if(createStudy){
+				db.createNewStudy(study, projectId);
+			} else {
+				db.importData(study, importType);
+			}
 			
-	    File f = new File(servletContext + "tmp" + System.getProperty("file.separator") + fileName);
+	    	File f = new File(servletContext + "tmp" + System.getProperty("file.separator") + fileName);
 
-	    if (!f.exists())
-	      throw new IllegalArgumentException(
-	          "Delete: no such file or directory: " + fileName);
+	    	if (!f.exists())
+	    	throw new IllegalArgumentException("Delete: no such file or directory: " + fileName);
 
-	    if (!f.canWrite())
-	      throw new IllegalArgumentException("Delete: write protected: "
-	          + fileName);
+	    	if (!f.canWrite())
+	    	throw new IllegalArgumentException("Delete: write protected: " + fileName);
 
-	    boolean success = f.delete();
+	    	boolean success = f.delete();
 
-	    if (!success){
-	      throw new IllegalArgumentException("Delete: deletion failed");
+	    	if (!success){
+	    	throw new IllegalArgumentException("Delete: deletion failed");
+			}
+	    	
+	    	System.out.println(" Imported: " + foStudy[i].getFiles()[0]);
 		}
-		
+	    
 		return new int[]{importNumber, nofImports};
 	}
 }

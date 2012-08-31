@@ -197,7 +197,7 @@ public class CenterPanel extends VLayout {
     private TextItem fishoracleUser;
     private TextItem fishoraclePW;
 	
-    private ProgressWindow window;
+    private Window window;
     
 	@SuppressWarnings("unused")
 	private MainPanel mp = null;
@@ -285,6 +285,7 @@ public class CenterPanel extends VLayout {
 	    			} else {
 	    				imgInfo.getQuery().setGlobalLowerTh(newLowerTh);
 	    			}
+
 	    			if(newUpperTh.equals("")){
 	    				imgInfo.getQuery().setGlobalUpperTh(null);
 	    			} else {
@@ -2666,30 +2667,31 @@ public class CenterPanel extends VLayout {
 					}
 				}
 				
+				//TODO serach for solution to async import with progressbar.
 				if(batchCheckbox.getValueAsBoolean()) {
 					// Import automatically
-					for(int i = 0; i < studies.length; i++) {
+					//for(int i = 0; i < studies.length; i++) {
 						if(createStudyItem.getValueAsString().equals("Create new study")) {
 							// create study and import data
-							importData(studies[i],
+							importData(studies,
 										selectItemFilterType.getValueAsString(), 
 										true,
 										Integer.parseInt(selectItemProjects.getValue().toString()),
 										"",
-										i + 1, 
+										studies.length, 
 										studies.length);
 						}
 						if(createStudyItem.getValueAsString().equals("Import to existing study")) {
 							// import data into existing study
-							importData(studies[i],
+							importData(studies,
 									selectItemFilterType.getValueAsString(), 
 									false,
 									Integer.parseInt(selectItemProjects.getValue().toString()),
 									"",
-									i + 1, 
+									studies.length, 
 									studies.length);
 						}
-					}
+					//}
 					
 				} else {
 					// Manual import
@@ -3384,7 +3386,7 @@ public class CenterPanel extends VLayout {
 		req.getAllGroupsExceptFoProject(foProject, callback);
 	}
 	
-	public void importData(FoStudy foStudy,
+	public void importData(FoStudy[] foStudy,
 							String importType,
 							boolean createStudy,
 							int projectId,
@@ -3400,9 +3402,15 @@ public class CenterPanel extends VLayout {
 			@Override
 			public void onSuccess(int[] result){
 				
+				/*
 				if(window != null){
 					window.updateValues(result[0], result[1]);
 				}
+				*/
+				
+				window.hide();
+				fileGrid.invalidateCache();
+				fileGrid.fetchData();
 				
 			}
 			public void onFailure(Throwable caught){
@@ -3412,6 +3420,7 @@ public class CenterPanel extends VLayout {
 		};
 		
 		if(batchCheckbox.getValueAsBoolean()){
+			/*
 			window = new ProgressWindow(0, nofImports);
 			window.addCloseClickHandler(new com.smartgwt.client.widgets.events.CloseClickHandler(){
 
@@ -3423,7 +3432,16 @@ public class CenterPanel extends VLayout {
 							w.clear();
 						}
 					});
-		
+		*/
+			window = new Window();
+			window.setTitle("BatchImport");
+			window.setAlign(Alignment.CENTER);
+			
+			window.setAutoCenter(true);
+			window.setIsModal(true);
+			window.setShowModalMask(true);
+			Label lbl = new Label("Import Data. This may take upto several minutes.");
+			window.addItem(lbl);
 			window.show();
 		}
 		
@@ -3647,7 +3665,7 @@ class ManualImportWindow extends Window {
 						s.setPropertyIds(intPIds);
 					}
 					
-					cp.importData(s,
+					cp.importData(new FoStudy[]{s},
 									importType,
 									createStudy,
 									Integer.parseInt(selectItemProjects.getValue().toString()),
