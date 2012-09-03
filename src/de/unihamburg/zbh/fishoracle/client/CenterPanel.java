@@ -2485,15 +2485,16 @@ public class CenterPanel extends VLayout {
 		
 		controlsPanel.addMember(importToolStrip);
 		
-		HLayout body = new HLayout();
+		VLayout body = new VLayout();
 		body.setWidth100();
 		body.setHeight100();
 		body.setDefaultLayoutAlign(Alignment.CENTER);
 		
 		//Grid
 		fileGrid = new ListGrid();
-		fileGrid.setWidth("50%");
-		fileGrid.setHeight100();  
+		fileGrid.setWidth100();
+		fileGrid.setHeight("50%");  
+		fileGrid.setShowRowNumbers(true);
 		fileGrid.setAlternateRecordStyles(true);
 		fileGrid.setEditByCell(true);
 		fileGrid.setEditEvent(ListGridEditEvent.CLICK);
@@ -2548,15 +2549,14 @@ public class CenterPanel extends VLayout {
 		
 		fileGrid.fetchData();
 		
-		VLayout importOptions = new VLayout();
+		HLayout importOptions = new HLayout();
 		importOptions.setWidth100();
-		importOptions.setHeight100();
-		importOptions.setDefaultLayoutAlign(Alignment.CENTER);
+		importOptions.setHeight("50%");
+		importOptions.setAlign(Alignment.CENTER);
 		
 		//dynamic form
 		DynamicForm importOptionsForm = new DynamicForm();
-		importOptionsForm.setWidth100();
-		importOptionsForm.setHeight100();
+		importOptionsForm.setWidth("250px");
 		importOptionsForm.setAlign(Alignment.CENTER);
 		
 		selectItemFilterType = new SelectItem();
