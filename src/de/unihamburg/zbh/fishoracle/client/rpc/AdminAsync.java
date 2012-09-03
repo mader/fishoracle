@@ -29,6 +29,8 @@ public interface AdminAsync {
 
 	void getUploadedFiles(AsyncCallback<String[]> callback);
 
+	void deleteFiles(String[] files, AsyncCallback<Void> callback);
+	
 	void fetchDBConfigData(AsyncCallback<DBConfigData> callback);
 	
 	void writeConfigData(DBConfigData dbcdata, AsyncCallback<Boolean> callback);
@@ -59,5 +61,5 @@ public interface AdminAsync {
 			AsyncCallback<FoGroup[]> callback);
 
 	void removeUserFromFoGroup(int groupId, int userId,
-			AsyncCallback<Boolean> callback);
+			AsyncCallback<Boolean> callback);	
 }

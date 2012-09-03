@@ -32,6 +32,7 @@ import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 public interface Admin extends RemoteService  {
 
 	public String[] getUploadedFiles() throws Exception;
+	void deleteFiles(String[] files);
 	public DBConfigData fetchDBConfigData() throws Exception;
 	public boolean writeConfigData(DBConfigData dbcdata) throws Exception;
 	int[] importData(FoStudy[] foStudy,

@@ -7,6 +7,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSourceField;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.rpc.RPCResponse;
@@ -116,9 +117,43 @@ public class FileImportDS extends FoDataSource {
 	}
 
 	@Override
-	protected void executeRemove(String requestId, DSRequest request,
-			DSResponse response) {
-		// TODO Auto-generated method stub
+	protected void executeRemove(final String requestId, final DSRequest request,
+			final DSResponse response) {
 		
+		JavaScriptObject data = request.getData();
+		final Record[] rec = (Record[]) Record.convertToRecordArray(data);
+		
+		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
+			
+			public void onSuccess(Void v){
+				
+				ListGridRecord[] list = new ListGridRecord[rec.length];
+				
+				for(int i = 0; i < rec.length; i++){
+					list[i] = (ListGridRecord) rec[i];
+				}
+				
+				response.setData(list);
+				processResponse(requestId, response);
+			}
+			
+			public void onFailure(Throwable caught){
+				response.setStatus(RPCResponse.STATUS_FAILURE);
+				processResponse(requestId, response);
+				SC.say(caught.getMessage());
+			}
+		};
+		
+		String[] files = new String[rec.length];
+		
+		for(int i = 0; i < rec.length; i++){
+			files[i] = rec[i].getAttribute("fileName");
+		}
+		
+		req.deleteFiles(files, callback);
 	}
 }

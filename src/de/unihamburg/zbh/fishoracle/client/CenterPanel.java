@@ -2473,7 +2473,7 @@ public class CenterPanel extends VLayout {
 		importToolStrip.setWidth100();
 		
 		ToolStripButton addUploadButton = new ToolStripButton();  
-		addUploadButton.setTitle("Upload File");
+		addUploadButton.setTitle("Upload Files");
 		addUploadButton.addClickHandler(new ClickHandler(){
 
 			@Override
@@ -2482,6 +2482,23 @@ public class CenterPanel extends VLayout {
 			}});
 		
 		importToolStrip.addButton(addUploadButton);
+		
+		ToolStripButton deleteUploadButton = new ToolStripButton();  
+		deleteUploadButton.setTitle("Delete Files");
+		deleteUploadButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				if(fileGrid.getSelectedRecords().length > 0){
+					fileGrid.removeSelectedData();
+				} else {
+					SC.say("Select at least one file for deletion.");
+				}
+				
+			}});
+		
+		importToolStrip.addButton(deleteUploadButton);
 		
 		controlsPanel.addMember(importToolStrip);
 		

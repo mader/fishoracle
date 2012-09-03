@@ -105,6 +105,30 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		return fileNames;
 	}
 	
+	public void deleteFiles(String[] files) {
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		File dir = new File(servletContext + System.getProperty("file.separator") + "tmp");
+		
+		for (int i=0; i < files.length; i++) {
+	    	
+			File f = new File(dir + System.getProperty("file.separator") + files[i]);
+
+	    	if (!f.exists())
+	    	throw new IllegalArgumentException("Delete: no such file or directory: " + files[i]);
+
+	    	if (!f.canWrite())
+	    	throw new IllegalArgumentException("Delete: write protected: " + files[i]);
+
+	    	boolean success = f.delete();
+
+	    	if (!success){
+	    	throw new IllegalArgumentException("Delete: deletion failed");
+			}
+	    }
+	}
+	
 	@Override
 	public FoGroup[] getAllFoGroups() throws Exception {
 		isAdmin();
