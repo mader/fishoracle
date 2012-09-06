@@ -120,6 +120,11 @@ public class SketchTool {
 				style.set_color(query.getTracks()[l].getTrackName() + "_mutations", "stroke", new Color(1.0,0.0,0.0,1.0));
 			}
 			
+			if(query.getTracks()[l].getDataType().equals("Translocations")){
+				
+				style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
+				style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
+			}
 			
 		}
 		

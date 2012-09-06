@@ -480,9 +480,15 @@ public class DBInterface {
 				}
 			}
 			
-			feats = adb.getFeatures(fifo,
-									chr,
-									r);
+			if(query.getTracks()[i].getDataType().equals("Translocations")){
+				
+				adb.translocationsOnly(fifo);
+				
+			}
+			
+			adb.setLocation(fifo, chr, r);
+			
+			feats = adb.getFeatures(fifo);
 			
 			if(query.getTracks()[i].getDataType().equals("Mutations")){
 				
@@ -491,6 +497,15 @@ public class DBInterface {
 				features.addArray(procFeats);
 				procFeats.dispose();
 			}
+			if(query.getTracks()[i].getDataType().equals("Translocations")){
+				
+				core.Array procFeats;
+				procFeats = adb.processTranslocations(fifo, feats, rdbe, query.getTracks()[i].getTrackName(), query.getBiotypeFilter());
+				features.addArray(procFeats);
+				
+				//procFeats.dispose();
+			}
+			
 			if(query.getTracks()[i].getDataType().equals("Segments")){
 				features.addArray(feats);
 			}

@@ -56,7 +56,7 @@ public class Track {
 		
 		selectItemFilterType = new SelectItem();
 		selectItemFilterType.setTitle("Filter Type");
-		selectItemFilterType.setValueMap("Segments","Mutations");
+		selectItemFilterType.setValueMap("Segments","Mutations","Translocations");
 		selectItemFilterType.setDefaultToFirstOption(true);
 		selectItemFilterType.addChangedHandler(new ChangedHandler(){
 
