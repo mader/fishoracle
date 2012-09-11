@@ -42,6 +42,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 import de.unihamburg.zbh.fishoracle_db_api.data.SNPMutation;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
+import de.unihamburg.zbh.fishoracle_db_api.data.Translocation;
 
 public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 
@@ -335,7 +336,44 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 				study.setMutations(mutations);
 		
 			}
+			
+			if(importType.equals("Translocations")){
+				
+				Translocation[][] translocs;
+				ArrayList<Translocation[]> translocContainer = new ArrayList<Translocation[]>();
 		
+				while (reader.readRecord())
+				{
+					
+					Translocation[] transloc = new Translocation[2];
+					
+					String chr1 = reader.get("CHR1");
+					String pos1 = reader.get("POS1");
+					String chr2 = reader.get("CHR2");
+					String pos2 = reader.get("POS2");
+					
+					transloc[0] = new Translocation(0, new Location(0, chr1,
+													Integer.parseInt(pos1),
+													Integer.parseInt(pos1)),
+													0);
+					transloc[1] = new Translocation(0, new Location(0, chr2,
+													Integer.parseInt(pos2),
+													Integer.parseInt(pos2)),
+													0);
+					
+					translocContainer.add(transloc);
+		
+				}
+
+				reader.close();
+
+				translocs = new Translocation[translocContainer.size()][];
+				translocContainer.toArray(translocs);
+			
+				study.setTranslocs(translocs);
+		
+			}
+			
 			study.setUserId(user.getId());
 	
 			if(createStudy){

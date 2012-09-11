@@ -583,6 +583,11 @@ public class DBInterface {
 			
 			ma.storeSNPMutations(study.getMutations(), s.getId());
 		}
+		if(importType.equals("Translocations")){
+			TranslocationAdaptor ta = driver.getTranslocationAdaptor();
+			
+			ta.storeTranslocations(study.getTranslocs(), s.getId());
+		}
 	}
 	
 	public FoUser insertUser(FoUser user) throws Exception {

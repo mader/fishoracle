@@ -2572,7 +2572,7 @@ public class CenterPanel extends VLayout {
 		
 		selectItemFilterType = new SelectItem();
 		selectItemFilterType.setTitle("Data Type");
-		selectItemFilterType.setValueMap("Segments","Mutations");
+		selectItemFilterType.setValueMap("Segments","Mutations","Translocations");
 		selectItemFilterType.setDefaultToFirstOption(true);
 		
 		createStudyItem = new RadioGroupItem();
