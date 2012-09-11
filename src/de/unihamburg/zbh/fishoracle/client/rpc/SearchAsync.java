@@ -31,5 +31,6 @@ public interface SearchAsync {
 	public void getSegmentInfo(int segmentId, AsyncCallback<FoCnSegment> callback);
 	public void getGeneInfo(String query, String ensemblDB, AsyncCallback<EnsemblGene> callback);
 	public void exportData(GWTImageInfo imageInfo, AsyncCallback<String> callback);
-	
+	public void updateImgInfoForTranslocationId(int translocId,
+			GWTImageInfo imgInfo, AsyncCallback<QueryInfo> callback);
 }

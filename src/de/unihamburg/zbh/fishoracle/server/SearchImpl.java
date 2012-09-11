@@ -36,6 +36,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
+import de.unihamburg.zbh.fishoracle_db_api.data.Translocation;
 import extended.RDBMysql;
 
 public class SearchImpl extends RemoteServiceServlet implements Search {
@@ -129,10 +130,10 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 
 				try{
 				
-				String[] region = query.getQueryString().split(":");
+					String[] region = query.getQueryString().split(":");
 					
-				featuresLoc = new Location(0,
-						region[0], Integer.parseInt(region[1]), Integer.parseInt(region[2]));
+					featuresLoc = new Location(0,
+					region[0], Integer.parseInt(region[1]), Integer.parseInt(region[2]));
 				
 				} catch (Exception e){
 					e.printStackTrace();
@@ -142,7 +143,16 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				}
 				
 				if(featuresLoc.getEnd() - featuresLoc.getStart() < 10 ){
-					throw new Exception("The end value must at least be 10 base pairs greater than the start value!");
+					
+					int addBases = 100000;
+					
+					if((featuresLoc.getStart() - addBases) < 0 ){
+						featuresLoc.setStart(0);
+						featuresLoc.setEnd(featuresLoc.getEnd() + 2 * addBases);
+					} else {
+						featuresLoc.setStart(featuresLoc.getStart() - addBases);
+						featuresLoc.setEnd(featuresLoc.getEnd() + addBases);
+					}
 				}
 			}
 			
@@ -357,7 +367,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		return segmentData;
 	}
-
+	
 	/**
 	 * Fetches gene data for a particular gene.
 	 * 
@@ -384,6 +394,27 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		rdb.delete();
 		
 		return gene;
+	}
+	
+	@Override
+	public QueryInfo updateImgInfoForTranslocationId(int translocId,
+			GWTImageInfo imgInfo) throws UserException {
+		
+		isActiveUser();
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		Translocation t = db.getTranslocationForId(translocId);
+		
+		String qryStr = t.getLocation().getChromosome() + ":" 
+				+ t.getLocation().getStart() + ":" + t.getLocation().getEnd();
+		
+		imgInfo.getQuery().setQueryString(qryStr);
+		imgInfo.getQuery().setSearchType("Region");
+		
+		return imgInfo.getQuery();
 	}
 	
 	//TODO adapt to new track concept

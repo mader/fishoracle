@@ -25,6 +25,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
+import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
 @RemoteServiceRelativePath("search")
 public interface Search extends RemoteService {
@@ -35,6 +36,8 @@ public interface Search extends RemoteService {
 	public FoCnSegment getSegmentInfo(int segmentId) throws Exception;
 	public EnsemblGene getGeneInfo(String query, String ensemblDB) throws Exception;
 	public String exportData(GWTImageInfo imageInfo) throws Exception;
+	public QueryInfo updateImgInfoForTranslocationId(int translocId,
+			GWTImageInfo imgInfo) throws UserException;
 	
 	public static class Util {
 
@@ -43,7 +46,4 @@ public interface Search extends RemoteService {
 			return GWT.create(Search.class);
 		}
 	}
-
-	
-
 }

@@ -51,6 +51,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.Project;
 import de.unihamburg.zbh.fishoracle_db_api.data.ProjectAccess;
 import de.unihamburg.zbh.fishoracle_db_api.data.Property;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
+import de.unihamburg.zbh.fishoracle_db_api.data.Translocation;
 import de.unihamburg.zbh.fishoracle_db_api.data.User;
 import de.unihamburg.zbh.fishoracle_db_api.driver.CnSegmentAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.EnsemblDBsAdaptor;
@@ -63,6 +64,7 @@ import de.unihamburg.zbh.fishoracle_db_api.driver.ProjectAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.PropertyAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.SNPMutationAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.StudyAdaptor;
+import de.unihamburg.zbh.fishoracle_db_api.driver.TranslocationAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.UserAdaptor;
 import extended.AnnoDBEnsembl;
 import extended.AnnoDBFo;
@@ -700,6 +702,15 @@ public class DBInterface {
 		CnSegment[] segments = ca.fetchCnSegmentsForStudyId(studyId);
 		
 		return DataTypeConverter.cnSegmentsToFoCnSegments(segments);
+	}
+	
+	public Translocation getTranslocationForId(int translocationId){
+		
+		FODriver driver = getFoDriver();
+		TranslocationAdaptor ta = driver.getTranslocationAdaptor();
+		
+		return ta.fetchTranslocationById(translocationId, false)[0];
+		
 	}
 	
 	public void removeStudy(int studyId){

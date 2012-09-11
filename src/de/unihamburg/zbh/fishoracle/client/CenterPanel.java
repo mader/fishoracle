@@ -90,6 +90,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
+import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.datasource.FileImportDS;
@@ -230,6 +231,10 @@ public class CenterPanel extends VLayout {
 		return centerTabSet;
 	}
 
+	public MainPanel getMainPanel() {
+		return mp;
+	}
+	
 	public ToolStripButton getSelectButtion() {
 		return selectButton;
 	}
@@ -3016,8 +3021,7 @@ public class CenterPanel extends VLayout {
 	/*=============================================================================
 	 *||                              RPC Calls                                  ||
 	 *=============================================================================
-	 * */	
-	
+	 * */
 		
 	public void imageRedraw(GWTImageInfo imgInfo){
 			
@@ -3835,13 +3839,16 @@ class RecMapClickHandler implements ClickHandler{
 		if(recInfo.getType().equals("gene")){
 			
 			geneDetails(recInfo.getElementName(), imgInfo.getQuery().getEnsemblDBName());
-			
 		}
 		
-		if(!recInfo.getType().equals("chromosome") && !recInfo.getType().equals("gene")){
+		if(recInfo.getType().equals("segment")){
 			
 			segmentDetails(recInfo.getElementName());
+		}
+		
+		if(recInfo.getType().equals("translocation")){
 			
+			updateImgInfoForTranslocationId(recInfo.getElementName(), imgInfo);
 		}
 	}
 	
@@ -3865,7 +3872,6 @@ class RecMapClickHandler implements ClickHandler{
 		req.getSegmentInfo(Integer.parseInt(query), callback);
 	}
 	
-	
 	public void geneDetails(String query, String ensemblDB){
 		
 		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
@@ -3884,6 +3890,26 @@ class RecMapClickHandler implements ClickHandler{
 			}
 		};
 		req.getGeneInfo(query, ensemblDB, callback);
+	}
+	
+	public void updateImgInfoForTranslocationId(String query, GWTImageInfo imgInfo){
+		
+		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<QueryInfo> callback = new AsyncCallback<QueryInfo>(){
+			public void onSuccess(QueryInfo query){
+				
+				cp.getMainPanel().getWestPanel().search(query);
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());
+			}
+		};
+		req.updateImgInfoForTranslocationId(Integer.parseInt(query), imgInfo, callback);
 	}
 }
 

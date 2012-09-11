@@ -222,13 +222,13 @@ public class SketchTool {
 	    return imgInfo;
 	}
 	
-	private RecMapInfo setRecMapInfo(ImageInfo info, String identifier, int index){
+	private RecMapInfo setRecMapInfo(ImageInfo info, String identifier, int index, String featureType){
 		
 		RecMapInfo recmapinfo = new RecMapInfo(info.get_rec_map(index).get_northwest_x(),
 												info.get_rec_map(index).get_northwest_y(),
 												info.get_rec_map(index).get_southeast_x(),
 												info.get_rec_map(index).get_southeast_y(),
-												info.get_rec_map(index).get_genome_feature().get_type(),
+												featureType,
 												identifier);
 		
 		return recmapinfo;
@@ -245,7 +245,6 @@ public class SketchTool {
 		String identifier = null;
 		RecMapInfo recmapinfo;
 		
-		
 		for(int i=0; i < info.num_of_rec_maps(); i++){
 		
 			// we don't need reqmap information for the karyoband
@@ -256,7 +255,10 @@ public class SketchTool {
 			if(info.get_rec_map(i).get_genome_feature().get_type().equals("gene")){
 				
 				identifier = info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.ID);
-				recmapinfo = setRecMapInfo(info, identifier, i);
+				recmapinfo = setRecMapInfo(info,
+											identifier,
+											i,
+											info.get_rec_map(i).get_genome_feature().get_type());
 				recmapinfoArray.add(recmapinfo);
 				continue;
 			}
@@ -264,7 +266,20 @@ public class SketchTool {
 			if (info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.FEATURE_TYPE).equals("segment")){
 				
 				identifier = info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.ID);
-				recmapinfo = setRecMapInfo(info, identifier, i);
+				recmapinfo = setRecMapInfo(info,
+											identifier,
+											i,
+											info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.FEATURE_TYPE));
+				recmapinfoArray.add(recmapinfo);
+				
+			}
+			if (info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.FEATURE_TYPE).equals("translocation")){
+				
+				identifier = info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.TRANSLOC_REF_ID);
+				recmapinfo = setRecMapInfo(info,
+											identifier,
+											i,
+											info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.FEATURE_TYPE));
 				recmapinfoArray.add(recmapinfo);
 				
 			}
