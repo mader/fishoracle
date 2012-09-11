@@ -28,8 +28,6 @@ import java.util.LinkedHashMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.FormPanel;
 
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Alignment;
@@ -81,8 +79,6 @@ import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
-import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
-import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
 import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
@@ -170,11 +166,6 @@ public class CenterPanel extends VLayout {
 	private TextItem lowerThTextItem;
 	private TextItem upperThTextItem;
 	
-	//TODO
-	private FormPanel uploadForm;
-	private FileUpload fu;
-	private DynamicForm metaDataForm;
-	private TextItem studyName;
 	private ListGrid fileGrid;
 	private RadioGroupItem createStudyItem;
 	private SelectItem selectItemFilterType;
@@ -183,9 +174,7 @@ public class CenterPanel extends VLayout {
 	private SelectItem selectItemPlatform;
 	private SelectItem selectItemGenomeAssembly;
 	private SelectItem selectItemMethod;
-	private TextAreaItem descriptionItem;
 	private CheckboxItem batchCheckbox;
-	private ButtonItem submitNewStudyButton;
 	
 	private TextItem ensemblHost;
     private TextItem ensemblPort;
