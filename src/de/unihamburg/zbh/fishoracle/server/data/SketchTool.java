@@ -31,6 +31,7 @@ import annotationsketch.*;
 import core.*;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
+import extended.FeatureNode;
 
 /**
  *  Draws images visualizing the genomic data especially chromosome,
@@ -125,8 +126,7 @@ public class SketchTool {
 				
 				style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
 				style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
-			}
-			
+			}	
 		}
 		
 		range = new Range(loc.getStart(), loc.getEnd());
@@ -153,7 +153,7 @@ public class SketchTool {
 		    	  
 		        return typeNumber + b.get_type();
 		      }};
-		
+		      
 		diagram = new Diagram(features, range, style);		
 		diagram.set_track_selector_func(ts);
 		
@@ -161,6 +161,12 @@ public class SketchTool {
 		
 		height = layout.get_height();
 
+		for(int k = 0; k < features.size(); k++){
+			FeatureNode fn = new FeatureNode(features.get(k).to_ptr());
+			
+			System.out.println(fn.get_attribute("l") + " " + fn.get_attribute("ID"));
+		}
+		
 		ImageInfo info = new ImageInfo();
 		
 		if(query.getImageType().equals("png")){	
@@ -280,6 +286,10 @@ public class SketchTool {
 											info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.FEATURE_TYPE));
 				recmapinfoArray.add(recmapinfo);
 				
+			}
+			if (info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.FEATURE_TYPE).equals("segment_root")){
+				
+				System.out.println(info.get_rec_map(i).get_genome_feature().get_attribute("l") + " " + info.get_rec_map(i).get_genome_feature().get_attribute("ID"));
 			}
 		}
 		return recmapinfoArray;

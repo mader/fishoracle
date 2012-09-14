@@ -504,6 +504,10 @@ public class DBInterface {
 				procFeats = adb.processTranslocations(fifo, feats, rdbe, query.getTracks()[i].getTrackName(), query.getBiotypeFilter());
 				features.addArray(procFeats);
 			} else {
+				
+				if(query.isSorted()){
+					adb.sortSegmentsForCoverage(feats);
+				}
 				features.addArray(feats);
 			}
 			
