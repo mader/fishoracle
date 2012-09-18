@@ -369,7 +369,7 @@ public class WestPanel extends SectionStack{
 		});
 		
 		ButtonItem removeTrackButton = new ButtonItem();
-		removeTrackButton.setTitle("remove Track");
+		removeTrackButton.setTitle("remove last Track");
 		removeTrackButton.setStartRow(false);
 		removeTrackButton.addClickHandler(new ClickHandler(){
 
