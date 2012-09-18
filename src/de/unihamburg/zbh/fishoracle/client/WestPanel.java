@@ -300,10 +300,28 @@ public class WestPanel extends SectionStack{
 		sortedCheckbox = new CheckboxItem();
 		sortedCheckbox.setTitle("sort segments by experiment");
 		sortedCheckbox.setValue(true);
+		sortedCheckbox.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
 		
 		showCNVCaptionsCheckbox = new CheckboxItem();
 		showCNVCaptionsCheckbox.setTitle("show segment captions");
 		showCNVCaptionsCheckbox.setValue(false);
+		showCNVCaptionsCheckbox.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
 		
 		globalThresholdCheckbox = new CheckboxItem();
 		globalThresholdCheckbox.setTitle("Global Intensity Threshold");
@@ -341,6 +359,15 @@ public class WestPanel extends SectionStack{
 						t.getGreaterTextItem().hide();
 						t.getLessTextItem().hide();
 					}
+				}
+			}
+		});
+		globalThresholdCheckbox.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
 				}
 			}
 		});
