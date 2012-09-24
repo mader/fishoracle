@@ -456,9 +456,7 @@ public class DBInterface {
 				adb.setSegmentsLowerTh(fifo, lth);
 				adb.setSegmentsUpperTh(fifo, uth);
 				
-			}
-			
-			if(query.getTracks()[i].getDataType().equals("Mutations")){
+			} else if(query.getTracks()[i].getDataType().equals("Mutations")){
 				
 				adb.mutationsOnly(fifo);
 				
@@ -481,12 +479,13 @@ public class DBInterface {
 					snpTool = query.getTracks()[i].getSnpTool();
 					adb.addSnptoolFilter(fifo, snpTool);
 				}
-			}
-			
-			if(query.getTracks()[i].getDataType().equals("Translocations")){
+			} else if(query.getTracks()[i].getDataType().equals("Translocations")){
 				
 				adb.translocationsOnly(fifo);
 				
+			} else {
+				adb.genericOnly(fifo);
+				adb.addGenericFilter(fifo, new String[]{query.getTracks()[i].getDataType()});
 			}
 			
 			adb.setLocation(fifo, chr, r);
@@ -499,19 +498,15 @@ public class DBInterface {
 				procFeats = adb.processMutations(feats, rdbe, query.getTracks()[i].getTrackName(), query.getBiotypeFilter());
 				features.addArray(procFeats);
 				procFeats.dispose();
-			}
-			if(query.getTracks()[i].getDataType().equals("Translocations")){
+			} else if(query.getTracks()[i].getDataType().equals("Translocations")){
 				
 				core.Array procFeats;
 				procFeats = adb.processTranslocations(fifo, feats, rdbe, query.getTracks()[i].getTrackName(), query.getBiotypeFilter());
 				features.addArray(procFeats);
-				
-				//procFeats.dispose();
-			}
-			
-			if(query.getTracks()[i].getDataType().equals("Segments")){
+			} else {
 				features.addArray(feats);
 			}
+			
 			feats.dispose();
 		}
 		
@@ -889,6 +884,15 @@ public class DBInterface {
 		String[] propertyTypes = pa.fetchAllTypes();
 		
 		return propertyTypes;
+	}
+	
+	public String[] getFeatureTypes(){
+		FODriver driver = getFoDriver();
+		GenericAdaptor gfa = driver.getGenericAdaptor();
+		
+		String[] featureTypes = gfa.fetchAllTypes();
+		
+		return featureTypes;
 	}
 	
 	public FoPlatform addPlatform(FoPlatform foPlatform){

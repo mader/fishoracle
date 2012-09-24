@@ -14,6 +14,7 @@ import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 
+import de.unihamburg.zbh.fishoracle.client.datasource.FeatureDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.StudyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.datasource.OrganDS;
@@ -56,7 +57,15 @@ public class Track {
 		
 		selectItemFilterType = new SelectItem();
 		selectItemFilterType.setTitle("Filter Type");
-		selectItemFilterType.setValueMap("Segments","Mutations","Translocations");
+		
+		selectItemFilterType.setDisplayField("featureType");
+		selectItemFilterType.setValueField("featureType");
+		selectItemFilterType.setAutoFetchData(false);
+		FeatureDS fDS = new FeatureDS();
+		
+		selectItemFilterType.setOptionDataSource(fDS);
+		selectItemFilterType.setOptionOperationId(OperationId.FEATURE_FETCH_TYPES);
+		
 		selectItemFilterType.setDefaultToFirstOption(true);
 		selectItemFilterType.addChangedHandler(new ChangedHandler(){
 

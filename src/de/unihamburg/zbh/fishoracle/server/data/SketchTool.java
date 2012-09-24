@@ -110,26 +110,24 @@ public class SketchTool {
 					style.set_num(query.getTracks()[l].getTrackName(), "max_capt_show_width", 0);
 				}
 				
-			}
-			if(query.getTracks()[l].getDataType().equals("Mutations")){
+			} else if(query.getTracks()[l].getDataType().equals("Mutations")){
 				
 				style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
 				style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
 				
 				style.set_bool(query.getTracks()[l].getTrackName() + "_mutations", "collapse_to_parent", true);
 				style.set_color(query.getTracks()[l].getTrackName() + "_mutations", "stroke", new Color(1.0,0.0,0.0,1.0));
-			}
-			
-			if(query.getTracks()[l].getDataType().equals("Translocations")){
+			} else if(query.getTracks()[l].getDataType().equals("Translocations")){
+				
+				style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
+				style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
+			} else {
 				
 				style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
 				style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
 			}
 			
 		}
-		
-		
-		
 		
 		range = new Range(loc.getStart(), loc.getEnd());
 		

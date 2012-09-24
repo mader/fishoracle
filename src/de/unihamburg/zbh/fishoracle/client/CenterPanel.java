@@ -93,6 +93,7 @@ import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
+import de.unihamburg.zbh.fishoracle.client.datasource.FeatureDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.FileImportDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.PlatformDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.CnSegmentDS;
@@ -2572,7 +2573,15 @@ public class CenterPanel extends VLayout {
 		
 		cbItemFilterType = new ComboBoxItem();
 		cbItemFilterType.setTitle("Data Type");
-		cbItemFilterType.setValueMap("Segments","Mutations","Translocations");
+		
+		cbItemFilterType.setDisplayField("featureType");
+		cbItemFilterType.setValueField("featureType");
+		cbItemFilterType.setAutoFetchData(false);
+		FeatureDS fDS = new FeatureDS();
+		
+		cbItemFilterType.setOptionDataSource(fDS);
+		cbItemFilterType.setOptionOperationId(OperationId.FEATURE_FETCH_TYPES);
+		
 		cbItemFilterType.setDefaultToFirstOption(true);
 		
 		createStudyItem = new RadioGroupItem();

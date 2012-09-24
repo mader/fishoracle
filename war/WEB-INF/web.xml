@@ -42,6 +42,16 @@
     <url-pattern>/fishoracle/SegmentService</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>FeatureService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.FeatureServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>FeatureService</servlet-name>
+    <url-pattern>/fishoracle/FeatureService</url-pattern>
+  </servlet-mapping>
+
  <servlet>
     <servlet-name>PlatformService</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.PlatformServiceImpl</servlet-class>
