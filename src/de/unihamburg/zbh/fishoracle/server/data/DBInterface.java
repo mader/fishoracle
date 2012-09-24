@@ -57,6 +57,7 @@ import de.unihamburg.zbh.fishoracle_db_api.driver.CnSegmentAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.EnsemblDBsAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriver;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriverImpl;
+import de.unihamburg.zbh.fishoracle_db_api.driver.GenericAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.GroupAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.OrganAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.PlatformAdaptor;
@@ -578,16 +579,21 @@ public class DBInterface {
 		
 			ca.storeCnSegments(study.getSegments(), s.getId());
 		}
-		if(importType.equals("Mutations")){
+		else if(importType.equals("Mutations")){
 			SNPMutationAdaptor ma = driver.getSNPMutationAdaptor();
 			
 			ma.storeSNPMutations(study.getMutations(), s.getId());
 		}
-		if(importType.equals("Translocations")){
+		else if(importType.equals("Translocations")){
 			TranslocationAdaptor ta = driver.getTranslocationAdaptor();
 			
 			ta.storeTranslocations(study.getTranslocs(), s.getId());
+		} else {
+			GenericAdaptor gfa = driver.getGenericAdaptor();
+			
+			gfa.storeGenericFeatures(study.getFeatures(), s.getId());
 		}
+		
 	}
 	
 	public FoUser insertUser(FoUser user) throws Exception {

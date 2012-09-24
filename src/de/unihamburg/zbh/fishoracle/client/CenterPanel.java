@@ -169,7 +169,7 @@ public class CenterPanel extends VLayout {
 	
 	private ListGrid fileGrid;
 	private RadioGroupItem createStudyItem;
-	private SelectItem selectItemFilterType;
+	private ComboBoxItem cbItemFilterType;
 	private SelectItem selectItemProjects;
 	private SelectItem selectItemTissues;
 	private SelectItem selectItemPlatform;
@@ -2570,10 +2570,10 @@ public class CenterPanel extends VLayout {
 		importOptionsForm.setWidth("250px");
 		importOptionsForm.setAlign(Alignment.CENTER);
 		
-		selectItemFilterType = new SelectItem();
-		selectItemFilterType.setTitle("Data Type");
-		selectItemFilterType.setValueMap("Segments","Mutations","Translocations");
-		selectItemFilterType.setDefaultToFirstOption(true);
+		cbItemFilterType = new ComboBoxItem();
+		cbItemFilterType.setTitle("Data Type");
+		cbItemFilterType.setValueMap("Segments","Mutations","Translocations");
+		cbItemFilterType.setDefaultToFirstOption(true);
 		
 		createStudyItem = new RadioGroupItem();
 		createStudyItem.setTitle("");
@@ -2685,7 +2685,7 @@ public class CenterPanel extends VLayout {
 						if(createStudyItem.getValueAsString().equals("Create new study")) {
 							// create study and import data
 							importData(studies,
-										selectItemFilterType.getValueAsString(), 
+										cbItemFilterType.getValueAsString(), 
 										true,
 										Integer.parseInt(selectItemProjects.getValue().toString()),
 										"",
@@ -2695,7 +2695,7 @@ public class CenterPanel extends VLayout {
 						if(createStudyItem.getValueAsString().equals("Import to existing study")) {
 							// import data into existing study
 							importData(studies,
-									selectItemFilterType.getValueAsString(), 
+									cbItemFilterType.getValueAsString(), 
 									false,
 									Integer.parseInt(selectItemProjects.getValue().toString()),
 									"",
@@ -2710,7 +2710,7 @@ public class CenterPanel extends VLayout {
 						ManualImportWindow miw = null;
 						if(createStudyItem.getValueAsString().equals("Create new study")) {
 							miw = new ManualImportWindow(studies,
-										selectItemFilterType.getValueAsString(),
+										cbItemFilterType.getValueAsString(),
 										Integer.parseInt(selectItemProjects.getValue().toString()),
 										true,
 										fileGrid,
@@ -2719,7 +2719,7 @@ public class CenterPanel extends VLayout {
 					}
 						if(createStudyItem.getValueAsString().equals("Import to existing study")) {
 							miw = new ManualImportWindow(studies,
-										selectItemFilterType.getValueAsString(),
+										cbItemFilterType.getValueAsString(),
 										Integer.parseInt(selectItemProjects.getValue().toString()),
 										false,
 										fileGrid,
@@ -2733,7 +2733,7 @@ public class CenterPanel extends VLayout {
 			}
 		});
 		
-		importOptionsForm.setFields(selectItemFilterType,
+		importOptionsForm.setFields(cbItemFilterType,
 									createStudyItem,
 									selectItemProjects,
 									selectItemTissues,

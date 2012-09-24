@@ -39,6 +39,7 @@ import de.unihamburg.zbh.fishoracle.server.data.DBConfig;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 import de.unihamburg.zbh.fishoracle.server.data.DataTypeConverter;
 import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
+import de.unihamburg.zbh.fishoracle_db_api.data.GenericFeature;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 import de.unihamburg.zbh.fishoracle_db_api.data.SNPMutation;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
@@ -291,9 +292,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 			
 				study.setSegments(segments);
 		
-			}
-		
-			if(importType.equals("Mutations")){
+			} else if(importType.equals("Mutations")){
 			
 				SNPMutation[] mutations;
 				ArrayList<SNPMutation> snpContainer = new ArrayList<SNPMutation>();
@@ -335,9 +334,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 			
 				study.setMutations(mutations);
 		
-			}
-			
-			if(importType.equals("Translocations")){
+			} else if(importType.equals("Translocations")){
 				
 				Translocation[][] translocs;
 				ArrayList<Translocation[]> translocContainer = new ArrayList<Translocation[]>();
@@ -371,6 +368,34 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 				translocContainer.toArray(translocs);
 			
 				study.setTranslocs(translocs);
+		
+			} else {
+				
+				GenericFeature[] features;
+				ArrayList<GenericFeature> featureContainer = new ArrayList<GenericFeature>();
+		
+				while (reader.readRecord())
+				{
+					
+					String chr = reader.get("#CHROM");
+					String start = reader.get("START");
+					String end = reader.get("END");
+					
+					GenericFeature f = new GenericFeature(0, new Location(0, chr,
+														Integer.parseInt(start),
+														Integer.parseInt(end)),
+														importType);
+				
+					featureContainer.add(f);
+		
+				}
+
+				reader.close();
+
+				features = new GenericFeature[featureContainer.size()];
+				featureContainer.toArray(features);
+			
+				study.setFeatures(features);
 		
 			}
 			
