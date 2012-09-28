@@ -169,12 +169,6 @@ public class SketchTool {
 
 		adb.delete();
 		
-		for(int k = 0; k < features.size(); k++){
-			FeatureNode fn = new FeatureNode(features.get(k).to_ptr());
-			
-			System.out.println(fn.get_attribute("l") + " " + fn.get_attribute("ID"));
-		}
-		
 		ImageInfo info = new ImageInfo();
 		
 		if(query.getImageType().equals("png")){	
@@ -294,10 +288,6 @@ public class SketchTool {
 											info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.FEATURE_TYPE));
 				recmapinfoArray.add(recmapinfo);
 				
-			}
-			if (info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.FEATURE_TYPE).equals("segment_root")){
-				
-				System.out.println(info.get_rec_map(i).get_genome_feature().get_attribute("l") + " " + info.get_rec_map(i).get_genome_feature().get_attribute("ID"));
 			}
 		}
 		return recmapinfoArray;
