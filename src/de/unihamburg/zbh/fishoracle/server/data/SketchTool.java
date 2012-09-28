@@ -31,7 +31,9 @@ import annotationsketch.*;
 import core.*;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
+import extended.AnnoDBFo;
 import extended.FeatureNode;
+import extended.GenomeNode;
 
 /**
  *  Draws images visualizing the genomic data especially chromosome,
@@ -154,13 +156,19 @@ public class SketchTool {
 		        return typeNumber + b.get_type();
 		      }};
 		      
+		AnnoDBFo adb = new AnnoDBFo();
+		
 		diagram = new Diagram(features, range, style);		
 		diagram.set_track_selector_func(ts);
 		
 		layout = new Layout(diagram, query.getWinWidth(), style);
-		
+		if(query.isSorted()){
+			adb.set_layout_block_sort(layout);
+		}
 		height = layout.get_height();
 
+		adb.delete();
+		
 		for(int k = 0; k < features.size(); k++){
 			FeatureNode fn = new FeatureNode(features.get(k).to_ptr());
 			
