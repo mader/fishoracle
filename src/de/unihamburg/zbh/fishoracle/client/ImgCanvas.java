@@ -44,6 +44,7 @@ public class ImgCanvas extends Img {
 	private Canvas line;
 	private Canvas rec;
 	private boolean mouseDown;
+	private boolean setChildren;
 	private ImgCanvas imgc;
 	private CenterPanel cp;
 	
@@ -57,6 +58,7 @@ public class ImgCanvas extends Img {
 		imgc = this;
 		this.cp = cp;
 		mouseDown = false;
+		setChildren = false;
 	}
 
 	@Override   
@@ -161,6 +163,14 @@ public class ImgCanvas extends Img {
 
 	public void setEnd(TextItem end) {
 		this.end = end;
+	}
+	
+	public boolean isSetChildren() {
+		return setChildren;
+	}
+
+	public void setSetChildren(boolean setChildren) {
+		this.setChildren = setChildren;
 	}
 
 	private Canvas createRec() {

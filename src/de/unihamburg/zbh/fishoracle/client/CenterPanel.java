@@ -48,6 +48,8 @@ import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
+import com.smartgwt.client.widgets.events.MouseOverEvent;
+import com.smartgwt.client.widgets.events.MouseOverHandler;
 
 import com.smartgwt.client.widgets.events.ResizedEvent;
 import com.smartgwt.client.widgets.events.ResizedHandler;
@@ -316,44 +318,61 @@ public class CenterPanel extends VLayout {
         image.setHeight(imgInfo.getHeight());
         image.setAppImgDir("/");
 		
-		int rmc;
-		
-		for(rmc=0; rmc < imgInfo.getRecmapinfo().size(); rmc++){
-			
-			final Img spaceImg = new Img("1pximg.gif");
-			
-			spaceImg.addClickHandler(new RecMapClickHandler(imgInfo.getRecmapinfo().get(rmc), imgInfo, this));
-			
-			int southeast_x = (int) imgInfo.getRecmapinfo().get(rmc).getSoutheastX();
-			
-			int northwest_x = (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestX();
-			
-			if(southeast_x > imgInfo.getWidth()){
-				spaceImg.setWidth(imgInfo.getWidth() - northwest_x);
-			} else {
-				spaceImg.setWidth(southeast_x - northwest_x);
-			}
-			
-			if(spaceImg.getWidth() <= 0){
-				spaceImg.setWidth(1);
-			}
-			
-			int southeast_y = (int) imgInfo.getRecmapinfo().get(rmc).getSoutheastY();
-			
-			int northwest_y = (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestY();
-			
-			spaceImg.setHeight(southeast_y - northwest_y);
-			
-			spaceImg.setLeft( (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestX());
-			
-			spaceImg.setTop( (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestY());
-			
-			spaceImg.setCursor(Cursor.HAND);
-			
-			image.addChild(spaceImg);
-			
-		}
-		
+        image.addMouseOverHandler(new MouseOverHandler(){
+
+        	@Override
+        	public void onMouseOver(MouseOverEvent event) {
+        		ImgCanvas image = (ImgCanvas) event.getSource();
+
+        		if(!image.isSetChildren()){
+
+        			int rmc;
+
+        			GWTImageInfo imgInfo = image.getImageInfo();
+
+        			for(rmc=0; rmc < imgInfo.getRecmapinfo().size(); rmc++){
+
+        				final Img spaceImg = new Img("1pximg.gif");
+
+        				spaceImg.addClickHandler(new RecMapClickHandler(imgInfo.getRecmapinfo().get(rmc), imgInfo, cp));
+
+        				int southeast_x = (int) imgInfo.getRecmapinfo().get(rmc).getSoutheastX();
+
+        				int northwest_x = (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestX();
+
+        				if(southeast_x > imgInfo.getWidth()){
+        					spaceImg.setWidth(imgInfo.getWidth() - northwest_x);
+        				} else {
+        					spaceImg.setWidth(southeast_x - northwest_x);
+        				}
+
+        				if(spaceImg.getWidth() <= 0){
+        					spaceImg.setWidth(1);
+        				}
+
+        				int southeast_y = (int) imgInfo.getRecmapinfo().get(rmc).getSoutheastY();
+
+        				int northwest_y = (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestY();
+
+        				spaceImg.setHeight(southeast_y - northwest_y);
+
+        				spaceImg.setLeft( (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestX());
+
+        				spaceImg.setTop( (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestY());
+
+        				spaceImg.setCursor(Cursor.HAND);
+
+        				image.addChild(spaceImg);
+
+        			}
+        			
+        			image.setSetChildren(true);
+        		}
+
+        	}
+
+        });
+        
 		return image;
 	}
 	
@@ -799,7 +818,7 @@ public class CenterPanel extends VLayout {
 		centerTabSet.addTab(imgTab);
 	
 		centerTabSet.selectTab(imgTab);
-				
+		
 	}
 	
 	public void loadWindow(FoCnSegment segmentData){

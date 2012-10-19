@@ -896,7 +896,7 @@ public class WestPanel extends SectionStack{
 			final AsyncCallback<GWTImageInfo> callback = new AsyncCallback<GWTImageInfo>(){
 				public void onSuccess(GWTImageInfo result){
 					
-					mp.getCenterPanel().newImageTab(result);				
+					mp.getCenterPanel().newImageTab(result);
 					
 				}
 				public void onFailure(Throwable caught){
