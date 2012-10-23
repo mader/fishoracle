@@ -32,8 +32,6 @@ import core.*;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 import extended.AnnoDBFo;
-import extended.FeatureNode;
-import extended.GenomeNode;
 
 /**
  *  Draws images visualizing the genomic data especially chromosome,
