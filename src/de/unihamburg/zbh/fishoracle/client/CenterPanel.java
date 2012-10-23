@@ -3083,8 +3083,6 @@ public class CenterPanel extends VLayout {
 				VLayout presentationLayer = (VLayout) cp.getCenterTabSet().getSelectedTab().getPane();
 				
 				presentationLayer.addMember(newImgLayer);
-				
-				newImgLayer.draw();
 
 			}
 			public void onFailure(Throwable caught){
