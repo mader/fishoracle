@@ -14,13 +14,13 @@ import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
+import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.rpc.SegmentService;
 import de.unihamburg.zbh.fishoracle.client.rpc.SegmentServiceAsync;
 
-public class CnSegmentDS extends FoDataSource {
+public class SegmentDS extends FoDataSource {
 
-	public CnSegmentDS() {
+	public SegmentDS() {
 		DataSourceField field;
 		field = new DataSourceIntegerField("segmentId", "Segment ID");
 		field.setPrimaryKey(true);
@@ -39,10 +39,13 @@ public class CnSegmentDS extends FoDataSource {
         field.setRequired(true);
         addField (field);
         
-        field = new DataSourceFloatField("mean", "Mean Intensity");
+        field = new DataSourceFloatField("score", "Mean Intensity/Status");
         addField (field);
         
         field = new DataSourceIntegerField("markers", "Number of Markers");
+        addField (field);
+        
+        field = new DataSourceTextField("type", "Segment Type");
         addField (field);
 	}
 
@@ -54,9 +57,9 @@ public class CnSegmentDS extends FoDataSource {
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "SegmentService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoCnSegment[]> callback = new AsyncCallback<FoCnSegment[]>(){
+		final AsyncCallback<FoSegment[]> callback = new AsyncCallback<FoSegment[]>(){
 			
-			public void onSuccess(FoCnSegment[] result){
+			public void onSuccess(FoSegment[] result){
 				
 				ListGridRecord[] list = new ListGridRecord[result.length];
 				
@@ -68,8 +71,9 @@ public class CnSegmentDS extends FoDataSource {
 						record.setAttribute("chromosome", result[i].getLocation().getChromosome());
 						record.setAttribute("start", result[i].getLocation().getStart());
 						record.setAttribute("end", result[i].getLocation().getEnd());
-						record.setAttribute("mean", result[i].getMean());
+						record.setAttribute("score", result[i].getMean());
 						record.setAttribute("markers", result[i].getNumberOfMarkers());
+						record.setAttribute("type", result[i].getType());
 						
 						list[i] = record;
 						

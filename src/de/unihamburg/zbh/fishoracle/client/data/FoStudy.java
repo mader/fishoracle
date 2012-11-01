@@ -24,7 +24,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class FoStudy implements IsSerializable {
 	
 	private int id;
-	private FoCnSegment segments[];
+	private FoSegment segments[];
 	private FoSNPMutation mutations[];
 	private FoPlatform platform;
 	private FoTissueSample tissue;
@@ -58,7 +58,7 @@ public class FoStudy implements IsSerializable {
 		this.userId = userId;
 	}
 
-	public FoStudy(FoCnSegment[] segments,
+	public FoStudy(FoSegment[] segments,
 					String name,
 					String type,
 					String assembly,
@@ -79,7 +79,7 @@ public class FoStudy implements IsSerializable {
 	}
 
 	public FoStudy(int id,
-					FoCnSegment[] segments,
+					FoSegment[] segments,
 					FoPlatform platform,
 					FoTissueSample tissue,
 					Date date,
@@ -102,11 +102,11 @@ public class FoStudy implements IsSerializable {
 		this.mutations = mutations;
 	}
 
-	public FoCnSegment[] getSegments() {
+	public FoSegment[] getSegments() {
 		return segments;
 	}
 
-	public void setSegments(FoCnSegment[] segments) {
+	public void setSegments(FoSegment[] segments) {
 		this.segments = segments;
 	}
 

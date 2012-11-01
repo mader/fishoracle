@@ -32,6 +32,7 @@ public class Track {
 	private SelectItem segmentThresholdSelectItem;
 	private TextItem greaterTextItem;
 	private TextItem lessTextItem;
+	private SelectItem statusSelectItem;
 	
 	private SelectItem selectItemExperiments;
 	
@@ -72,20 +73,35 @@ public class Track {
 			@Override
 			public void onChanged(ChangedEvent event) {
 				String val =  event.getValue().toString();
-				if(val.equals("Segments")){
+				if(val.equals("Segments (PennCNV)") || val.equals("Segments (DNACopy)")){
 					selectItemFilter.setValueMap("Project","Tissue","Experiments");
 					selectItemFilter.setValue("Project");
 					if(!(Boolean) mp.getWestPanel().getGlobalThresholdCheckbox().getValue()){
-						segmentThresholdSelectItem.show();
-						greaterTextItem.show();
-						lessTextItem.show();
+						
+						
+						if(val.equals("Segments (DNACopy)")){
+							segmentThresholdSelectItem.show();
+							greaterTextItem.show();
+							lessTextItem.show();
+							
+							statusSelectItem.hide();
+						}
+						
+						if(val.equals("Segments (PennCNV)")){
+							statusSelectItem.show();
+							
+							segmentThresholdSelectItem.hide();
+							greaterTextItem.hide();
+							lessTextItem.hide();
+							
+						}
+						
 					}
 					textItemQuality.hide();
 					selectItemSomatic.hide();
 					selectItemConfidence.hide();
 					selectItemSNPTool.hide();
-				}
-				if(val.equals("Mutations")){
+				} else if(val.equals("Mutations")){
 					selectItemFilter.setValueMap("Project",
 							"Tissue",
 							"Experiments",
@@ -97,7 +113,15 @@ public class Track {
 					segmentThresholdSelectItem.hide();
 					greaterTextItem.hide();
 					lessTextItem.hide();
-				}	
+					statusSelectItem.hide();
+				} else {
+					selectItemFilter.setValueMap("Project","Tissue","Experiments");
+					selectItemFilter.setValue("Project");
+					segmentThresholdSelectItem.hide();
+					greaterTextItem.hide();
+					lessTextItem.hide();
+					statusSelectItem.hide();
+				}
 			}
 		});
 		
@@ -156,6 +180,28 @@ public class Track {
 		lessTextItem.setValue("-0.5");
 		lessTextItem.setVisible(false);
 		lessTextItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					mp.getWestPanel().startSearch();
+				}
+			}
+		});
+		
+		statusSelectItem = new SelectItem();
+		statusSelectItem.setTitle("CNV Status");
+		statusSelectItem.setMultiple(true);
+		statusSelectItem.setMultipleAppearance(MultipleAppearance.PICKLIST);
+		statusSelectItem.setValueMap("0",
+										"1",
+										"2",
+										"3",
+										"4",
+										"5");
+		statusSelectItem.setDefaultValues("0","1");
+		statusSelectItem.setVisible(false);
+		statusSelectItem.addKeyPressHandler(new KeyPressHandler(){
 			
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
@@ -322,6 +368,7 @@ public class Track {
 							segmentThresholdSelectItem,
 							greaterTextItem,
 							lessTextItem,
+							statusSelectItem,
 							selectItemProjects,
 							selectItemTissues,
 							selectItemExperiments,
@@ -403,6 +450,14 @@ public class Track {
 
 	public void setLessTextItem(TextItem lessTextItem) {
 		this.lessTextItem = lessTextItem;
+	}
+	
+	public SelectItem getStatusSelectItem() {
+		return statusSelectItem;
+	}
+
+	public void setStatusSelectItem(SelectItem statusSelectItem) {
+		this.statusSelectItem = statusSelectItem;
 	}
 
 	public SelectItem getSelectItemExperiments() {

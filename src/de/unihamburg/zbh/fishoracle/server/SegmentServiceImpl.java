@@ -2,7 +2,7 @@ package de.unihamburg.zbh.fishoracle.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
+import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.rpc.SegmentService;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 
@@ -11,13 +11,13 @@ public class SegmentServiceImpl extends RemoteServiceServlet implements SegmentS
 	private static final long serialVersionUID = 1L;
 	
 	@Override
-	public FoCnSegment add(FoCnSegment foStudy) {
+	public FoSegment add(FoSegment foStudy) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public FoCnSegment[] fetch(int studyId)
+	public FoSegment[] fetch(int studyId)
 			throws Exception {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
@@ -29,7 +29,7 @@ public class SegmentServiceImpl extends RemoteServiceServlet implements SegmentS
 	}
 
 	@Override
-	public void update(FoCnSegment foStudy) {
+	public void update(FoSegment foStudy) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -86,7 +86,7 @@ import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
+import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
@@ -98,7 +98,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.datasource.FeatureDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.FileImportDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.PlatformDS;
-import de.unihamburg.zbh.fishoracle.client.datasource.CnSegmentDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.SegmentDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.EnsemblDBDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.StudyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
@@ -821,7 +821,7 @@ public class CenterPanel extends VLayout {
 		
 	}
 	
-	public void loadWindow(FoCnSegment segmentData){
+	public void loadWindow(FoSegment segmentData){
 		
 		Window window = new Window();
 		window.setTitle("Segment " + segmentData.getId());
@@ -1899,7 +1899,7 @@ public class CenterPanel extends VLayout {
 		centerTabSet.selectTab(platformsAdminTab);
 	}
 	
-	public void openCnSegmentTab(String studyId){
+	public void openSegmentTab(String studyId){
 		Tab segmentAdminTab = new Tab("Segments");
 		segmentAdminTab.setCanClose(true);
 		
@@ -1927,12 +1927,13 @@ public class CenterPanel extends VLayout {
 		lgfChr.setCellAlign(Alignment.CENTER);
 		ListGridField lgfStart = new ListGridField("start", "Start");
 		ListGridField lgfEnd = new ListGridField("end", "End");
-		ListGridField lgfMean = new ListGridField("mean", "Segment Mean");
+		ListGridField lgfScore = new ListGridField("score", "Segment Mean/Status");
 		ListGridField lgfMarkers = new ListGridField("markers", "Number of Markers");
+		ListGridField lgfType = new ListGridField("type", "Segment Type");
 		
-		segmentGrid.setFields(lgfId, lgfChr, lgfStart, lgfEnd, lgfMean, lgfMarkers);
+		segmentGrid.setFields(lgfId, lgfChr, lgfStart, lgfEnd, lgfScore, lgfMarkers, lgfType);
 		
-		CnSegmentDS sDS = new CnSegmentDS();
+		SegmentDS sDS = new SegmentDS();
 		
 		segmentGrid.setDataSource(sDS);
 		
@@ -2009,7 +2010,7 @@ public class CenterPanel extends VLayout {
 				
 				if (lgr != null){
 				
-					openCnSegmentTab(lgr.getAttributeAsString("studyId"));
+					openSegmentTab(lgr.getAttributeAsString("studyId"));
 					
 				} else {
 					SC.say("Select a study.");
@@ -2712,8 +2713,12 @@ public class CenterPanel extends VLayout {
 					//for(int i = 0; i < studies.length; i++) {
 						if(createStudyItem.getValueAsString().equals("Create new study")) {
 							// create study and import data
+							
+							
+							
 							importData(studies,
-										cbItemFilterType.getValueAsString(), 
+										cbItemFilterType.getValueAsString(),
+										cbItemFilterType.getSelectedRecord().getAttribute("type"),
 										true,
 										Integer.parseInt(selectItemProjects.getValue().toString()),
 										"",
@@ -2724,6 +2729,7 @@ public class CenterPanel extends VLayout {
 							// import data into existing study
 							importData(studies,
 									cbItemFilterType.getValueAsString(), 
+									cbItemFilterType.getSelectedRecord().getAttribute("type"),
 									false,
 									Integer.parseInt(selectItemProjects.getValue().toString()),
 									"",
@@ -2739,6 +2745,7 @@ public class CenterPanel extends VLayout {
 						if(createStudyItem.getValueAsString().equals("Create new study")) {
 							miw = new ManualImportWindow(studies,
 										cbItemFilterType.getValueAsString(),
+										cbItemFilterType.getSelectedRecord().getAttribute("type"),
 										Integer.parseInt(selectItemProjects.getValue().toString()),
 										true,
 										fileGrid,
@@ -2748,6 +2755,7 @@ public class CenterPanel extends VLayout {
 						if(createStudyItem.getValueAsString().equals("Import to existing study")) {
 							miw = new ManualImportWindow(studies,
 										cbItemFilterType.getValueAsString(),
+										cbItemFilterType.getSelectedRecord().getAttribute("type"),
 										Integer.parseInt(selectItemProjects.getValue().toString()),
 										false,
 										fileGrid,
@@ -3424,6 +3432,7 @@ public class CenterPanel extends VLayout {
 	
 	public void importData(FoStudy[] foStudy,
 							String importType,
+							String importSubType,
 							boolean createStudy,
 							int projectId,
 							String tool,
@@ -3483,6 +3492,7 @@ public class CenterPanel extends VLayout {
 		
 		req.importData(foStudy,
 						importType,
+						importSubType,
 						createStudy,
 						projectId,
 						tool,
@@ -3512,6 +3522,7 @@ class ManualImportWindow extends Window {
 	
 	public ManualImportWindow(final FoStudy[] studies,
 							final String importType,
+							final String dataSubType,
 							final int projectId,
 							final boolean createStudy,
 							ListGrid lg,
@@ -3703,6 +3714,7 @@ class ManualImportWindow extends Window {
 					
 					cp.importData(new FoStudy[]{s},
 									importType,
+									dataSubType,
 									createStudy,
 									Integer.parseInt(selectItemProjects.getValue().toString()),
 									selectItemSNPTool.getValueAsString(),
@@ -3884,8 +3896,8 @@ class RecMapClickHandler implements ClickHandler{
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoCnSegment> callback = new AsyncCallback<FoCnSegment>(){
-			public void onSuccess(FoCnSegment segmentData){
+		final AsyncCallback<FoSegment> callback = new AsyncCallback<FoSegment>(){
+			public void onSuccess(FoSegment segmentData){
 				
 				cp.loadWindow(segmentData);
 				

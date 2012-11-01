@@ -92,7 +92,8 @@ public class SketchTool {
 		
 		for(int l=0; l < query.getTracks().length; l++ ){
 		
-			if(query.getTracks()[l].getDataType().equals("Segments")){
+			if(query.getTracks()[l].getDataType().equals("Segments (DNACopy)") || 
+					query.getTracks()[l].getDataType().equals("Segments (PennCNV)")){
 				if(query.isSorted()){
 			
 					style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,0.0));

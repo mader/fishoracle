@@ -38,10 +38,10 @@ import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle.server.data.DBConfig;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 import de.unihamburg.zbh.fishoracle.server.data.DataTypeConverter;
-import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 import de.unihamburg.zbh.fishoracle_db_api.data.GenericFeature;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 import de.unihamburg.zbh.fishoracle_db_api.data.SNPMutation;
+import de.unihamburg.zbh.fishoracle_db_api.data.Segment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
 import de.unihamburg.zbh.fishoracle_db_api.data.Translocation;
 
@@ -237,6 +237,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	@Override
 	public int[] importData(FoStudy[] foStudy,
 								String importType,
+								String dataSubType,
 								boolean createStudy,
 								int projectId,
 								String tool,
@@ -262,32 +263,56 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 			DBInterface db = new DBInterface(servletContext);
 
-			if(importType.equals("Segments")){
+			if(importType.equals("Segments (DNACopy)") || 
+					importType.equals("Segments (PennCNV)")){
 		
-				CnSegment[] segments;
-				ArrayList<CnSegment> segmentContainer = new ArrayList<CnSegment>();
+				Segment[] segments;
+				ArrayList<Segment> segmentContainer = new ArrayList<Segment>();
 		
 				while (reader.readRecord())
 				{
 					String chr = reader.get("chrom");
 					String start = reader.get("loc.start");
 					String end = reader.get("loc.end");
-					String markers = reader.get("num.mark");
-					String segmentMean = reader.get("seg.mean");
+					String mean = "0";
+					String markers = "0";
+					String status = "-1";
+					String statusScore = "-1.0";
+							
+					if(dataSubType.equals("dnacopy")){
+						
+						mean = reader.get("seg.mean");
+						markers = reader.get("num.mark");
+						status = "-1";
+						statusScore = "-1.0";
+					}
+					if(dataSubType.equals("penncnv")){
+						
+						status = reader.get("cnv.status");
+						statusScore = reader.get("status.score");
+						mean = "0";
+						markers = "0";
+					}
 			
 					Location loc = new Location(0, chr, Integer.parseInt(start), Integer.parseInt(end));
 			
-					CnSegment segment = new CnSegment(0,
-														loc,
-														Double.parseDouble(segmentMean),
-														Integer.parseInt(markers));
+					Segment segment = new Segment(0,
+													loc,
+													dataSubType);
+					
+					segment.setMean(Double.parseDouble(mean));
+					segment.setNumberOfMarkers(Integer.parseInt(markers));
+					
+					segment.setStatus(Integer.parseInt(status));
+					segment.setStatusScore(Double.parseDouble(statusScore));
+					
 					segmentContainer.add(segment);
 		
 				}
 
 				reader.close();
 
-				segments = new CnSegment[segmentContainer.size()];
+				segments = new Segment[segmentContainer.size()];
 				segmentContainer.toArray(segments);
 			
 				study.setSegments(segments);

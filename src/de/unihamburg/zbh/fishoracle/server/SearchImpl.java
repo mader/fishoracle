@@ -28,7 +28,7 @@ import annotationsketch.FeatureCollection;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.server.data.*;
-import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
+import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
@@ -351,7 +351,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 	 * @throws Exception
 	 * @throws Exception
 	 * */
-	public FoCnSegment getSegmentInfo(
+	public FoSegment getSegmentInfo(
 			int segmentId) throws Exception {
 		
 		isActiveUser();
@@ -363,7 +363,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		FoCnSegment  segmentData = db.getSegmentInfos(segmentId);
+		FoSegment  segmentData = db.getSegmentInfos(segmentId);
 		
 		return segmentData;
 	}

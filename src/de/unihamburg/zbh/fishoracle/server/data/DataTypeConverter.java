@@ -17,7 +17,7 @@
 
 package de.unihamburg.zbh.fishoracle.server.data;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
+import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoEnsemblDBs;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoLocation;
@@ -30,7 +30,6 @@ import de.unihamburg.zbh.fishoracle.client.data.FoSNPMutation;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoTissueSample;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
-import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 import de.unihamburg.zbh.fishoracle_db_api.data.EnsemblDBs;
 import de.unihamburg.zbh.fishoracle_db_api.data.Group;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
@@ -40,6 +39,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.Project;
 import de.unihamburg.zbh.fishoracle_db_api.data.ProjectAccess;
 import de.unihamburg.zbh.fishoracle_db_api.data.Property;
 import de.unihamburg.zbh.fishoracle_db_api.data.SNPMutation;
+import de.unihamburg.zbh.fishoracle_db_api.data.Segment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
 import de.unihamburg.zbh.fishoracle_db_api.data.TissueSample;
 import de.unihamburg.zbh.fishoracle_db_api.data.User;
@@ -131,20 +131,25 @@ public class DataTypeConverter {
 		return loc;
 	}
 	
-	public static FoCnSegment[] cnSegmentsToFoCnSegments(CnSegment[] segments){
-		FoCnSegment[] foSegments = new FoCnSegment[segments.length];
+	public static FoSegment[] segmentsToFoSegments(Segment[] segments){
+		FoSegment[] foSegments = new FoSegment[segments.length];
 		
 		for(int i=0; i < segments.length; i++){
-			foSegments[i] = cnSegmentToFoCnSegment(segments[i]);
+			foSegments[i] = segmentToFoSegment(segments[i]);
 		}
 		return foSegments;
 	}
 	
-	public static FoCnSegment cnSegmentToFoCnSegment(CnSegment segment){
-		FoCnSegment foSegment = new FoCnSegment(segment.getId(),
+	public static FoSegment segmentToFoSegment(Segment segment){
+		FoSegment foSegment = new FoSegment(segment.getId(),
 											locationToFoLocation(segment.getLocation()),
-											segment.getMean(),
-											segment.getNumberOfMarkers());
+											segment.getType());
+		
+		foSegment.setMean(segment.getMean());
+		foSegment.setNumberOfMarkers(segment.getNumberOfMarkers());
+		foSegment.setStatus(segment.getStatus());
+		foSegment.setStatusScore(segment.getStatusScore());
+		
 		if(segment.getStudyName() != null){
 			foSegment.setStudyName(segment.getStudyName());
 		}

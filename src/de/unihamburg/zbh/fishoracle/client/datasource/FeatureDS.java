@@ -51,25 +51,33 @@ public class FeatureDS extends FoDataSource {
 			
 			public void onSuccess(String[] result){
 				
-				ListGridRecord[] list = new ListGridRecord[result.length + 3];
+				ListGridRecord[] list = new ListGridRecord[result.length + 4];
 				
 				ListGridRecord record = new ListGridRecord(); 
 				record.setAttribute("featureId", 0);
-				record.setAttribute("featureType", "Segments");
+				record.setAttribute("featureType", "Segments (DNACopy)");
+				record.setAttribute("type", "dnacopy");
 				
 				list[0] = record;
 				
 				record = new ListGridRecord(); 
 				record.setAttribute("featureId", 0);
-				record.setAttribute("featureType", "Mutations");
+				record.setAttribute("featureType", "Segments (PennCNV)");
+				record.setAttribute("type", "penncnv");
 				
 				list[1] = record;
 				
 				record = new ListGridRecord(); 
 				record.setAttribute("featureId", 0);
-				record.setAttribute("featureType", "Translocations");
+				record.setAttribute("featureType", "Mutations");
 				
 				list[2] = record;
+				
+				record = new ListGridRecord(); 
+				record.setAttribute("featureId", 0);
+				record.setAttribute("featureType", "Translocations");
+				
+				list[3] = record;
 				
 				if (result.length > 0) {
 					for (int i = 0; i < result.length; i++) {
@@ -77,7 +85,7 @@ public class FeatureDS extends FoDataSource {
 						record = new ListGridRecord(); 
 						record.setAttribute("featureId", new Integer(i).toString());
 						record.setAttribute("featureType", result[i]);
-						list[i + 3] = record;
+						list[i + 4] = record;
 						
 					}
 				}

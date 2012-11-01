@@ -27,7 +27,7 @@ import annotationsketch.FeatureIndex;
 import annotationsketch.FeatureIndexFo;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
+import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoEnsemblDBs;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoPlatform;
@@ -41,7 +41,6 @@ import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
-import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 import de.unihamburg.zbh.fishoracle_db_api.data.EnsemblDBs;
 import de.unihamburg.zbh.fishoracle_db_api.data.Group;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
@@ -50,10 +49,10 @@ import de.unihamburg.zbh.fishoracle_db_api.data.Platform;
 import de.unihamburg.zbh.fishoracle_db_api.data.Project;
 import de.unihamburg.zbh.fishoracle_db_api.data.ProjectAccess;
 import de.unihamburg.zbh.fishoracle_db_api.data.Property;
+import de.unihamburg.zbh.fishoracle_db_api.data.Segment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
 import de.unihamburg.zbh.fishoracle_db_api.data.Translocation;
 import de.unihamburg.zbh.fishoracle_db_api.data.User;
-import de.unihamburg.zbh.fishoracle_db_api.driver.CnSegmentAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.EnsemblDBsAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriver;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriverImpl;
@@ -64,6 +63,7 @@ import de.unihamburg.zbh.fishoracle_db_api.driver.PlatformAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.ProjectAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.PropertyAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.SNPMutationAdaptor;
+import de.unihamburg.zbh.fishoracle_db_api.driver.SegmentAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.StudyAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.TranslocationAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.UserAdaptor;
@@ -328,17 +328,18 @@ public class DBInterface {
 	public Location getMaxSegmentRange(String chr, int start, int end, QueryInfo query){
 		
 		FODriver driver = getFoDriver();
-		CnSegmentAdaptor sa = driver.getCnSegmentAdaptor();
+		SegmentAdaptor sa = driver.getSegmentAdaptor();
 		
 		Location maxLoc = new Location(0, chr, start, end);
 		
 		for(int i = 0; i < query.getTracks().length; i++){
 			
 			Location l;
-			if(query.getTracks()[i].getDataType().equals("Segments")){
+			if(query.getTracks()[i].getDataType().equals("Segments (DNACopy)") || 
+					query.getTracks()[i].getDataType().equals("Segments (PennCNV)")){
 				if(query.isGlobalTh()){
 				
-					l = sa.fetchMaximalOverlappingCnSegmentRange(chr,
+					l = sa.fetchMaximalOverlappingSegmentRange(chr,
 																	start,
 																	end,
 																	query.getGlobalLowerThAsDouble(),
@@ -347,7 +348,7 @@ public class DBInterface {
 																	query.getTracks()[i].getTissueIds(),
 																	query.getTracks()[i].getExperimentIds());
 				} else {
-					l = sa.fetchMaximalOverlappingCnSegmentRange(chr,
+					l = sa.fetchMaximalOverlappingSegmentRange(chr,
 																	start,
 																	end,
 																	query.getTracks()[i].getLowerThAsDouble(),
@@ -398,6 +399,8 @@ public class DBInterface {
 		Double lth = null;
 		Double uth = null;
 		
+		int[] status;
+		
 		for(int i = 0; i < query.getTracks().length; i++){
 			
 			if(i > 0){
@@ -421,9 +424,9 @@ public class DBInterface {
 				adb.setAdditionalExperimentFilter(fifo, eIds);
 			}
 			
-			if(query.getTracks()[i].getDataType().equals("Segments")){
+			if(query.getTracks()[i].getDataType().equals("Segments (DNACopy)")){
 				
-				adb.segmentOnly(fifo);
+				adb.segmentOnly(fifo, 0);
 				
 				if(query.isGlobalTh()){
 				
@@ -456,6 +459,23 @@ public class DBInterface {
 				adb.setSegmentsLowerTh(fifo, lth);
 				adb.setSegmentsUpperTh(fifo, uth);
 				
+			} else if (query.getTracks()[i].getDataType().equals("Segments (PennCNV)")){
+			
+				adb.segmentOnly(fifo, 1);
+				
+				if(query.isGlobalTh()){
+					
+					status = query.getGlobalCnvStati();
+				} else {
+					
+					status = query.getTracks()[i].getCnvStati();
+				}
+				
+				adb.setSegmentsSorted(fifo, query.isSorted());
+				
+				adb.addSegmentTypeFilter(fifo, status);
+				
+			
 			} else if(query.getTracks()[i].getDataType().equals("Mutations")){
 				
 				adb.mutationsOnly(fifo);
@@ -519,14 +539,14 @@ public class DBInterface {
 		
 	}
 	
-	public FoCnSegment getSegmentInfos(int segmentId) {
+	public FoSegment getSegmentInfos(int segmentId) {
 		
 		FODriver driver = getFoDriver();
-		CnSegmentAdaptor sa = driver.getCnSegmentAdaptor();
+		SegmentAdaptor sa = driver.getSegmentAdaptor();
 		
-		CnSegment s = sa.fetchCnSegmentById(segmentId);
+		Segment s = sa.fetchSegmentById(segmentId);
 		
-		return DataTypeConverter.cnSegmentToFoCnSegment(s);
+		return DataTypeConverter.segmentToFoSegment(s);
 	}
 	
 	public FoEnsemblDBs addEDB(FoEnsemblDBs foEdbs) {
@@ -574,9 +594,9 @@ public class DBInterface {
 		Study s = sa.fetchStudyForName(study.getName(), false);
 		
 		if(importType.equals("Segments")){
-			CnSegmentAdaptor ca = driver.getCnSegmentAdaptor();
+			SegmentAdaptor ca = driver.getSegmentAdaptor();
 		
-			ca.storeCnSegments(study.getSegments(), s.getId());
+			ca.storeSegments(study.getSegments(), s.getId());
 		}
 		else if(importType.equals("Mutations")){
 			SNPMutationAdaptor ma = driver.getSNPMutationAdaptor();
@@ -704,14 +724,14 @@ public class DBInterface {
 		
 	}
 	
-	public FoCnSegment[] getCnSegmentsForStudyId(int studyId){
+	public FoSegment[] getCnSegmentsForStudyId(int studyId){
 		
 		FODriver driver = getFoDriver();
-		CnSegmentAdaptor ca = driver.getCnSegmentAdaptor();
+		SegmentAdaptor ca = driver.getSegmentAdaptor();
 		
-		CnSegment[] segments = ca.fetchCnSegmentsForStudyId(studyId);
+		Segment[] segments = ca.fetchSegmentsForStudyId(studyId);
 		
-		return DataTypeConverter.cnSegmentsToFoCnSegments(segments);
+		return DataTypeConverter.segmentsToFoSegments(segments);
 	}
 	
 	public Translocation getTranslocationForId(int translocationId){

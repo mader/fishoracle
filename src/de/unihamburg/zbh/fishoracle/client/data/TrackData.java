@@ -22,6 +22,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class TrackData implements IsSerializable {
 
 	private String dataType;
+	private String dataSubType;
 	private String trackName;
 	private int trackNumber;
 	private int[] ProjectIds;
@@ -36,7 +37,9 @@ public class TrackData implements IsSerializable {
 	private String lowerTh;
 	private String upperTh;
 	
-	private FoCnSegment[] trackSegments;
+	private int[] cnvStati;
+	
+	private FoSegment[] trackSegments;
 	
 	public TrackData() {
 	}
@@ -52,6 +55,14 @@ public class TrackData implements IsSerializable {
 
 	public void setDataType(String dataType) {
 		this.dataType = dataType;
+	}
+	
+	public String getDataSubType() {
+		return dataSubType;
+	}
+
+	public void setDataSubType(String dataSubType) {
+		this.dataSubType = dataSubType;
 	}
 
 	public String getTrackName() {
@@ -141,7 +152,6 @@ public class TrackData implements IsSerializable {
 		}
 		return r;
 	}
-
 	
 	public void setLowerTh(String lowerTh) {
 		this.lowerTh = lowerTh;
@@ -166,12 +176,20 @@ public class TrackData implements IsSerializable {
 	public void setUpperTh(String upperTh) {
 		this.upperTh = upperTh;
 	}
+	
+	public int[] getCnvStati() {
+		return cnvStati;
+	}
 
-	public FoCnSegment[] getTrackSegments() {
+	public void setCnvStati(int[] cnvStati) {
+		this.cnvStati = cnvStati;
+	}
+
+	public FoSegment[] getTrackSegments() {
 		return trackSegments;
 	}
 
-	public void setTrackSegments(FoCnSegment[] trackSegments) {
+	public void setTrackSegments(FoSegment[] trackSegments) {
 		this.trackSegments = trackSegments;
 	}
 }

@@ -24,8 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
-import de.unihamburg.zbh.fishoracle_db_api.data.CnSegment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
+import de.unihamburg.zbh.fishoracle_db_api.data.Segment;
 
 import jxl.*;
 import jxl.write.*; 
@@ -39,7 +39,7 @@ public class Export {
 	}
 
 	@SuppressWarnings({"deprecation"})
-	public String exportImageAsExcelDocument(CnSegment[] segments, 
+	public String exportImageAsExcelDocument(Segment[] segments, 
 			                                  EnsemblGene[] genes, 
 			                                  Location maxRange, 
 			                                  String servletPath) throws IOException, 

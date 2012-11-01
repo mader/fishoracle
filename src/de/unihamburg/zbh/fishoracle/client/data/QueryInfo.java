@@ -25,6 +25,7 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 	private String searchType;
 	private String globalLowerTh;
 	private String globalUpperTh;
+	private int[] globalCnvStati;
 	private String imageType;
 	private TrackData[] tracks;
 	private int winWidth;
@@ -44,6 +45,7 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 						String searchType,
 						String globalLowerTh,
 						String globalUpperTh,
+						int[] globalCnvStati,
 						boolean sorted,
 						boolean cnvCaptions,
 						boolean globalTh,
@@ -67,6 +69,7 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		} else {
 			this.globalUpperTh = null;
 		}
+		this.globalCnvStati = globalCnvStati;
 		this.sorted = sorted;
 		this.cnvCaptions = cnvCaptions;
 		this.globalTh = globalTh; 
@@ -85,6 +88,7 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		query.setSearchType(this.searchType);
 		query.setGlobalLowerTh(this.globalLowerTh);
 		query.setGlobalUpperTh(this.globalUpperTh);
+		query.setGlobalCnvStati(this.globalCnvStati);
 		query.setImageType(this.imageType);
 		query.setTracks(this.tracks);
 		query.setWinWidth(this.winWidth);
@@ -149,6 +153,14 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		return r;
 	}
 	
+	public int[] getGlobalCnvStati() {
+		return globalCnvStati;
+	}
+
+	public void setGlobalCnvStati(int[] globalStati) {
+		this.globalCnvStati = globalStati;
+	}
+
 	public void setGlobalUpperTh(String globalUpperTh) {
 		this.globalUpperTh = globalUpperTh;
 	}

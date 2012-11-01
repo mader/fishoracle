@@ -37,6 +37,7 @@ public interface Admin extends RemoteService  {
 	public boolean writeConfigData(DBConfigData dbcdata) throws Exception;
 	int[] importData(FoStudy[] foStudy,
 						String importType,
+						String dataSubType,
 						boolean createStudy,
 						int projectId,
 						String tool,

@@ -80,8 +80,11 @@ public class WestPanel extends SectionStack{
 	private SelectItem ensemblSelectItem;
 	private SelectItem biotypeSelectItem;
 	
+	private SelectItem segmentDataSelectItem;
 	private TextItem greaterTextItem;
 	private TextItem lessTextItem;
+	
+	private SelectItem statusSelectItem;
 	
 	private SectionStackSection adminSection;
 	
@@ -97,6 +100,24 @@ public class WestPanel extends SectionStack{
 			numberOfTracks--;
 			searchContent.removeMember(t.getTrackForm());
 		}
+	}
+	
+	
+	
+	public SelectItem getSegmentDataSelectItem() {
+		return segmentDataSelectItem;
+	}
+	
+	public TextItem getGreaterTextItem() {
+		return greaterTextItem;
+	}
+
+	public TextItem getLessTextItem() {
+		return lessTextItem;
+	}	
+	
+	public SelectItem getStatusTextItem() {
+		return statusSelectItem;
 	}
 	
 	public CheckboxItem getGlobalThresholdCheckbox() {
@@ -241,12 +262,12 @@ public class WestPanel extends SectionStack{
 				"polymorphic_pseudogene");
 		
 		
-		final SelectItem cncDataSelectItem = new SelectItem();
-		cncDataSelectItem.setTitle("");
-		cncDataSelectItem.setType("Select"); 
-		cncDataSelectItem.setValueMap("greater than", "less than");
-		cncDataSelectItem.setDefaultValue("less than");
-		cncDataSelectItem.addChangeHandler(new ChangeHandler(){
+		segmentDataSelectItem = new SelectItem();
+		segmentDataSelectItem.setTitle("");
+		segmentDataSelectItem.setType("Select"); 
+		segmentDataSelectItem.setValueMap("greater than", "less than");
+		segmentDataSelectItem.setDefaultValue("less than");
+		segmentDataSelectItem.addChangeHandler(new ChangeHandler(){
 
 			@Override
 			public void onChange(ChangeEvent event) {
@@ -297,6 +318,27 @@ public class WestPanel extends SectionStack{
 			}
 		});
 		
+		statusSelectItem = new SelectItem();
+		statusSelectItem.setTitle("CNV Status");
+		statusSelectItem.setMultiple(true);
+		statusSelectItem.setMultipleAppearance(MultipleAppearance.PICKLIST);
+		statusSelectItem.setValueMap("0",
+										"1",
+										"2",
+										"3",
+										"4",
+										"5");
+		statusSelectItem.setDefaultValues("0","1");
+		statusSelectItem.addKeyPressHandler(new KeyPressHandler(){
+			
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getKeyName().equals("Enter")){
+					startSearch();
+				}
+			}
+		});
+		
 		sortedCheckbox = new CheckboxItem();
 		sortedCheckbox.setTitle("sort segments by experiment");
 		sortedCheckbox.setValue(true);
@@ -324,7 +366,7 @@ public class WestPanel extends SectionStack{
 		});
 		
 		globalThresholdCheckbox = new CheckboxItem();
-		globalThresholdCheckbox.setTitle("Global Intensity Threshold");
+		globalThresholdCheckbox.setTitle("Global Segment Threshold");
 		globalThresholdCheckbox.setValue(true);
 		globalThresholdCheckbox.addChangedHandler(new ChangedHandler(){
 
@@ -332,25 +374,31 @@ public class WestPanel extends SectionStack{
 			public void onChanged(ChangedEvent event) {
 				
 				if(!((Boolean) event.getValue())){
-					cncDataSelectItem.hide();
+					segmentDataSelectItem.hide();
 					greaterTextItem.hide();
 					lessTextItem.hide();
+					statusSelectItem.hide();
 					
 					for(int i = 0; i < tracks.size(); i++){
 						
 						Track t = tracks.get(i);
-						if(t.getSelectItemFilterType().getValueAsString().equals("Segments")){
+						if(t.getSelectItemFilterType().getValueAsString().equals("Segments (DNACopy)")){
 							t.getSegmentThresholdSelectItem().show();
 							t.getGreaterTextItem().show();
 							t.getLessTextItem().show();
 						}
+						if(t.getSelectItemFilterType().getValueAsString().equals("Segments (PennCNV)")){
+							t.getStatusSelectItem().show();
+						}
+						
 					}
 				}
 				
 				if((Boolean) event.getValue()){
-					cncDataSelectItem.show();
+					segmentDataSelectItem.show();
 					greaterTextItem.show();
 					lessTextItem.show();
+					statusSelectItem.show();
 					
 					for(int i = 0; i < tracks.size(); i++){
 						
@@ -358,6 +406,7 @@ public class WestPanel extends SectionStack{
 						t.getSegmentThresholdSelectItem().hide();
 						t.getGreaterTextItem().hide();
 						t.getLessTextItem().hide();
+						t.getStatusSelectItem().hide();
 					}
 				}
 			}
@@ -425,9 +474,10 @@ public class WestPanel extends SectionStack{
 							sortedCheckbox,
 							showCNVCaptionsCheckbox,
 							globalThresholdCheckbox,
-							cncDataSelectItem,
+							segmentDataSelectItem,
 							greaterTextItem,
 							lessTextItem,
+							statusSelectItem,
 							addTrackButton,
 							removeTrackButton,
 							searchButton);
@@ -754,6 +804,8 @@ public class WestPanel extends SectionStack{
 				String globalLessThenThr;
 				String globalGreaterThenThr;
 				
+				int[] globalCnvStati;
+				
 				if(globalThresholdCheckbox.getValueAsBoolean()){
 					if(lessTextItem.getDisplayValue().equals("")){
 						globalLessThenThr = null;
@@ -765,9 +817,18 @@ public class WestPanel extends SectionStack{
 					} else {
 						globalGreaterThenThr = greaterTextItem.getDisplayValue();
 					}
+					
+					if(statusSelectItem.getValues().length == 0){
+						globalCnvStati = new int[0];
+					} else {
+						globalCnvStati = strArrToIntArr(statusSelectItem.getValues());
+					}
+					
+					
 				} else {
 					globalLessThenThr = null;
 					globalGreaterThenThr = null;
+					globalCnvStati = new int[0];
 				}
 				
 				TrackData[] trackData = new TrackData[tracks.size()];
@@ -780,6 +841,7 @@ public class WestPanel extends SectionStack{
 					if(globalThresholdCheckbox.getValueAsBoolean()){
 						trackData[i].setLowerTh(null);
 						trackData[i].setUpperTh(null);
+						trackData[i].setCnvStati(new int[0]);
 					} else {
 						if(tracks.get(i).getLessTextItem().getDisplayValue().equals("")){
 							trackData[i].setLowerTh(null);
@@ -791,6 +853,13 @@ public class WestPanel extends SectionStack{
 						} else {
 							trackData[i].setUpperTh(tracks.get(i).getGreaterTextItem().getDisplayValue());
 						}
+						
+						if(tracks.get(i).getStatusSelectItem().getValues().length == 0){
+							trackData[i].setCnvStati(new int[0]);
+						} else {
+							trackData[i].setCnvStati(strArrToIntArr(tracks.get(i).getStatusSelectItem().getValues()));
+						}
+						
 					}
 					if(tracks.get(i).getSelectItemProjects().getVisible()){
 						
@@ -864,6 +933,7 @@ public class WestPanel extends SectionStack{
 											typeStr,
 											globalLessThenThr,
 											globalGreaterThenThr,
+											globalCnvStati,
 											sortedCheckbox.getValueAsBoolean(),
 											showCNVCaptionsCheckbox.getValueAsBoolean(),
 											globalThresholdCheckbox.getValueAsBoolean(),

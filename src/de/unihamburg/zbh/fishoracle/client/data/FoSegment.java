@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2011-2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2011-2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -19,39 +19,38 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class FoCnSegment implements IsSerializable {
+/**
+ * @author Malte Mader
+ *
+ */
+public class FoSegment implements IsSerializable {
 
 	private int id;
 	private FoLocation location;
 	private double mean;
 	private int numberOfMarkers;
+	private int status;
+	private double statusScore;
+	private String type;
 	private int studyId;
 	private String studyName;
 	
-	public FoCnSegment() {
+	public FoSegment() {
 	}
 
-	public FoCnSegment(int id,
+	public FoSegment(int id,
 						FoLocation loc,
-						double mean,
-						int numberOfMarkers) {
+						String type) {
 		this.id = id;
 		this.location = loc;
-		this.mean = mean;
-		this.numberOfMarkers = numberOfMarkers;
+		this.type = type;
+		
+		this.mean = -23;
+		this.numberOfMarkers = -1;
+		this.status = -1;
+		this.statusScore = -1.0;
 		this.studyId = 0;
-	}
-	
-	public FoCnSegment(int id,
-						FoLocation loc,
-						double mean,
-						int numberOfMarkers,
-						int studyId) {
-		this.id = id;
-		this.location = loc;
-		this.mean = mean;
-		this.numberOfMarkers = numberOfMarkers;
-		this.studyId = studyId;
+		this.studyName = "";
 	}
 
 	public int getId() {
@@ -84,6 +83,30 @@ public class FoCnSegment implements IsSerializable {
 
 	public void setNumberOfMarkers(int numberOfMarkers) {
 		this.numberOfMarkers = numberOfMarkers;
+	}
+	
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public double getStatusScore() {
+		return statusScore;
+	}
+
+	public void setStatusScore(double statusScore) {
+		this.statusScore = statusScore;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public int getStudyId() {

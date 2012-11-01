@@ -37,6 +37,7 @@ public interface AdminAsync {
 
 	void importData(FoStudy[] foStudy,
 					String importType,
+					String dataSubType,
 					boolean createStudy,
 					int projectId,
 					String tool,

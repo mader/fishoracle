@@ -3,13 +3,13 @@ package de.unihamburg.zbh.fishoracle.client.rpc;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
+import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 
 public interface SegmentService extends RemoteService {
 	
-	FoCnSegment add(FoCnSegment foCnSegment);
-	FoCnSegment[] fetch(int studyId) throws Exception;
-	public void update(FoCnSegment CnSegment);
+	FoSegment add(FoSegment foSegment);
+	FoSegment[] fetch(int studyId) throws Exception;
+	public void update(FoSegment segment);
 	public void delete(int segmentId);
 	
 	public static class Util {

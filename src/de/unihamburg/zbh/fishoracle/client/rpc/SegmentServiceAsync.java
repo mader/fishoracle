@@ -2,16 +2,16 @@ package de.unihamburg.zbh.fishoracle.client.rpc;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoCnSegment;
+import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 
 public interface SegmentServiceAsync {
 
-	void add(FoCnSegment foCnSegment, AsyncCallback<FoCnSegment> callback);
+	void add(FoSegment foSegment, AsyncCallback<FoSegment> callback);
 
 	void delete(int studyId, AsyncCallback<Void> callback);
 
 	void fetch(int studyId,
-			AsyncCallback<FoCnSegment[]> callback);
+			AsyncCallback<FoSegment[]> callback);
 
-	void update(FoCnSegment foCnSegment, AsyncCallback<Void> callback);
+	void update(FoSegment foSegment, AsyncCallback<Void> callback);
 }
