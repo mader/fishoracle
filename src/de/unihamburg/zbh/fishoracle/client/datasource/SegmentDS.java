@@ -39,10 +39,16 @@ public class SegmentDS extends FoDataSource {
         field.setRequired(true);
         addField (field);
         
-        field = new DataSourceFloatField("score", "Mean Intensity/Status");
+        field = new DataSourceFloatField("mean", "Mean Intensity");
         addField (field);
         
         field = new DataSourceIntegerField("markers", "Number of Markers");
+        addField (field);
+        
+        field = new DataSourceIntegerField("status", "Status");
+        addField (field);
+        
+        field = new DataSourceFloatField("statusScore", "Score");
         addField (field);
         
         field = new DataSourceTextField("type", "Segment Type");
@@ -71,8 +77,10 @@ public class SegmentDS extends FoDataSource {
 						record.setAttribute("chromosome", result[i].getLocation().getChromosome());
 						record.setAttribute("start", result[i].getLocation().getStart());
 						record.setAttribute("end", result[i].getLocation().getEnd());
-						record.setAttribute("score", result[i].getMean());
+						record.setAttribute("mean", result[i].getMean());
 						record.setAttribute("markers", result[i].getNumberOfMarkers());
+						record.setAttribute("status", result[i].getStatus());
+						record.setAttribute("statusScore", result[i].getStatusScore());
 						record.setAttribute("type", result[i].getType());
 						
 						list[i] = record;

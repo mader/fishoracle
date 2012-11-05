@@ -874,8 +874,16 @@ public class CenterPanel extends VLayout {
 		lgr[5].setAttribute("val", segmentData.getNumberOfMarkers());
 		
 		lgr[6] = new ListGridRecord();
-		lgr[6].setAttribute("key", "Study");
-		lgr[6].setAttribute("val", segmentData.getStudyName());
+		lgr[6].setAttribute("key", "Status");
+		lgr[6].setAttribute("val", segmentData.getStatus());
+		
+		lgr[7] = new ListGridRecord();
+		lgr[7].setAttribute("key", "Status score");
+		lgr[7].setAttribute("val", segmentData.getStatusScore());
+		
+		lgr[8] = new ListGridRecord();
+		lgr[8].setAttribute("key", "Study");
+		lgr[8].setAttribute("val", segmentData.getStudyName());
 		
 		cncGrid.setData(lgr);
 		
