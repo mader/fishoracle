@@ -593,7 +593,8 @@ public class DBInterface {
 		
 		Study s = sa.fetchStudyForName(study.getName(), false);
 		
-		if(importType.equals("Segments")){
+		if(importType.equals("Segments (DNACopy)") || 
+				importType.equals("Segments (PennCNV)")){
 			SegmentAdaptor ca = driver.getSegmentAdaptor();
 		
 			ca.storeSegments(study.getSegments(), s.getId());
