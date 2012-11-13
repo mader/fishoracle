@@ -260,6 +260,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 			reader.readHeaders();
 		
 			Study study = DataTypeConverter.foStudyToStudy(foStudy[i]);
+			int plId = foStudy[i].getPlatformId();
 		
 			DBInterface db = new DBInterface(servletContext);
 
@@ -306,6 +307,8 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 					segment.setStatus(Integer.parseInt(status));
 					segment.setStatusScore(Double.parseDouble(statusScore));
 					
+					segment.setPlatformId(plId);
+					
 					segmentContainer.add(segment);
 		
 				}
@@ -347,6 +350,8 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 														somatic,
 														confidence,
 														tool);
+					
+					mut.setPlatformId(plId);
 				
 					snpContainer.add(mut);
 		
@@ -378,10 +383,12 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 													Integer.parseInt(pos1),
 													Integer.parseInt(pos1)),
 													0);
+					transloc[0].setPlatformId(plId);
 					transloc[1] = new Translocation(0, new Location(0, chr2,
 													Integer.parseInt(pos2),
 													Integer.parseInt(pos2)),
 													0);
+					transloc[1].setPlatformId(plId);
 					
 					translocContainer.add(transloc);
 		
@@ -410,6 +417,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 														Integer.parseInt(start),
 														Integer.parseInt(end)),
 														importType);
+					f.setPlatformId(plId);
 				
 					featureContainer.add(f);
 		

@@ -177,7 +177,6 @@ public class CenterPanel extends VLayout {
 	private SelectItem selectItemTissues;
 	private SelectItem selectItemPlatform;
 	private SelectItem selectItemGenomeAssembly;
-	private SelectItem selectItemMethod;
 	private CheckboxItem batchCheckbox;
 	
 	private TextItem ensemblHost;
@@ -2082,6 +2081,8 @@ public class CenterPanel extends VLayout {
 		studyGrid.setAutoFetchData(false);
 		studyGrid.setFixedRecordHeights(false);
 		
+		/*
+		
 		ListGridField lgfId = new ListGridField("studyId", "Study ID");
 		ListGridField lgfPlatform = new ListGridField("platformName", "Platform");
 		ListGridField lgfTissue = new ListGridField("tissueName", "Tissue");
@@ -2090,6 +2091,8 @@ public class CenterPanel extends VLayout {
 		ListGridField lgfDescription = new ListGridField("studyDescription", "Description");
 		
 		studyGrid.setFields(lgfId, lgfPlatform, lgfTissue, lgfDate, lgfName, lgfDescription);
+		
+		*/
 		
 		//TODO make load the data for default option...
 		StudyDS mDS = new StudyDS();
@@ -2627,14 +2630,12 @@ public class CenterPanel extends VLayout {
 					selectItemTissues.show();
 					selectItemPlatform.show();
 					selectItemGenomeAssembly.show();
-					selectItemMethod.show();
 				}
 				if(val.equals("Import to existing study")) {
 					selectItemProjects.hide();
 					selectItemTissues.hide();
 					selectItemPlatform.hide();
 					selectItemGenomeAssembly.hide();
-					selectItemMethod.hide();
 				}
 			}
 		});
@@ -2680,11 +2681,6 @@ public class CenterPanel extends VLayout {
 		selectItemGenomeAssembly.setValueMap("GrCh37", "ncbi36");
 		selectItemGenomeAssembly.setDefaultToFirstOption(true);
 		
-		selectItemMethod = new SelectItem();
-		selectItemMethod.setTitle("Method");
-		selectItemMethod.setValueMap("Sequencing", "Microarray");
-		selectItemMethod.setDefaultToFirstOption(true);
-		
 		batchCheckbox = new CheckboxItem();
 		batchCheckbox.setTitle("Batch import");
 		batchCheckbox.setValue(false);
@@ -2707,7 +2703,6 @@ public class CenterPanel extends VLayout {
 					
 					if(createStudyItem.getValueAsString().equals("Create new study")){
 						studies[i].setAssembly(selectItemGenomeAssembly.getValueAsString());
-						studies[i].setType(selectItemMethod.getValueAsString());
 						studies[i].setDescription("");
 						studies[i].setOrganId(Integer.parseInt(selectItemTissues.getValue().toString()));
 						studies[i].setPlatformId(Integer.parseInt(selectItemPlatform.getValue().toString()));
@@ -2783,7 +2778,6 @@ public class CenterPanel extends VLayout {
 									selectItemTissues,
 									selectItemPlatform,
 									selectItemGenomeAssembly,
-									selectItemMethod,
 									batchCheckbox,
 									importButton);
 		
@@ -3517,7 +3511,6 @@ class ManualImportWindow extends Window {
 	private SelectItem selectItemTissues;
 	private SelectItem selectItemPlatform;
 	private SelectItem selectItemGenomeAssembly;
-	private SelectItem selectItemMethod;
 	private TextAreaItem textItemDescription;
 	private SelectItem selectItemSNPTool;
 	private SelectItem selectItemProperty;
@@ -3619,15 +3612,6 @@ class ManualImportWindow extends Window {
 			selectItemGenomeAssembly.setVisible(false);
 		}
 		
-		selectItemMethod = new SelectItem();
-		selectItemMethod.setTitle("Method");
-		selectItemMethod.setValueMap("Sequencing", "Microarray");
-		selectItemMethod.setDefaultValue(studies[0].getType());
-		
-		if(!createStudy){
-			selectItemMethod.setVisible(false);
-		}
-		
 		textItemDescription = new TextAreaItem();
 		textItemDescription.setTitle("Description");
 		textItemDescription.setDefaultValue("");
@@ -3674,7 +3658,6 @@ class ManualImportWindow extends Window {
 					selectItemTissues.setValue(studies[fileNumber].getOrganId());
 					selectItemPlatform.setValue(studies[fileNumber].getPlatformId());
 					selectItemGenomeAssembly.setValue(studies[fileNumber].getAssembly());
-					selectItemMethod.setValue(studies[fileNumber].getType());
 					textItemDescription.setValue("");
 					selectItemSNPTool.setValue("");
 					selectItemProperty.clearValue();
@@ -3708,7 +3691,6 @@ class ManualImportWindow extends Window {
 					
 					if(createStudy){
 						s.setAssembly(selectItemGenomeAssembly.getValueAsString());
-						s.setType(selectItemMethod.getValueAsString());
 						s.setDescription(textItemDescription.getValueAsString());
 						s.setOrganId(Integer.parseInt(selectItemTissues.getValue().toString()));
 						s.setPlatformId(Integer.parseInt(selectItemPlatform.getValue().toString()));
@@ -3746,7 +3728,6 @@ class ManualImportWindow extends Window {
 						selectItemTissues.setValue(studies[fileNumber].getOrganId());
 						selectItemPlatform.setValue(studies[fileNumber].getPlatformId());
 						selectItemGenomeAssembly.setValue(studies[fileNumber].getAssembly());
-						selectItemMethod.setValue(studies[fileNumber].getType());
 						textItemDescription.setValue("");
 						selectItemSNPTool.setValue("");
 						selectItemProperty.clearValue();
@@ -3766,7 +3747,6 @@ class ManualImportWindow extends Window {
 				selectItemTissues,
 				selectItemPlatform,
 				selectItemGenomeAssembly,
-				selectItemMethod,
 				selectItemSNPTool,
 				textItemDescription,
 				selectItemProperty,

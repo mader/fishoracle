@@ -8,6 +8,7 @@ import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSourceField;
+import com.smartgwt.client.data.fields.DataSourceBooleanField;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.rpc.RPCResponse;
@@ -35,14 +36,24 @@ public class StudyDS extends FoDataSource {
         field = new DataSourceTextField("studyDescription", "Description");
         addField (field);
         
-        field = new DataSourceTextField("platformName", "Platform");
-        addField (field);
-        
         field = new DataSourceTextField("tissueName", "Tissue");
         addField (field);
         
         field = new DataSourceTextField("date", "Date");
         addField (field);
+        
+        field = new DataSourceBooleanField("cnv", "CNV?");
+        addField (field);
+        
+        field = new DataSourceBooleanField("snp", "SNP?");
+        addField (field);
+        
+        field = new DataSourceBooleanField("transloc", "Translocation?");
+        addField (field);
+        
+        field = new DataSourceBooleanField("generic", "Generic?");
+        addField (field);
+        
 	}
 	
 	@Override
@@ -68,14 +79,15 @@ public class StudyDS extends FoDataSource {
 						record.setAttribute("studyDescription", result[i].getDescription());
 						record.setAttribute("date", result[i].getDate());
 						
-						if(result[i].getPlatform() != null){
-							record.setAttribute("platformName", result[i].getPlatform().getName());
-						}
-						
 						if(result[i].getTissue() != null){
 							record.setAttribute("tissueName", result[i].getTissue().getOrgan().getLabel() + 
 									" (" + result[i].getTissue().getOrgan().getType() + ")");
 						}
+						
+						record.setAttribute("cnv", result[i].isHasSegment());
+						record.setAttribute("snp", result[i].isHasMutation());
+						record.setAttribute("transloc", result[i].isHasTranslocation());
+						record.setAttribute("generic", result[i].isHasGeneric());
 						
 						list[i] = record;
 						

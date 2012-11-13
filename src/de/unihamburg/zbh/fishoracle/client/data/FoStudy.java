@@ -30,14 +30,18 @@ public class FoStudy implements IsSerializable {
 	private FoTissueSample tissue;
 	private Date date;
 	private String name;
-	private String type;
 	private String assembly;
 	private String Description;
-	private int platformId;
 	private int organId;
 	private int[] propertyIds;
+	private int platformId;
 	private int userId;
 	private String files[];
+	
+	private boolean hasSegment;
+	private boolean hasMutation;
+	private boolean hasTranslocation;
+	private boolean hasGeneric;
 	
 	public FoStudy() {
 	}
@@ -45,14 +49,12 @@ public class FoStudy implements IsSerializable {
 	public FoStudy(int id,
 					Date date,
 					String name,
-					String type,
 					String assembly,
 					String description,
 					int userId) {
 		this.id = id;
 		this.date = date;
 		this.name = name;
-		this.type = type;
 		this.assembly = assembly;
 		Description = description;
 		this.userId = userId;
@@ -60,19 +62,15 @@ public class FoStudy implements IsSerializable {
 
 	public FoStudy(FoSegment[] segments,
 					String name,
-					String type,
 					String assembly,
 					String description,
-					int platformId,
 					int organId,
 					int[] propertyIds,
 					int userId) {
 		this.segments = segments;
 		this.name = name;
-		this.type = type;
 		this.assembly = assembly;
 		Description = description;
-		this.platformId = platformId;
 		this.organId = organId;
 		this.propertyIds = propertyIds;
 		this.userId = userId;
@@ -158,14 +156,6 @@ public class FoStudy implements IsSerializable {
 		this.name = name;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
 	public String getAssembly() {
 		return assembly;
 	}
@@ -180,14 +170,6 @@ public class FoStudy implements IsSerializable {
 
 	public void setDescription(String description) {
 		Description = description;
-	}
-
-	public int getPlatformId() {
-		return platformId;
-	}
-
-	public void setPlatformId(int platformId) {
-		this.platformId = platformId;
 	}
 
 	public int getOrganId() {
@@ -205,6 +187,14 @@ public class FoStudy implements IsSerializable {
 	public void setPropertyIds(int[] propertyIds) {
 		this.propertyIds = propertyIds;
 	}
+	
+	public int getPlatformId() {
+		return platformId;
+	}
+
+	public void setPlatformId(int platformId) {
+		this.platformId = platformId;
+	}
 
 	public int getId() {
 		return id;
@@ -212,5 +202,37 @@ public class FoStudy implements IsSerializable {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public boolean isHasSegment() {
+		return hasSegment;
+	}
+
+	public void setHasSegment(boolean hasSegment) {
+		this.hasSegment = hasSegment;
+	}
+
+	public boolean isHasMutation() {
+		return hasMutation;
+	}
+
+	public void setHasMutation(boolean hasMutation) {
+		this.hasMutation = hasMutation;
+	}
+
+	public boolean isHasTranslocation() {
+		return hasTranslocation;
+	}
+
+	public void setHasTranslocation(boolean hasTranslocation) {
+		this.hasTranslocation = hasTranslocation;
+	}
+
+	public boolean isHasGeneric() {
+		return hasGeneric;
+	}
+
+	public void setHasGeneric(boolean hasGeneric) {
+		this.hasGeneric = hasGeneric;
 	}
 }

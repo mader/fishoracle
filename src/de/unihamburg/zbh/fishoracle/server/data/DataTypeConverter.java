@@ -339,22 +339,22 @@ public class DataTypeConverter {
 		Study study = new Study(foStudy.getId(),
 									foStudy.getDate(),
 									foStudy.getName(),
-									foStudy.getType(),
 									foStudy.getAssembly(),
 									foStudy.getDescription(),
 									foStudy.getUserId());
 		
-		if(foStudy.getPlatform() != null){
-			study.setPlatform(foPlatformToPlatform(foStudy.getPlatform()));
-		} else {
-			study.setPlatformId(foStudy.getPlatformId());
-		}
 		if(foStudy.getTissue() != null){
 			study.setTissue(foTissueSampleToTissueSample(foStudy.getTissue()));
 		} else {
 			study.setOrganId(foStudy.getOrganId());
 			study.setPropertyIds(foStudy.getPropertyIds());
 		}
+		
+		study.setHasSegment(foStudy.isHasSegment());
+		study.setHasMutation(foStudy.isHasMutation());
+		study.setHasTranslocation(foStudy.isHasTranslocation());
+		study.setHasGeneric(foStudy.isHasGeneric());
+		
 		return study;
 	}
 	
@@ -373,22 +373,22 @@ public class DataTypeConverter {
 		FoStudy foStudy = new FoStudy(study.getId(),
 										study.getDate(),
 										study.getName(),
-										study.getType(),
 										study.getAssembly(),
 										study.getDescription(),
 										study.getUserId());
 		
-		if(study.getPlatform() != null){
-			foStudy.setPlatform(platformToFoPlatform(study.getPlatform()));
-		} else {
-			foStudy.setPlatformId(study.getPlatformId());
-		}
 		if(study.getTissue() != null){
 			foStudy.setTissue(tissueSampleToFoTissueSample(study.getTissue()));
 		} else {
 			foStudy.setOrganId(study.getOrganId());
 			foStudy.setPropertyIds(study.getPropertyIds());
 		}
+		
+		foStudy.setHasSegment(study.isHasSegment());
+		foStudy.setHasMutation(study.isHasMutation());
+		foStudy.setHasTranslocation(study.isHasTranslocation());
+		foStudy.setHasGeneric(study.isHasGeneric());		
+		
 		return foStudy;
 	}
 	
