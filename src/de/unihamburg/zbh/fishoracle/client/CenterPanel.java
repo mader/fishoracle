@@ -2373,13 +2373,11 @@ public class CenterPanel extends VLayout {
 		projectStudyGrid.setAutoFetchData(false);
 		projectStudyGrid.markForRedraw();
 		
-		ListGridField lgfProjectStudyId = new ListGridField("studyId", "Study ID");
-		ListGridField lgfProjectStudyName = new ListGridField("studyName", "Name");
-		ListGridField lgfProjectStudyDescription = new ListGridField("studyDescription", "Description");
-		
-		projectStudyGrid.setFields(lgfProjectStudyId, lgfProjectStudyName, lgfProjectStudyDescription);
-		
 		StudyDS mDS = new StudyDS();
+		mDS.getField("cnv").setCanView(false);
+		mDS.getField("snp").setCanView(false);
+		mDS.getField("transloc").setCanView(false);
+		mDS.getField("generic").setCanView(false);
 		
 		projectStudyGrid.setDataSource(mDS);
 		projectStudyGrid.setFetchOperation(OperationId.STUDY_FETCH_FOR_PROJECT);
