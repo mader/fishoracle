@@ -27,6 +27,7 @@ public class OperationId {
 	public static final String USER_UPDATE_ISACTIVE = "getUpdateUserIsActive";
 	
 	public static final String FEATURE_FETCH_ALL = "getAllFeatures";
+	public static final String FEATURE_FETCH_FOR_STUDY_ID = "getFeaturesForStudyId";
 	public static final String FEATURE_FETCH_TYPES = "getAllFeatureTypes";
 	
 	public OperationId() {

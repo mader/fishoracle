@@ -24,7 +24,7 @@ public class SegmentServiceImpl extends RemoteServiceServlet implements SegmentS
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.getCnSegmentsForStudyId(studyId);
+		return db.getSegmentsForStudyId(studyId);
 		
 	}
 

@@ -98,6 +98,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.datasource.FeatureDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.FileImportDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.PlatformDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.SNPMutationDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.SegmentDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.EnsemblDBDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.StudyDS;
@@ -106,6 +107,7 @@ import de.unihamburg.zbh.fishoracle.client.datasource.OrganDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectAccessDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.PropertyDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.TranslocationDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.UserDS;
 import de.unihamburg.zbh.fishoracle.client.ImgCanvas;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
@@ -126,7 +128,7 @@ public class CenterPanel extends VLayout {
 	private ListGrid platformGrid;
 	private ListGrid groupGrid;
 	private ListGrid groupUserGrid;
-	private ListGrid segmentGrid;
+	private ListGrid dataTypeGrid;
 	private SelectItem userSelectItem;
 	private SelectItem projectSelectItem;
 	private ListGrid ensemblGrid;
@@ -1906,9 +1908,8 @@ public class CenterPanel extends VLayout {
 		centerTabSet.selectTab(platformsAdminTab);
 	}
 	
-	public void openSegmentTab(String studyId){
-		//TODO
-		Tab segmentAdminTab = new Tab("Segments");
+	public void openDataTab(String type, String studyId){
+		Tab segmentAdminTab = new Tab(type);
 		segmentAdminTab.setCanClose(true);
 		
 		VLayout pane = new VLayout();
@@ -1920,34 +1921,46 @@ public class CenterPanel extends VLayout {
 		gridContainer.setWidth100();
 		gridContainer.setHeight100();
 		
-		segmentGrid = new ListGrid();
-		segmentGrid.setWidth100();
-		segmentGrid.setHeight100();
-		segmentGrid.setShowAllRecords(true);
-		segmentGrid.setAlternateRecordStyles(true);
-		segmentGrid.setWrapCells(true);
-		segmentGrid.setFixedRecordHeights(false);
-		segmentGrid.setAutoFetchData(false);
-		segmentGrid.setShowAllRecords(false);
+		dataTypeGrid = new ListGrid();
+		dataTypeGrid.setWidth100();
+		dataTypeGrid.setHeight100();
+		dataTypeGrid.setShowAllRecords(true);
+		dataTypeGrid.setAlternateRecordStyles(true);
+		dataTypeGrid.setWrapCells(true);
+		dataTypeGrid.setFixedRecordHeights(false);
+		dataTypeGrid.setAutoFetchData(false);
+		dataTypeGrid.setShowAllRecords(false);
 		
-		ListGridField lgfId = new ListGridField("segmentId", "Segment Id");
-		ListGridField lgfChr = new ListGridField("chromosome", "Chromosome");
-		lgfChr.setCellAlign(Alignment.CENTER);
-		ListGridField lgfStart = new ListGridField("start", "Start");
-		ListGridField lgfEnd = new ListGridField("end", "End");
-		ListGridField lgfScore = new ListGridField("score", "Segment Mean/Status");
-		ListGridField lgfMarkers = new ListGridField("markers", "Number of Markers");
-		ListGridField lgfType = new ListGridField("type", "Segment Type");
 		
-		segmentGrid.setFields(lgfId, lgfChr, lgfStart, lgfEnd, lgfScore, lgfMarkers, lgfType);
+		if(type.equals("Segments")){
+			SegmentDS sDS = new SegmentDS();
 		
-		SegmentDS sDS = new SegmentDS();
+			dataTypeGrid.setDataSource(sDS);
+		}
 		
-		segmentGrid.setDataSource(sDS);
+		if(type.equals("Mutations")){
+			SNPMutationDS mDS = new SNPMutationDS();
 		
-		segmentGrid.fetchData(new Criteria("studyId", studyId));
+			dataTypeGrid.setDataSource(mDS);
+		}
 		
-		gridContainer.addMember(segmentGrid);
+		if(type.equals("Translocations")){
+			TranslocationDS tDS = new TranslocationDS();
+		
+			dataTypeGrid.setDataSource(tDS);
+		}
+		
+		if(type.equals("Features")){
+			FeatureDS fDS = new FeatureDS();
+			
+			dataTypeGrid.setDataSource(fDS);
+			
+			dataTypeGrid.setFetchOperation(OperationId.FEATURE_FETCH_FOR_STUDY_ID);
+		}
+		
+		dataTypeGrid.fetchData(new Criteria("studyId", studyId));
+		
+		gridContainer.addMember(dataTypeGrid);
 		
 		pane.addMember(gridContainer);
 		
@@ -2018,7 +2031,7 @@ public class CenterPanel extends VLayout {
 				
 				if (lgr != null){
 				
-					openSegmentTab(lgr.getAttributeAsString("studyId"));
+					openDataTab("Segments", lgr.getAttributeAsString("studyId"));
 					
 				} else {
 					SC.say("Select a study.");
@@ -2027,6 +2040,69 @@ public class CenterPanel extends VLayout {
 			}});
 		
 		sToolStrip.addButton(showSegmentsButton);
+		
+		ToolStripButton showMutationsButton = new ToolStripButton();
+		showMutationsButton.setTitle("show mutations");
+		showMutationsButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				ListGridRecord lgr = studyGrid.getSelectedRecord();
+				
+				if (lgr != null){
+				
+					openDataTab("Mutations", lgr.getAttributeAsString("studyId"));
+					
+				} else {
+					SC.say("Select a study.");
+				}
+				
+			}});
+		
+		sToolStrip.addButton(showMutationsButton);
+		
+		ToolStripButton showTranslocationsButton = new ToolStripButton();
+		showTranslocationsButton.setTitle("show translocations");
+		showTranslocationsButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				ListGridRecord lgr = studyGrid.getSelectedRecord();
+				
+				if (lgr != null){
+				
+					openDataTab("Translocations", lgr.getAttributeAsString("studyId"));
+					
+				} else {
+					SC.say("Select a study.");
+				}
+				
+			}});
+		
+		sToolStrip.addButton(showTranslocationsButton);
+		
+		ToolStripButton showFeaturesButton = new ToolStripButton();
+		showFeaturesButton.setTitle("show features");
+		showFeaturesButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				ListGridRecord lgr = studyGrid.getSelectedRecord();
+				
+				if (lgr != null){
+				
+					openDataTab("Features", lgr.getAttributeAsString("studyId"));
+					
+				} else {
+					SC.say("Select a study.");
+				}
+				
+			}});
+		
+		sToolStrip.addButton(showFeaturesButton);
 		
 		ToolStripButton removeStudyButton = new ToolStripButton();
 		removeStudyButton.setTitle("remove study");

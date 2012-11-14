@@ -43,6 +43,26 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>MutationService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.MutationServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>MutationService</servlet-name>
+    <url-pattern>/fishoracle/MutationService</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>TranslocationService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.TranslocationServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>TranslocationService</servlet-name>
+    <url-pattern>/fishoracle/TranslocationService</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>FeatureService</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.FeatureServiceImpl</servlet-class>
   </servlet>

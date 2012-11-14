@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2011-2012 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2011-2012 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2012 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -23,38 +23,29 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author Malte Mader
  *
  */
-public class FoSegment implements IsSerializable {
-
+public class FoTranslocation implements IsSerializable {
+	
 	private int id;
 	private FoLocation location;
-	private double mean;
-	private int numberOfMarkers;
-	private int status;
-	private double statusScore;
-	private String type;
+	private int refId;
 	private int platformId;
 	private String platformName;
 	private int studyId;
-	private String studyName;
 	
-	public FoSegment() {
+	public FoTranslocation() {
 	}
 
-	public FoSegment(int id,
-						FoLocation loc,
-						String type) {
-		this.id = id;
-		this.location = loc;
-		this.type = type;
+	public FoTranslocation(int id,
+							FoLocation location,
+							int refId) {
 		
-		this.mean = -23;
-		this.numberOfMarkers = -1;
-		this.status = -1;
-		this.statusScore = -1.0;
-		this.studyId = 0;
-		this.studyName = "";
+		this.id = id;
+		this.location = location;
+		this.refId = refId;
+		this.platformName = "";
+		this.platformId = 0;
 	}
-
+	
 	public int getId() {
 		return id;
 	}
@@ -62,7 +53,7 @@ public class FoSegment implements IsSerializable {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+
 	public FoLocation getLocation() {
 		return location;
 	}
@@ -71,46 +62,14 @@ public class FoSegment implements IsSerializable {
 		this.location = location;
 	}
 
-	public double getMean() {
-		return mean;
+	public int getRefId() {
+		return refId;
 	}
 
-	public void setMean(double mean) {
-		this.mean = mean;
+	public void setRefId(int refId) {
+		this.refId = refId;
 	}
 
-	public int getNumberOfMarkers() {
-		return numberOfMarkers;
-	}
-
-	public void setNumberOfMarkers(int numberOfMarkers) {
-		this.numberOfMarkers = numberOfMarkers;
-	}
-	
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	public double getStatusScore() {
-		return statusScore;
-	}
-
-	public void setStatusScore(double statusScore) {
-		this.statusScore = statusScore;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-	
 	public int getPlatformId() {
 		return platformId;
 	}
@@ -133,13 +92,5 @@ public class FoSegment implements IsSerializable {
 
 	public void setStudyId(int studyId) {
 		this.studyId = studyId;
-	}
-
-	public String getStudyName() {
-		return studyName;
-	}
-
-	public void setStudyName(String studyName) {
-		this.studyName = studyName;
 	}
 }

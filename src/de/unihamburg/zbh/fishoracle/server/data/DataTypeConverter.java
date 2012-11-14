@@ -17,6 +17,7 @@
 
 package de.unihamburg.zbh.fishoracle.server.data;
 
+import de.unihamburg.zbh.fishoracle.client.data.FoGenericFeature;
 import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoEnsemblDBs;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
@@ -29,8 +30,10 @@ import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.FoSNPMutation;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoTissueSample;
+import de.unihamburg.zbh.fishoracle.client.data.FoTranslocation;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle_db_api.data.EnsemblDBs;
+import de.unihamburg.zbh.fishoracle_db_api.data.GenericFeature;
 import de.unihamburg.zbh.fishoracle_db_api.data.Group;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 import de.unihamburg.zbh.fishoracle_db_api.data.Organ;
@@ -42,6 +45,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.SNPMutation;
 import de.unihamburg.zbh.fishoracle_db_api.data.Segment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
 import de.unihamburg.zbh.fishoracle_db_api.data.TissueSample;
+import de.unihamburg.zbh.fishoracle_db_api.data.Translocation;
 import de.unihamburg.zbh.fishoracle_db_api.data.User;
 
 //TODO Tests.
@@ -150,6 +154,9 @@ public class DataTypeConverter {
 		foSegment.setStatus(segment.getStatus());
 		foSegment.setStatusScore(segment.getStatusScore());
 		
+		foSegment.setPlatformId(segment.getPlatformId());
+		foSegment.setPlatformName(segment.getPlatformName());
+		
 		if(segment.getStudyName() != null){
 			foSegment.setStudyName(segment.getStudyName());
 		}
@@ -160,12 +167,12 @@ public class DataTypeConverter {
 		FoSNPMutation[] foMutations = new FoSNPMutation[mutations.length];
 		
 		for(int i=0; i < mutations.length; i++){
-			foMutations[i] = foSNPMutationToFoSNPMutation(mutations[i]);
+			foMutations[i] = snpMutationToFoSNPMutation(mutations[i]);
 		}
 		return foMutations;
 	}
 	
-	public static FoSNPMutation foSNPMutationToFoSNPMutation(SNPMutation mutation){
+	public static FoSNPMutation snpMutationToFoSNPMutation(SNPMutation mutation){
 		FoSNPMutation foMutation = new FoSNPMutation(mutation.getId(),
 											locationToFoLocation(mutation.getLocation()),
 											mutation.getDbSnpId(),
@@ -176,8 +183,62 @@ public class DataTypeConverter {
 											mutation.getConfidence(),
 											mutation.getSnpTool());
 		
+		foMutation.setPlatformId(mutation.getPlatformId());
+		foMutation.setPlatformName(mutation.getPlatformName());
 		foMutation.setStudyId(mutation.getStudyId());
 		return foMutation;
+	}
+	
+	public static FoTranslocation[][] translocationToFoTranslocation(Translocation[][] translocs){
+		FoTranslocation[][] foTranslocs = new FoTranslocation[translocs.length][];;
+		
+		for(int i=0; i < translocs.length; i++){
+			foTranslocs[i] = translocationToFoTranslocation(translocs[i]);
+		}
+		return foTranslocs;
+	}
+	
+	public static FoTranslocation[] translocationToFoTranslocation(Translocation[] translocs){
+		FoTranslocation[] foTranslocs = new FoTranslocation[translocs.length];
+		
+		for(int i=0; i < translocs.length; i++){
+			foTranslocs[i] = translocationToFoTranslocation(translocs[i]);
+		}
+		return foTranslocs;
+	}
+	
+	
+	public static FoTranslocation translocationToFoTranslocation(Translocation transloc){
+		FoTranslocation foTransloc = new FoTranslocation(transloc.getId(),
+											locationToFoLocation(transloc.getLocation()),
+											transloc.getRefId());
+		
+		foTransloc.setStudyId(transloc.getStudyId());
+		foTransloc.setPlatformId(transloc.getPlatformId());
+		foTransloc.setPlatformName(transloc.getPlatformName());
+		
+		return foTransloc;
+	}
+	
+	public static FoGenericFeature[] featureToFoFeature(GenericFeature[] features){
+		FoGenericFeature[] foFeatures = new FoGenericFeature[features.length];
+		
+		for(int i=0; i < features.length; i++){
+			foFeatures[i] = featureToFoFeature(features[i]);
+		}
+		return foFeatures;
+	}
+	
+	public static FoGenericFeature featureToFoFeature(GenericFeature feature){
+		FoGenericFeature foFeature = new FoGenericFeature(feature.getId(),
+											locationToFoLocation(feature.getLocation()),
+											feature.getType());
+		
+		foFeature.setStudyId(feature.getStudyId());
+		foFeature.setPlatformId(feature.getPlatformId());
+		foFeature.setPlatformName(feature.getPlatformName());
+		
+		return foFeature;
 	}
 	
 	public static TissueSample[] foTissueSamplesToTissueSamples(FoTissueSample[] foTissues){

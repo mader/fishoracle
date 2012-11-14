@@ -25,6 +25,8 @@ import annotationsketch.FeatureIndex;
 import annotationsketch.FeatureIndexFo;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoGenericFeature;
+import de.unihamburg.zbh.fishoracle.client.data.FoSNPMutation;
 import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoEnsemblDBs;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
@@ -34,12 +36,14 @@ import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
+import de.unihamburg.zbh.fishoracle.client.data.FoTranslocation;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
 import de.unihamburg.zbh.fishoracle_db_api.data.EnsemblDBs;
+import de.unihamburg.zbh.fishoracle_db_api.data.GenericFeature;
 import de.unihamburg.zbh.fishoracle_db_api.data.Group;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 import de.unihamburg.zbh.fishoracle_db_api.data.Organ;
@@ -47,6 +51,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.Platform;
 import de.unihamburg.zbh.fishoracle_db_api.data.Project;
 import de.unihamburg.zbh.fishoracle_db_api.data.ProjectAccess;
 import de.unihamburg.zbh.fishoracle_db_api.data.Property;
+import de.unihamburg.zbh.fishoracle_db_api.data.SNPMutation;
 import de.unihamburg.zbh.fishoracle_db_api.data.Segment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
 import de.unihamburg.zbh.fishoracle_db_api.data.Translocation;
@@ -723,7 +728,7 @@ public class DBInterface {
 		
 	}
 	
-	public FoSegment[] getCnSegmentsForStudyId(int studyId){
+	public FoSegment[] getSegmentsForStudyId(int studyId){
 		
 		FODriver driver = getFoDriver();
 		SegmentAdaptor ca = driver.getSegmentAdaptor();
@@ -733,6 +738,26 @@ public class DBInterface {
 		return DataTypeConverter.segmentsToFoSegments(segments);
 	}
 	
+	public FoSNPMutation[] getMutationsForStudyId(int studyId){
+		
+		FODriver driver = getFoDriver();
+		SNPMutationAdaptor ma = driver.getSNPMutationAdaptor();
+		
+		SNPMutation[] mutations = ma.fetchSNPMutationsForStudyId(studyId);
+		
+		return DataTypeConverter.snpMutationToFoSNPMutation(mutations);
+	}
+	
+	public FoTranslocation[][] getTranslocationsForStudyId(int studyId){
+		
+		FODriver driver = getFoDriver();
+		TranslocationAdaptor ta = driver.getTranslocationAdaptor();
+		
+		Translocation[][] translocs = ta.fetchTranslocationsForStudyId(studyId);
+		
+		return DataTypeConverter.translocationToFoTranslocation(translocs);
+	}
+	
 	public Translocation getTranslocationForId(int translocationId){
 		
 		FODriver driver = getFoDriver();
@@ -740,6 +765,16 @@ public class DBInterface {
 		
 		return ta.fetchTranslocationById(translocationId, false)[0];
 		
+	}
+	
+	public FoGenericFeature[] getFeaturesForStudyId(int studyId){
+		
+		FODriver driver = getFoDriver();
+		GenericAdaptor ga = driver.getGenericAdaptor();
+		
+		GenericFeature[] features = ga.fetchGenericFeaturesForStudyId(studyId);
+		
+		return DataTypeConverter.featureToFoFeature(features);
 	}
 	
 	public void removeStudy(int studyId){
