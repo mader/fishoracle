@@ -108,7 +108,12 @@ public class StudyDS extends FoDataSource {
 		
 		if(request.getOperationId().equals(OperationId.STUDY_FETCH_FOR_PROJECT)){
 			Criteria c = request.getCriteria();
-			projectId = Integer.parseInt(c.getAttribute("projectId"));
+			
+			if(c.getAttribute("projectId") != null){
+				projectId = Integer.parseInt(c.getAttribute("projectId"));
+			} else {
+				projectId = 1;
+			}
 		}
 		
 		req.fetch(request.getOperationId(), projectId, callback);

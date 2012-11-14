@@ -1907,6 +1907,7 @@ public class CenterPanel extends VLayout {
 	}
 	
 	public void openSegmentTab(String studyId){
+		//TODO
 		Tab segmentAdminTab = new Tab("Segments");
 		segmentAdminTab.setCanClose(true);
 		
@@ -2078,23 +2079,9 @@ public class CenterPanel extends VLayout {
 		studyGrid.setAlternateRecordStyles(true);
 		studyGrid.setWrapCells(true);
 		studyGrid.setShowAllRecords(false);
-		studyGrid.setAutoFetchData(false);
+		studyGrid.setAutoFetchData(true);
 		studyGrid.setFixedRecordHeights(false);
 		
-		/*
-		
-		ListGridField lgfId = new ListGridField("studyId", "Study ID");
-		ListGridField lgfPlatform = new ListGridField("platformName", "Platform");
-		ListGridField lgfTissue = new ListGridField("tissueName", "Tissue");
-		ListGridField lgfDate = new ListGridField("date", "Date");
-		ListGridField lgfName = new ListGridField("studyName", "Name");
-		ListGridField lgfDescription = new ListGridField("studyDescription", "Description");
-		
-		studyGrid.setFields(lgfId, lgfPlatform, lgfTissue, lgfDate, lgfName, lgfDescription);
-		
-		*/
-		
-		//TODO make load the data for default option...
 		StudyDS mDS = new StudyDS();
 		
 		studyGrid.setDataSource(mDS);
