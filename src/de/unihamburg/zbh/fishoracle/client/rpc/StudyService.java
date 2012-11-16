@@ -10,9 +10,15 @@ import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 public interface StudyService extends RemoteService {
 
 	FoStudy add(FoStudy foStudy);
+	FoStudy addToProject(int studyId, int projectId) throws Exception;
 	FoStudy[] fetch(String operationId, int projectId) throws Exception;
 	public void update(FoStudy foStudy);
-	public void delete(int studyId);
+	void delete(int studyId, int projectId);
+	
+	FoStudy[] fetchNotInProject(
+			String operationId,
+			int projectId,
+			int notInProjectId);
 	
 	public static class Util {
 

@@ -105,25 +105,93 @@ public class StudyDS extends FoDataSource {
 		};
 		
 		int projectId = 0;
+		int notInProjectId = 0;
 		
-		if(request.getOperationId().equals(OperationId.STUDY_FETCH_FOR_PROJECT)){
-			Criteria c = request.getCriteria();
+		Criteria c = request.getCriteria();
 			
-			if(c.getAttribute("projectId") != null){
-				projectId = Integer.parseInt(c.getAttribute("projectId"));
-			} else {
-				projectId = 1;
-			}
+		if(c.getAttribute("projectId") != null){
+			projectId = Integer.parseInt(c.getAttribute("projectId"));
+		} else {
+			projectId = 1;
 		}
 		
-		req.fetch(request.getOperationId(), projectId, callback);
+		if(request.getOperationId().equals(OperationId.STUDY_FETCH_FOR_PROJECT)){
 		
+			req.fetch(request.getOperationId(), projectId, callback);
+		}
+		
+		if(request.getOperationId().equals(OperationId.STUDY_FETCH_NOT_IN_PROJECT)){
+			
+			if(c.getAttribute("notInProjectId") != null){
+				notInProjectId = Integer.parseInt(c.getAttribute("notInProjectId"));
+			} else {
+				notInProjectId = 1;
+			}
+			
+			req.fetchNotInProject(request.getOperationId(), projectId, notInProjectId, callback);
+		}
 	}
 
 	@Override
 	protected void executeAdd(final String requestId, final DSRequest request,
 			final DSResponse response) {
-		// TODO Auto-generated method stub		
+		
+		final StudyServiceAsync req = (StudyServiceAsync) GWT.create(StudyService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "StudyService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoStudy> callback = new AsyncCallback<FoStudy>(){
+			
+			public void onSuccess(FoStudy result){
+				
+				ListGridRecord[] list = new ListGridRecord[1];
+				
+				ListGridRecord record = new ListGridRecord (); 
+				record.setAttribute("StudyId", new Integer(result.getId()).toString());
+				record.setAttribute("StudyName", result.getName());
+				record.setAttribute("StudyDescription", result.getDescription());
+				record.setAttribute("date", result.getDate());
+				
+				if(result.getTissue() != null){
+					record.setAttribute("tissueName", result.getTissue().getOrgan().getLabel() + 
+							" (" + result.getTissue().getOrgan().getType() + ")");
+				}
+				
+				record.setAttribute("cnv", result.isHasSegment());
+				record.setAttribute("snp", result.isHasMutation());
+				record.setAttribute("transloc", result.isHasTranslocation());
+				record.setAttribute("generic", result.isHasGeneric());
+				
+				list[0] = record;
+				
+				response.setData(list);
+				processResponse(requestId, response);
+			}
+			
+			public void onFailure(Throwable caught){
+				response.setStatus(RPCResponse.STATUS_FAILURE);
+				processResponse(requestId, response);
+				SC.say(caught.getMessage());
+			}
+		};
+		
+		JavaScriptObject data = request.getData();
+		ListGridRecord rec = new ListGridRecord(data);
+		
+		if(request.getOperationId().equals(OperationId.STUDY_ADD_TO_PROJECT)){
+		
+			Criteria c = request.getCriteria();
+		
+			int projectId = 0;
+			
+			if(c.getAttribute("projectId") != null){
+				projectId = Integer.parseInt(c.getAttribute("projectId"));
+			}
+        
+			int studyId = rec.getAttributeAsInt("studyId");
+			
+			req.addToProject(studyId, projectId, callback);
+		}
 	}
 
 	@Override
@@ -164,6 +232,14 @@ public class StudyDS extends FoDataSource {
 		
 		int studyId = Integer.parseInt(rec.getAttribute("studyId"));
 		
-		req.delete(studyId, callback);
+		Criteria c = request.getCriteria();
+		
+		int projectId = 0;
+		
+		if(c.getAttribute("projectId") != null){
+			projectId = Integer.parseInt(c.getAttribute("projectId"));
+		}
+		
+		req.delete(studyId, projectId, callback);
 	}
 }

@@ -8,7 +8,9 @@ import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.rpc.StudyService;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
+import de.unihamburg.zbh.fishoracle.server.data.DataTypeConverter;
 import de.unihamburg.zbh.fishoracle.server.data.SessionData;
+import de.unihamburg.zbh.fishoracle_db_api.data.Study;
 
 public class StudyServiceImpl extends RemoteServiceServlet implements StudyService {
 	
@@ -64,6 +66,7 @@ public class StudyServiceImpl extends RemoteServiceServlet implements StudyServi
 			studies = db.getStudiesForProject(new int[]{projectId}, true);
 		
 		}
+		
 		return studies;
 	}
 
@@ -73,12 +76,49 @@ public class StudyServiceImpl extends RemoteServiceServlet implements StudyServi
 	}
 
 	@Override
-	public void delete(int studyId) {
+	public void delete(int studyId, int projectId) {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		db.removeStudy(studyId);
+		db.removeStudy(studyId, projectId);
+	}
+
+	@Override
+	public FoStudy addToProject(int studyId, int projectId) throws Exception {
+		
+		if(projectId == 0){
+			throw new Exception("No valid project ID given.");
+		}
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		Study study = null;
+		
+		db.addStudyToProject(studyId, projectId);
+		
+		study = db.getStudyForId(studyId);
+		
+		return DataTypeConverter.studyToFoStudy(study);
+	}
+
+	@Override
+	public FoStudy[] fetchNotInProject(String operationId, 
+										int projectId, 
+										int notInProject) {
+		
+		FoStudy[] studies = null;
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+			
+		studies = db.getStudieNotInProject(projectId, notInProject);
+		
+		return studies;
 	}
 }

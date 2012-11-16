@@ -33,6 +33,7 @@ import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
 import com.smartgwt.client.types.ListGridEditEvent;
+import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.SelectionType;
@@ -152,6 +153,7 @@ public class CenterPanel extends VLayout {
 	private ListGrid projectAccessGrid;
 	private SelectItem accessRightSelectItem;
 	private SelectItem groupSelectItem;
+	private SelectItem studySelectItem;
 	
 	private TextItem groupNameTextItem;
 	private TextItem organLabelTextItem;
@@ -2124,6 +2126,10 @@ public class CenterPanel extends VLayout {
 						public void execute(Boolean value) {
 							if(value != null && value){
 							
+								Criteria c = new Criteria("projectId", projectSelectItem.getValueAsString());
+								
+								studyGrid.setCriteria(c);
+								
 								studyGrid.removeData(lgr);
 								
 							}
@@ -2227,7 +2233,7 @@ public class CenterPanel extends VLayout {
 		
 		final Window window = new Window();
 
-		window.setTitle("Add Project Access to Project " + project.getName());
+		window.setTitle("Add project access to project " + project.getName());
 		window.setWidth(250);
 		window.setHeight(200);
 		window.setAlign(Alignment.CENTER);
@@ -2278,6 +2284,105 @@ public class CenterPanel extends VLayout {
 		window.addItem(projectAccessForm);
 		
 		window.show();
+	}
+	
+	public void loadAddStudyProjectWindow(final FoProject project){
+		
+		final Window window = new Window();
+
+		window.setTitle("Add study to project " + project.getName());
+		window.setWidth(250);
+		window.setHeight(200);
+		window.setAlign(Alignment.CENTER);
+		
+		window.setAutoCenter(true);
+		window.setIsModal(true);
+		window.setShowModalMask(true);
+		
+		final DynamicForm addStudyForm = new DynamicForm();
+		
+		projectSelectItem = new SelectItem();
+        projectSelectItem.setTitle("Project");
+        
+        projectSelectItem.setDisplayField("projectName");
+		projectSelectItem.setValueField("projectId");		
+		
+		projectSelectItem.setAutoFetchData(false);
+		
+		ProjectDS pDS = new ProjectDS();
+		
+		projectSelectItem.setOptionDataSource(pDS);
+		projectSelectItem.setOptionOperationId(OperationId.PROJECT_FETCH_ALL);
+		
+		projectSelectItem.setDefaultToFirstOption(true);
+		projectSelectItem.addChangedHandler(new ChangedHandler() {
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				
+				String projectId = projectSelectItem.getValueAsString();
+				String notInProjectId = "" + project.getId();
+				
+				Criteria c = new Criteria("projectId", projectId);
+				c.addCriteria("notInProjectId", notInProjectId);
+				
+				studySelectItem.setPickListCriteria(c);
+				
+				studySelectItem.setOptionOperationId(OperationId.STUDY_FETCH_NOT_IN_PROJECT);
+				
+				studySelectItem.fetchData();
+			}
+		});
+		
+		studySelectItem = new SelectItem();
+		studySelectItem.setTitle("Study");
+		studySelectItem.setDisplayField("studyName");
+		studySelectItem.setValueField("studyId");
+		studySelectItem.setMultiple(true);
+		studySelectItem.setMultipleAppearance(MultipleAppearance.PICKLIST);
+		studySelectItem.setAutoFetchData(false);
+		
+		StudyDS mDS = new StudyDS();
+		
+		studySelectItem.setOptionDataSource(mDS);
+		studySelectItem.setOptionOperationId(OperationId.STUDY_FETCH_NOT_IN_PROJECT);
+		
+		ButtonItem addStudyButton = new ButtonItem("Add");
+		addStudyButton.setWidth(50);
+
+		addStudyButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				
+				ListGridRecord[] lgr = studySelectItem.getSelectedRecords();
+				
+				String projectId = "" + project.getId();
+				
+				Criteria c = new Criteria("projectId", projectId);
+				
+				projectStudyGrid.setCriteria(c);
+				
+				projectStudyGrid.setAddOperation(OperationId.STUDY_ADD_TO_PROJECT);
+				
+				for(int i = 0; i < lgr.length; i++){
+				
+					projectStudyGrid.addData(lgr[i]);
+				
+				}
+				
+				window.hide();
+			}
+			
+		});
+		
+		addStudyForm.setItems(projectSelectItem, studySelectItem, addStudyButton);
+	
+		window.addItem(addStudyForm);
+		
+		window.show();
+		
 	}
 	
 	public void openProjectAdminTab(FoUser user){
@@ -2403,6 +2508,33 @@ public class CenterPanel extends VLayout {
 			}});
 		
 		projectToolStrip.addButton(removeProjectAccessButton);
+		
+		ToolStripButton addStudyToProjectButton = new ToolStripButton();  
+		addStudyToProjectButton.setTitle("add study to project");
+		if(user.getIsAdmin() == false){
+			addStudyToProjectButton.setDisabled(true);
+		}
+		addStudyToProjectButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				ListGridRecord lgr = projectGrid.getSelectedRecord();
+				
+				if (lgr != null){
+				
+					FoProject project = new FoProject(Integer.parseInt(lgr.getAttribute("projectId")),
+																		lgr.getAttribute("projectName"),
+																		lgr.getAttribute("projectDescription"));
+					loadAddStudyProjectWindow(project);
+					
+				} else {
+					SC.say("Select a project.");
+				}
+				
+			}});
+		
+		projectToolStrip.addButton(addStudyToProjectButton);
 		
 		controlsPanel.addMember(projectToolStrip);
 		

@@ -6,6 +6,8 @@ public class OperationId {
 	
 	public static final String STUDY_FETCH_ALL = "getAllStudies";
 	public static final String STUDY_FETCH_FOR_PROJECT = "getAllStudiesForProject";
+	public static final String STUDY_ADD_TO_PROJECT = "addStudyToProject";
+	public static final String STUDY_FETCH_NOT_IN_PROJECT = "getNotInProject";
 	
 	public static final String ORGAN_FETCH_ALL = "getAllOrgans";
 	public static final String ORGAN_FETCH_ENABLED = "getAllEnabledOrgans";

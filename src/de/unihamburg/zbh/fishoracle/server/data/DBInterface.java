@@ -777,12 +777,51 @@ public class DBInterface {
 		return DataTypeConverter.featureToFoFeature(features);
 	}
 	
-	public void removeStudy(int studyId){
+	public void removeStudy(int studyId, int projectId){
 		
 		FODriver driver = getFoDriver();
 		StudyAdaptor sa = driver.getStudyAdaptor();
 		
-		sa.deleteStudy(studyId);
+		int count = sa.countStudyInProjects(studyId);
+		
+		if(count > 1){
+			
+			ProjectAdaptor pa = driver.getProjectAdaptor();
+			
+			pa.removeStudyFromProject(studyId, projectId);
+			
+		} else {
+		
+			sa.deleteStudy(studyId);
+		}
+	}
+	
+	public Study getStudyForId(int studyId){
+		
+		FODriver driver = getFoDriver();
+		StudyAdaptor sa = driver.getStudyAdaptor();
+		
+		Study s = sa.fetchStudyById(studyId, true);
+		
+		return s;
+	}
+	
+	public FoStudy[] getStudieNotInProject(int projectId, int notInProject){
+		
+		FODriver driver = getFoDriver();
+		StudyAdaptor sa = driver.getStudyAdaptor();
+		
+		Study[] s = sa.fetchStudiesNotInProject(projectId, notInProject, true);
+		
+		return DataTypeConverter.studiesToFostudies(s);
+	}
+	
+	public void addStudyToProject(int studyId, int projectId){
+		
+		FODriver driver = getFoDriver();
+		ProjectAdaptor pa = driver.getProjectAdaptor();
+		
+		pa.addStudyToProject(studyId, projectId);
 		
 	}
 	
