@@ -147,9 +147,9 @@ public class StudyDS extends FoDataSource {
 				ListGridRecord[] list = new ListGridRecord[1];
 				
 				ListGridRecord record = new ListGridRecord (); 
-				record.setAttribute("StudyId", new Integer(result.getId()).toString());
-				record.setAttribute("StudyName", result.getName());
-				record.setAttribute("StudyDescription", result.getDescription());
+				record.setAttribute("studyId", new Integer(result.getId()).toString());
+				record.setAttribute("studyName", result.getName());
+				record.setAttribute("studyDescription", result.getDescription());
 				record.setAttribute("date", result.getDate());
 				
 				if(result.getTissue() != null){
@@ -179,16 +179,14 @@ public class StudyDS extends FoDataSource {
 		ListGridRecord rec = new ListGridRecord(data);
 		
 		if(request.getOperationId().equals(OperationId.STUDY_ADD_TO_PROJECT)){
-		
-			Criteria c = request.getCriteria();
-		
+			
 			int projectId = 0;
 			
-			if(c.getAttribute("projectId") != null){
-				projectId = Integer.parseInt(c.getAttribute("projectId"));
+			if(rec.getAttribute("projectId") != null){
+				projectId = Integer.parseInt(rec.getAttribute("projectId"));
 			}
         
-			int studyId = rec.getAttributeAsInt("studyId");
+			int studyId = Integer.parseInt(rec.getAttribute("studyId"));
 			
 			req.addToProject(studyId, projectId, callback);
 		}
@@ -232,12 +230,10 @@ public class StudyDS extends FoDataSource {
 		
 		int studyId = Integer.parseInt(rec.getAttribute("studyId"));
 		
-		Criteria c = request.getCriteria();
-		
 		int projectId = 0;
 		
-		if(c.getAttribute("projectId") != null){
-			projectId = Integer.parseInt(c.getAttribute("projectId"));
+		if(rec.getAttribute("projectId") != null){
+			projectId = Integer.parseInt(rec.getAttribute("projectId"));
 		}
 		
 		req.delete(studyId, projectId, callback);

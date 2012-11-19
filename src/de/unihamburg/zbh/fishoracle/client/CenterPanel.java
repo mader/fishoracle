@@ -67,6 +67,8 @@ import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
+import com.smartgwt.client.widgets.form.fields.events.DataArrivedEvent;
+import com.smartgwt.client.widgets.form.fields.events.DataArrivedHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.form.validator.MatchesFieldValidator;
@@ -82,6 +84,8 @@ import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
+import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
+import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
 import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
@@ -2120,15 +2124,13 @@ public class CenterPanel extends VLayout {
 				
 				if(lgr != null) {
 				
-					SC.confirm("Do you really want to delete " + lgr.getAttribute("name") + "?", new BooleanCallback(){
+					SC.confirm("Do you really want to delete " + lgr.getAttribute("studyName") + "?", new BooleanCallback(){
 
 						@Override
 						public void execute(Boolean value) {
 							if(value != null && value){
-							
-								Criteria c = new Criteria("projectId", projectSelectItem.getValueAsString());
 								
-								studyGrid.setCriteria(c);
+								lgr.setAttribute("projectId", projectSelectItem.getValueAsString());
 								
 								studyGrid.removeData(lgr);
 								
@@ -2334,6 +2336,26 @@ public class CenterPanel extends VLayout {
 			}
 		});
 		
+		projectSelectItem.addDataArrivedHandler(new DataArrivedHandler(){
+
+			@Override
+			public void onDataArrived(DataArrivedEvent event) {
+				
+				String projectId = projectSelectItem.getValueAsString();
+				String notInProjectId = "" + project.getId();
+				
+				Criteria c = new Criteria("projectId", projectId);
+				c.addCriteria("notInProjectId", notInProjectId);
+				
+				studySelectItem.setPickListCriteria(c);
+				
+				studySelectItem.setOptionOperationId(OperationId.STUDY_FETCH_NOT_IN_PROJECT);
+				
+				studySelectItem.fetchData();
+				
+			}
+		});
+		
 		studySelectItem = new SelectItem();
 		studySelectItem.setTitle("Study");
 		studySelectItem.setDisplayField("studyName");
@@ -2360,14 +2382,12 @@ public class CenterPanel extends VLayout {
 				
 				String projectId = "" + project.getId();
 				
-				Criteria c = new Criteria("projectId", projectId);
-				
-				projectStudyGrid.setCriteria(c);
-				
 				projectStudyGrid.setAddOperation(OperationId.STUDY_ADD_TO_PROJECT);
 				
 				for(int i = 0; i < lgr.length; i++){
 				
+					
+					lgr[i].setAttribute("projectId", projectId);
 					projectStudyGrid.addData(lgr[i]);
 				
 				}
@@ -2441,13 +2461,24 @@ public class CenterPanel extends VLayout {
 						@Override
 						public void execute(Boolean value) {
 							if(value != null && value){
-						
-								projectGrid.removeData(lgr);
+								
+								String projectId = lgr.getAttribute("projectId");
 								
 								projectAccessGrid.selectAllRecords();
 								projectAccessGrid.removeSelectedData();
+								
 								projectStudyGrid.selectAllRecords();
+								ListGridRecord[] lgrStudy = projectStudyGrid.getSelectedRecords();
+								
+								for(int i = 0; i < lgrStudy.length; i++){
+								
+									lgrStudy[i].setAttribute("projectId", projectId);
+								
+								}
+								
 								projectStudyGrid.removeSelectedData();
+								
+								projectGrid.removeData(lgr);
 							}
 						}
 					});
@@ -2621,6 +2652,21 @@ public class CenterPanel extends VLayout {
 		projectGrid.addRecordClickHandler(new MyProjectRecordClickHandler(projectStudyGrid, projectAccessGrid, user, cp));
 		
 		projectAdminTab.setPane(pane);
+		
+		projectAdminTab.addTabSelectedHandler(new TabSelectedHandler(){
+
+			@Override
+			public void onTabSelected(TabSelectedEvent event) {
+				
+				if(projectGrid.getSelectedRecord() != null){
+					String projectId = projectGrid.getSelectedRecord().getAttribute("projectId");
+				
+					projectStudyGrid.setFetchOperation(OperationId.STUDY_FETCH_FOR_PROJECT);
+					
+					projectStudyGrid.fetchData(new Criteria("projectId", projectId));
+				}
+			}
+		});
 		
 		centerTabSet.addTab(projectAdminTab);
 		
