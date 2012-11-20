@@ -2653,21 +2653,25 @@ public class CenterPanel extends VLayout {
 		
 		projectAdminTab.setPane(pane);
 		
+		/*
 		projectAdminTab.addTabSelectedHandler(new TabSelectedHandler(){
 
 			@Override
 			public void onTabSelected(TabSelectedEvent event) {
 				
 				if(projectGrid.getSelectedRecord() != null){
+					
 					String projectId = projectGrid.getSelectedRecord().getAttribute("projectId");
 				
 					projectStudyGrid.setFetchOperation(OperationId.STUDY_FETCH_FOR_PROJECT);
+					
+					//TODO Find oput why this does not work.
 					
 					projectStudyGrid.fetchData(new Criteria("projectId", projectId));
 				}
 			}
 		});
-		
+		*/
 		centerTabSet.addTab(projectAdminTab);
 		
 		centerTabSet.selectTab(projectAdminTab);
