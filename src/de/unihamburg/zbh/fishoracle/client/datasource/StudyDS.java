@@ -29,8 +29,10 @@ public class StudyDS extends FoDataSource {
 		field.setRequired(true);
 		addField(field);
 		
-		field = new DataSourceTextField("studyName", "Name");
-		field.setRequired(true);
+		field = new DataSourceIntegerField("userId", "User ID");
+		addField(field);
+		
+		field = new DataSourceTextField("configName", "Name");
         addField (field);
         
         field = new DataSourceTextField("studyDescription", "Description");

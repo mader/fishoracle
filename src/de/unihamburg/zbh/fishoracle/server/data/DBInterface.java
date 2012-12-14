@@ -25,6 +25,7 @@ import annotationsketch.FeatureIndex;
 import annotationsketch.FeatureIndexFo;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoGenericFeature;
 import de.unihamburg.zbh.fishoracle.client.data.FoSNPMutation;
 import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
@@ -42,6 +43,7 @@ import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
+import de.unihamburg.zbh.fishoracle_db_api.data.ConfigData;
 import de.unihamburg.zbh.fishoracle_db_api.data.EnsemblDBs;
 import de.unihamburg.zbh.fishoracle_db_api.data.GenericFeature;
 import de.unihamburg.zbh.fishoracle_db_api.data.Group;
@@ -56,6 +58,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.Segment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
 import de.unihamburg.zbh.fishoracle_db_api.data.Translocation;
 import de.unihamburg.zbh.fishoracle_db_api.data.User;
+import de.unihamburg.zbh.fishoracle_db_api.driver.ConfigAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.EnsemblDBsAdaptor;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriver;
 import de.unihamburg.zbh.fishoracle_db_api.driver.FODriverImpl;
@@ -1027,7 +1030,7 @@ public class DBInterface {
 		pa.deleteProject(projectId);
 	}
 	
-	public void removeUserFromGroup(int groupId, int userId){
+	public void removeUserFromGroup(int groupId, int userId) {
 		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		
@@ -1035,7 +1038,7 @@ public class DBInterface {
 		
 	}
 	
-	public void updateProfile(FoUser updateUser, FoUser sessionUser) throws Exception{
+	public void updateProfile(FoUser updateUser, FoUser sessionUser) throws Exception {
 		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
@@ -1052,7 +1055,7 @@ public class DBInterface {
 		}
 	}
 	
-	public void updatePassword(FoUser updateUser, FoUser sessionUser) throws Exception{
+	public void updatePassword(FoUser updateUser, FoUser sessionUser) throws Exception {
 		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
@@ -1067,11 +1070,46 @@ public class DBInterface {
 		}
 	}
 	
-	public void setPassword(int userId, String pw){
+	public void setPassword(int userId, String pw) {
 		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
 		ua.updateUserPassword(userId, pw);
+	}
+	
+	public void addConfig(FoConfigData foConf) {
 		
+		FODriver driver = getFoDriver();
+		ConfigAdaptor ca = driver.getConfigAdaptor();
+		
+		ca.storeConfig(DataTypeConverter.FoConfigDataToConfigData(foConf));
+	}
+	
+	public FoConfigData getConfigForId(int configId) {
+		
+		FODriver driver = getFoDriver();
+		ConfigAdaptor ca = driver.getConfigAdaptor();
+		
+		ConfigData foConf = ca.fetchConfigById(configId);
+		
+		return DataTypeConverter.ConfigDataToFoConfigData(foConf);
+	}
+	
+	public FoConfigData[] getConfigForUserId(int userId) {
+		
+		FODriver driver = getFoDriver();
+		ConfigAdaptor ca = driver.getConfigAdaptor();
+		
+		ConfigData[] foConf = ca.fetchConfigForUserId(userId);
+		
+		return DataTypeConverter.ConfigDataToFoConfigData(foConf);
+	}
+	
+	public void removeConfig(int configId) {
+		
+		FODriver driver = getFoDriver();
+		ConfigAdaptor ca = driver.getConfigAdaptor();
+		
+		ca.deleteConfig(configId);
 	}
 }

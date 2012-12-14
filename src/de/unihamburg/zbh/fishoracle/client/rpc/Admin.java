@@ -29,7 +29,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
 @RemoteServiceRelativePath("admin")
-public interface Admin extends RemoteService  {
+public interface Admin extends RemoteService {
 
 	public String[] getUploadedFiles() throws Exception;
 	void deleteFiles(String[] files);

@@ -21,6 +21,16 @@
     <url-pattern>/fishoracle/Search</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ConfigService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.ConfigServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>ConfigService</servlet-name>
+    <url-pattern>/fishoracle/ConfigService</url-pattern>
+  </servlet-mapping>
+
  <servlet>
     <servlet-name>EnsemblDBsService</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.EnsemblDBsServiceImpl</servlet-class>
@@ -30,7 +40,6 @@
     <servlet-name>EnsemblDBsService</servlet-name>
     <url-pattern>/fishoracle/EnsemblDBsService</url-pattern>
   </servlet-mapping>
-
 
   <servlet>
     <servlet-name>SegmentService</servlet-name>

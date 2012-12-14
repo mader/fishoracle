@@ -17,6 +17,7 @@
 
 package de.unihamburg.zbh.fishoracle.server.data;
 
+import de.unihamburg.zbh.fishoracle.client.data.FoConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoGenericFeature;
 import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoEnsemblDBs;
@@ -30,8 +31,10 @@ import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
 import de.unihamburg.zbh.fishoracle.client.data.FoSNPMutation;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoTissueSample;
+import de.unihamburg.zbh.fishoracle.client.data.FoTrackData;
 import de.unihamburg.zbh.fishoracle.client.data.FoTranslocation;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
+import de.unihamburg.zbh.fishoracle_db_api.data.ConfigData;
 import de.unihamburg.zbh.fishoracle_db_api.data.EnsemblDBs;
 import de.unihamburg.zbh.fishoracle_db_api.data.GenericFeature;
 import de.unihamburg.zbh.fishoracle_db_api.data.Group;
@@ -45,6 +48,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.SNPMutation;
 import de.unihamburg.zbh.fishoracle_db_api.data.Segment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
 import de.unihamburg.zbh.fishoracle_db_api.data.TissueSample;
+import de.unihamburg.zbh.fishoracle_db_api.data.TrackData;
 import de.unihamburg.zbh.fishoracle_db_api.data.Translocation;
 import de.unihamburg.zbh.fishoracle_db_api.data.User;
 
@@ -54,6 +58,92 @@ public class DataTypeConverter {
 	public DataTypeConverter() {
 	}
 
+	public static FoConfigData[] ConfigDataToFoConfigData(ConfigData[] cd){
+		FoConfigData[] foCd = new FoConfigData[cd.length];
+		
+		for(int i=0; i < cd.length; i++){
+			foCd[i] = ConfigDataToFoConfigData(cd[i]);
+		}
+		return foCd;
+	}
+	
+	public static FoConfigData ConfigDataToFoConfigData(ConfigData cd){
+		
+		FoConfigData foCd = new FoConfigData();
+		foCd.setId(cd.getId());
+		foCd.setUserId(cd.getUserId());
+		foCd.setEnsemblDBId(cd.getEnsemblDBId());
+		foCd.setName(cd.getName());
+		foCd.setStrArrays(cd.getStrArray());
+		foCd.setTracks(TrackDataToFoTrackData(cd.getTracks()));
+		
+		return foCd;
+	}
+	
+	public static ConfigData[] FoConfigDataToConfigData(FoConfigData[] foCd){
+		ConfigData[] cd = new ConfigData[foCd.length];
+		
+		for(int i=0; i < foCd.length; i++){
+			cd[i] = FoConfigDataToConfigData(foCd[i]);
+		}
+		return cd;
+	}
+	
+	public static ConfigData FoConfigDataToConfigData(FoConfigData foCd){
+		
+		ConfigData cd = new ConfigData();
+		cd.setId(foCd.getId());
+		cd.setUserId(foCd.getUserId());
+		cd.setEnsemblDBId(foCd.getEnsemblDBId());
+		cd.setName(foCd.getName());
+		cd.setStrArrays(foCd.getStrArray());
+		cd.setTracks(FoTrackDataToTrackData(foCd.getTracks()));
+		
+		return cd;
+	}
+	
+	public static FoTrackData[] TrackDataToFoTrackData(TrackData[] td){
+		FoTrackData[] foTd = new FoTrackData[td.length];
+		
+		for(int i=0; i < td.length; i++){
+			foTd[i] = TrackDataToFoTrackData(td[i]);
+		}
+		return foTd;
+	}
+	
+	public static FoTrackData TrackDataToFoTrackData(TrackData td){
+		
+		FoTrackData foTd = new FoTrackData();
+		foTd.setId(td.getId());
+		foTd.setConfigId(td.getConfigId());
+		foTd.setTrackName(td.getTrackName());
+		foTd.setTrackNumber(td.getTrackNumber());
+		foTd.setStrArrays(td.getStrArray());
+		
+		return foTd;
+	}
+	
+	public static TrackData[] FoTrackDataToTrackData(FoTrackData[] foTd){
+		TrackData[] td = new TrackData[foTd.length];
+		
+		for(int i=0; i < foTd.length; i++){
+			td[i] = FoTrackDataToTrackData(foTd[i]);
+		}
+		return td;
+	}
+	
+	public static TrackData FoTrackDataToTrackData(FoTrackData foTd){
+		
+		TrackData td = new TrackData();
+		td.setId(foTd.getId());
+		td.setConfigId(foTd.getConfigId());
+		td.setTrackName(foTd.getTrackName());
+		td.setTrackNumber(foTd.getTrackNumber());
+		td.setStrArrays(foTd.getStrArray());
+		
+		return td;
+	}
+	
 	public static EnsemblDBs[] foEdbssToEdbss(FoEnsemblDBs[] foEdbs){
 		EnsemblDBs[] edbs = new EnsemblDBs[foEdbs.length];
 		
