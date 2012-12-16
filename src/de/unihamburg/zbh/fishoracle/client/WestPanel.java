@@ -52,14 +52,18 @@ import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
 import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoTrackData;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
-import de.unihamburg.zbh.fishoracle.client.data.TrackData;
+import de.unihamburg.zbh.fishoracle.client.datasource.ConfigDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.EnsemblDBDS;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
+import de.unihamburg.zbh.fishoracle_db_api.data.ConfigData;
+import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 
 public class WestPanel extends SectionStack{
 
@@ -101,8 +105,6 @@ public class WestPanel extends SectionStack{
 			searchContent.removeMember(t.getTrackForm());
 		}
 	}
-	
-	
 	
 	public SelectItem getSegmentDataSelectItem() {
 		return segmentDataSelectItem;
@@ -326,8 +328,7 @@ public class WestPanel extends SectionStack{
 										"1",
 										"2",
 										"3",
-										"4",
-										"5");
+										"4");
 		statusSelectItem.setDefaultValues("0","1");
 		statusSelectItem.addKeyPressHandler(new KeyPressHandler(){
 			
@@ -421,6 +422,24 @@ public class WestPanel extends SectionStack{
 			}
 		});
 		
+		ButtonItem loadConfigButton = new ButtonItem();
+		loadConfigButton.setTitle("load config");
+		loadConfigButton.setStartRow(true);
+		loadConfigButton.setEndRow(false);
+		
+		SelectItem configSelectItem = new SelectItem();
+		configSelectItem.setEndRow(true);
+		configSelectItem.setStartRow(false);
+		configSelectItem.setShowTitle(false);
+		configSelectItem.setDisplayField("configName");
+		configSelectItem.setValueField("configId");		
+		configSelectItem.setAutoFetchData(false);
+		ConfigDS cDS = new ConfigDS();
+		configSelectItem.setOptionDataSource(cDS);
+		
+		ButtonItem saveTracksButton = new ButtonItem();
+		saveTracksButton.setTitle("save config");
+		
 		ButtonItem searchButton = new ButtonItem("Search");
 		searchButton.addClickHandler(new ClickHandler(){
 
@@ -478,6 +497,9 @@ public class WestPanel extends SectionStack{
 							greaterTextItem,
 							lessTextItem,
 							statusSelectItem,
+							loadConfigButton,
+							configSelectItem,
+							saveTracksButton,
 							addTrackButton,
 							removeTrackButton,
 							searchButton);
@@ -773,6 +795,117 @@ public class WestPanel extends SectionStack{
 		return intArr;
 	}
 	
+	public FoConfigData getFoConfig(){
+			
+				String globalLessThenThr;
+				String globalGreaterThenThr;
+				int[] globalCnvStati;
+				
+				/* Get global options. */
+				if(globalThresholdCheckbox.getValueAsBoolean()){
+					if(lessTextItem.getDisplayValue().equals("")){
+						globalLessThenThr = null;
+					} else {
+						globalLessThenThr = lessTextItem.getDisplayValue();
+					}
+					if(greaterTextItem.getDisplayValue().equals("")){
+						globalGreaterThenThr = null;
+					} else {
+						globalGreaterThenThr = greaterTextItem.getDisplayValue();
+					}
+					
+					if(statusSelectItem.getValues().length == 0){
+						globalCnvStati = new int[0];
+					} else {
+						globalCnvStati = strArrToIntArr(statusSelectItem.getValues());
+					}
+				} else {
+					globalLessThenThr = null;
+					globalGreaterThenThr = null;
+					globalCnvStati = new int[0];
+				}
+				
+				FoTrackData[] trackData = new FoTrackData[tracks.size()];
+				
+				/* Get all track Options */
+				for(int i = 0; i < tracks.size(); i++){
+					trackData[i] = new FoTrackData();
+					
+					trackData[i].setTrackNumber(tracks.get(i).getTrackNumber());
+					trackData[i].setTrackName(tracks.get(i).getTrackNameItem().getDisplayValue());
+					
+					trackData[i].addStrArray(Constants.DATA_TYPE, new String[]{tracks.get(i).getSelectItemFilterType().getValueAsString()});
+					
+					if(!globalThresholdCheckbox.getValueAsBoolean()){
+						if(!tracks.get(i).getLessTextItem().getDisplayValue().equals("")){
+							trackData[i].addStrArray(Constants.SEGMENT_MEAN, new String[]{tracks.get(i).getLessTextItem().getDisplayValue()});
+						}
+						if(!tracks.get(i).getGreaterTextItem().getDisplayValue().equals("")){
+							trackData[i].addStrArray(Constants.SEGMENT_MEAN, new String[]{tracks.get(i).getGreaterTextItem().getDisplayValue()});
+						}
+						
+						if(tracks.get(i).getStatusSelectItem().getValues().length != 0){
+							trackData[i].addStrArray(Constants.SEGMENT_MEAN, tracks.get(i).getStatusSelectItem().getValues());
+						}
+					}
+					if(tracks.get(i).getSelectItemProjects().getVisible()){
+						
+						String[] strArr = tracks.get(i).getSelectItemProjects().getValues();
+						trackData[i].addStrArray(Constants.PROJECT_IDS, strArr);
+					}
+					
+					if(tracks.get(i).getSelectItemTissues().getVisible()){
+						
+						String[] strArr = tracks.get(i).getSelectItemTissues().getValues();
+						trackData[i].addStrArray(Constants.TISSUE_IDS, strArr);
+					}
+					
+					if(tracks.get(i).getSelectItemExperiments().getVisible()){
+						
+						String[] strArr = tracks.get(i).getSelectItemExperiments().getValues();
+						trackData[i].addStrArray(Constants.EXPERIMENT_IDS, strArr);
+					}
+					if(tracks.get(i).getSelectItemFilterType().getValueAsString().equals("Mutations")){
+						if(tracks.get(i).getTextItemQuality().getVisible()){
+							//TODO
+							trackData[i].addStrArray(Constants.SCORE, new String[]{tracks.get(i).getTextItemQuality().getValueAsString()});
+						}
+						if(tracks.get(i).getSelectItemSomatic().getVisible()){
+							
+							String[] strArr = tracks.get(i).getSelectItemSomatic().getValues();
+							trackData[i].addStrArray(Constants.SOMATIC, strArr);
+						}
+						if(tracks.get(i).getSelectItemConfidence().getVisible()){
+							
+							String[] strArr = tracks.get(i).getSelectItemConfidence().getValues();							
+							trackData[i].addStrArray(Constants.CONFIDENCE, strArr);
+						}
+						if(tracks.get(i).getSelectItemSNPTool().getVisible()){
+							
+							String[] strArr = tracks.get(i).getSelectItemSNPTool().getValues();							
+							trackData[i].addStrArray(Constants.SNP_TOOL, strArr);
+						}
+					}
+				}
+			
+				FoConfigData config = new FoConfigData();
+				
+				config.setTracks(trackData);
+				
+				if(globalLessThenThr != null){
+					config.addStrArray(Constants.GLOBAL_TH, new String[]{globalLessThenThr});
+				}
+				if(globalGreaterThenThr != null){
+					config.addStrArray(Constants.GLOBAL_TH, new String[]{globalGreaterThenThr});
+				}
+				if(globalCnvStati.length != 0){
+					//TODO
+					config.addStrArray(Constants.GLOBAL_TH, intArrToStrArr(globalCnvStati));
+				}
+				
+		return config;
+	}
+	
 	public void startSearch(){
 		String typeStr = null;
 		String qryStr = null;
@@ -799,136 +932,11 @@ public class WestPanel extends SectionStack{
 			}
 						
 			QueryInfo newQuery = null;
+
+			FoConfigData config = getFoConfig();
+			
 			try {
-				
-				String globalLessThenThr;
-				String globalGreaterThenThr;
-				
-				int[] globalCnvStati;
-				
-				if(globalThresholdCheckbox.getValueAsBoolean()){
-					if(lessTextItem.getDisplayValue().equals("")){
-						globalLessThenThr = null;
-					} else {
-						globalLessThenThr = lessTextItem.getDisplayValue();
-					}
-					if(greaterTextItem.getDisplayValue().equals("")){
-						globalGreaterThenThr = null;
-					} else {
-						globalGreaterThenThr = greaterTextItem.getDisplayValue();
-					}
-					
-					if(statusSelectItem.getValues().length == 0){
-						globalCnvStati = new int[0];
-					} else {
-						globalCnvStati = strArrToIntArr(statusSelectItem.getValues());
-					}
-					
-					
-				} else {
-					globalLessThenThr = null;
-					globalGreaterThenThr = null;
-					globalCnvStati = new int[0];
-				}
-				
-				TrackData[] trackData = new TrackData[tracks.size()];
-				
-				for(int i = 0; i < tracks.size(); i++){
-					trackData[i] = new TrackData();
-					trackData[i].setDataType(tracks.get(i).getSelectItemFilterType().getValueAsString());
-					trackData[i].setTrackNumber(tracks.get(i).getTrackNumber());
-					trackData[i].setTrackName(tracks.get(i).getTrackNameItem().getDisplayValue());
-					if(globalThresholdCheckbox.getValueAsBoolean()){
-						trackData[i].setLowerTh(null);
-						trackData[i].setUpperTh(null);
-						trackData[i].setCnvStati(new int[0]);
-					} else {
-						if(tracks.get(i).getLessTextItem().getDisplayValue().equals("")){
-							trackData[i].setLowerTh(null);
-						} else {
-							trackData[i].setLowerTh(tracks.get(i).getLessTextItem().getDisplayValue());
-						}
-						if(tracks.get(i).getGreaterTextItem().getDisplayValue().equals("")){
-							trackData[i].setUpperTh(null);
-						} else {
-							trackData[i].setUpperTh(tracks.get(i).getGreaterTextItem().getDisplayValue());
-						}
-						
-						if(tracks.get(i).getStatusSelectItem().getValues().length == 0){
-							trackData[i].setCnvStati(new int[0]);
-						} else {
-							trackData[i].setCnvStati(strArrToIntArr(tracks.get(i).getStatusSelectItem().getValues()));
-						}
-						
-					}
-					if(tracks.get(i).getSelectItemProjects().getVisible()){
-						
-						String[] strArr = tracks.get(i).getSelectItemProjects().getValues();
-						
-						trackData[i].setProjectIds(strArrToIntArr(strArr));
-						
-					} else {
-						trackData[i].setProjectIds(null);
-					}
-					
-					if(tracks.get(i).getSelectItemTissues().getVisible()){
-						
-						String[] strArr = tracks.get(i).getSelectItemTissues().getValues();
-						
-						trackData[i].setTissueIds(strArrToIntArr(strArr));
-						
-					} else {
-						trackData[i].setTissueIds(null);
-					}
-					
-					if(tracks.get(i).getSelectItemExperiments().getVisible()){
-						
-						String[] strArr = tracks.get(i).getSelectItemExperiments().getValues();
-						
-						trackData[i].setExperimentIds(strArrToIntArr(strArr));
-						
-					} else {
-						trackData[i].setExperimentIds(null);
-					}
-					if(tracks.get(i).getSelectItemFilterType().getValueAsString().equals("Mutations")){
-						if(tracks.get(i).getTextItemQuality().getVisible()){
-							
-							trackData[i].setQualityScore((double) Double.parseDouble(tracks.get(i).getTextItemQuality().getValueAsString()));
-							
-						} else {
-							trackData[i].setQualityScore(99999.0);
-						}
-						if(tracks.get(i).getSelectItemSomatic().getVisible()){
-							
-							String[] strArr = tracks.get(i).getSelectItemSomatic().getValues();
-							
-							trackData[i].setSomatic(strArr);
-							
-						} else {
-							trackData[i].setSomatic(null);
-						}
-						if(tracks.get(i).getSelectItemConfidence().getVisible()){
-							
-							String[] strArr = tracks.get(i).getSelectItemConfidence().getValues();
-							
-							trackData[i].setConfidence(strArr);
-							
-						} else {
-							trackData[i].setConfidence(null);
-						}
-						if(tracks.get(i).getSelectItemSNPTool().getVisible()){
-							
-							String[] strArr = tracks.get(i).getSelectItemSNPTool().getValues();
-							
-							trackData[i].setSnpTool(strArr);
-							
-						} else {
-							trackData[i].setSnpTool(null);
-						}
-					}
-					
-				}
-				
+			
 				newQuery = new QueryInfo(qryStr,
 											typeStr,
 											globalLessThenThr,

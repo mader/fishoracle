@@ -67,11 +67,14 @@ public class ConfigDS extends FoDataSource {
 		};
 		
 		JavaScriptObject data = request.getData();
+		
 		ListGridRecord rec = new ListGridRecord(data);
 		
 		// how do I get the necessary object?
+		//Seems that this does not work. Have to fall 
+		//back to traditional GWT-RPC schema...
 		
-		req.add(foConf, callback);
+		//req.add(foConf, callback);
 	}
 	
 	@Override
@@ -113,7 +116,6 @@ public class ConfigDS extends FoDataSource {
 		};
 		
 		int userId = 0;
-		int configId = 0;
 		
 		Criteria c = request.getCriteria();
 			
@@ -123,15 +125,7 @@ public class ConfigDS extends FoDataSource {
 			userId = 1;
 		}
 		
-		if(request.getOperationId().equals(OperationId.CONFIG_FETCH_FOR_USER)){
-		
-			req.fetchForUserId(request.getOperationId(), userId, callback);
-		}
-		
-		if(request.getOperationId().equals(OperationId.STUDY_FETCH_FOR_ID)){
-			
-			req.fetch(configId, callback);
-		}
+		req.fetchForUser(userId, callback);
 	}
 
 	@Override
