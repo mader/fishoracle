@@ -35,6 +35,7 @@ import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
+import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 import de.unihamburg.zbh.fishoracle_db_api.data.Translocation;
 import extended.RDBMysql;
@@ -91,7 +92,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 			System.out.println(dt + " Search: " + query.getQueryString());
 			System.out.println(dt + " Search type: " + query.getSearchType());
 			
-			RDBMysql rdbEnsembl = db.getEnsemblRDB(query.getEnsemblDBName());
+			RDBMysql rdbEnsembl = db.getEnsemblRDB(query.getConfig().getStrArray("ensemblDBName")[0]);
 			RDBMysql rdbFishoracle = db.getFishoracleRDB();
 			
 			if(query.getSearchType().equals("Gene Search")){
@@ -182,7 +183,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 									maxSegmentRange.getChromosome(),
 									maxSegmentRange.getStart(),
 									maxSegmentRange.getEnd(),
-									query.getBiotypeFilter(),
+									query.getConfig().getStrArray(Constants.ENSEMBL_BIOTYPES),
 									features);
 			}
 
@@ -292,7 +293,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		RDBMysql rdbEnsembl = db.getEnsemblRDB(imageInfo.getQuery().getEnsemblDBName());
+		RDBMysql rdbEnsembl = db.getEnsemblRDB(imageInfo.getQuery().getConfig().getStrArray("ensemblDBName")[0]);
 		RDBMysql rdbFishoracle = db.getFishoracleRDB();
 		
 		FeatureCollection features =  new FeatureCollection();
@@ -315,7 +316,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 								chr,
 								start,
 								end,
-								imageInfo.getQuery().getBiotypeFilter(),
+								imageInfo.getQuery().getConfig().getStrArray(Constants.ENSEMBL_BIOTYPES),
 								features);
 		}
 		

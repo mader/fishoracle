@@ -23,19 +23,9 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 
 	private String queryString;
 	private String searchType;
-	private String globalLowerTh;
-	private String globalUpperTh;
-	private int[] globalCnvStati;
 	private String imageType;
-	private TrackData[] tracks;
 	private int winWidth;
-	private boolean sorted;
-	private boolean cnvCaptions;
-	private boolean globalTh;
-	private String ensemblDBName;
-	private String ensemblDBLabel;
-	
-	private String[] biotypeFilter;
+	private FoConfigData config;
 	
 	public QueryInfo() {
 		
@@ -43,42 +33,15 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 
 	public QueryInfo(String queryString,
 						String searchType,
-						String globalLowerTh,
-						String globalUpperTh,
-						int[] globalCnvStati,
-						boolean sorted,
-						boolean cnvCaptions,
-						boolean globalTh,
 						String imageType,
-						TrackData[] tracks,
-						String ensemblDBName,
-						String ensemblDBLabel,
-						String[] biotypeFilter,
-						int winWidth) throws Exception {
+						int winWidth,
+						FoConfigData config) throws Exception {
 		super();
 		this.queryString = queryString;
 		this.searchType = searchType;
-		if(globalLowerTh != null){
-			this.globalLowerTh = globalLowerTh;
-		} else 	{
-			this.globalLowerTh = null;
-		}
-		
-		if(globalUpperTh != null){
-			this.globalUpperTh = globalUpperTh;
-		} else {
-			this.globalUpperTh = null;
-		}
-		this.globalCnvStati = globalCnvStati;
-		this.sorted = sorted;
-		this.cnvCaptions = cnvCaptions;
-		this.globalTh = globalTh; 
 		this.imageType = imageType;
-		this.tracks = tracks;
-		this.ensemblDBName = ensemblDBName;
-		this.ensemblDBLabel = ensemblDBLabel;
-		this.biotypeFilter = biotypeFilter;
 		this.winWidth = winWidth;
+		this.config = config;
 	}
 
 	public QueryInfo clone(){
@@ -86,19 +49,9 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		QueryInfo query = new QueryInfo();
 		query.setQueryString(this.queryString);
 		query.setSearchType(this.searchType);
-		query.setGlobalLowerTh(this.globalLowerTh);
-		query.setGlobalUpperTh(this.globalUpperTh);
-		query.setGlobalCnvStati(this.globalCnvStati);
 		query.setImageType(this.imageType);
-		query.setTracks(this.tracks);
 		query.setWinWidth(this.winWidth);
-		query.setSorted(this.sorted);
-		query.setCnvCaptions(this.cnvCaptions);
-		query.setGlobalTh(this.globalTh);
-		query.setEnsemblDBName(this.ensemblDBName);
-		query.setEnsemblDBLabel(this.ensemblDBLabel);
-		query.setBiotypeFilter(this.biotypeFilter);
-		
+		query.setConfig(this.config);
 		return query;
 	}
 	
@@ -118,53 +71,6 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 		this.searchType = searchType;
 	}
 	
-	public String getGlobalLowerTh() {
-		return globalLowerTh;
-	}
-
-	public Double getGlobalLowerThAsDouble() {
-		
-		Double r;
-		
-		if(globalLowerTh == null){
-			r = null;
-		} else {
-			r = Double.parseDouble(globalLowerTh);
-		}
-		return r;
-	}
-	
-	public void setGlobalLowerTh(String globalLowerTh) {
-		this.globalLowerTh = globalLowerTh;
-	}
-
-	public String getGlobalUpperTh() {
-		return globalUpperTh;
-	}
-
-	public Double getGlobalUpperThAsDouble() {
-		Double r;
-		
-		if(globalUpperTh == null){
-			r = null;
-		} else {
-			r = Double.parseDouble(globalUpperTh);
-		}
-		return r;
-	}
-	
-	public int[] getGlobalCnvStati() {
-		return globalCnvStati;
-	}
-
-	public void setGlobalCnvStati(int[] globalStati) {
-		this.globalCnvStati = globalStati;
-	}
-
-	public void setGlobalUpperTh(String globalUpperTh) {
-		this.globalUpperTh = globalUpperTh;
-	}
-
 	public String getImageType() {
 		return imageType;
 	}
@@ -172,15 +78,7 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 	public void setImageType(String imageType) {
 		this.imageType = imageType;
 	}
-
-	public TrackData[] getTracks() {
-		return tracks;
-	}
-
-	public void setTracks(TrackData[] tracks) {
-		this.tracks = tracks;
-	}
-
+	
 	public int getWinWidth() {
 		return winWidth;
 	}
@@ -188,52 +86,12 @@ public class QueryInfo  implements IsSerializable, Cloneable {
 	public void setWinWidth(int winWidth) {
 		this.winWidth = winWidth;
 	}
-	
-	public boolean isSorted() {
-		return sorted;
+
+	public FoConfigData getConfig() {
+		return config;
 	}
 
-	public void setSorted(boolean sorted) {
-		this.sorted = sorted;
-	}
-	
-	public boolean isCnvCaptions() {
-		return cnvCaptions;
-	}
-
-	public void setCnvCaptions(boolean cnvCaptions) {
-		this.cnvCaptions = cnvCaptions;
-	}
-
-	public boolean isGlobalTh() {
-		return globalTh;
-	}
-
-	public void setGlobalTh(boolean globalTh) {
-		this.globalTh = globalTh;
-	}
-
-	public String[] getBiotypeFilter() {
-		return biotypeFilter;
-	}
-
-	public void setBiotypeFilter(String[] biotypeFilter) {
-		this.biotypeFilter = biotypeFilter;
-	}
-
-	public String getEnsemblDBName() {
-		return ensemblDBName;
-	}
-
-	public void setEnsemblDBName(String ensemblDB) {
-		this.ensemblDBName = ensemblDB;
-	}
-
-	public String getEnsemblDBLabel() {
-		return ensemblDBLabel;
-	}
-
-	public void setEnsemblDBLabel(String ensemblDBLabel) {
-		this.ensemblDBLabel = ensemblDBLabel;
+	public void setConfig(FoConfigData config) {
+		this.config = config;
 	}
 }

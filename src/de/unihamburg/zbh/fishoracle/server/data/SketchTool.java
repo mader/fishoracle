@@ -30,6 +30,7 @@ import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import annotationsketch.*;
 import core.*;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
+import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 import extended.AnnoDBFo;
 
@@ -90,43 +91,43 @@ public class SketchTool {
 		
 		style.load_file(serverPath + "config" + System.getProperty("file.separator") + "default.style");
 		
-		for(int l=0; l < query.getTracks().length; l++ ){
+		for(int l=0; l < query.getConfig().getTracks().length; l++ ){
 		
-			if(query.getTracks()[l].getDataType().equals("Segments (DNACopy)") || 
-					query.getTracks()[l].getDataType().equals("Segments (PennCNV)")){
-				if(query.isSorted()){
+			if(query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals("Segments (DNACopy)") || 
+					query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals("Segments (PennCNV)")){
+				if(query.getConfig().getStrArray(Constants.SORTED_SEGMENTS)[0].equals("true")){
 			
-					style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,0.0));
-					style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
+					style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,0.0));
+					style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
 			
-					style.set_bool(query.getTracks()[l].getTrackName() + "_segments", "collapse_to_parent", true);
-					style.set_color(query.getTracks()[l].getTrackName() + "_segments", "fill", new Color(0.0,0.0,1.0,0.7));
+					style.set_bool(query.getConfig().getTracks()[l].getTrackName() + "_segments", "collapse_to_parent", true);
+					style.set_color(query.getConfig().getTracks()[l].getTrackName() + "_segments", "fill", new Color(0.0,0.0,1.0,0.7));
 				
 				} else {
 				
-					style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,1.0,0.7));
-					style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,1.0,0.7));
+					style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,1.0,0.7));
+					style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,1.0,0.7));
 				
 				}
-				if(!query.isCnvCaptions()){
-					style.set_num(query.getTracks()[l].getTrackName(), "max_capt_show_width", 0);
+				if(!query.getConfig().getStrArray(Constants.SHOW_SEGMENT_CAPTION)[0].equals("true")){
+					style.set_num(query.getConfig().getTracks()[l].getTrackName(), "max_capt_show_width", 0);
 				}
 				
-			} else if(query.getTracks()[l].getDataType().equals("Mutations")){
+			} else if(query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals("Mutations")){
 				
-				style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
-				style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
+				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
+				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
 				
-				style.set_bool(query.getTracks()[l].getTrackName() + "_mutations", "collapse_to_parent", true);
-				style.set_color(query.getTracks()[l].getTrackName() + "_mutations", "stroke", new Color(1.0,0.0,0.0,1.0));
-			} else if(query.getTracks()[l].getDataType().equals("Translocations")){
+				style.set_bool(query.getConfig().getTracks()[l].getTrackName() + "_mutations", "collapse_to_parent", true);
+				style.set_color(query.getConfig().getTracks()[l].getTrackName() + "_mutations", "stroke", new Color(1.0,0.0,0.0,1.0));
+			} else if(query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals("Translocations")){
 				
-				style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
-				style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
+				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
+				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
 			} else {
 				
-				style.set_color(query.getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
-				style.set_color(query.getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
+				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
+				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
 			}	
 		}
 		
@@ -145,9 +146,9 @@ public class SketchTool {
 		    		  typeNumber = "2:";
 		    	  }
 		    	  else {
-		    		  for(int i = 0; i < query.getTracks().length; i++){
-		    			  if(b.get_type().equals(query.getTracks()[i].getTrackName())){
-		    				  typeNumber = (query.getTracks()[i].getTrackNumber() + 2) + ":";
+		    		  for(int i = 0; i < query.getConfig().getTracks().length; i++){
+		    			  if(b.get_type().equals(query.getConfig().getTracks()[i].getTrackName())){
+		    				  typeNumber = (query.getConfig().getTracks()[i].getTrackNumber() + 2) + ":";
 		    			  }
 		    		  }
 		    	  }
@@ -161,7 +162,7 @@ public class SketchTool {
 		diagram.set_track_selector_func(ts);
 		
 		layout = new Layout(diagram, query.getWinWidth(), style);
-		if(query.isSorted()){
+		if(query.getConfig().getStrArray(Constants.SORTED_SEGMENTS)[0].equals("true")){
 			adb.set_layout_block_sort(layout);
 		}
 		height = layout.get_height();

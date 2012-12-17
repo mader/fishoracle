@@ -121,6 +121,7 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
+import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 
 public class CenterPanel extends VLayout {
 
@@ -284,29 +285,21 @@ public class CenterPanel extends VLayout {
 	    	try {
 	    		if(((String) trackItem.getValue()).equals("Global threshold")){
 	    			
-	    			if(newLowerTh.equals("")){
-	    				imgInfo.getQuery().setGlobalLowerTh(null);
-	    			} else {
-	    				imgInfo.getQuery().setGlobalLowerTh(newLowerTh);
+	    			if(!newLowerTh.equals("")){
+	    				imgInfo.getQuery().getConfig().addStrArray(Constants.SEGMENT_MEAN, new String[]{newLowerTh});
 	    			}
 
-	    			if(newUpperTh.equals("")){
-	    				imgInfo.getQuery().setGlobalUpperTh(null);
-	    			} else {
-	    				imgInfo.getQuery().setGlobalUpperTh(newUpperTh);
+	    			if(!newUpperTh.equals("")){
+	    				imgInfo.getQuery().getConfig().addStrArray(Constants.SEGMENT_MEAN, new String[]{newLowerTh});
 	    			}
 	    			
 	    		} else {
 	    			int trackNumber = Integer.parseInt((String) trackItem.getValue());
-	    			if(newLowerTh.equals("")){
-	    				imgInfo.getQuery().getTracks()[trackNumber - 1].setLowerTh(null);
-	    			} else {
-	    				imgInfo.getQuery().getTracks()[trackNumber - 1].setLowerTh(newLowerTh);
+	    			if(!newLowerTh.equals("")){
+	    				imgInfo.getQuery().getConfig().getTracks()[trackNumber - 1].addStrArray(Constants.SEGMENT_MEAN, new String[]{newLowerTh});
 	    			}
-	    			if(newUpperTh.equals("")){
-	    				imgInfo.getQuery().getTracks()[trackNumber - 1].setUpperTh(null);
-	    			} else {
-	    				imgInfo.getQuery().getTracks()[trackNumber - 1].setUpperTh(newUpperTh);
+	    			if(!newUpperTh.equals("")){
+	    				imgInfo.getQuery().getConfig().getTracks()[trackNumber - 1].addStrArray(Constants.SEGMENT_MEAN, new String[]{newLowerTh});
 	    			}
 	    		}
 			} catch (Exception e) {
@@ -385,7 +378,7 @@ public class CenterPanel extends VLayout {
 	
 	public void newImageTab(final GWTImageInfo imgInfo){
 		
-		Tab imgTab = new Tab(imgInfo.getQuery().getQueryString() + " (" + imgInfo.getQuery().getEnsemblDBLabel() + ")"); 
+		Tab imgTab = new Tab(imgInfo.getQuery().getQueryString() + " (" + imgInfo.getQuery().getConfig().getStrArray("ensemblDBLabel")[0] + ")"); 
 		imgTab.setCanClose(true);
 		
 		VLayout presentationLayer = new VLayout();
@@ -628,13 +621,13 @@ public class CenterPanel extends VLayout {
 		
 		LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
 		
-		if(imgInfo.getQuery().isGlobalTh()){
+		if(imgInfo.getQuery().getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
 			trackItem.setValueMap("Global threshold");
 		} else {
 		
-			for(int i=0; i< imgInfo.getQuery().getTracks().length; i++){
-				valueMap.put(new Integer(imgInfo.getQuery().getTracks()[i].getTrackNumber()).toString(),
-								imgInfo.getQuery().getTracks()[i].getTrackName());
+			for(int i=0; i< imgInfo.getQuery().getConfig().getTracks().length; i++){
+				valueMap.put(new Integer(imgInfo.getQuery().getConfig().getTracks()[i].getTrackNumber()).toString(),
+								imgInfo.getQuery().getConfig().getTracks()[i].getTrackName());
 			}
 			trackItem.setValueMap(valueMap);
 		}
@@ -648,9 +641,21 @@ public class CenterPanel extends VLayout {
 				ImgCanvas imgLayer = (ImgCanvas) cp.getCenterTabSet().getSelectedTab().getPane().getChildren()[1];
 				GWTImageInfo imgInfo = imgLayer.getImageInfo();
 				
-				lowerThTextItem.setValue(imgInfo.getQuery().getTracks()[Integer.parseInt((String) event.getItem().getValue()) - 1].getLowerTh());
+				String th; 
+				
+				th = imgInfo.getQuery().getConfig().getTracks()[Integer.parseInt((String) event.getItem().getValue()) - 1].getStrArray(Constants.SEGMENT_MEAN)[0];
+				
+				if(Integer.parseInt(th) < 0 ){
+					lowerThTextItem.setValue(th);
+					upperThTextItem.setValue("");
+				}
+				if(Integer.parseInt(th) > 0 ){
+					lowerThTextItem.setValue("");
+					upperThTextItem.setValue(th);
+					
+				}
+				
 				lowerThTextItem.redraw();
-				upperThTextItem.setValue(imgInfo.getQuery().getTracks()[Integer.parseInt((String) event.getItem().getValue()) - 1].getUpperTh());
 				upperThTextItem.redraw();
 			}
 		});
@@ -662,10 +667,15 @@ public class CenterPanel extends VLayout {
 		lowerThTextItem.setTitle("Less Than");
 		lowerThTextItem.setWrapTitle(false);
 		lowerThTextItem.setWidth(40);
-		if(imgInfo.getQuery().isGlobalTh()){
-			lowerThTextItem.setValue(imgInfo.getQuery().getGlobalLowerTh());
+		
+		if(imgInfo.getQuery().getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
+			if(Double.parseDouble(imgInfo.getQuery().getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]) <= 0){
+				lowerThTextItem.setValue(imgInfo.getQuery().getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]);
+			}
 		} else {
-			lowerThTextItem.setValue(imgInfo.getQuery().getTracks()[Integer.parseInt((String)trackItem.getValue()) - 1].getLowerTh());
+			if(Double.parseDouble(imgInfo.getQuery().getConfig().getTracks()[Integer.parseInt((String)trackItem.getValue()) - 1].getStrArray(Constants.SEGMENT_MEAN)[0]) <= 0){
+				lowerThTextItem.setValue(imgInfo.getQuery().getConfig().getTracks()[Integer.parseInt((String)trackItem.getValue()) - 1].getStrArray(Constants.SEGMENT_MEAN)[0]);
+			}
 		}
 		lowerThTextItem.addKeyPressHandler(new KeyPressHandler(){
 
@@ -683,10 +693,14 @@ public class CenterPanel extends VLayout {
 		upperThTextItem.setTitle("Greater Than");
 		upperThTextItem.setWrapTitle(false);
 		upperThTextItem.setWidth(40);
-		if(imgInfo.getQuery().isGlobalTh()){
-			upperThTextItem.setValue(imgInfo.getQuery().getGlobalUpperTh());
-		} else { 
-			upperThTextItem.setValue(imgInfo.getQuery().getTracks()[Integer.parseInt((String) trackItem.getValue()) - 1].getUpperTh());
+		if(imgInfo.getQuery().getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
+			if(Double.parseDouble(imgInfo.getQuery().getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]) > 0){
+				upperThTextItem.setValue(imgInfo.getQuery().getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]);
+			}
+		} else {
+			if(Double.parseDouble(imgInfo.getQuery().getConfig().getTracks()[Integer.parseInt((String)trackItem.getValue()) - 1].getStrArray(Constants.SEGMENT_MEAN)[0]) > 0){
+				upperThTextItem.setValue(imgInfo.getQuery().getConfig().getTracks()[Integer.parseInt((String) trackItem.getValue()) - 1].getStrArray(Constants.SEGMENT_MEAN)[0]);
+			}
 		}
 		upperThTextItem.addKeyPressHandler(new KeyPressHandler(){
 
@@ -4107,7 +4121,7 @@ class RecMapClickHandler implements ClickHandler{
 		
 		if(recInfo.getType().equals("gene")){
 			
-			geneDetails(recInfo.getElementName(), imgInfo.getQuery().getEnsemblDBName());
+			geneDetails(recInfo.getElementName(), imgInfo.getQuery().getConfig().getStrArray("ensemblDBName")[0]);
 		}
 		
 		if(recInfo.getType().equals("segment")){

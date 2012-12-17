@@ -44,6 +44,7 @@ import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.exceptions.DBQueryException;
 
 import de.unihamburg.zbh.fishoracle_db_api.data.ConfigData;
+import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 import de.unihamburg.zbh.fishoracle_db_api.data.EnsemblDBs;
 import de.unihamburg.zbh.fishoracle_db_api.data.GenericFeature;
 import de.unihamburg.zbh.fishoracle_db_api.data.Group;
@@ -338,30 +339,28 @@ public class DBInterface {
 		
 		Location maxLoc = new Location(0, chr, start, end);
 		
-		for(int i = 0; i < query.getTracks().length; i++){
+		for(int i = 0; i < query.getConfig().getTracks().length; i++){
 			
 			Location l;
-			if(query.getTracks()[i].getDataType().equals("Segments (DNACopy)") || 
-					query.getTracks()[i].getDataType().equals("Segments (PennCNV)")){
-				if(query.isGlobalTh()){
+			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Segments (DNACopy)") || 
+					query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Segments (PennCNV)")){
+				if(query.getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
 				
 					l = sa.fetchMaximalOverlappingSegmentRange(chr,
-																	start,
-																	end,
-																	query.getGlobalLowerThAsDouble(),
-																	query.getGlobalUpperThAsDouble(),
-																	query.getTracks()[i].getProjectIds(),
-																	query.getTracks()[i].getTissueIds(),
-																	query.getTracks()[i].getExperimentIds());
+																start,
+																end,
+																Double.parseDouble(query.getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]),
+																query.getConfig().getTracks()[i].getStrArray(Constants.PROJECT_IDS),
+																query.getConfig().getTracks()[i].getStrArray(Constants.TISSUE_IDS),
+																query.getConfig().getTracks()[i].getStrArray(Constants.EXPERIMENT_IDS));
 				} else {
 					l = sa.fetchMaximalOverlappingSegmentRange(chr,
-																	start,
-																	end,
-																	query.getTracks()[i].getLowerThAsDouble(),
-																	query.getTracks()[i].getUpperThasDouble(),
-																	query.getTracks()[i].getProjectIds(),
-																	query.getTracks()[i].getTissueIds(),
-																	query.getTracks()[i].getExperimentIds());
+																start,
+																end,
+																Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.SEGMENT_MEAN)[0]),
+																query.getConfig().getTracks()[i].getStrArray(Constants.PROJECT_IDS),
+																query.getConfig().getTracks()[i].getStrArray(Constants.TISSUE_IDS),
+																query.getConfig().getTracks()[i].getStrArray(Constants.EXPERIMENT_IDS));
 				}
 			
 				try {
@@ -379,6 +378,20 @@ public class DBInterface {
 		return maxLoc;
 	}
 	
+	//TODO this should not be necessary. Fix asap!
+	//temporary helper method.
+	//remove, if not used anymore...
+	private int[] strArrToIntArr(String[] strArr){
+		
+		int[] intArr = new int[strArr.length];
+		
+		for(int j = 0; j < strArr.length; j++){
+			intArr[j] = Integer.parseInt(strArr[j]);
+		}
+		
+		return intArr;
+	}
+	
 	public void getFeaturesForTracks(RDBMysql rdbFo,
 										RDBMysql rdbe,
 										String chr,
@@ -394,9 +407,9 @@ public class DBInterface {
 		FeatureIndex fi = adb.gt_anno_db_schema_get_feature_index((RDB) rdbFo);
 		FeatureIndexFo fifo = new FeatureIndexFo(fi.to_ptr());
 		
-		int[] pIds;
-		int[] tIds;
-		int[] eIds;
+		String[] pIds;
+		String[] tIds;
+		String[] eIds;
 		double qualityScore;
 		String[] somatic;
 		String[] confidence;
@@ -405,133 +418,134 @@ public class DBInterface {
 		Double lth = null;
 		Double uth = null;
 		
-		int[] status;
+		String[] status;
 		
-		for(int i = 0; i < query.getTracks().length; i++){
+		for(int i = 0; i < query.getConfig().getTracks().length; i++){
 			
 			if(i > 0){
 				adb.unsetAllFilters(fifo);
 			}
 			
-			adb.setTrackId(fifo, query.getTracks()[i].getTrackName());
+			adb.setTrackId(fifo, query.getConfig().getTracks()[i].getTrackName());
 			
-			if(query.getTracks()[i].getProjectIds() != null){
-				pIds = query.getTracks()[i].getProjectIds();
-				adb.addProjectFilter(fifo, pIds);
+			if((pIds = query.getConfig().getTracks()[i].getStrArray(Constants.PROJECT_IDS)) != null){
+				adb.addProjectFilter(fifo, strArrToIntArr(pIds));
 			}
 				
-			if(query.getTracks()[i].getTissueIds() != null){
-				tIds = query.getTracks()[i].getTissueIds();
-				adb.addTissueFilter(fifo, tIds);
+			if((tIds = query.getConfig().getTracks()[i].getStrArray(Constants.TISSUE_IDS)) != null){
+				adb.addTissueFilter(fifo, strArrToIntArr(tIds));
 			}
 				
-			if(query.getTracks()[i].getExperimentIds() != null){
-				eIds = query.getTracks()[i].getExperimentIds();
-				adb.setAdditionalExperimentFilter(fifo, eIds);
+			if((eIds = query.getConfig().getTracks()[i].getStrArray(Constants.EXPERIMENT_IDS)) != null){
+				adb.setAdditionalExperimentFilter(fifo, strArrToIntArr(eIds));
 			}
 			
-			if(query.getTracks()[i].getDataType().equals("Segments (DNACopy)")){
+			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Segments (DNACopy)")){
 				
 				adb.segmentOnly(fifo, 0);
 				
-				if(query.isGlobalTh()){
+				if(query.getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
 				
-					if(query.getGlobalLowerThAsDouble() != null){
-						lth = query.getGlobalLowerThAsDouble();
+					if(Double.parseDouble(query.getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]) <= 0){
+						lth = Double.parseDouble(query.getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]);
 					} else {
 						lth = 99999.0;
 					}
 				
-					if(query.getGlobalUpperThAsDouble() != null){
-						uth = query.getGlobalUpperThAsDouble();
+					if(Double.parseDouble(query.getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]) > 0){
+						uth = Double.parseDouble(query.getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]);
 					} else {
 						uth = 99999.0;
 					}
 				} else {
 				
-					if(query.getTracks()[i].getLowerThAsDouble() != null){
-						lth = query.getTracks()[i].getLowerThAsDouble();
+					if(Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.SEGMENT_MEAN)[0]) <= 0){
+						lth = Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.SEGMENT_MEAN)[0]);
 					} else {
 						lth = 99999.0;
 					}
 				
-					if(query.getTracks()[i].getUpperThasDouble() != null){
-						uth = query.getTracks()[i].getUpperThasDouble();
+					if(Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.SEGMENT_MEAN)[0]) > 0){
+						uth = Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.SEGMENT_MEAN)[0]);
 					} else {
 						uth = 99999.0;
 					}
 				}
-				adb.setSegmentsSorted(fifo, query.isSorted());
+				adb.setSegmentsSorted(fifo, query.getConfig().getStrArray(Constants.SORTED_SEGMENTS)[0].equals("true"));
 				adb.setSegmentsLowerTh(fifo, lth);
 				adb.setSegmentsUpperTh(fifo, uth);
 				
-			} else if (query.getTracks()[i].getDataType().equals("Segments (PennCNV)")){
+			} else if (query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Segments (PennCNV)")){
 			
 				adb.segmentOnly(fifo, 1);
 				
-				if(query.isGlobalTh()){
+				if(query.getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
 					
-					status = query.getGlobalCnvStati();
+					status = query.getConfig().getStrArray(Constants.CNV_STATI);
 				} else {
 					
-					status = query.getTracks()[i].getCnvStati();
+					status = query.getConfig().getTracks()[i].getStrArray(Constants.CNV_STATI);
 				}
 				
-				adb.setSegmentsSorted(fifo, query.isSorted());
+				adb.setSegmentsSorted(fifo, query.getConfig().getStrArray(Constants.SORTED_SEGMENTS)[0].equals("true"));
 				
-				adb.addSegmentTypeFilter(fifo, status);
+				adb.addSegmentTypeFilter(fifo, strArrToIntArr(status));
 				
 			
-			} else if(query.getTracks()[i].getDataType().equals("Mutations")){
+			} else if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Mutations")){
 				
 				adb.mutationsOnly(fifo);
 				
-				if(query.getTracks()[i].getQualityScore() != 99999.0){
-					qualityScore = query.getTracks()[i].getQualityScore();
+				if(query.getConfig().getTracks()[i].getStrArray(Constants.QUALTY_SCORE) != null){
+					qualityScore = Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.QUALTY_SCORE)[0]);
 					adb.setScore(fifo, qualityScore, true);
 				}
 				
-				if(query.getTracks()[i].getSomatic() != null){
-					somatic = query.getTracks()[i].getSomatic();
+				if((somatic = query.getConfig().getTracks()[i].getStrArray(Constants.SOMATIC)) != null){
 					adb.addSomaticFilter(fifo, somatic);
 				}
 				
-				if(query.getTracks()[i].getConfidence() != null){
-					confidence = query.getTracks()[i].getConfidence();
+				if((confidence = query.getConfig().getTracks()[i].getStrArray(Constants.CONFIDENCE)) != null){
 					adb.addConfidenceFilter(fifo, confidence);
 				}
 				
-				if(query.getTracks()[i].getSnpTool() != null){
-					snpTool = query.getTracks()[i].getSnpTool();
+				if((snpTool = query.getConfig().getTracks()[i].getStrArray(Constants.SNP_TOOL)) != null){
 					adb.addSnptoolFilter(fifo, snpTool);
 				}
-			} else if(query.getTracks()[i].getDataType().equals("Translocations")){
+			} else if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Translocations")){
 				
 				adb.translocationsOnly(fifo);
 				
 			} else {
 				adb.genericOnly(fifo);
-				adb.addGenericFilter(fifo, new String[]{query.getTracks()[i].getDataType()});
+				adb.addGenericFilter(fifo, new String[]{query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0]});
 			}
-			
+		
 			adb.setLocation(fifo, chr, r);
 			
 			feats = adb.getFeatures(fifo);
 			
-			if(query.getTracks()[i].getDataType().equals("Mutations")){
+			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Mutations")){
 				
 				core.Array procFeats;
-				procFeats = adb.processMutations(feats, rdbe, query.getTracks()[i].getTrackName(), query.getBiotypeFilter());
+				procFeats = adb.processMutations(feats,
+													rdbe,
+													query.getConfig().getTracks()[i].getTrackName(),
+													query.getConfig().getStrArray(Constants.ENSEMBL_BIOTYPES));
 				features.addArray(procFeats);
 				procFeats.dispose();
-			} else if(query.getTracks()[i].getDataType().equals("Translocations")){
+			} else if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Translocations")){
 				
 				core.Array procFeats;
-				procFeats = adb.processTranslocations(fifo, feats, rdbe, query.getTracks()[i].getTrackName(), query.getBiotypeFilter());
+				procFeats = adb.processTranslocations(fifo,
+														feats,
+														rdbe,
+														query.getConfig().getTracks()[i].getTrackName(),
+														query.getConfig().getStrArray(Constants.ENSEMBL_BIOTYPES));
 				features.addArray(procFeats);
 			} else {
 				
-				if(query.isSorted()){
+				if(query.getConfig().getStrArray(Constants.SORTED_SEGMENTS)[0].equals("true")){
 					adb.sortSegmentsForCoverage(feats);
 				}
 				features.addArray(feats);

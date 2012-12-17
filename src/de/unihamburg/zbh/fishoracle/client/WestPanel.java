@@ -62,7 +62,6 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
-import de.unihamburg.zbh.fishoracle_db_api.data.ConfigData;
 import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 
 public class WestPanel extends SectionStack{
@@ -87,6 +86,8 @@ public class WestPanel extends SectionStack{
 	private SelectItem segmentDataSelectItem;
 	private TextItem greaterTextItem;
 	private TextItem lessTextItem;
+	
+	private TextItem saveConfigTextItem;
 	
 	private SelectItem statusSelectItem;
 	
@@ -439,6 +440,13 @@ public class WestPanel extends SectionStack{
 		
 		ButtonItem saveTracksButton = new ButtonItem();
 		saveTracksButton.setTitle("save config");
+		saveTracksButton.setStartRow(true);
+		saveTracksButton.setEndRow(false);
+		
+		saveConfigTextItem = new TextItem();
+		saveConfigTextItem.setShowTitle(false);
+		saveConfigTextItem.setStartRow(false);
+		saveConfigTextItem.setEndRow(true);
 		
 		ButtonItem searchButton = new ButtonItem("Search");
 		searchButton.addClickHandler(new ClickHandler(){
@@ -500,6 +508,7 @@ public class WestPanel extends SectionStack{
 							loadConfigButton,
 							configSelectItem,
 							saveTracksButton,
+							saveConfigTextItem,
 							addTrackButton,
 							removeTrackButton,
 							searchButton);
@@ -795,7 +804,18 @@ public class WestPanel extends SectionStack{
 		return intArr;
 	}
 	
-	public FoConfigData getFoConfig(){
+	private String[] intArrToStrArr(int[] intArr){
+		
+		String[] strArr = new String[intArr.length];
+		
+		for(int j = 0; j < intArr.length; j++){
+			strArr[j] = String.valueOf(intArr[j]);
+		}
+		
+		return strArr;
+	}
+	
+	public FoConfigData buildFoConfig(){
 			
 				String globalLessThenThr;
 				String globalGreaterThenThr;
@@ -845,7 +865,7 @@ public class WestPanel extends SectionStack{
 						}
 						
 						if(tracks.get(i).getStatusSelectItem().getValues().length != 0){
-							trackData[i].addStrArray(Constants.SEGMENT_MEAN, tracks.get(i).getStatusSelectItem().getValues());
+							trackData[i].addStrArray(Constants.CNV_STATI, tracks.get(i).getStatusSelectItem().getValues());
 						}
 					}
 					if(tracks.get(i).getSelectItemProjects().getVisible()){
@@ -867,8 +887,8 @@ public class WestPanel extends SectionStack{
 					}
 					if(tracks.get(i).getSelectItemFilterType().getValueAsString().equals("Mutations")){
 						if(tracks.get(i).getTextItemQuality().getVisible()){
-							//TODO
-							trackData[i].addStrArray(Constants.SCORE, new String[]{tracks.get(i).getTextItemQuality().getValueAsString()});
+							
+							trackData[i].addStrArray(Constants.QUALTY_SCORE, new String[]{tracks.get(i).getTextItemQuality().getValueAsString()});
 						}
 						if(tracks.get(i).getSelectItemSomatic().getVisible()){
 							
@@ -888,20 +908,28 @@ public class WestPanel extends SectionStack{
 					}
 				}
 			
+				/*create and set config object*/
 				FoConfigData config = new FoConfigData();
 				
 				config.setTracks(trackData);
 				
 				if(globalLessThenThr != null){
-					config.addStrArray(Constants.GLOBAL_TH, new String[]{globalLessThenThr});
+					config.addStrArray(Constants.SEGMENT_MEAN, new String[]{globalLessThenThr});
 				}
 				if(globalGreaterThenThr != null){
-					config.addStrArray(Constants.GLOBAL_TH, new String[]{globalGreaterThenThr});
+					config.addStrArray(Constants.SEGMENT_MEAN, new String[]{globalGreaterThenThr});
 				}
 				if(globalCnvStati.length != 0){
-					//TODO
-					config.addStrArray(Constants.GLOBAL_TH, intArrToStrArr(globalCnvStati));
+					config.addStrArray(Constants.CNV_STATI, intArrToStrArr(globalCnvStati));
 				}
+				
+				config.setName(saveConfigTextItem.getDisplayValue());
+				
+				config.addStrArray(Constants.ENSEMBL_ID, new String[]{ensemblSelectItem.getValueAsString()});
+				config.addStrArray(Constants.ENSEMBL_BIOTYPES, biotypeSelectItem.getValues());
+				config.addStrArray(Constants.SORTED_SEGMENTS, new String[]{String.valueOf(sortedCheckbox.getValueAsBoolean())});
+				config.addStrArray(Constants.SHOW_SEGMENT_CAPTION, new String[]{String.valueOf(showCNVCaptionsCheckbox.getValueAsBoolean())});
+				config.addStrArray(Constants.IS_GLOBAL_SEGMENT_TH, new String[]{String.valueOf(globalThresholdCheckbox.getValueAsBoolean())});
 				
 		return config;
 	}
@@ -933,24 +961,18 @@ public class WestPanel extends SectionStack{
 						
 			QueryInfo newQuery = null;
 
-			FoConfigData config = getFoConfig();
+			FoConfigData config = buildFoConfig();
+			
+			config.addStrArray("ensemblDBName", new String[]{ensemblSelectItem.getValueAsString()});
+			config.addStrArray("ensemblDBLabel", new String[]{ensemblSelectItem.getDisplayValue()});
 			
 			try {
 			
 				newQuery = new QueryInfo(qryStr,
 											typeStr,
-											globalLessThenThr,
-											globalGreaterThenThr,
-											globalCnvStati,
-											sortedCheckbox.getValueAsBoolean(),
-											showCNVCaptionsCheckbox.getValueAsBoolean(),
-											globalThresholdCheckbox.getValueAsBoolean(),
 											"png",
-											trackData,
-											ensemblSelectItem.getValueAsString(),
-											ensemblSelectItem.getDisplayValue(),
-											biotypeSelectItem.getValues(),
-											mp.getCenterPanel().getWidth() - 30);
+											mp.getCenterPanel().getWidth() - 30,
+											config);
 			} catch (Exception e) {
 				SC.say(e.getMessage());
 			}
