@@ -37,6 +37,7 @@ import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
+import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
@@ -60,6 +61,8 @@ import de.unihamburg.zbh.fishoracle.client.datasource.ConfigDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.EnsemblDBDS;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
+import de.unihamburg.zbh.fishoracle.client.rpc.ConfigService;
+import de.unihamburg.zbh.fishoracle.client.rpc.ConfigServiceAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
@@ -442,6 +445,16 @@ public class WestPanel extends SectionStack{
 		saveTracksButton.setTitle("save config");
 		saveTracksButton.setStartRow(true);
 		saveTracksButton.setEndRow(false);
+		
+		saveTracksButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				FoConfigData config = buildFoConfig();
+				saveConfigData(config);
+			}
+		});
 		
 		saveConfigTextItem = new TextItem();
 		saveConfigTextItem.setShowTitle(false);
@@ -1006,6 +1019,27 @@ public class WestPanel extends SectionStack{
 				}
 			};
 			req.generateImage(q, callback);
+	}
+	
+	public void saveConfigData(FoConfigData foConf){
+		
+		final ConfigServiceAsync req = (ConfigServiceAsync) GWT.create(ConfigService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "ConfigService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
+			
+			public void onSuccess(Void result){
+			
+				SC.say("Hi");
+				
+			}
+			public void onFailure(Throwable caught){
+				System.out.println(caught.getMessage());
+				SC.say(caught.getMessage());
+			}
+		};
+		req.add(foConf, callback);
 	}
 	
 	public void getDatabaseConnectionData(){
