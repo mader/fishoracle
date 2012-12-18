@@ -41,6 +41,7 @@ import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -91,6 +92,7 @@ public class WestPanel extends SectionStack{
 	private TextItem lessTextItem;
 	
 	private TextItem saveConfigTextItem;
+	private SelectItem configSelectItem;
 	
 	private SelectItem statusSelectItem;
 	
@@ -431,7 +433,7 @@ public class WestPanel extends SectionStack{
 		loadConfigButton.setStartRow(true);
 		loadConfigButton.setEndRow(false);
 		
-		SelectItem configSelectItem = new SelectItem();
+		configSelectItem = new SelectItem();
 		configSelectItem.setEndRow(true);
 		configSelectItem.setStartRow(false);
 		configSelectItem.setShowTitle(false);
@@ -451,8 +453,12 @@ public class WestPanel extends SectionStack{
 			@Override
 			public void onClick(ClickEvent event) {
 				
-				FoConfigData config = buildFoConfig();
-				saveConfigData(config);
+				if(saveConfigTextItem.getDisplayValue().equals("")){
+					SC.say("Configuration name needed!");
+				} else {
+					FoConfigData config = buildFoConfig();
+					saveConfigData(config);
+				}
 			}
 		});
 		
@@ -938,7 +944,10 @@ public class WestPanel extends SectionStack{
 				
 				config.setName(saveConfigTextItem.getDisplayValue());
 				
-				config.addStrArray(Constants.ENSEMBL_ID, new String[]{ensemblSelectItem.getValueAsString()});
+				ListGridRecord lgr = ensemblSelectItem.getSelectedRecord();
+				
+				config.setEnsemblDBId(lgr.getAttributeAsInt("ensemblDBVersion"));
+				
 				config.addStrArray(Constants.ENSEMBL_BIOTYPES, biotypeSelectItem.getValues());
 				config.addStrArray(Constants.SORTED_SEGMENTS, new String[]{String.valueOf(sortedCheckbox.getValueAsBoolean())});
 				config.addStrArray(Constants.SHOW_SEGMENT_CAPTION, new String[]{String.valueOf(showCNVCaptionsCheckbox.getValueAsBoolean())});
@@ -1031,7 +1040,8 @@ public class WestPanel extends SectionStack{
 			
 			public void onSuccess(Void result){
 			
-				SC.say("Hi");
+				configSelectItem.fetchData();
+				SC.say("Configuration saved.");
 				
 			}
 			public void onFailure(Throwable caught){
