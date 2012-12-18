@@ -84,8 +84,6 @@ import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
-import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
-import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
 import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
@@ -4184,7 +4182,7 @@ class RecMapClickHandler implements ClickHandler{
 		final AsyncCallback<QueryInfo> callback = new AsyncCallback<QueryInfo>(){
 			public void onSuccess(QueryInfo query){
 				
-				cp.getMainPanel().getWestPanel().search(query);
+				cp.getMainPanel().getWestPanel().getSearchContent().search(query);
 				
 			}
 			public void onFailure(Throwable caught){

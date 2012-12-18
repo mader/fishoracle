@@ -22,7 +22,7 @@ import de.unihamburg.zbh.fishoracle.client.datasource.ProjectDS;
 
 public class Track {
 
-	private MainPanel mp = null;
+	private ConfigLayout cl = null;
 	private DynamicForm trackForm;
 	private TextItem trackNameItem;
 	private SelectItem selectItemFilter;
@@ -43,9 +43,9 @@ public class Track {
 	
 	private int trackNumber;
 
-	public Track(int numberOfTracks, CheckboxItem globalThresholdCheckbox, MainPanel m){
+	public Track(int numberOfTracks, boolean globalTh, ConfigLayout c){
 		
-		this.mp = m;
+		this.cl = c;
 		trackNumber = numberOfTracks;
 		
 		trackForm = new DynamicForm();
@@ -73,10 +73,11 @@ public class Track {
 			@Override
 			public void onChanged(ChangedEvent event) {
 				String val =  event.getValue().toString();
+				//TODO write external method
 				if(val.equals("Segments (PennCNV)") || val.equals("Segments (DNACopy)")){
 					selectItemFilter.setValueMap("Project","Tissue","Experiments");
 					selectItemFilter.setValue("Project");
-					if(!(Boolean) mp.getWestPanel().getGlobalThresholdCheckbox().getValue()){
+					if(!(Boolean) cl.getGlobalThresholdCheckbox().getValue()){
 						
 						
 						if(val.equals("Segments (DNACopy)")){
@@ -170,7 +171,7 @@ public class Track {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					mp.getWestPanel().startSearch();
+					cl.startSearch();
 				}
 			}
 		});
@@ -184,7 +185,7 @@ public class Track {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					mp.getWestPanel().startSearch();
+					cl.startSearch();
 				}
 			}
 		});
@@ -197,8 +198,7 @@ public class Track {
 										"1",
 										"2",
 										"3",
-										"4",
-										"5");
+										"4");
 		statusSelectItem.setDefaultValues("0","1");
 		statusSelectItem.setVisible(false);
 		statusSelectItem.addKeyPressHandler(new KeyPressHandler(){
@@ -206,12 +206,12 @@ public class Track {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					mp.getWestPanel().startSearch();
+					cl.startSearch();
 				}
 			}
 		});
 		
-		if(!(Boolean) globalThresholdCheckbox.getValue()){
+		if(!globalTh){
 			segmentThresholdSelectItem.setVisible(true);
 			greaterTextItem.setVisible(true);
 			lessTextItem.setVisible(true);

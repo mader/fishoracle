@@ -107,7 +107,7 @@ public class NorthPanel extends HLayout{
 			
 			@Override
 			public void onClick(ClickEvent event) {
-				mp.getWestPanel().removeAllTracks();
+				mp.getWestPanel().getSearchContent().removeAllTracks();
 				userLogout();
 			}
 		});
@@ -173,7 +173,7 @@ public class NorthPanel extends HLayout{
 					}
 				}
 				
-				mp.getWestPanel().getSearchTextItem().setValue("");
+				mp.getWestPanel().getSearchContent().getSearchTextItem().setValue("");
 				
 				/* remove all center panel tabs except for the welcome tab*/
 				TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
