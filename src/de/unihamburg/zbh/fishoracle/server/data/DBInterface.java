@@ -860,9 +860,16 @@ public class DBInterface {
 		ProjectAdaptor pa = driver.getProjectAdaptor();
 		
 		Group[] g = ga.fetchGroupsForUser(user.getId(), false);
-		ProjectAccess[] projectAccess = pa.fetchProjectAccessForGroups(g, withChildren, writeOnly);
 		
-		Project[] p = pa.fetchProjectsForProjectAccess(projectAccess, false);
+		Project[] p;
+		
+		if(g.length > 0){
+			ProjectAccess[] projectAccess = pa.fetchProjectAccessForGroups(g, withChildren, writeOnly);
+			p = pa.fetchProjectsForProjectAccess(projectAccess, false);
+		} else {
+			p = new Project[1];
+			p[0] = new Project(0, "No access to projects.", "You have no access to projects.");
+		}
 		
 		return DataTypeConverter.projectsToFoProjects(p);
 	}
