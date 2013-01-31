@@ -252,7 +252,7 @@ public class SketchTool {
 		RecMapInfo recmapinfo;
 		
 		for(int i=0; i < info.num_of_rec_maps(); i++){
-		
+			
 			// we don't need reqmap information for the karyoband
 			if(info.get_rec_map(i).get_genome_feature().get_type().equals("karyoband")){
 				continue;

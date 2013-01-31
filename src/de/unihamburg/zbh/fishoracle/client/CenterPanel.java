@@ -329,7 +329,12 @@ public class CenterPanel extends VLayout {
         			GWTImageInfo imgInfo = image.getImageInfo();
 
         			for(rmc=0; rmc < imgInfo.getRecmapinfo().size(); rmc++){
-
+        				
+        				if((imgInfo.getRecmapinfo().get(rmc).getSoutheastX() - imgInfo.getRecmapinfo().get(rmc).getNorthwestX()) < 3 
+        						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals("gene")){
+        					continue;
+        				}
+        				
         				final Img spaceImg = new Img("1pximg.gif");
 
         				spaceImg.addClickHandler(new RecMapClickHandler(imgInfo.getRecmapinfo().get(rmc), imgInfo, cp));
