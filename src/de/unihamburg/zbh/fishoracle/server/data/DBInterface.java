@@ -152,7 +152,7 @@ public class DBInterface {
 			throw new Exception(e.getMessage());
 		}
 		
-		Location l = new Location(0, fn.get_seqid(), fn.get_range().get_start(), fn.get_range().get_end());
+		Location l = new Location(fn.get_seqid(), fn.get_range().get_start(), fn.get_range().get_end());
 		
 		fn.dispose();
 		fi.delete();
@@ -185,7 +185,7 @@ public class DBInterface {
 		
 		Range r = ka.fetchRangeForKaryoband(fi, chr, band);
 		
-		Location l = new Location(0, chr, r.get_start(), r.get_end());
+		Location l = new Location(chr, r.get_start(), r.get_end());
 		
 		fi.delete();
 		adb.delete();
@@ -337,7 +337,7 @@ public class DBInterface {
 		FODriver driver = getFoDriver();
 		SegmentAdaptor sa = driver.getSegmentAdaptor();
 		
-		Location maxLoc = new Location(0, chr, start, end);
+		Location maxLoc = new Location(chr, start, end);
 		
 		for(int i = 0; i < query.getConfig().getTracks().length; i++){
 			

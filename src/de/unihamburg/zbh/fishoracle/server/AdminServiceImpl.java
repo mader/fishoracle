@@ -295,7 +295,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 						markers = "0";
 					}
 			
-					Location loc = new Location(0, chr, Integer.parseInt(start), Integer.parseInt(end));
+					Location loc = new Location(chr, Integer.parseInt(start), Integer.parseInt(end));
 			
 					Segment segment = new Segment(0,
 													loc,
@@ -340,7 +340,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 						quality = "100.0";
 					}
 					
-					SNPMutation mut = new SNPMutation(0, new Location(0, chr,
+					SNPMutation mut = new SNPMutation(0, new Location(chr,
 														Integer.parseInt(pos),
 														Integer.parseInt(pos)),
 														dbSnpId,
@@ -379,12 +379,12 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 					String chr2 = reader.get("CHR2");
 					String pos2 = reader.get("POS2");
 					
-					transloc[0] = new Translocation(0, new Location(0, chr1,
+					transloc[0] = new Translocation(0, new Location(chr1,
 													Integer.parseInt(pos1),
 													Integer.parseInt(pos1)),
 													0);
 					transloc[0].setPlatformId(plId);
-					transloc[1] = new Translocation(0, new Location(0, chr2,
+					transloc[1] = new Translocation(0, new Location(chr2,
 													Integer.parseInt(pos2),
 													Integer.parseInt(pos2)),
 													0);
@@ -413,7 +413,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 					String start = reader.get("START");
 					String end = reader.get("END");
 					
-					GenericFeature f = new GenericFeature(0, new Location(0, chr,
+					GenericFeature f = new GenericFeature(0, new Location(chr,
 														Integer.parseInt(start),
 														Integer.parseInt(end)),
 														importType);

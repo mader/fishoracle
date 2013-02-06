@@ -133,8 +133,9 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 				
 					String[] region = query.getQueryString().split(":");
 					
-					featuresLoc = new Location(0,
-					region[0], Integer.parseInt(region[1]), Integer.parseInt(region[2]));
+					featuresLoc = new Location(region[0],
+												Integer.parseInt(region[1]),
+												Integer.parseInt(region[2]));
 				
 				} catch (Exception e){
 					e.printStackTrace();
@@ -301,7 +302,7 @@ public class SearchImpl extends RemoteServiceServlet implements Search {
 		Location maxRange = null;
 		
 		try {
-			maxRange = new Location(0, chr, start, end);
+			maxRange = new Location(chr, start, end);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error: " + e.getMessage());

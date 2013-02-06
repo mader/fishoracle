@@ -24,8 +24,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class FoLocation implements IsSerializable {
-
-	private int id;
+	
 	private String chrosmome;
 	private int start;
 	private int end;
@@ -33,8 +32,7 @@ public class FoLocation implements IsSerializable {
 	public FoLocation() {
 	}
 
-	public FoLocation(int id, String chrosmome, int start, int end) {
-		this.id = id;
+	public FoLocation(String chrosmome, int start, int end) {
 		this.chrosmome = chrosmome;
 		this.start = start;
 		this.end = end;
@@ -62,14 +60,6 @@ public class FoLocation implements IsSerializable {
 
 	public void setEnd(int end) {
 		this.end = end;
-	}
-	
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	/**

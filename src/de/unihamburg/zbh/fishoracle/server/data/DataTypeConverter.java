@@ -209,8 +209,7 @@ public class DataTypeConverter {
 	}
 	
 	public static FoLocation locationToFoLocation(Location loc){
-		FoLocation foLocation = new FoLocation(loc.getId(),
-												loc.getChromosome(),
+		FoLocation foLocation = new FoLocation(loc.getChromosome(),
 												loc.getStart(),
 												loc.getEnd());
 		return foLocation;
@@ -218,8 +217,7 @@ public class DataTypeConverter {
 	
 	
 	public static Location foLocationToLocation(FoLocation foLoc){
-		Location loc = new Location(foLoc.getId(),
-										foLoc.getChromosome(),
+		Location loc = new Location(foLoc.getChromosome(),
 										foLoc.getStart(),
 										foLoc.getEnd());
 		return loc;
