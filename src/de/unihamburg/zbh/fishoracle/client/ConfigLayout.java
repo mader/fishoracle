@@ -24,6 +24,7 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.layout.VLayout;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
 import de.unihamburg.zbh.fishoracle.client.data.FoTrackData;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
@@ -110,7 +111,7 @@ public class ConfigLayout extends VLayout {
 				
 				String dataType = td.getStrArray(Constants.DATA_TYPE)[0];
 				
-				if(dataType.equals("Segments (DNACopy)")){
+				if(dataType.equals(FoConstants.ACGH_INTENSITY)){
 				
 					SelectItem segmentSelect = t.getSegmentThresholdSelectItem();
 					TextItem greater = t.getLessTextItem();
@@ -137,7 +138,7 @@ public class ConfigLayout extends VLayout {
 					less.setVisible(true);
 				}
 				
-				if(dataType.equals("Segments (PennCNV)")){
+				if(dataType.equals(FoConstants.ACGH_STATUS)){
 					
 					t.getStatusSelectItem().setValues(td.getStrArray(Constants.CNV_STATI));
 					t.getStatusSelectItem().setVisible(true);
@@ -430,12 +431,12 @@ public class ConfigLayout extends VLayout {
 					for(int i = 0; i < tracks.size(); i++){
 						
 						Track t = tracks.get(i);
-						if(t.getSelectItemFilterType().getValueAsString().equals("Segments (DNACopy)")){
+						if(t.getSelectItemFilterType().getValueAsString().equals(FoConstants.ACGH_INTENSITY)){
 							t.getSegmentThresholdSelectItem().show();
 							t.getGreaterTextItem().show();
 							t.getLessTextItem().show();
 						}
-						if(t.getSelectItemFilterType().getValueAsString().equals("Segments (PennCNV)")){
+						if(t.getSelectItemFilterType().getValueAsString().equals(FoConstants.ACGH_STATUS)){
 							t.getStatusSelectItem().show();
 						}
 						

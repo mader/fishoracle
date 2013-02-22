@@ -3,7 +3,6 @@ package de.unihamburg.zbh.fishoracle.client;
 import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
-import com.smartgwt.client.widgets.form.fields.CheckboxItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
@@ -19,6 +18,7 @@ import de.unihamburg.zbh.fishoracle.client.datasource.StudyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.datasource.OrganDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.ProjectDS;
+import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
 
 public class Track {
 
@@ -74,13 +74,13 @@ public class Track {
 			public void onChanged(ChangedEvent event) {
 				String val =  event.getValue().toString();
 				//TODO write external method
-				if(val.equals("Segments (PennCNV)") || val.equals("Segments (DNACopy)")){
+				if(val.equals(FoConstants.ACGH_STATUS) || val.equals(FoConstants.ACGH_INTENSITY)){
 					selectItemFilter.setValueMap("Project","Tissue","Experiments");
 					selectItemFilter.setValue("Project");
 					if(!(Boolean) cl.getGlobalThresholdCheckbox().getValue()){
 						
 						
-						if(val.equals("Segments (DNACopy)")){
+						if(val.equals(FoConstants.ACGH_INTENSITY)){
 							segmentThresholdSelectItem.show();
 							greaterTextItem.show();
 							lessTextItem.show();
@@ -88,7 +88,7 @@ public class Track {
 							statusSelectItem.hide();
 						}
 						
-						if(val.equals("Segments (PennCNV)")){
+						if(val.equals(FoConstants.ACGH_STATUS)){
 							statusSelectItem.show();
 							
 							segmentThresholdSelectItem.hide();

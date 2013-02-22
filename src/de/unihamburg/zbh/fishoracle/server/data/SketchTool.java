@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 
@@ -93,8 +94,8 @@ public class SketchTool {
 		
 		for(int l=0; l < query.getConfig().getTracks().length; l++ ){
 		
-			if(query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals("Segments (DNACopy)") || 
-					query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals("Segments (PennCNV)")){
+			if(query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_INTENSITY) || 
+					query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_STATUS)){
 				if(query.getConfig().getStrArray(Constants.SORTED_SEGMENTS)[0].equals("true")){
 			
 					style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,0.0));

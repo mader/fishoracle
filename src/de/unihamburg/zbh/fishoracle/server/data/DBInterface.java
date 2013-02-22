@@ -26,6 +26,7 @@ import annotationsketch.FeatureIndexFo;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
 import de.unihamburg.zbh.fishoracle.client.data.FoGenericFeature;
 import de.unihamburg.zbh.fishoracle.client.data.FoSNPMutation;
 import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
@@ -342,8 +343,8 @@ public class DBInterface {
 		for(int i = 0; i < query.getConfig().getTracks().length; i++){
 			
 			Location l;
-			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Segments (DNACopy)") || 
-					query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Segments (PennCNV)")){
+			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_INTENSITY) || 
+					query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_STATUS)){
 				if(query.getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
 				
 					l = sa.fetchMaximalOverlappingSegmentRange(chr,
@@ -440,7 +441,7 @@ public class DBInterface {
 				adb.setAdditionalExperimentFilter(fifo, strArrToIntArr(eIds));
 			}
 			
-			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Segments (DNACopy)")){
+			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_INTENSITY)){
 				
 				adb.segmentOnly(fifo, 0);
 				
@@ -475,7 +476,7 @@ public class DBInterface {
 				adb.setSegmentsLowerTh(fifo, lth);
 				adb.setSegmentsUpperTh(fifo, uth);
 				
-			} else if (query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Segments (PennCNV)")){
+			} else if (query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_STATUS)){
 			
 				adb.segmentOnly(fifo, 1);
 				
@@ -613,8 +614,8 @@ public class DBInterface {
 		
 		Study s = sa.fetchStudyForName(study.getName(), false);
 		
-		if(importType.equals("Segments (DNACopy)") || 
-				importType.equals("Segments (PennCNV)")){
+		if(importType.equals(FoConstants.ACGH_INTENSITY) || 
+				importType.equals(FoConstants.ACGH_STATUS)){
 			SegmentAdaptor ca = driver.getSegmentAdaptor();
 		
 			ca.storeSegments(study.getSegments(), s.getId());

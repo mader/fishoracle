@@ -13,6 +13,7 @@ import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
+import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
 import de.unihamburg.zbh.fishoracle.client.data.FoGenericFeature;
 import de.unihamburg.zbh.fishoracle.client.rpc.FeatureService;
 import de.unihamburg.zbh.fishoracle.client.rpc.FeatureServiceAsync;
@@ -96,14 +97,14 @@ public class FeatureDS extends FoDataSource {
 				
 				ListGridRecord record = new ListGridRecord(); 
 				record.setAttribute("featureId", 0);
-				record.setAttribute("featureType", "Segments (DNACopy)");
+				record.setAttribute("featureType", FoConstants.ACGH_INTENSITY);
 				record.setAttribute("type", "dnacopy");
 				
 				list[0] = record;
 				
 				record = new ListGridRecord(); 
 				record.setAttribute("featureId", 0);
-				record.setAttribute("featureType", "Segments (PennCNV)");
+				record.setAttribute("featureType", FoConstants.ACGH_STATUS);
 				record.setAttribute("type", "penncnv");
 				
 				list[1] = record;
