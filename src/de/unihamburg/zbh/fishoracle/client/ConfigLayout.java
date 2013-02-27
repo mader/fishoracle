@@ -7,6 +7,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.IButton;
+import com.smartgwt.client.widgets.ImgButton;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.CheckboxItem;
@@ -587,6 +589,7 @@ public class ConfigLayout extends VLayout {
 							searchButton);
 		
 		this.addMember(searchForm);
+		
 	}
 	
 private int[] strArrToIntArr(String[] strArr){
@@ -835,7 +838,7 @@ private int[] strArrToIntArr(String[] strArr){
 		final AsyncCallback<FoConfigData> callback = new AsyncCallback<FoConfigData>(){
 			
 			public void onSuccess(FoConfigData result){
-				//TODO
+				//TODO Outsource to method ion Config Layout.
 				
 				ensemblSelectItem.setValue(result.getStrArray(Constants.ENSEMBL_ID)[0]);
 				

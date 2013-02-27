@@ -1,8 +1,12 @@
 package de.unihamburg.zbh.fishoracle.client;
 
 import com.smartgwt.client.types.MultipleAppearance;
+import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.IButton;
+import com.smartgwt.client.widgets.ImgButton;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
+import com.smartgwt.client.widgets.form.fields.CanvasItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
@@ -27,8 +31,8 @@ public class Track {
 	private TextItem trackNameItem;
 	private SelectItem selectItemFilter;
 	private SelectItem selectItemFilterType;
-	private SelectItem selectItemProjects;
-	private SelectItem selectItemTissues;
+	private ProjectSelectItem selectItemProjects;
+	private TissueSelectItem selectItemTissues;
 	private SelectItem segmentThresholdSelectItem;
 	private TextItem greaterTextItem;
 	private TextItem lessTextItem;
@@ -49,6 +53,7 @@ public class Track {
 		trackNumber = numberOfTracks;
 		
 		trackForm = new DynamicForm();
+		trackForm.setNumCols(3);
 		trackForm.setGroupTitle("Track" + numberOfTracks);
 		trackForm.setIsGroup(true);
 		
@@ -57,7 +62,7 @@ public class Track {
 		trackNameItem.setValue("Track" + numberOfTracks);
 		
 		selectItemFilterType = new SelectItem();
-		selectItemFilterType.setTitle("Filter Type");
+		selectItemFilterType.setTitle("Data Type");
 		
 		selectItemFilterType.setDisplayField("featureType");
 		selectItemFilterType.setValueField("featureType");
@@ -130,6 +135,54 @@ public class Track {
 		selectItemFilter.setTitle("Filter");
 		selectItemFilter.setValueMap("Project","Tissue","Experiments");
 		selectItemFilter.setDefaultToFirstOption(true);
+		selectItemFilter.setStartRow(true);
+		selectItemFilter.setEndRow(false);
+		
+		CanvasItem addButtonItem = new CanvasItem();
+		addButtonItem.setShowTitle(false);
+		addButtonItem.setEndRow(true);
+		addButtonItem.setWidth(18);
+		addButtonItem.setHeight(18);
+		Canvas add = new Canvas();
+		ImgButton addButton = new ImgButton();
+		addButton.setWidth(18);
+		addButton.setHeight(18);
+		addButton.setSrc("[SKIN]/actions/add.png");
+		addButton.setShowRollOver(false);
+		addButton.setShowDown(false);
+		addButton.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler(){
+
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.events.ClickEvent event) {
+				
+					if(selectItemFilter.getValue().equals("Tissue")){
+						selectItemTissues.show();
+					}
+					if(selectItemFilter.getValue().equals("Project")){
+						selectItemProjects.show();
+					}
+					if(selectItemFilter.getValue().equals("Experiments")){
+						selectItemExperiments.show();
+					}
+					if(selectItemFilter.getValue().equals("Quality")){
+						textItemQuality.show();
+					}
+					if(selectItemFilter.getValue().equals("Somatic")){
+						selectItemSomatic.show();
+					}
+					if(selectItemFilter.getValue().equals("Confidence")){
+						selectItemConfidence.show();
+					}
+					if(selectItemFilter.getValue().equals("SNP Tool")){
+						selectItemSNPTool.show();
+					}
+			}
+		});
+		
+		
+		add.addChild(addButton);
+		addButtonItem.setCanvas(add);
 		
 		segmentThresholdSelectItem = new SelectItem();
 		segmentThresholdSelectItem.setTitle("");
@@ -217,39 +270,13 @@ public class Track {
 			lessTextItem.setVisible(true);
 		}
 		
-		selectItemProjects = new SelectItem();
-		selectItemProjects.setTitle("Project Filter");
-		selectItemProjects.setMultiple(true);
-		selectItemProjects.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		selectItemProjects.setDisplayField("projectName");
-		selectItemProjects.setValueField("projectId");		
-		selectItemProjects.setAutoFetchData(false);
-		ProjectDS pDS = new ProjectDS();
 		
-		selectItemProjects.setOptionDataSource(pDS);
-		selectItemProjects.setOptionOperationId(OperationId.PROJECT_FETCH_ALL);
+		selectItemProjects = new ProjectSelectItem(FoConstants.PROJECT_SELECT_MULTI);
 		
-		selectItemProjects.setDefaultToFirstOption(true);
-		selectItemProjects.setVisible(false);
-		
-		selectItemTissues = new SelectItem();
-		selectItemTissues.setTitle("Tissue Filter");
-		selectItemTissues.setMultiple(true);
-		selectItemTissues.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		
-		selectItemTissues.setDisplayField("organNamePlusType");
-		selectItemTissues.setValueField("organId");		
-		selectItemTissues.setAutoFetchData(false);
-		OrganDS oDS = new OrganDS();
-		
-		selectItemTissues.setOptionDataSource(oDS);
-		selectItemTissues.setOptionOperationId(OperationId.ORGAN_FETCH_ENABLED);
-		
-		selectItemTissues.setDefaultToFirstOption(true);
-		selectItemTissues.setVisible(false);
+		selectItemTissues = new TissueSelectItem(FoConstants.TISSUE_SELECT_MULTI);
 		
 		selectItemExperiments = new SelectItem();
-		selectItemExperiments.setTitle("Experiment Filter");
+		selectItemExperiments.setTitle("Experiment");
 		selectItemExperiments.setMultiple(true);
 		selectItemExperiments.setMultipleAppearance(MultipleAppearance.PICKLIST);
 		
@@ -265,13 +292,13 @@ public class Track {
 		selectItemExperiments.setVisible(false);
 		
 		textItemQuality = new TextItem();
-		textItemQuality.setTitle("Quality Filter");
+		textItemQuality.setTitle("Quality");
 		textItemQuality.setValue(20.0);
 		textItemQuality.setVisible(false);
 		
 		//fetch filter options from database...
 		selectItemSomatic = new SelectItem();
-		selectItemSomatic.setTitle("Somatic Filter");
+		selectItemSomatic.setTitle("Somatic");
 		selectItemSomatic.setMultiple(true);
 		selectItemSomatic.setMultipleAppearance(MultipleAppearance.PICKLIST);
 		selectItemSomatic.setValueMap("somatic", "germline");
@@ -280,7 +307,7 @@ public class Track {
 		
 		//fetch filter options from database...
 		selectItemConfidence = new SelectItem();
-		selectItemConfidence.setTitle("Confidence Filter");
+		selectItemConfidence.setTitle("Confidence");
 		selectItemConfidence.setMultiple(true);
 		selectItemConfidence.setMultipleAppearance(MultipleAppearance.PICKLIST);
 		selectItemConfidence.setValueMap("high confidence", "moderate confidence", "low confidence");
@@ -289,7 +316,7 @@ public class Track {
 		
 		//fetch filter options from database...
 		selectItemSNPTool = new SelectItem();
-		selectItemSNPTool.setTitle("SNP Tool Filter");
+		selectItemSNPTool.setTitle("SNP Tool");
 		selectItemSNPTool.setMultiple(true);
 		selectItemSNPTool.setMultipleAppearance(MultipleAppearance.PICKLIST);
 		selectItemSNPTool.setValueMap("gatk", "varscan", "snvmix", "samtools");
@@ -362,9 +389,10 @@ public class Track {
 			}
 		});
 		
-		trackForm.setItems(trackNameItem, 
+		trackForm.setItems(trackNameItem,
 							selectItemFilterType,
 							selectItemFilter,
+							addButtonItem,
 							segmentThresholdSelectItem,
 							greaterTextItem,
 							lessTextItem,
@@ -412,19 +440,19 @@ public class Track {
 		this.selectItemFilter = selectItemFilter;
 	}
 
-	public SelectItem getSelectItemProjects() {
+	public ProjectSelectItem getSelectItemProjects() {
 		return selectItemProjects;
 	}
 
-	public void setSelectItemProjects(SelectItem selectItemProjects) {
+	public void setSelectItemProjects(ProjectSelectItem selectItemProjects) {
 		this.selectItemProjects = selectItemProjects;
 	}
 
-	public SelectItem getSelectItemTissues() {
+	public TissueSelectItem getSelectItemTissues() {
 		return selectItemTissues;
 	}
 
-	public void setSelectItemTissues(SelectItem selectItemTissues) {
+	public void setSelectItemTissues(TissueSelectItem selectItemTissues) {
 		this.selectItemTissues = selectItemTissues;
 	}
 

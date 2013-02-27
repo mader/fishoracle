@@ -198,7 +198,7 @@ public class CenterPanel extends VLayout {
 	
     private Window window;
     
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	private MainPanel mp = null;
 	private CenterPanel cp = null;
 	
