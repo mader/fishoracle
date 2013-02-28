@@ -2,26 +2,22 @@ package de.unihamburg.zbh.fishoracle.client;
 
 import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.widgets.Canvas;
-import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.ImgButton;
 import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.CanvasItem;
+import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
-import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 
 import de.unihamburg.zbh.fishoracle.client.datasource.FeatureDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.StudyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
-import de.unihamburg.zbh.fishoracle.client.datasource.OrganDS;
-import de.unihamburg.zbh.fishoracle.client.datasource.ProjectDS;
 import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
 
 public class Track {
@@ -32,18 +28,26 @@ public class Track {
 	private SelectItem selectItemFilter;
 	private SelectItem selectItemFilterType;
 	private ProjectSelectItem selectItemProjects;
+	private RemoveButton removeProjectButtonItem;
 	private TissueSelectItem selectItemTissues;
+	private RemoveButton removeTissueButtonItem;
 	private SelectItem segmentThresholdSelectItem;
 	private TextItem greaterTextItem;
 	private TextItem lessTextItem;
 	private SelectItem statusSelectItem;
 	
+	private CanvasItem addButtonItem;
 	private SelectItem selectItemExperiments;
+	private RemoveButton removeExperimentsButtonItem;
 	
 	private TextItem textItemQuality;
+	private RemoveButton removeQualityButtonItem;
 	private SelectItem selectItemSomatic;
+	private RemoveButton removeSomaticButtonItem;
 	private SelectItem selectItemConfidence;
+	private RemoveButton removeConfidenceButtonItem;
 	private SelectItem selectItemSNPTool;
+	private RemoveButton removeSNPToolButtonItem;
 	
 	private int trackNumber;
 
@@ -104,9 +108,13 @@ public class Track {
 						
 					}
 					textItemQuality.hide();
+					removeQualityButtonItem.hide();
 					selectItemSomatic.hide();
+					removeSomaticButtonItem.hide();
 					selectItemConfidence.hide();
+					removeConfidenceButtonItem.hide();
 					selectItemSNPTool.hide();
+					removeSNPToolButtonItem.hide();
 				} else if(val.equals("Mutations")){
 					selectItemFilter.setValueMap("Project",
 							"Tissue",
@@ -137,8 +145,50 @@ public class Track {
 		selectItemFilter.setDefaultToFirstOption(true);
 		selectItemFilter.setStartRow(true);
 		selectItemFilter.setEndRow(false);
+		selectItemFilter.addChangedHandler(new ChangedHandler(){
+
+			@Override
+			public void onChanged(ChangedEvent event) {
+				
+				if(selectItemFilter.getValue().equals("Tissue") && !selectItemTissues.isVisible()){
+					addButtonItem.enable();
+				} else if(selectItemFilter.getValue().equals("Tissue")) {
+					addButtonItem.disable();
+				}
+				if(selectItemFilter.getValue().equals("Project") && !selectItemProjects.isVisible()){
+					addButtonItem.enable();
+				} else if(selectItemFilter.getValue().equals("Project")) {
+					addButtonItem.disable();
+				}
+				if(selectItemFilter.getValue().equals("Experiments") && !selectItemExperiments.isVisible()){
+					addButtonItem.enable();
+				} else if(selectItemFilter.getValue().equals("Experiments")) {
+					addButtonItem.disable();
+				}
+				if(selectItemFilter.getValue().equals("Quality") && !textItemQuality.isVisible()){
+					addButtonItem.enable();
+				} else if(selectItemFilter.getValue().equals("Quality")) {
+					addButtonItem.disable();
+				}
+				if(selectItemFilter.getValue().equals("Somatic") && !selectItemSomatic.isVisible()){
+					addButtonItem.enable();
+				} else if(selectItemFilter.getValue().equals("Somatic")) {
+					addButtonItem.disable();
+				}
+				if(selectItemFilter.getValue().equals("Confidence") && !selectItemConfidence.isVisible()){
+					addButtonItem.enable();
+				} else if(selectItemFilter.getValue().equals("Confidence")) {
+					addButtonItem.disable();
+				}
+				if(selectItemFilter.getValue().equals("SNP Tool") && !selectItemSNPTool.isVisible()){
+					addButtonItem.enable();
+				} else if(selectItemFilter.getValue().equals("SNP Tool")) {
+					addButtonItem.disable();
+				}
+			}
+		});
 		
-		CanvasItem addButtonItem = new CanvasItem();
+		addButtonItem = new CanvasItem();
 		addButtonItem.setShowTitle(false);
 		addButtonItem.setEndRow(true);
 		addButtonItem.setWidth(18);
@@ -158,28 +208,41 @@ public class Track {
 				
 					if(selectItemFilter.getValue().equals("Tissue")){
 						selectItemTissues.show();
+						removeTissueButtonItem.show();
+						addButtonItem.disable();
 					}
 					if(selectItemFilter.getValue().equals("Project")){
 						selectItemProjects.show();
+						removeProjectButtonItem.show();
+						addButtonItem.disable();
 					}
 					if(selectItemFilter.getValue().equals("Experiments")){
 						selectItemExperiments.show();
+						removeExperimentsButtonItem.show();
+						addButtonItem.disable();
 					}
 					if(selectItemFilter.getValue().equals("Quality")){
 						textItemQuality.show();
+						removeQualityButtonItem.show();
+						addButtonItem.disable();
 					}
 					if(selectItemFilter.getValue().equals("Somatic")){
 						selectItemSomatic.show();
+						removeSomaticButtonItem.show();
+						addButtonItem.disable();
 					}
 					if(selectItemFilter.getValue().equals("Confidence")){
 						selectItemConfidence.show();
+						removeConfidenceButtonItem.show();
+						addButtonItem.disable();
 					}
 					if(selectItemFilter.getValue().equals("SNP Tool")){
 						selectItemSNPTool.show();
+						removeSNPToolButtonItem.show();
+						addButtonItem.disable();
 					}
 			}
 		});
-		
 		
 		add.addChild(addButton);
 		addButtonItem.setCanvas(add);
@@ -270,10 +333,11 @@ public class Track {
 			lessTextItem.setVisible(true);
 		}
 		
-		
 		selectItemProjects = new ProjectSelectItem(FoConstants.PROJECT_SELECT_MULTI);
+		removeProjectButtonItem = new RemoveButton(selectItemProjects, addButtonItem, selectItemFilter, "Project");
 		
 		selectItemTissues = new TissueSelectItem(FoConstants.TISSUE_SELECT_MULTI);
+		removeTissueButtonItem = new RemoveButton(selectItemTissues, addButtonItem, selectItemFilter, "Tissue");
 		
 		selectItemExperiments = new SelectItem();
 		selectItemExperiments.setTitle("Experiment");
@@ -290,20 +354,23 @@ public class Track {
 		
 		selectItemExperiments.setDefaultToFirstOption(true);
 		selectItemExperiments.setVisible(false);
+		removeExperimentsButtonItem = new RemoveButton(selectItemExperiments, addButtonItem, selectItemFilter, "Experiments");
 		
 		textItemQuality = new TextItem();
 		textItemQuality.setTitle("Quality");
 		textItemQuality.setValue(20.0);
 		textItemQuality.setVisible(false);
+		removeQualityButtonItem = new RemoveButton(textItemQuality, addButtonItem, selectItemFilter, "Quality");
 		
 		//fetch filter options from database...
 		selectItemSomatic = new SelectItem();
 		selectItemSomatic.setTitle("Somatic");
 		selectItemSomatic.setMultiple(true);
 		selectItemSomatic.setMultipleAppearance(MultipleAppearance.PICKLIST);
-		selectItemSomatic.setValueMap("somatic", "germline");
+		selectItemSomatic.setValueMap("Somatic", "germline");
 		selectItemSomatic.setDefaultToFirstOption(true);
 		selectItemSomatic.setVisible(false);
+		removeSomaticButtonItem = new RemoveButton(selectItemSomatic, addButtonItem, selectItemFilter, "Somatic");
 		
 		//fetch filter options from database...
 		selectItemConfidence = new SelectItem();
@@ -313,6 +380,7 @@ public class Track {
 		selectItemConfidence.setValueMap("high confidence", "moderate confidence", "low confidence");
 		selectItemConfidence.setDefaultToFirstOption(true);
 		selectItemConfidence.setVisible(false);
+		removeConfidenceButtonItem = new RemoveButton(selectItemConfidence, addButtonItem, selectItemFilter, "Confidence");
 		
 		//fetch filter options from database...
 		selectItemSNPTool = new SelectItem();
@@ -322,72 +390,7 @@ public class Track {
 		selectItemSNPTool.setValueMap("gatk", "varscan", "snvmix", "samtools");
 		selectItemSNPTool.setDefaultToFirstOption(true);
 		selectItemSNPTool.setVisible(false);
-		
-		ButtonItem addFilterButton = new ButtonItem();
-		addFilterButton.setTitle("add Filter");
-		addFilterButton.setEndRow(false);
-		addFilterButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				
-					if(selectItemFilter.getValue().equals("Tissue")){
-						selectItemTissues.show();
-					}
-					if(selectItemFilter.getValue().equals("Project")){
-						selectItemProjects.show();
-					}
-					if(selectItemFilter.getValue().equals("Experiments")){
-						selectItemExperiments.show();
-					}
-					if(selectItemFilter.getValue().equals("Quality")){
-						textItemQuality.show();
-					}
-					if(selectItemFilter.getValue().equals("Somatic")){
-						selectItemSomatic.show();
-					}
-					if(selectItemFilter.getValue().equals("Confidence")){
-						selectItemConfidence.show();
-					}
-					if(selectItemFilter.getValue().equals("SNP Tool")){
-						selectItemSNPTool.show();
-					}
-			}
-		});
-		
-		ButtonItem removeFilterButton = new ButtonItem();
-		removeFilterButton.setTitle("remove Filter");
-		removeFilterButton.setStartRow(false);
-		removeFilterButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				
-					if(selectItemFilter.getValue().equals("Tissue")){
-						selectItemTissues.hide();
-					}
-					if(selectItemFilter.getValue().equals("Project")){
-						selectItemProjects.hide();
-					}
-					if(selectItemFilter.getValue().equals("Experiments")){
-						selectItemExperiments.hide();
-					}
-					if(selectItemFilter.getValue().equals("Quality")){
-						textItemQuality.hide();
-					}
-					if(selectItemFilter.getValue().equals("Somatic")){
-						selectItemSomatic.hide();
-					}
-					if(selectItemFilter.getValue().equals("Confidence")){
-						selectItemConfidence.hide();
-					}
-					if(selectItemFilter.getValue().equals("SNP Tool")){
-						selectItemSNPTool.hide();
-					}
-			}
-		});
+		removeSNPToolButtonItem = new RemoveButton(selectItemSNPTool, addButtonItem, selectItemFilter, "SNP Tool");
 		
 		trackForm.setItems(trackNameItem,
 							selectItemFilterType,
@@ -398,16 +401,21 @@ public class Track {
 							lessTextItem,
 							statusSelectItem,
 							selectItemProjects,
+							removeProjectButtonItem,
 							selectItemTissues,
+							removeTissueButtonItem,
 							selectItemExperiments,
+							removeExperimentsButtonItem,
 							textItemQuality,
+							removeQualityButtonItem,
 							selectItemSomatic,
+							removeSomaticButtonItem,
 							selectItemConfidence,
+							removeConfidenceButtonItem,
 							selectItemSNPTool,
-							addFilterButton,
-							removeFilterButton);
+							removeSNPToolButtonItem);
 	}
-
+	
 	public DynamicForm getTrackForm() {
 		return trackForm;
 	}
@@ -534,5 +542,54 @@ public class Track {
 
 	public void setTrackNumber(int trackNumber) {
 		this.trackNumber = trackNumber;
+	}
+}
+
+class RemoveButton extends CanvasItem {
+	
+	private FormItem fi;
+	private CanvasItem addButton;
+	private CanvasItem self;
+	private SelectItem dataType;
+	private String type;
+	
+	RemoveButton(FormItem f, CanvasItem aButton, SelectItem dt, String t){
+		super();
+		this.type = t;
+		this.fi = f;
+		this.addButton = aButton;
+		this.dataType = dt;
+		this.self = this;
+		
+		this.setShowTitle(false);
+		this.setEndRow(true);
+		this.setWidth(18);
+		this.setHeight(18);
+		Canvas remove = new Canvas();
+		ImgButton removeButton = new ImgButton();
+		removeButton.setWidth(18);
+		removeButton.setHeight(18);
+		removeButton.setSrc("[SKIN]/actions/remove.png");
+		removeButton.setShowRollOver(false);
+		removeButton.setShowDown(false);
+		this.setVisible(false);
+		
+		removeButton.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler(){
+		
+			@Override
+			public void onClick(
+				com.smartgwt.client.widgets.events.ClickEvent event) {
+			
+				fi.hide();
+				self.hide();
+				
+				if(dataType.getValue().equals(type)){
+					addButton.enable();
+				}
+			}
+		});
+	
+		remove.addChild(removeButton);
+		this.setCanvas(remove);
 	}
 }

@@ -47,7 +47,7 @@ public class MainPanel extends Layout {
 		centerPanel = new CenterPanel(this);
 	
 		westPanel = new WestPanel(this);
-		westPanel.setWidth("22%");
+		westPanel.setWidth("23%");
 		westPanel.setShowResizeBar(true);
 	
 		mainFrame.addMember(westPanel);
