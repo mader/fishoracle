@@ -65,6 +65,31 @@ public class Track {
 		trackNameItem.setTitle("Track Title");
 		trackNameItem.setValue("Track" + numberOfTracks);
 		
+		CanvasItem removeTrack = new CanvasItem();
+		removeTrack.setShowTitle(false);
+		removeTrack.setEndRow(true);
+		removeTrack.setWidth(18);
+		removeTrack.setHeight(18);
+		Canvas remove = new Canvas();
+		ImgButton removeButton = new ImgButton();
+		removeButton.setWidth(18);
+		removeButton.setHeight(18);
+		removeButton.setSrc("[SKIN]/actions/remove.png");
+		removeButton.setShowRollOver(false);
+		removeButton.setShowDown(false);
+		
+		removeButton.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler(){
+		
+			@Override
+			public void onClick(
+				com.smartgwt.client.widgets.events.ClickEvent event) {
+				cl.removeTrack(trackNumber);
+			}
+		});
+		
+		remove.addChild(removeButton);
+		removeTrack.setCanvas(remove);
+		
 		selectItemFilterType = new SelectItem();
 		selectItemFilterType.setTitle("Data Type");
 		
@@ -393,6 +418,7 @@ public class Track {
 		removeSNPToolButtonItem = new RemoveButton(selectItemSNPTool, addButtonItem, selectItemFilter, "SNP Tool");
 		
 		trackForm.setItems(trackNameItem,
+							removeTrack,
 							selectItemFilterType,
 							selectItemFilter,
 							addButtonItem,

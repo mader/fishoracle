@@ -197,6 +197,7 @@ public class ConfigLayout extends VLayout {
 		tracks.add(t);
 		numberOfTracks++;
 		this.addMember(t.getTrackForm());
+		//this.addMembert.getTrackForm(), pos + 1);
 		this.redraw();
 	}
 	
@@ -544,26 +545,6 @@ public class ConfigLayout extends VLayout {
 			}
 		});
 		
-		ButtonItem removeTrackButton = new ButtonItem();
-		removeTrackButton.setTitle("remove last Track");
-		removeTrackButton.setStartRow(false);
-		removeTrackButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				
-				if(tracks.size() > 1){
-					Track lastTrack = tracks.get(tracks.size() - 1);
-					tracks.remove(tracks.size() - 1);
-					numberOfTracks--;
-					self.removeMember(lastTrack.getTrackForm());
-				} else {
-					SC.say("You need at least one track to visualize your data!");
-				}
-			}
-		});
-		
 		searchForm.setItems(searchTextItem,
 							chrTextItem,
 							startTextItem,
@@ -583,14 +564,31 @@ public class ConfigLayout extends VLayout {
 							saveTracksButton,
 							saveConfigTextItem,
 							addTrackButton,
-							removeTrackButton,
 							searchButton);
 		
 		this.addMember(searchForm);
 		
 	}
+
+	public void removeTrack(int pos){
+		if(tracks.size() > 1){
+			Track track = tracks.get(pos - 1);
+			tracks.remove(pos - 1);
+			numberOfTracks--;
+			self.removeMember(track.getTrackForm());
+			
+			for(int i = pos - 1; i < tracks.size(); i++){
+				Track t = tracks.get(i);
+				t.setTrackNumber(t.getTrackNumber() - 1);
+				t.getTrackForm().setGroupTitle("Track" + t.getTrackNumber());
+			}
+			
+		} else {
+			SC.say("You need at least one track to visualize your data!");
+		}
+	}
 	
-private int[] strArrToIntArr(String[] strArr){
+	private int[] strArrToIntArr(String[] strArr){
 		
 		int[] intArr = new int[strArr.length];
 		
