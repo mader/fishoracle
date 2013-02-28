@@ -77,6 +77,7 @@ public class Track {
 		removeButton.setSrc("[SKIN]/actions/remove.png");
 		removeButton.setShowRollOver(false);
 		removeButton.setShowDown(false);
+		removeButton.setTooltip("Remove Track");
 		
 		removeButton.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler(){
 		
@@ -225,6 +226,7 @@ public class Track {
 		addButton.setSrc("[SKIN]/actions/add.png");
 		addButton.setShowRollOver(false);
 		addButton.setShowDown(false);
+		addButton.setTooltip("Add Filter");
 		addButton.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler(){
 
 			@Override
@@ -598,6 +600,7 @@ class RemoveButton extends CanvasItem {
 		removeButton.setSrc("[SKIN]/actions/remove.png");
 		removeButton.setShowRollOver(false);
 		removeButton.setShowDown(false);
+		removeButton.setTooltip("Remove " + type + " Filter");
 		this.setVisible(false);
 		
 		removeButton.addClickHandler(new com.smartgwt.client.widgets.events.ClickHandler(){
