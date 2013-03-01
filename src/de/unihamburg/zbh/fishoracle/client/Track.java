@@ -51,19 +51,19 @@ public class Track {
 	
 	private int trackNumber;
 
-	public Track(int numberOfTracks, boolean globalTh, ConfigLayout c){
+	public Track(int trackPos, boolean globalTh, ConfigLayout c){
 		
 		this.cl = c;
-		trackNumber = numberOfTracks;
+		trackNumber = trackPos;
 		
 		trackForm = new DynamicForm();
 		trackForm.setNumCols(3);
-		trackForm.setGroupTitle("Track" + numberOfTracks);
+		trackForm.setGroupTitle("Track" + trackPos);
 		trackForm.setIsGroup(true);
 		
 		trackNameItem = new TextItem();
 		trackNameItem.setTitle("Track Title");
-		trackNameItem.setValue("Track" + numberOfTracks);
+		trackNameItem.setValue("Track" + trackPos);
 		
 		CanvasItem removeTrack = new CanvasItem();
 		removeTrack.setShowTitle(false);

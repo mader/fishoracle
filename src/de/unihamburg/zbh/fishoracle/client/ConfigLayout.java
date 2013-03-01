@@ -1,6 +1,7 @@
 package de.unihamburg.zbh.fishoracle.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -63,6 +64,8 @@ public class ConfigLayout extends VLayout {
 	
 	private SelectItem statusSelectItem;
 	
+	private TextItem trackPosTextItem;
+	
 	private int numberOfTracks = 1;
 	
 	private ArrayList<Track> tracks = new ArrayList<Track>();
@@ -103,7 +106,9 @@ public class ConfigLayout extends VLayout {
 	
 	public void addTrack(FoTrackData td, boolean globalTh){
 		
-		Track t = new Track(numberOfTracks, globalTh, this);
+		int trackPos = Integer.parseInt(trackPosTextItem.getValue().toString());
+		
+		Track t = new Track(trackPos, globalTh, this);
 		
 		if(td != null){
 			
@@ -194,10 +199,15 @@ public class ConfigLayout extends VLayout {
 			}
 		}
 		
-		tracks.add(t);
+		tracks.add(trackPos - 1, t);
+		this.addMember(t.getTrackForm(), trackPos);
+		
+		if(trackPos < numberOfTracks){
+			updateTrackNumbers(trackPos + 1, true);
+		}
+		
 		numberOfTracks++;
-		this.addMember(t.getTrackForm());
-		//this.addMembert.getTrackForm(), pos + 1);
+		trackPosTextItem.setValue(numberOfTracks);
 		this.redraw();
 	}
 	
@@ -545,6 +555,14 @@ public class ConfigLayout extends VLayout {
 			}
 		});
 		
+		trackPosTextItem = new TextItem();
+		trackPosTextItem.setTooltip("At Position");
+		trackPosTextItem.setWidth(50);
+		trackPosTextItem.setShowTitle(false);
+		trackPosTextItem.setStartRow(false);
+		trackPosTextItem.setEndRow(true);
+		trackPosTextItem.setValue(numberOfTracks);
+		
 		searchForm.setItems(searchTextItem,
 							chrTextItem,
 							startTextItem,
@@ -564,24 +582,33 @@ public class ConfigLayout extends VLayout {
 							saveTracksButton,
 							saveConfigTextItem,
 							addTrackButton,
+							trackPosTextItem,
 							searchButton);
 		
 		this.addMember(searchForm);
 		
 	}
 
+	public void updateTrackNumbers(int pos, boolean add){
+		for(int i = pos - 1; i < tracks.size(); i++){
+			Track t = tracks.get(i);
+			if(add){
+				t.setTrackNumber(t.getTrackNumber() + 1);
+			} else {
+				t.setTrackNumber(t.getTrackNumber() - 1);
+			}
+			t.getTrackForm().setGroupTitle("Track" + t.getTrackNumber());
+		}
+	}
+	
 	public void removeTrack(int pos){
 		if(tracks.size() > 1){
 			Track track = tracks.get(pos - 1);
 			tracks.remove(pos - 1);
 			numberOfTracks--;
 			self.removeMember(track.getTrackForm());
-			
-			for(int i = pos - 1; i < tracks.size(); i++){
-				Track t = tracks.get(i);
-				t.setTrackNumber(t.getTrackNumber() - 1);
-				t.getTrackForm().setGroupTitle("Track" + t.getTrackNumber());
-			}
+			updateTrackNumbers(pos, false);
+			trackPosTextItem.setValue(numberOfTracks);
 			
 		} else {
 			SC.say("You need at least one track to visualize your data!");
@@ -733,46 +760,67 @@ public class ConfigLayout extends VLayout {
 		String typeStr = null;
 		String qryStr = null;
 		
-		if(searchTextItem.getDisplayValue().equals("") &&
-			chrTextItem.getDisplayValue().equals("") &&
-			startTextItem.getDisplayValue().equals("") &&
-			endTextItem.getDisplayValue().equals("") ){
-			SC.say("You have to type in a search term or provide a chromosome, start position and end position!");
-		} else {
+		String name;
+		boolean nondup = true;
 		
-			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Region")){
-				typeStr = "Region";
-				qryStr = chrTextItem.getDisplayValue() + ":" 
+		HashMap<String, String> names = new HashMap<String, String>();
+		
+		for(int i = 0; i < tracks.size(); i++){
+			
+			name = tracks.get(i).getTrackNameItem().getDisplayValue();
+			
+			if(names.get(name) == null){
+				names.put(name, "1");
+			} else {
+				nondup = false;
+				SC.say("Track names cannot be duplicate! " + name);
+				break;
+			}
+		}
+		
+		if(nondup){
+		
+			if(searchTextItem.getDisplayValue().equals("") &&
+					chrTextItem.getDisplayValue().equals("") &&
+					startTextItem.getDisplayValue().equals("") &&
+					endTextItem.getDisplayValue().equals("") ){
+				SC.say("You have to type in a search term or provide a chromosome, start position and end position!");
+			} else {
+				
+				if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Region")){
+					typeStr = "Region";
+					qryStr = chrTextItem.getDisplayValue() + ":" 
 							+ startTextItem.getDisplayValue() + ":" + endTextItem.getDisplayValue();
-			}
-			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Gene")){
-				typeStr = "Gene Search";
-				qryStr = searchTextItem.getDisplayValue();
-			}
-			if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Karyoband")){
-				typeStr = "Band Search";
-				qryStr = searchTextItem.getDisplayValue();
-			}
+				}
+				if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Gene")){
+					typeStr = "Gene Search";
+					qryStr = searchTextItem.getDisplayValue();
+				}
+				if(SearchRadioGroupItem.getDisplayValue().equalsIgnoreCase("Karyoband")){
+					typeStr = "Band Search";
+					qryStr = searchTextItem.getDisplayValue();
+				}
 						
-			QueryInfo newQuery = null;
+				QueryInfo newQuery = null;
 
-			FoConfigData config = buildFoConfig();
+				FoConfigData config = buildFoConfig();
 			
-			config.addStrArray("ensemblDBName", new String[]{ensemblSelectItem.getValueAsString()});
-			config.addStrArray("ensemblDBLabel", new String[]{ensemblSelectItem.getDisplayValue()});
+				config.addStrArray("ensemblDBName", new String[]{ensemblSelectItem.getValueAsString()});
+				config.addStrArray("ensemblDBLabel", new String[]{ensemblSelectItem.getDisplayValue()});
 			
-			try {
+				try {
 			
-				newQuery = new QueryInfo(qryStr,
-											typeStr,
-											"png",
-											mp.getCenterPanel().getWidth() - 30,
-											config);
-			} catch (Exception e) {
-				SC.say(e.getMessage());
+					newQuery = new QueryInfo(qryStr,
+												typeStr,
+												"png",
+												mp.getCenterPanel().getWidth() - 30,
+												config);
+				} catch (Exception e) {
+					SC.say(e.getMessage());
+				}
+			
+				search(newQuery);
 			}
-			
-			search(newQuery);
 		}
 	}
 	
