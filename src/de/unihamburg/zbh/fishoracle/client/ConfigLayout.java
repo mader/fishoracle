@@ -13,9 +13,8 @@ import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.CheckboxItem;
 import com.smartgwt.client.widgets.form.fields.RadioGroupItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
+import com.smartgwt.client.widgets.form.fields.SpinnerItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
-import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
-import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
@@ -55,9 +54,7 @@ public class ConfigLayout extends VLayout {
 	private SelectItem ensemblSelectItem;
 	private SelectItem biotypeSelectItem;
 	
-	private SelectItem segmentDataSelectItem;
-	private TextItem greaterTextItem;
-	private TextItem lessTextItem;
+	private IntensitySpinnerItem thrItem;
 	
 	private TextItem saveConfigTextItem;
 	private SelectItem configSelectItem;
@@ -79,18 +76,6 @@ public class ConfigLayout extends VLayout {
 			this.removeMember(t.getTrackForm());
 		}
 	}
-	
-	public SelectItem getSegmentDataSelectItem() {
-		return segmentDataSelectItem;
-	}
-	
-	public TextItem getGreaterTextItem() {
-		return greaterTextItem;
-	}
-
-	public TextItem getLessTextItem() {
-		return lessTextItem;
-	}	
 	
 	public SelectItem getStatusTextItem() {
 		return statusSelectItem;
@@ -118,29 +103,12 @@ public class ConfigLayout extends VLayout {
 				
 				if(dataType.equals(FoConstants.ACGH_INTENSITY)){
 				
-					SelectItem segmentSelect = t.getSegmentThresholdSelectItem();
-					TextItem greater = t.getLessTextItem();
-					TextItem less = t.getGreaterTextItem();
-				
-					String segMean = td.getStrArray(Constants.SEGMENT_MEAN)[0];
-				
-					if(Double.parseDouble(segMean) > 0){
-						segmentSelect.setValue("geater than");
-						greater.setValue(segMean);
-						greater.enable();
-						less.setValue("");
-						less.disable();
-					} else {
-						segmentSelect.setValue("less than");
-						greater.setValue("");
-						greater.disable();
-						less.setValue(segMean);
-						less.enable();
-					}
+					SpinnerItem thrItem = t.getThrItem();
 					
-					segmentSelect.setVisible(true);
-					greater.setVisible(true);
-					less.setVisible(true);
+					String segMean = td.getStrArray(Constants.SEGMENT_MEAN)[0];
+					
+					thrItem.setValue(segMean);
+					thrItem.setVisible(true);
 				}
 				
 				if(dataType.equals(FoConstants.ACGH_STATUS)){
@@ -328,48 +296,8 @@ public class ConfigLayout extends VLayout {
 				"processed_transcript",
 				"polymorphic_pseudogene");
 		
-		
-		segmentDataSelectItem = new SelectItem();
-		segmentDataSelectItem.setTitle("");
-		segmentDataSelectItem.setType("Select"); 
-		segmentDataSelectItem.setValueMap("greater than", "less than");
-		segmentDataSelectItem.setDefaultValue("less than");
-		segmentDataSelectItem.addChangeHandler(new ChangeHandler(){
-
-			@Override
-			public void onChange(ChangeEvent event) {
-				if(event.getValue().equals("greater than")){
-					greaterTextItem.enable();
-					greaterTextItem.setValue("0.5");
-					lessTextItem.disable();
-					lessTextItem.setValue("");
-				}
-				if(event.getValue().equals("less than")){
-					greaterTextItem.disable();
-					greaterTextItem.setValue("");
-					lessTextItem.enable();
-					lessTextItem.setValue("-0.5");
-				}
-			}
-		});
-		
-		greaterTextItem = new TextItem();
-		greaterTextItem.setTitle("greater than");
-		greaterTextItem.setDisabled(true);
-		greaterTextItem.addKeyPressHandler(new KeyPressHandler(){
-			
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if(event.getKeyName().equals("Enter")){
-					startSearch();
-				}
-			}
-		});
-		
-		lessTextItem = new TextItem();
-		lessTextItem.setTitle("less than");
-		lessTextItem.setValue("-0.5");
-		lessTextItem.addKeyPressHandler(new KeyPressHandler(){
+		thrItem = new IntensitySpinnerItem();
+		thrItem.addKeyPressHandler(new KeyPressHandler(){
 			
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
@@ -380,7 +308,7 @@ public class ConfigLayout extends VLayout {
 		});
 		
 		statusSelectItem = new SelectItem();
-		statusSelectItem.setTitle("CNV Status");
+		statusSelectItem.setTitle("Status");
 		statusSelectItem.setMultiple(true);
 		statusSelectItem.setMultipleAppearance(MultipleAppearance.PICKLIST);
 		statusSelectItem.setValueMap("0",
@@ -434,18 +362,14 @@ public class ConfigLayout extends VLayout {
 			public void onChanged(ChangedEvent event) {
 				
 				if(!((Boolean) event.getValue())){
-					segmentDataSelectItem.hide();
-					greaterTextItem.hide();
-					lessTextItem.hide();
+					thrItem.hide();
 					statusSelectItem.hide();
 					
 					for(int i = 0; i < tracks.size(); i++){
 						
 						Track t = tracks.get(i);
 						if(t.getSelectItemFilterType().getValueAsString().equals(FoConstants.ACGH_INTENSITY)){
-							t.getSegmentThresholdSelectItem().show();
-							t.getGreaterTextItem().show();
-							t.getLessTextItem().show();
+							t.getThrItem().show();
 						}
 						if(t.getSelectItemFilterType().getValueAsString().equals(FoConstants.ACGH_STATUS)){
 							t.getStatusSelectItem().show();
@@ -455,17 +379,13 @@ public class ConfigLayout extends VLayout {
 				}
 				
 				if((Boolean) event.getValue()){
-					segmentDataSelectItem.show();
-					greaterTextItem.show();
-					lessTextItem.show();
+					thrItem.show();
 					statusSelectItem.show();
 					
 					for(int i = 0; i < tracks.size(); i++){
 						
 						Track t = tracks.get(i);
-						t.getSegmentThresholdSelectItem().hide();
-						t.getGreaterTextItem().hide();
-						t.getLessTextItem().hide();
+						t.getThrItem().hide();
 						t.getStatusSelectItem().hide();
 					}
 				}
@@ -573,9 +493,7 @@ public class ConfigLayout extends VLayout {
 							sortedCheckbox,
 							showCNVCaptionsCheckbox,
 							globalThresholdCheckbox,
-							segmentDataSelectItem,
-							greaterTextItem,
-							lessTextItem,
+							thrItem,
 							statusSelectItem,
 							loadConfigButton,
 							configSelectItem,
@@ -645,15 +563,15 @@ public class ConfigLayout extends VLayout {
 				
 				/* Get global options. */
 				if(globalThresholdCheckbox.getValueAsBoolean()){
-					if(lessTextItem.getDisplayValue().equals("")){
+					if(Double.parseDouble(thrItem.getDisplayValue()) > 0){
 						globalLessThenThr = null;
 					} else {
-						globalLessThenThr = lessTextItem.getDisplayValue();
+						globalLessThenThr = thrItem.getDisplayValue();;
 					}
-					if(greaterTextItem.getDisplayValue().equals("")){
+					if(Double.parseDouble(thrItem.getDisplayValue()) < 0){
 						globalGreaterThenThr = null;
 					} else {
-						globalGreaterThenThr = greaterTextItem.getDisplayValue();
+						globalGreaterThenThr = thrItem.getDisplayValue();
 					}
 					
 					if(statusSelectItem.getValues().length == 0){
@@ -679,11 +597,8 @@ public class ConfigLayout extends VLayout {
 					trackData[i].addStrArray(Constants.DATA_TYPE, new String[]{tracks.get(i).getSelectItemFilterType().getValueAsString()});
 					
 					if(!globalThresholdCheckbox.getValueAsBoolean()){
-						if(!tracks.get(i).getLessTextItem().getDisplayValue().equals("")){
-							trackData[i].addStrArray(Constants.SEGMENT_MEAN, new String[]{tracks.get(i).getLessTextItem().getDisplayValue()});
-						}
-						if(!tracks.get(i).getGreaterTextItem().getDisplayValue().equals("")){
-							trackData[i].addStrArray(Constants.SEGMENT_MEAN, new String[]{tracks.get(i).getGreaterTextItem().getDisplayValue()});
+						if(tracks.get(i).getThrItem().isVisible()){
+							trackData[i].addStrArray(Constants.SEGMENT_MEAN, new String[]{tracks.get(i).getThrItem().getDisplayValue()});
 						}
 						
 						if(tracks.get(i).getStatusSelectItem().getValues().length != 0){
@@ -757,6 +672,9 @@ public class ConfigLayout extends VLayout {
 	}
 	
 	public void startSearch(){
+		
+		searchTextItem.focusInItem(); //Workaround to force an update of the spinner items display value.
+		
 		String typeStr = null;
 		String qryStr = null;
 		
@@ -894,31 +812,14 @@ public class ConfigLayout extends VLayout {
 					
 					String segMean = result.getStrArray(Constants.SEGMENT_MEAN)[0];
 					
-					segmentDataSelectItem.show();
-					greaterTextItem.show();
-					lessTextItem.show();
-					
-					if(Double.parseDouble(segMean) > 0){
-						segmentDataSelectItem.setValue("geater than");
-						greaterTextItem.setValue(segMean);
-						greaterTextItem.enable();
-						lessTextItem.setValue("");
-						lessTextItem.disable();
-					} else {
-						segmentDataSelectItem.setValue("less than");
-						greaterTextItem.setValue("");
-						greaterTextItem.disable();
-						lessTextItem.setValue(segMean);
-						lessTextItem.enable();
-					}
+					thrItem.show();
+					thrItem.setValue(segMean);
 				
 					statusSelectItem.setValues(result.getStrArray(Constants.CNV_STATI));
 					statusSelectItem.show();
 
 				} else {
-					segmentDataSelectItem.hide();
-					greaterTextItem.hide();
-					lessTextItem.hide();
+					thrItem.hide();
 					statusSelectItem.hide();
 				}
 				

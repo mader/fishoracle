@@ -8,8 +8,6 @@ import com.smartgwt.client.widgets.form.fields.CanvasItem;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
-import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
-import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
@@ -31,9 +29,8 @@ public class Track {
 	private RemoveButton removeProjectButtonItem;
 	private TissueSelectItem selectItemTissues;
 	private RemoveButton removeTissueButtonItem;
-	private SelectItem segmentThresholdSelectItem;
-	private TextItem greaterTextItem;
-	private TextItem lessTextItem;
+	
+	private IntensitySpinnerItem thrItem;
 	private SelectItem statusSelectItem;
 	
 	private CanvasItem addButtonItem;
@@ -116,9 +113,7 @@ public class Track {
 						
 						
 						if(val.equals(FoConstants.ACGH_INTENSITY)){
-							segmentThresholdSelectItem.show();
-							greaterTextItem.show();
-							lessTextItem.show();
+							thrItem.show();
 							
 							statusSelectItem.hide();
 						}
@@ -126,10 +121,7 @@ public class Track {
 						if(val.equals(FoConstants.ACGH_STATUS)){
 							statusSelectItem.show();
 							
-							segmentThresholdSelectItem.hide();
-							greaterTextItem.hide();
-							lessTextItem.hide();
-							
+							thrItem.hide();
 						}
 						
 					}
@@ -150,16 +142,12 @@ public class Track {
 							"Confidence",
 							"SNP Tool");
 					selectItemFilter.setValue("Project");
-					segmentThresholdSelectItem.hide();
-					greaterTextItem.hide();
-					lessTextItem.hide();
+					thrItem.hide();
 					statusSelectItem.hide();
 				} else {
 					selectItemFilter.setValueMap("Project","Tissue","Experiments");
 					selectItemFilter.setValue("Project");
-					segmentThresholdSelectItem.hide();
-					greaterTextItem.hide();
-					lessTextItem.hide();
+					thrItem.hide();
 					statusSelectItem.hide();
 				}
 			}
@@ -274,56 +262,9 @@ public class Track {
 		add.addChild(addButton);
 		addButtonItem.setCanvas(add);
 		
-		segmentThresholdSelectItem = new SelectItem();
-		segmentThresholdSelectItem.setTitle("");
-		segmentThresholdSelectItem.setType("Select"); 
-		segmentThresholdSelectItem.setValueMap("greater than", "less than");
-		segmentThresholdSelectItem.setDefaultValue("less than");
-		segmentThresholdSelectItem.setVisible(false);
-		segmentThresholdSelectItem.addChangeHandler(new ChangeHandler(){
-
-			@Override
-			public void onChange(ChangeEvent event) {
-				if(event.getValue().equals("greater than")){
-					greaterTextItem.enable();
-					greaterTextItem.setValue("0.5");
-					lessTextItem.disable();
-					lessTextItem.setValue("");
-				}
-				if(event.getValue().equals("less than")){
-					greaterTextItem.disable();
-					greaterTextItem.setValue("");
-					lessTextItem.enable();
-					lessTextItem.setValue("-0.5");
-				}
-				if(event.getValue().equals("between")){
-					greaterTextItem.enable();
-					greaterTextItem.setValue("0.5");
-					lessTextItem.enable();
-					lessTextItem.setValue("-0.5");
-				}
-			}
-		});
-		
-		greaterTextItem = new TextItem();
-		greaterTextItem.setTitle("greater than");
-		greaterTextItem.setDisabled(true);
-		greaterTextItem.setVisible(false);
-		greaterTextItem.addKeyPressHandler(new KeyPressHandler(){
-			
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if(event.getKeyName().equals("Enter")){
-					cl.startSearch();
-				}
-			}
-		});
-		
-		lessTextItem = new TextItem();
-		lessTextItem.setTitle("less than");
-		lessTextItem.setValue("-0.5");
-		lessTextItem.setVisible(false);
-		lessTextItem.addKeyPressHandler(new KeyPressHandler(){
+		thrItem = new IntensitySpinnerItem();
+		thrItem.setVisible(false);
+		thrItem.addKeyPressHandler(new KeyPressHandler(){
 			
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
@@ -334,7 +275,7 @@ public class Track {
 		});
 		
 		statusSelectItem = new SelectItem();
-		statusSelectItem.setTitle("CNV Status");
+		statusSelectItem.setTitle("Status");
 		statusSelectItem.setMultiple(true);
 		statusSelectItem.setMultipleAppearance(MultipleAppearance.PICKLIST);
 		statusSelectItem.setValueMap("0",
@@ -355,9 +296,7 @@ public class Track {
 		});
 		
 		if(!globalTh){
-			segmentThresholdSelectItem.setVisible(true);
-			greaterTextItem.setVisible(true);
-			lessTextItem.setVisible(true);
+			thrItem.setVisible(true);
 		}
 		
 		selectItemProjects = new ProjectSelectItem(FoConstants.PROJECT_SELECT_MULTI);
@@ -424,9 +363,7 @@ public class Track {
 							selectItemFilterType,
 							selectItemFilter,
 							addButtonItem,
-							segmentThresholdSelectItem,
-							greaterTextItem,
-							lessTextItem,
+							thrItem,
 							statusSelectItem,
 							selectItemProjects,
 							removeProjectButtonItem,
@@ -491,33 +428,17 @@ public class Track {
 	public void setSelectItemTissues(TissueSelectItem selectItemTissues) {
 		this.selectItemTissues = selectItemTissues;
 	}
-
-	public SelectItem getSegmentThresholdSelectItem() {
-		return segmentThresholdSelectItem;
-	}
-
-	public void setSegmentThresholdSelectItem(SelectItem segmentThresholdSelectItem) {
-		this.segmentThresholdSelectItem = segmentThresholdSelectItem;
-	}
-
-	public TextItem getGreaterTextItem() {
-		return greaterTextItem;
-	}
-
-	public void setGreaterTextItem(TextItem greaterTextItem) {
-		this.greaterTextItem = greaterTextItem;
-	}
-
-	public TextItem getLessTextItem() {
-		return lessTextItem;
-	}
-
-	public void setLessTextItem(TextItem lessTextItem) {
-		this.lessTextItem = lessTextItem;
-	}
 	
 	public SelectItem getStatusSelectItem() {
 		return statusSelectItem;
+	}
+
+	public IntensitySpinnerItem getThrItem() {
+		return thrItem;
+	}
+
+	public void setThrItem(IntensitySpinnerItem thrItem) {
+		this.thrItem = thrItem;
 	}
 
 	public void setStatusSelectItem(SelectItem statusSelectItem) {
