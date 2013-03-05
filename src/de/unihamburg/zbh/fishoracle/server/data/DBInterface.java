@@ -382,6 +382,7 @@ public class DBInterface {
 	//TODO this should not be necessary. Fix asap!
 	//temporary helper method.
 	//remove, if not used anymore...
+	@Deprecated
 	private int[] strArrToIntArr(String[] strArr){
 		
 		int[] intArr = new int[strArr.length];
@@ -416,9 +417,7 @@ public class DBInterface {
 		String[] confidence;
 		String[] snpTool;
 		
-		Double lth = null;
-		Double uth = null;
-		
+		Double th = null;
 		String[] status;
 		
 		for(int i = 0; i < query.getConfig().getTracks().length; i++){
@@ -447,34 +446,15 @@ public class DBInterface {
 				
 				if(query.getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
 				
-					if(Double.parseDouble(query.getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]) <= 0){
-						lth = Double.parseDouble(query.getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]);
-					} else {
-						lth = 99999.0;
-					}
-				
-					if(Double.parseDouble(query.getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]) > 0){
-						uth = Double.parseDouble(query.getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]);
-					} else {
-						uth = 99999.0;
-					}
+					th = Double.parseDouble(query.getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]);
+					
 				} else {
 				
-					if(Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.SEGMENT_MEAN)[0]) <= 0){
-						lth = Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.SEGMENT_MEAN)[0]);
-					} else {
-						lth = 99999.0;
-					}
-				
-					if(Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.SEGMENT_MEAN)[0]) > 0){
-						uth = Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.SEGMENT_MEAN)[0]);
-					} else {
-						uth = 99999.0;
-					}
+					th = Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.SEGMENT_MEAN)[0]);
+					
 				}
 				adb.setSegmentsSorted(fifo, query.getConfig().getStrArray(Constants.SORTED_SEGMENTS)[0].equals("true"));
-				adb.setSegmentsLowerTh(fifo, lth);
-				adb.setSegmentsUpperTh(fifo, uth);
+				adb.setSegmentsTh(fifo, th);
 				
 			} else if (query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_STATUS)){
 			

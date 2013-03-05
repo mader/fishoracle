@@ -48,7 +48,7 @@ public class Track {
 	
 	private int trackNumber;
 
-	public Track(int trackPos, boolean globalTh, ConfigLayout c){
+	public Track(int trackPos, boolean globalTh, final boolean newSearch, ConfigLayout c){
 		
 		this.cl = c;
 		trackNumber = trackPos;
@@ -269,7 +269,7 @@ public class Track {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					cl.startSearch();
+					cl.startSearch(newSearch);
 				}
 			}
 		});
@@ -290,7 +290,7 @@ public class Track {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					cl.startSearch();
+					cl.startSearch(newSearch);
 				}
 			}
 		});
@@ -491,6 +491,64 @@ public class Track {
 
 	public void setTrackNumber(int trackNumber) {
 		this.trackNumber = trackNumber;
+	}
+
+	public RemoveButton getRemoveProjectButtonItem() {
+		return removeProjectButtonItem;
+	}
+
+	public void setRemoveProjectButtonItem(RemoveButton removeProjectButtonItem) {
+		this.removeProjectButtonItem = removeProjectButtonItem;
+	}
+
+	public RemoveButton getRemoveTissueButtonItem() {
+		return removeTissueButtonItem;
+	}
+
+	public void setRemoveTissueButtonItem(RemoveButton removeTissueButtonItem) {
+		this.removeTissueButtonItem = removeTissueButtonItem;
+	}
+
+	public RemoveButton getRemoveExperimentsButtonItem() {
+		return removeExperimentsButtonItem;
+	}
+
+	public void setRemoveExperimentsButtonItem(
+			RemoveButton removeExperimentsButtonItem) {
+		this.removeExperimentsButtonItem = removeExperimentsButtonItem;
+	}
+
+	public RemoveButton getRemoveQualityButtonItem() {
+		return removeQualityButtonItem;
+	}
+
+	public void setRemoveQualityButtonItem(RemoveButton removeQualityButtonItem) {
+		this.removeQualityButtonItem = removeQualityButtonItem;
+	}
+
+	public RemoveButton getRemoveSomaticButtonItem() {
+		return removeSomaticButtonItem;
+	}
+
+	public void setRemoveSomaticButtonItem(RemoveButton removeSomaticButtonItem) {
+		this.removeSomaticButtonItem = removeSomaticButtonItem;
+	}
+
+	public RemoveButton getRemoveConfidenceButtonItem() {
+		return removeConfidenceButtonItem;
+	}
+
+	public void setRemoveConfidenceButtonItem(
+			RemoveButton removeConfidenceButtonItem) {
+		this.removeConfidenceButtonItem = removeConfidenceButtonItem;
+	}
+
+	public RemoveButton getRemoveSNPToolButtonItem() {
+		return removeSNPToolButtonItem;
+	}
+
+	public void setRemoveSNPToolButtonItem(RemoveButton removeSNPToolButtonItem) {
+		this.removeSNPToolButtonItem = removeSNPToolButtonItem;
 	}
 }
 

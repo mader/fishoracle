@@ -64,7 +64,7 @@ public class WestPanel extends SectionStack{
 		searchSection.setID("search1");
 		searchSection.setExpanded(true);
 
-		searchContent = new ConfigLayout(mp);
+		searchContent = new ConfigLayout(mp, true);
 		searchContent.markForRedraw();
 		
 		searchSection.setItems(searchContent);

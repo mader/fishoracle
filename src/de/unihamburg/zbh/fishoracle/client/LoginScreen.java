@@ -224,7 +224,7 @@ public class LoginScreen extends VLayout{
 				
 				boolean globalTh = (Boolean)  mp.getWestPanel().getSearchContent().getGlobalThresholdCheckbox().getValue();
 				
-				mp.getWestPanel().getSearchContent().addTrack(null, globalTh);
+				mp.getWestPanel().getSearchContent().addTrack(null, globalTh, true, 1);
 				ls.animateFade(0, new AnimationCallback(){
 					@Override
 					public void execute(boolean earlyFinish) {

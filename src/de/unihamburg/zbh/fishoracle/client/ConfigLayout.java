@@ -8,6 +8,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.CheckboxItem;
@@ -65,6 +66,9 @@ public class ConfigLayout extends VLayout {
 	
 	private int numberOfTracks = 1;
 	
+	private GWTImageInfo imgInfo;
+	private Window win;
+	
 	private ArrayList<Track> tracks = new ArrayList<Track>();
 	
 	public void removeAllTracks(){
@@ -89,11 +93,57 @@ public class ConfigLayout extends VLayout {
 		return searchTextItem;
 	}
 	
-	public void addTrack(FoTrackData td, boolean globalTh){
+	public TextItem getChrTextItem() {
+		return chrTextItem;
+	}
+
+	public void setChrTextItem(TextItem chrTextItem) {
+		this.chrTextItem = chrTextItem;
+	}
+
+	public TextItem getStartTextItem() {
+		return startTextItem;
+	}
+
+	public void setStartTextItem(TextItem startTextItem) {
+		this.startTextItem = startTextItem;
+	}
+
+	public TextItem getEndTextItem() {
+		return endTextItem;
+	}
+
+	public void setEndTextItem(TextItem endTextItem) {
+		this.endTextItem = endTextItem;
+	}
+
+	public RadioGroupItem getSearchRadioGroupItem() {
+		return SearchRadioGroupItem;
+	}
+
+	public void setSearchRadioGroupItem(RadioGroupItem searchRadioGroupItem) {
+		SearchRadioGroupItem = searchRadioGroupItem;
+	}
+
+	public GWTImageInfo getImgInfo() {
+		return imgInfo;
+	}
+
+	public void setImgInfo(GWTImageInfo imgInfo) {
+		this.imgInfo = imgInfo;
+	}
+	
+	public Window getWin() {
+		return win;
+	}
+
+	public void setWin(Window win) {
+		this.win = win;
+	}
+
+	public void addTrack(FoTrackData td, boolean globalTh, final boolean newSearch, int trackPos){
 		
-		int trackPos = Integer.parseInt(trackPosTextItem.getValue().toString());
-		
-		Track t = new Track(trackPos, globalTh, this);
+		Track t = new Track(trackPos, globalTh, newSearch, this);
 		
 		if(td != null){
 			
@@ -133,37 +183,44 @@ public class ConfigLayout extends VLayout {
 			if((pIds = td.getStrArray(Constants.PROJECT_IDS)) != null){
 				t.getSelectItemProjects().setValues(pIds);
 				t.getSelectItemProjects().setVisible(true);
+				t.getRemoveProjectButtonItem().setVisible(true);
 			}
 			
 			if((tIds = td.getStrArray(Constants.TISSUE_IDS)) != null){
 				t.getSelectItemTissues().setValues(tIds);
 				t.getSelectItemTissues().setVisible(true);
+				t.getRemoveTissueButtonItem().setVisible(true);
 			}
 		 
 			if((eIds = td.getStrArray(Constants.EXPERIMENT_IDS)) != null){
 				t.getSelectItemExperiments().setValues(eIds);
 				t.getSelectItemExperiments().setVisible(true);
+				t.getRemoveExperimentsButtonItem().setVisible(true);
 			}
 		 
 			if(td.getStrArray(Constants.QUALTY_SCORE) != null){
 				qualityScore = Double.parseDouble(td.getStrArray(Constants.QUALTY_SCORE)[0]);
 				t.getTextItemQuality().setValue(qualityScore);
 				t.getTextItemQuality().setVisible(true);
+				t.getRemoveQualityButtonItem().setVisible(true);
 			}
 			
 			if((somatic = td.getStrArray(Constants.SOMATIC)) != null){
 				t.getSelectItemSomatic().setValues(somatic);
 				t.getSelectItemSomatic().setVisible(true);
+				t.getRemoveSomaticButtonItem().setVisible(true);
 			}
 			
 			if((confidence = td.getStrArray(Constants.CONFIDENCE)) != null){
 				t.getSelectItemConfidence().setValues(confidence);
 				t.getSelectItemConfidence().setVisible(true);
+				t.getRemoveConfidenceButtonItem().setVisible(true);
 			}
 			
 			if((snpTool = td.getStrArray(Constants.SNP_TOOL)) != null){
 				t.getSelectItemSNPTool().setValues(snpTool);
 				t.getSelectItemConfidence().setVisible(true);
+				t.getRemoveSNPToolButtonItem().setVisible(true);
 			}
 		}
 		
@@ -179,7 +236,7 @@ public class ConfigLayout extends VLayout {
 		this.redraw();
 	}
 	
-	public ConfigLayout(MainPanel mainPanel){
+	public ConfigLayout(MainPanel mainPanel, final boolean newSearch){
 		
 		this.self = this;
 		this.mp = mainPanel;
@@ -193,10 +250,13 @@ public class ConfigLayout extends VLayout {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					startSearch();
+					startSearch(newSearch);
 				}
 			}
 		});
+		if(!newSearch){
+			searchTextItem.setDisabled(true);
+		}
 		
 		chrTextItem = new TextItem();
 		chrTextItem.setTitle("Chromosome");
@@ -206,10 +266,13 @@ public class ConfigLayout extends VLayout {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					startSearch();
+					startSearch(newSearch);
 				}
 			}
 		});
+		if(!newSearch){
+			chrTextItem.setDisabled(true);
+		}
 		
 		startTextItem = new TextItem();  
 		startTextItem.setTitle("Start");
@@ -219,10 +282,13 @@ public class ConfigLayout extends VLayout {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					startSearch();
+					startSearch(newSearch);
 				}
 			}
 		});
+		if(!newSearch){
+			startTextItem.setDisabled(true);
+		}
 
 		endTextItem = new TextItem();  
 		endTextItem.setTitle("End");
@@ -232,10 +298,13 @@ public class ConfigLayout extends VLayout {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					startSearch();
+					startSearch(newSearch);
 				}
 			}
 		});
+		if(!newSearch){
+			endTextItem.setDisabled(true);
+		}
 		
 		SearchRadioGroupItem = new RadioGroupItem();  
 		SearchRadioGroupItem.setTitle("Type");  
@@ -258,6 +327,9 @@ public class ConfigLayout extends VLayout {
 				}
 			}
 		});
+		if(!newSearch){
+			SearchRadioGroupItem.setDisabled(true);
+		}
 		
 		ensemblSelectItem = new SelectItem();
 		ensemblSelectItem.setTitle("Ensembl Database");
@@ -302,7 +374,7 @@ public class ConfigLayout extends VLayout {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					startSearch();
+					startSearch(newSearch);
 				}
 			}
 		});
@@ -322,7 +394,7 @@ public class ConfigLayout extends VLayout {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					startSearch();
+					startSearch(newSearch);
 				}
 			}
 		});
@@ -335,7 +407,7 @@ public class ConfigLayout extends VLayout {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					startSearch();
+					startSearch(newSearch);
 				}
 			}
 		});
@@ -348,7 +420,7 @@ public class ConfigLayout extends VLayout {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					startSearch();
+					startSearch(newSearch);
 				}
 			}
 		});
@@ -396,7 +468,7 @@ public class ConfigLayout extends VLayout {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getKeyName().equals("Enter")){
-					startSearch();
+					startSearch(newSearch);
 				}
 			}
 		});
@@ -451,12 +523,19 @@ public class ConfigLayout extends VLayout {
 		saveConfigTextItem.setEndRow(true);
 		
 		ButtonItem searchButton = new ButtonItem("Search");
+		if(newSearch){
+			searchButton.setTitle("Search");
+		} else {
+			searchButton.setTitle("Refresh");
+		}
+		searchButton.setStartRow(false);
+		searchButton.setEndRow(false);
 		searchButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				startSearch();
+				startSearch(newSearch);
 			}
 		});
 		
@@ -471,7 +550,7 @@ public class ConfigLayout extends VLayout {
 				
 					boolean globalTh = (Boolean)  globalThresholdCheckbox.getValue();
 				
-					addTrack(null, globalTh);
+					addTrack(null, globalTh, newSearch, Integer.parseInt(trackPosTextItem.getValue().toString()));
 			}
 		});
 		
@@ -553,6 +632,42 @@ public class ConfigLayout extends VLayout {
 		}
 		
 		return strArr;
+	}
+	
+	public void loadConfig(FoConfigData cd, boolean newSearch){
+		
+		ensemblSelectItem.setValue(cd.getStrArray(Constants.ENSEMBL_ID)[0]);
+		
+		biotypeSelectItem.setValues(cd.getStrArray(Constants.ENSEMBL_BIOTYPES));
+		
+		boolean globalTh =  Boolean.parseBoolean(cd.getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0]);
+		
+		if(globalTh){
+			
+			String segMean = cd.getStrArray(Constants.SEGMENT_MEAN)[0];
+			
+			thrItem.show();
+			thrItem.setValue(segMean);
+		
+			statusSelectItem.setValues(cd.getStrArray(Constants.CNV_STATI));
+			statusSelectItem.show();
+
+		} else {
+			thrItem.hide();
+			statusSelectItem.hide();
+		}
+		
+		sortedCheckbox.setValue(Boolean.parseBoolean(cd.getStrArray(Constants.SORTED_SEGMENTS)[0]));
+		showCNVCaptionsCheckbox.setValue(Boolean.parseBoolean(cd.getStrArray(Constants.SHOW_SEGMENT_CAPTION)[0]));
+		globalThresholdCheckbox.setValue(Boolean.parseBoolean(cd.getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0]));
+		
+		removeAllTracks();
+		
+		FoTrackData[] tds = cd.getTracks();
+		
+		for(int i = 0; i < tds.length; i++){
+			addTrack(tds[i], globalTh, newSearch, tds[i].getTrackNumber());
+		}
 	}
 	
 	public FoConfigData buildFoConfig(){
@@ -671,7 +786,7 @@ public class ConfigLayout extends VLayout {
 		return config;
 	}
 	
-	public void startSearch(){
+	public void startSearch(boolean newSearch){
 		
 		searchTextItem.focusInItem(); //Workaround to force an update of the spinner items display value.
 		
@@ -737,7 +852,13 @@ public class ConfigLayout extends VLayout {
 					SC.say(e.getMessage());
 				}
 			
-				search(newQuery);
+				if(newSearch){
+					search(newQuery);
+				} else {
+					imgInfo.setQuery(newQuery);
+					win.destroy();
+					mp.getCenterPanel().refreshRange();
+				}
 			}
 		}
 	}
@@ -800,40 +921,8 @@ public class ConfigLayout extends VLayout {
 		final AsyncCallback<FoConfigData> callback = new AsyncCallback<FoConfigData>(){
 			
 			public void onSuccess(FoConfigData result){
-				//TODO Outsource to method ion Config Layout.
 				
-				ensemblSelectItem.setValue(result.getStrArray(Constants.ENSEMBL_ID)[0]);
-				
-				biotypeSelectItem.setValues(result.getStrArray(Constants.ENSEMBL_BIOTYPES));
-				
-				boolean globalTh =  Boolean.parseBoolean(result.getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0]);
-				
-				if(globalTh){
-					
-					String segMean = result.getStrArray(Constants.SEGMENT_MEAN)[0];
-					
-					thrItem.show();
-					thrItem.setValue(segMean);
-				
-					statusSelectItem.setValues(result.getStrArray(Constants.CNV_STATI));
-					statusSelectItem.show();
-
-				} else {
-					thrItem.hide();
-					statusSelectItem.hide();
-				}
-				
-				sortedCheckbox.setValue(Boolean.parseBoolean(result.getStrArray(Constants.SORTED_SEGMENTS)[0]));
-				showCNVCaptionsCheckbox.setValue(Boolean.parseBoolean(result.getStrArray(Constants.SHOW_SEGMENT_CAPTION)[0]));
-				globalThresholdCheckbox.setValue(Boolean.parseBoolean(result.getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0]));
-				
-				removeAllTracks();
-				
-				FoTrackData[] tds = result.getTracks();
-				
-				for(int i = 0; i < tds.length; i++){
-					addTrack(tds[i], globalTh);
-				}
+				loadConfig(result, true);
 			}
 			
 			public void onFailure(Throwable caught){

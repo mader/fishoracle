@@ -173,9 +173,6 @@ public class CenterPanel extends VLayout {
 	private TextItem chrTextItem;
 	private TextItem startTextItem;
 	private TextItem endTextItem;
-	private SelectItem trackItem;
-	private TextItem lowerThTextItem;
-	private TextItem upperThTextItem;
 	
 	private ListGrid fileGrid;
 	private RadioGroupItem createStudyItem;
@@ -247,25 +244,22 @@ public class CenterPanel extends VLayout {
 		return selectButton;
 	}
 	
-	private void refreshRange(){
+	public void refreshRange(){
+		
+		GWTImageInfo imgInfo;
+		
 		ImgCanvas imgLayer = (ImgCanvas) cp.getCenterTabSet().getSelectedTab().getPane().getChildren()[1];
-		GWTImageInfo imgInfo = imgLayer.getImageInfo();
+		imgInfo = imgLayer.getImageInfo();
 		
 		String newChr;
 	    int newStart;
 	    int newEnd;
-	    String newLowerTh;
-	    String newUpperTh;
-	    
+	    //TODO
 		newChr = chrTextItem.getDisplayValue();
 	    
 	    newStart = Integer.parseInt(startTextItem.getDisplayValue());
 	    
 	    newEnd = Integer.parseInt(endTextItem.getDisplayValue());
-	    
-	    newLowerTh = lowerThTextItem.getDisplayValue();
-	    
-	    newUpperTh = upperThTextItem.getDisplayValue();
 	    
 	    if(newStart >= newEnd || newEnd - newStart <= 10){
 	    	
@@ -278,30 +272,6 @@ public class CenterPanel extends VLayout {
 	    	imgInfo.setStart(newStart);
 	    
 	    	imgInfo.setEnd(newEnd);
-
-	    	try {
-	    		if(((String) trackItem.getValue()).equals("Global threshold")){
-	    			
-	    			if(!newLowerTh.equals("")){
-	    				imgInfo.getQuery().getConfig().addStrArray(Constants.SEGMENT_MEAN, new String[]{newLowerTh});
-	    			}
-
-	    			if(!newUpperTh.equals("")){
-	    				imgInfo.getQuery().getConfig().addStrArray(Constants.SEGMENT_MEAN, new String[]{newLowerTh});
-	    			}
-	    			
-	    		} else {
-	    			int trackNumber = Integer.parseInt((String) trackItem.getValue());
-	    			if(!newLowerTh.equals("")){
-	    				imgInfo.getQuery().getConfig().getTracks()[trackNumber - 1].addStrArray(Constants.SEGMENT_MEAN, new String[]{newLowerTh});
-	    			}
-	    			if(!newUpperTh.equals("")){
-	    				imgInfo.getQuery().getConfig().getTracks()[trackNumber - 1].addStrArray(Constants.SEGMENT_MEAN, new String[]{newLowerTh});
-	    			}
-	    		}
-			} catch (Exception e) {
-				SC.say(e.getMessage());
-			}
 	    	
 	    	cp.imageRedraw(imgInfo);
 	    }
@@ -615,105 +585,47 @@ public class CenterPanel extends VLayout {
 		
 		presentationToolStrip.addSeparator();
 		
-		trackItem = new SelectItem();
-		trackItem.setShowTitle(false);
-		trackItem.setTooltip("Select the track for which the intensity" +
-							" thresholds should be displayed.");
-		trackItem.setWidth(80);
+		/*---------------------------*/
 		
-		LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
-		
-		if(imgInfo.getQuery().getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
-			trackItem.setValueMap("Global threshold");
-		} else {
-		
-			for(int i=0; i< imgInfo.getQuery().getConfig().getTracks().length; i++){
-				valueMap.put(new Integer(imgInfo.getQuery().getConfig().getTracks()[i].getTrackNumber()).toString(),
-								imgInfo.getQuery().getConfig().getTracks()[i].getTrackName());
-			}
-			trackItem.setValueMap(valueMap);
-		}
-		
-		trackItem.setDefaultToFirstOption(true);
-		trackItem.addChangedHandler(new ChangedHandler(){
-
+		//TODO
+		ToolStripButton configButton = new ToolStripButton();
+		configButton.setTitle("Configure");
+		configButton.addClickHandler(new ClickHandler(){
 			@Override
-			public void onChanged(ChangedEvent event) {
+			public void onClick(ClickEvent event) {
 				
 				ImgCanvas imgLayer = (ImgCanvas) cp.getCenterTabSet().getSelectedTab().getPane().getChildren()[1];
 				GWTImageInfo imgInfo = imgLayer.getImageInfo();
 				
-				String th; 
-				
-				th = imgInfo.getQuery().getConfig().getTracks()[Integer.parseInt((String) event.getItem().getValue()) - 1].getStrArray(Constants.SEGMENT_MEAN)[0];
-				
-				if(Integer.parseInt(th) < 0 ){
-					lowerThTextItem.setValue(th);
-					upperThTextItem.setValue("");
+				Window w = new Window();
+				w.setTitle("Configuration");
+				w.setAutoCenter(true);
+				w.setAutoSize(true);
+				w.setIsModal(true);
+				w.setShowModalMask(true);
+				ConfigLayout cl = new ConfigLayout(mp, false);
+				cl.setImgInfo(imgInfo);
+				cl.setWin(w);
+				cl.loadConfig(imgInfo.getQuery().getConfig(), false);
+				cl.getSearchTextItem().setValue(imgInfo.getQuery().getQueryString());
+				cl.getSearchRadioGroupItem().setValue(imgInfo.getQuery().getSearchType());
+				if(imgInfo.getQuery().getSearchType().equals("Region")){
+					cl.getChrTextItem().setValue(chrTextItem.getDisplayValue());
+					cl.getStartTextItem().setValue(startTextItem.getDisplayValue());
+					cl.getEndTextItem().setValue(endTextItem.getDisplayValue());
+					cl.getSearchTextItem().hide();
+					cl.getChrTextItem().show();
+					cl.getStartTextItem().show();
+					cl.getEndTextItem().show();
 				}
-				if(Integer.parseInt(th) > 0 ){
-					lowerThTextItem.setValue("");
-					upperThTextItem.setValue(th);
-					
-				}
-				
-				lowerThTextItem.redraw();
-				upperThTextItem.redraw();
+				w.addItem(cl);
+				w.show();
 			}
 		});
 		
-		presentationToolStrip.addFormItem(trackItem);
+		presentationToolStrip.addButton(configButton);
 		
-		lowerThTextItem = new TextItem();
-		lowerThTextItem.setTooltip("Set the lower threshold for the selcted track.");
-		lowerThTextItem.setTitle("Less Than");
-		lowerThTextItem.setWrapTitle(false);
-		lowerThTextItem.setWidth(40);
-		
-		if(imgInfo.getQuery().getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
-			if(Double.parseDouble(imgInfo.getQuery().getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]) <= 0){
-				lowerThTextItem.setValue(imgInfo.getQuery().getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]);
-			}
-		} else {
-			if(Double.parseDouble(imgInfo.getQuery().getConfig().getTracks()[Integer.parseInt((String)trackItem.getValue()) - 1].getStrArray(Constants.SEGMENT_MEAN)[0]) <= 0){
-				lowerThTextItem.setValue(imgInfo.getQuery().getConfig().getTracks()[Integer.parseInt((String)trackItem.getValue()) - 1].getStrArray(Constants.SEGMENT_MEAN)[0]);
-			}
-		}
-		lowerThTextItem.addKeyPressHandler(new KeyPressHandler(){
-
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if(event.getKeyName().equals("Enter")){
-					refreshRange();
-				}
-			}
-		});
-		presentationToolStrip.addFormItem(lowerThTextItem);
-		
-		upperThTextItem = new TextItem();
-		upperThTextItem.setTooltip("Set the upper threshold for the selected track.");
-		upperThTextItem.setTitle("Greater Than");
-		upperThTextItem.setWrapTitle(false);
-		upperThTextItem.setWidth(40);
-		if(imgInfo.getQuery().getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
-			if(Double.parseDouble(imgInfo.getQuery().getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]) > 0){
-				upperThTextItem.setValue(imgInfo.getQuery().getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]);
-			}
-		} else {
-			if(Double.parseDouble(imgInfo.getQuery().getConfig().getTracks()[Integer.parseInt((String)trackItem.getValue()) - 1].getStrArray(Constants.SEGMENT_MEAN)[0]) > 0){
-				upperThTextItem.setValue(imgInfo.getQuery().getConfig().getTracks()[Integer.parseInt((String) trackItem.getValue()) - 1].getStrArray(Constants.SEGMENT_MEAN)[0]);
-			}
-		}
-		upperThTextItem.addKeyPressHandler(new KeyPressHandler(){
-
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if(event.getKeyName().equals("Enter")){
-					refreshRange();
-				}
-			}
-		});
-		presentationToolStrip.addFormItem(upperThTextItem);
+		/*-----------------------------------*/
 		
 		ToolStripButton refreshButton = new ToolStripButton();
 		refreshButton.setTooltip("Refresh image");
