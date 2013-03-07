@@ -300,7 +300,8 @@ public class CenterPanel extends VLayout {
         			for(rmc=0; rmc < imgInfo.getRecmapinfo().size(); rmc++){
         				
         				if((imgInfo.getRecmapinfo().get(rmc).getSoutheastX() - imgInfo.getRecmapinfo().get(rmc).getNorthwestX()) < 3 
-        						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals("gene")){
+        						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals("gene")
+        						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals("translocation")){
         					continue;
         				}
         				
