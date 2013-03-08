@@ -119,7 +119,6 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
-import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 
 public class CenterPanel extends VLayout {
 
@@ -254,7 +253,7 @@ public class CenterPanel extends VLayout {
 		String newChr;
 	    int newStart;
 	    int newEnd;
-	    //TODO
+	    
 		newChr = chrTextItem.getDisplayValue();
 	    
 	    newStart = Integer.parseInt(startTextItem.getDisplayValue());
@@ -586,9 +585,6 @@ public class CenterPanel extends VLayout {
 		
 		presentationToolStrip.addSeparator();
 		
-		/*---------------------------*/
-		
-		//TODO
 		ToolStripButton configButton = new ToolStripButton();
 		configButton.setTitle("Configure");
 		configButton.addClickHandler(new ClickHandler(){
@@ -625,8 +621,6 @@ public class CenterPanel extends VLayout {
 		});
 		
 		presentationToolStrip.addButton(configButton);
-		
-		/*-----------------------------------*/
 		
 		ToolStripButton refreshButton = new ToolStripButton();
 		refreshButton.setTooltip("Refresh image");

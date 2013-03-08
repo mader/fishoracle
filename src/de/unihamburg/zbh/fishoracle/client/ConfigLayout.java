@@ -222,6 +222,25 @@ public class ConfigLayout extends VLayout {
 				t.getSelectItemConfidence().setVisible(true);
 				t.getRemoveSNPToolButtonItem().setVisible(true);
 			}
+			
+			int red;
+			int green;
+			int blue;
+			int alpha;
+			
+			red = Integer.parseInt(td.getStrArray(Constants.COLOR_RED)[0]);
+			green = Integer.parseInt(td.getStrArray(Constants.COLOR_GREEN)[0]);
+			blue = Integer.parseInt(td.getStrArray(Constants.COLOR_BLUE)[0]);
+			alpha = Integer.parseInt(td.getStrArray(Constants.COLOR_ALPHA)[0]);
+			
+			t.getColorPicker().setRed(red);
+			t.getColorPicker().setGreen(green);
+			t.getColorPicker().setBlue(blue);
+			t.getColorPicker().setAlpha(alpha);
+			
+			t.getColorPicker().updateButtonColor();
+			t.getColorPicker().setCustom(Boolean.parseBoolean(td.getStrArray(Constants.COLOR_CUSTOM)[0]));
+			
 		}
 		
 		tracks.add(trackPos - 1, t);
@@ -672,21 +691,14 @@ public class ConfigLayout extends VLayout {
 	
 	public FoConfigData buildFoConfig(){
 			
-				String globalLessThenThr;
-				String globalGreaterThenThr;
+				String globalThr = null;
 				int[] globalCnvStati;
 				
 				/* Get global options. */
 				if(globalThresholdCheckbox.getValueAsBoolean()){
-					if(Double.parseDouble(thrItem.getDisplayValue()) > 0){
-						globalLessThenThr = null;
-					} else {
-						globalLessThenThr = thrItem.getDisplayValue();;
-					}
-					if(Double.parseDouble(thrItem.getDisplayValue()) < 0){
-						globalGreaterThenThr = null;
-					} else {
-						globalGreaterThenThr = thrItem.getDisplayValue();
+					
+					if(thrItem.isVisible()){
+						globalThr = thrItem.getDisplayValue();
 					}
 					
 					if(statusSelectItem.getValues().length == 0){
@@ -695,8 +707,7 @@ public class ConfigLayout extends VLayout {
 						globalCnvStati = strArrToIntArr(statusSelectItem.getValues());
 					}
 				} else {
-					globalLessThenThr = null;
-					globalGreaterThenThr = null;
+					globalThr = null;
 					globalCnvStati = new int[0];
 				}
 				
@@ -758,6 +769,67 @@ public class ConfigLayout extends VLayout {
 							trackData[i].addStrArray(Constants.SNP_TOOL, strArr);
 						}
 					}
+					
+					FoColorPickerItem cp  = tracks.get(i).getColorPicker();
+					
+					trackData[i].addStrArray(Constants.COLOR_CUSTOM, new String[]{new Boolean(cp.isCustom()).toString()});
+					
+					if(cp.isCustom()){
+						String[] red = new String[]{new Integer(cp.getRed()).toString()};
+						trackData[i].addStrArray(Constants.COLOR_RED, red);
+						
+						String[] green = new String[]{new Integer(cp.getGreen()).toString()};
+						trackData[i].addStrArray(Constants.COLOR_GREEN, green);
+					
+						String[] blue = new String[]{new Integer(cp.getBlue()).toString()};
+						trackData[i].addStrArray(Constants.COLOR_BLUE, blue);
+						
+						String[] alpha = new String[]{new Integer(cp.getAlpha()).toString()};
+						trackData[i].addStrArray(Constants.COLOR_ALPHA, alpha);
+						
+					} else {
+						
+						if(trackData[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_INTENSITY)){
+							
+							double thr;
+							
+							if(!globalThresholdCheckbox.getValueAsBoolean()){
+								thr = Double.parseDouble(trackData[i].getStrArray(Constants.SEGMENT_MEAN)[0]);
+							} else {
+								thr = Double.parseDouble(globalThr);
+							}
+							
+							if(thr <= 0){
+								trackData[i].addStrArray(Constants.COLOR_RED, new String[]{"0"});
+								trackData[i].addStrArray(Constants.COLOR_GREEN, new String[]{"0"});
+								trackData[i].addStrArray(Constants.COLOR_BLUE, new String[]{"255"});
+								trackData[i].addStrArray(Constants.COLOR_ALPHA, new String[]{"70"});
+							} else {
+								trackData[i].addStrArray(Constants.COLOR_RED, new String[]{"255"});
+								trackData[i].addStrArray(Constants.COLOR_GREEN, new String[]{"0"});
+								trackData[i].addStrArray(Constants.COLOR_BLUE, new String[]{"0"});
+								trackData[i].addStrArray(Constants.COLOR_ALPHA, new String[]{"70"});
+							}
+						}
+						else if(trackData[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_STATUS)){
+							trackData[i].addStrArray(Constants.COLOR_RED, new String[]{"0"});
+							trackData[i].addStrArray(Constants.COLOR_GREEN, new String[]{"0"});
+							trackData[i].addStrArray(Constants.COLOR_BLUE, new String[]{"128"});
+							trackData[i].addStrArray(Constants.COLOR_ALPHA, new String[]{"70"});
+						}
+						else if(trackData[i].getStrArray(Constants.DATA_TYPE)[0].equals("Mutations")){
+							trackData[i].addStrArray(Constants.COLOR_RED, new String[]{"0"});
+							trackData[i].addStrArray(Constants.COLOR_GREEN, new String[]{"0"});
+							trackData[i].addStrArray(Constants.COLOR_BLUE, new String[]{"0"});
+							trackData[i].addStrArray(Constants.COLOR_ALPHA, new String[]{"0"});
+						}
+						else {
+							trackData[i].addStrArray(Constants.COLOR_RED, new String[]{"128"});
+							trackData[i].addStrArray(Constants.COLOR_GREEN, new String[]{"128"});
+							trackData[i].addStrArray(Constants.COLOR_BLUE, new String[]{"128"});
+							trackData[i].addStrArray(Constants.COLOR_ALPHA, new String[]{"100"});
+						}
+					}
 				}
 			
 				/*create and set config object*/
@@ -765,11 +837,8 @@ public class ConfigLayout extends VLayout {
 				
 				config.setTracks(trackData);
 				
-				if(globalLessThenThr != null){
-					config.addStrArray(Constants.SEGMENT_MEAN, new String[]{globalLessThenThr});
-				}
-				if(globalGreaterThenThr != null){
-					config.addStrArray(Constants.SEGMENT_MEAN, new String[]{globalGreaterThenThr});
+				if(globalThr != null){
+					config.addStrArray(Constants.SEGMENT_MEAN, new String[]{globalThr});
 				}
 				if(globalCnvStati.length != 0){
 					config.addStrArray(Constants.CNV_STATI, intArrToStrArr(globalCnvStati));

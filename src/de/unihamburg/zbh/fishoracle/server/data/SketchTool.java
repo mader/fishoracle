@@ -94,6 +94,16 @@ public class SketchTool {
 		
 		for(int l=0; l < query.getConfig().getTracks().length; l++ ){
 		
+			double red;
+			double green;
+			double blue;
+			double alpha;
+			
+			red = Double.parseDouble(query.getConfig().getTracks()[l].getStrArray(Constants.COLOR_RED)[0])/255.0;
+			green = Double.parseDouble(query.getConfig().getTracks()[l].getStrArray(Constants.COLOR_GREEN)[0])/255.0;
+			blue = Double.parseDouble(query.getConfig().getTracks()[l].getStrArray(Constants.COLOR_BLUE)[0])/255.0;
+			alpha = Double.parseDouble(query.getConfig().getTracks()[l].getStrArray(Constants.COLOR_ALPHA)[0])/100.0;
+			
 			if(query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_INTENSITY) || 
 					query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_STATUS)){
 				if(query.getConfig().getStrArray(Constants.SORTED_SEGMENTS)[0].equals("true")){
@@ -102,12 +112,12 @@ public class SketchTool {
 					style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
 			
 					style.set_bool(query.getConfig().getTracks()[l].getTrackName() + "_segments", "collapse_to_parent", true);
-					style.set_color(query.getConfig().getTracks()[l].getTrackName() + "_segments", "fill", new Color(0.0,0.0,1.0,0.7));
+					style.set_color(query.getConfig().getTracks()[l].getTrackName() + "_segments", "fill", new Color(red,green,blue,alpha));
 				
 				} else {
 				
-					style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,1.0,0.7));
-					style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,1.0,0.7));
+					style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(red,green,blue,alpha));
+					style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(red,green,blue,alpha));
 				
 				}
 				if(!query.getConfig().getStrArray(Constants.SHOW_SEGMENT_CAPTION)[0].equals("true")){
@@ -116,20 +126,20 @@ public class SketchTool {
 				
 			} else if(query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals("Mutations")){
 				
-				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
-				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
+				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(red,green,blue,1.0));
+				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(red,green,blue,alpha));
 				
 				style.set_bool(query.getConfig().getTracks()[l].getTrackName() + "_mutations", "collapse_to_parent", true);
 				style.set_color(query.getConfig().getTracks()[l].getTrackName() + "_mutations", "stroke", new Color(1.0,0.0,0.0,1.0));
 			} else if(query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals("Translocations")){
 				
-				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
-				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
+				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(red,green,blue,alpha));
+				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(red,green,blue,alpha));
 			} else {
 				
-				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,1.0));
-				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(0.0,0.0,0.0,0.0));
-			}	
+				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(red,green,blue,alpha));
+				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(red,green,blue,alpha));
+			}
 		}
 		
 		range = new Range(loc.getStart(), loc.getEnd());

@@ -46,6 +46,8 @@ public class Track {
 	private SelectItem selectItemSNPTool;
 	private RemoveButton removeSNPToolButtonItem;
 	
+	private FoColorPickerItem colorPicker;
+	
 	private int trackNumber;
 
 	public Track(int trackPos, boolean globalTh, final boolean newSearch, ConfigLayout c){
@@ -358,6 +360,9 @@ public class Track {
 		selectItemSNPTool.setVisible(false);
 		removeSNPToolButtonItem = new RemoveButton(selectItemSNPTool, addButtonItem, selectItemFilter, "SNP Tool");
 		
+		colorPicker = new FoColorPickerItem();
+		colorPicker.setTitle("Color");
+		
 		trackForm.setItems(trackNameItem,
 							removeTrack,
 							selectItemFilterType,
@@ -378,7 +383,8 @@ public class Track {
 							selectItemConfidence,
 							removeConfidenceButtonItem,
 							selectItemSNPTool,
-							removeSNPToolButtonItem);
+							removeSNPToolButtonItem,
+							colorPicker);
 	}
 	
 	public DynamicForm getTrackForm() {
@@ -549,6 +555,14 @@ public class Track {
 
 	public void setRemoveSNPToolButtonItem(RemoveButton removeSNPToolButtonItem) {
 		this.removeSNPToolButtonItem = removeSNPToolButtonItem;
+	}
+
+	public FoColorPickerItem getColorPicker() {
+		return colorPicker;
+	}
+
+	public void setColorPicker(FoColorPickerItem colorPicker) {
+		this.colorPicker = colorPicker;
 	}
 }
 
