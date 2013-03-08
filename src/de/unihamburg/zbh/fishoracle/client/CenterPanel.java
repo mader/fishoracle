@@ -639,20 +639,10 @@ public class CenterPanel extends VLayout {
 		/*menu for more actions*/
 		Menu exportMenu = new Menu();
 		
-		MenuItem excelExportItem = new MenuItem("Export image as excel document");
 		MenuItem pdfExportItem = new MenuItem("Export image as pdf document");
 		MenuItem psExportItem = new MenuItem("Export image as ps document");
 		MenuItem svgExportItem = new MenuItem("Export image as svg document");
 		MenuItem pngExportItem = new MenuItem("Export image as png document");
-		
-		excelExportItem.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler(){
-
-			public void onClick(MenuItemClickEvent event) {
-				//GWTImageInfo imgInfo = ((ImgCanvas) cp.getCenterTabSet().getSelectedTab().getPane().getChildren()[1]).getImageInfo();
-				//cp.exportExcel(imgInfo);
-				SC.say("This function is currently not supported.");
-			}
-		});
 		
 		pdfExportItem.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler(){
 
@@ -707,7 +697,7 @@ public class CenterPanel extends VLayout {
 			}
 		});
 		
-		exportMenu.setItems(excelExportItem, pdfExportItem, psExportItem, svgExportItem, pngExportItem);
+		exportMenu.setItems(pdfExportItem, psExportItem, svgExportItem, pngExportItem);
 		
 		final ImgCanvas image = createImageLayer(imgInfo);
 		
@@ -3267,44 +3257,6 @@ public class CenterPanel extends VLayout {
 			}
 		};
 		req.redrawImage(imgInfo, callback);
-	}
-
-	public void exportExcel(GWTImageInfo imgInfo){
-		
-		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<String> callback = new AsyncCallback<String>(){
-			public void onSuccess(String result){
-				
-				Window window = new Window();
-				window.setTitle("export image as Excel document");
-				window.setAutoCenter(true);
-				window.setWidth(160);
-				window.setHeight(100);
-				
-				DynamicForm downloadForm = new DynamicForm();
-				downloadForm.setPadding(25);
-				
-				LinkItem link = new LinkItem();
-				link.setValue(result);
-				link.setLinkTitle("download");
-				link.setAlign(Alignment.CENTER);
-				link.setShowTitle(false);
-				
-				downloadForm.setItems(link);
-				
-				window.addItem(downloadForm);
-				
-				window.show();
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say("Nothing found!");
-			}
-		};
-		req.exportData(imgInfo, callback);
 	}
 	
 	public void exportImage(GWTImageInfo imgInfo){
