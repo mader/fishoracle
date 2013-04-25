@@ -27,6 +27,7 @@ public class RecMapInfo implements IsSerializable,Cloneable {
 	private double southeastY;
 	private String type;
 	private String elementName;
+	private int trackNumber;
 	
 	public RecMapInfo() {
 		
@@ -105,4 +106,11 @@ public class RecMapInfo implements IsSerializable,Cloneable {
 		this.elementName = elementName;
 	}
 
+	public int getTrackNumber() {
+		return trackNumber;
+	}
+
+	public void setTrackNumber(int trackNumber) {
+		this.trackNumber = trackNumber;
+	}
 }

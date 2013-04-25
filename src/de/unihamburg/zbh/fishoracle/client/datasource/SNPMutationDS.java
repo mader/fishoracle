@@ -13,9 +13,13 @@ import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
+import de.unihamburg.zbh.fishoracle.client.data.FoConfig;
+import de.unihamburg.zbh.fishoracle.client.data.FoConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoSNPMutation;
+import de.unihamburg.zbh.fishoracle.client.data.FoTrackData;
 import de.unihamburg.zbh.fishoracle.client.rpc.MutationService;
 import de.unihamburg.zbh.fishoracle.client.rpc.MutationServiceAsync;
+import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 
 public class SNPMutationDS extends FoDataSource {
 
@@ -108,11 +112,36 @@ public class SNPMutationDS extends FoDataSource {
 		};
 		
 		int studyId = 0;
+		String geneId;
+		String ensemblId;
 		
 		Criteria c = request.getCriteria();
-		studyId = Integer.parseInt(c.getAttribute("studyId"));
 		
-		req.fetch(studyId, callback);
+		if(request.getOperationId().equals(OperationId.MUTATION_FETCH_FOR_ATTRIBS)){
+			
+			geneId = c.getAttribute("geneId");
+			ensemblId = c.getAttribute("ensemblId");
+			
+			FoTrackData conf = new FoTrackData(); 
+			
+			conf.setTrackNumber(Integer.parseInt(c.getAttribute("trackId")));
+			conf.addStrArray(Constants.QUALTY_SCORE, c.getAttributeAsStringArray(Constants.QUALTY_SCORE));
+			conf.addStrArray(Constants.SOMATIC, c.getAttributeAsStringArray(Constants.SOMATIC));
+			conf.addStrArray(Constants.CONFIDENCE, c.getAttributeAsStringArray(Constants.CONFIDENCE));
+			conf.addStrArray(Constants.SNP_TOOL, c.getAttributeAsStringArray(Constants.SNP_TOOL));
+			conf.addStrArray(Constants.PROJECT_IDS, c.getAttributeAsStringArray(Constants.PROJECT_IDS));
+			conf.addStrArray(Constants.TISSUE_IDS, c.getAttributeAsStringArray(Constants.TISSUE_IDS));
+			conf.addStrArray(Constants.EXPERIMENT_IDS, c.getAttributeAsStringArray(Constants.EXPERIMENT_IDS));
+			
+			//FoConfigData cd = (FoConfigData) c.getAttributeAsObject("config");
+			
+			req.fetchForConfig(geneId, ensemblId, conf, callback);
+		}
+		
+		if(request.getOperationId().equals(OperationId.MUTATION_FETCH_FOR_STUDY_ID)){
+			studyId = Integer.parseInt(c.getAttribute("studyId"));
+			req.fetch(studyId, callback);
+		}
 		
 	}
 

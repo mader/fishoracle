@@ -197,7 +197,7 @@ public class SketchTool {
 		
 		layout.sketch(canvas);
 		
-		ArrayList<RecMapInfo> recmapinfoArr = getRecMapElements(info);
+		ArrayList<RecMapInfo> recmapinfoArr = getRecMapElements(info, query);
 		
 		String dateStr;
 		Calendar cal = Calendar.getInstance();
@@ -256,7 +256,7 @@ public class SketchTool {
 	 * and stores additional information in it.
 	 *  
 	 * */
-	private ArrayList<RecMapInfo> getRecMapElements(ImageInfo info){
+	private ArrayList<RecMapInfo> getRecMapElements(ImageInfo info, QueryInfo query){
 		
 		ArrayList<RecMapInfo> recmapinfoArray = new ArrayList<RecMapInfo>();
 		String identifier = null;
@@ -299,6 +299,25 @@ public class SketchTool {
 											info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.FEATURE_TYPE));
 				recmapinfoArray.add(recmapinfo);
 				
+			}
+			if (info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.FEATURE_TYPE).equals("mutation_root")){
+				
+				//Track name <--> track type
+				
+				identifier = info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.ID);
+				recmapinfo = setRecMapInfo(info,
+											identifier,
+											i,
+											info.get_rec_map(i).get_genome_feature().get_attribute(GFF3Constants.FEATURE_TYPE));
+				
+				for(int j = 0; j < query.getConfig().getTracks().length; j++){
+					if(info.get_rec_map(i).get_genome_feature().get_type().equals(query.getConfig().getTracks()[j].getTrackName())){
+						recmapinfo.setTrackNumber(j);
+						break;
+					}
+				}
+				
+				recmapinfoArray.add(recmapinfo);
 			}
 		}
 		return recmapinfoArray;

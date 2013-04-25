@@ -89,6 +89,7 @@ import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
@@ -119,6 +120,7 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
+import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 
 public class CenterPanel extends VLayout {
 
@@ -300,7 +302,8 @@ public class CenterPanel extends VLayout {
         				
         				if((imgInfo.getRecmapinfo().get(rmc).getSoutheastX() - imgInfo.getRecmapinfo().get(rmc).getNorthwestX()) < 3 
         						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals("gene")
-        						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals("translocation")){
+        						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals("translocation")
+        						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals("mutation")){
         					continue;
         				}
         				
@@ -739,6 +742,52 @@ public class CenterPanel extends VLayout {
 	
 		centerTabSet.selectTab(imgTab);
 		
+	}
+	
+	public void loadMutationWindow(String id, int trackId, FoConfigData cd){
+		//TODO
+		Window window = new Window();
+		window.setTitle("Mutations");
+		window.setWidth(500);
+		window.setHeight(330);
+		window.setAutoCenter(true);
+		window.setCanDragResize(true);
+		
+		ListGrid mutGrid = new ListGrid();
+		mutGrid.setWidth100();
+		mutGrid.setHeight100();
+		mutGrid.setShowAllRecords(true);
+		mutGrid.setAlternateRecordStyles(true);
+		mutGrid.setShowHeader(false);
+		mutGrid.setWrapCells(true);
+		
+		mutGrid.setShowAllRecords(false);
+		mutGrid.setAutoFetchData(false);
+		
+		SNPMutationDS mDS = new SNPMutationDS();
+		
+		Criteria c = new Criteria("geneId", id);
+		
+		c.setAttribute("trackId", trackId);
+		c.setAttribute("ensemblId", cd.getStrArray(Constants.ENSEMBL_ID)[0]);
+		
+		c.setAttribute(Constants.QUALTY_SCORE, cd.getTracks()[trackId].getStrArray(Constants.QUALTY_SCORE));
+		c.setAttribute(Constants.SOMATIC, cd.getStrArray(Constants.SOMATIC));
+		c.setAttribute(Constants.CONFIDENCE, cd.getStrArray(Constants.CONFIDENCE));
+		c.setAttribute(Constants.SNP_TOOL, cd.getStrArray(Constants.SNP_TOOL));
+		c.setAttribute(Constants.PROJECT_IDS, cd.getStrArray(Constants.PROJECT_IDS));
+		c.setAttribute(Constants.TISSUE_IDS, cd.getStrArray(Constants.TISSUE_IDS));
+		c.setAttribute(Constants.EXPERIMENT_IDS, cd.getStrArray(Constants.EXPERIMENT_IDS));
+		
+		//c.setAttribute("config", (Object) cd);
+		
+		mutGrid.setDataSource(mDS);
+		mutGrid.setFetchOperation(OperationId.MUTATION_FETCH_FOR_ATTRIBS);
+		mutGrid.fetchData(c);
+		
+		window.addItem(mutGrid);
+		
+		window.show();
 	}
 	
 	public void loadWindow(FoSegment segmentData){
@@ -3993,6 +4042,15 @@ class RecMapClickHandler implements ClickHandler{
 		if(recInfo.getType().equals("translocation")){
 			
 			updateImgInfoForTranslocationId(recInfo.getElementName(), imgInfo);
+		}
+		if(recInfo.getType().equals("mutation_root")){
+			FoConfigData cd = imgInfo.getQuery().getConfig();
+			
+			cp.loadMutationWindow(recInfo.getElementName(), recInfo.getTrackNumber(), cd);
+			
+			//updateImgInfoForTranslocationId(recInfo.getElementName(), imgInfo);
+			//SC.say("mutation clicked.");
+			//TODO
 		}
 	}
 	

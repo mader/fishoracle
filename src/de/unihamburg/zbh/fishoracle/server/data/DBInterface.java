@@ -38,6 +38,7 @@ import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
+import de.unihamburg.zbh.fishoracle.client.data.FoTrackData;
 import de.unihamburg.zbh.fishoracle.client.data.FoTranslocation;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
@@ -734,6 +735,25 @@ public class DBInterface {
 		Segment[] segments = ca.fetchSegmentsForStudyId(studyId);
 		
 		return DataTypeConverter.segmentsToFoSegments(segments);
+	}
+	
+	public FoSNPMutation[] getMutationsForConfig(Location loc, FoTrackData cd){
+		
+		FODriver driver = getFoDriver();
+		SNPMutationAdaptor ma = driver.getSNPMutationAdaptor();
+		
+		SNPMutation[] mutations = ma.fetchSNPMutations(loc.getChromosome(),
+														loc.getStart(),
+														loc.getEnd(),
+														Double.parseDouble(cd.getStrArray(Constants.QUALTY_SCORE)[0]),
+														cd.getStrArray(Constants.SOMATIC),
+														cd.getStrArray(Constants.CONFIDENCE), 
+														cd.getStrArray(Constants.SNP_TOOL),
+														strArrToIntArr(cd.getStrArray(Constants.PROJECT_IDS)),
+														strArrToIntArr(cd.getStrArray(Constants.TISSUE_IDS)),
+														strArrToIntArr(cd.getStrArray(Constants.EXPERIMENT_IDS)));
+		
+		return DataTypeConverter.snpMutationToFoSNPMutation(mutations);
 	}
 	
 	public FoSNPMutation[] getMutationsForStudyId(int studyId){

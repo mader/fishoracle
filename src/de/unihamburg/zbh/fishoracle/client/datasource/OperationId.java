@@ -32,6 +32,9 @@ public class OperationId {
 	public static final String FEATURE_FETCH_FOR_STUDY_ID = "getFeaturesForStudyId";
 	public static final String FEATURE_FETCH_TYPES = "getAllFeatureTypes";
 	
+	public static final String MUTATION_FETCH_FOR_STUDY_ID = "getMutationsForStudyId";
+	public static final String MUTATION_FETCH_FOR_ATTRIBS = "getMutationsForAttributes";
+	
 	public OperationId() {
 	}
 }
