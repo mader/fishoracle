@@ -32,6 +32,7 @@ public class FoSNPMutation implements IsSerializable {
 	private String snpTool;
 	private int platformId;
 	private String platformName;
+	private String studyName;
 	private int studyId;
 	
 	public FoSNPMutation() {
@@ -143,6 +144,14 @@ public class FoSNPMutation implements IsSerializable {
 
 	public void setPlatformName(String platformName) {
 		this.platformName = platformName;
+	}
+	
+	public String getStudyName() {
+		return studyName;
+	}
+
+	public void setStudyName(String studyName) {
+		this.studyName = studyName;
 	}
 
 	public int getStudyId() {

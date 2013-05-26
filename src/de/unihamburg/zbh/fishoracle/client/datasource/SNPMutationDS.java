@@ -1,5 +1,8 @@
 package de.unihamburg.zbh.fishoracle.client.datasource;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -7,22 +10,24 @@ import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSourceField;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.SummaryFunction;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoConfig;
 import de.unihamburg.zbh.fishoracle.client.data.FoConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoSNPMutation;
-import de.unihamburg.zbh.fishoracle.client.data.FoTrackData;
 import de.unihamburg.zbh.fishoracle.client.rpc.MutationService;
 import de.unihamburg.zbh.fishoracle.client.rpc.MutationServiceAsync;
-import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 
 public class SNPMutationDS extends FoDataSource {
 
+	FoConfigData foConf;
+	
 	public SNPMutationDS() {
 		DataSourceField field;
 		field = new DataSourceIntegerField("mutationId", "Mutation ID");
@@ -62,6 +67,12 @@ public class SNPMutationDS extends FoDataSource {
         field = new DataSourceTextField("platformName", "Platform");
         addField (field);
         
+        field = new DataSourceTextField("studyName", "Study");
+        addField (field);
+	}
+	
+	public void addConfigData(FoConfigData cd){
+		this.foConf = cd;
 	}
 	
 	@Override
@@ -95,6 +106,7 @@ public class SNPMutationDS extends FoDataSource {
 						record.setAttribute("conf", result[i].getConfidence());
 						record.setAttribute("tool", result[i].getSnpTool());
 						record.setAttribute("platformName", result[i].getPlatformName());
+						record.setAttribute("studyName", result[i].getStudyName());
 						
 						list[i] = record;
 						
@@ -113,29 +125,16 @@ public class SNPMutationDS extends FoDataSource {
 		
 		int studyId = 0;
 		String geneId;
-		String ensemblId;
+		int trackId;
 		
 		Criteria c = request.getCriteria();
 		
 		if(request.getOperationId().equals(OperationId.MUTATION_FETCH_FOR_ATTRIBS)){
 			
 			geneId = c.getAttribute("geneId");
-			ensemblId = c.getAttribute("ensemblId");
+			trackId = Integer.parseInt(c.getAttribute("trackId"));
 			
-			FoTrackData conf = new FoTrackData(); 
-			
-			conf.setTrackNumber(Integer.parseInt(c.getAttribute("trackId")));
-			conf.addStrArray(Constants.QUALTY_SCORE, c.getAttributeAsStringArray(Constants.QUALTY_SCORE));
-			conf.addStrArray(Constants.SOMATIC, c.getAttributeAsStringArray(Constants.SOMATIC));
-			conf.addStrArray(Constants.CONFIDENCE, c.getAttributeAsStringArray(Constants.CONFIDENCE));
-			conf.addStrArray(Constants.SNP_TOOL, c.getAttributeAsStringArray(Constants.SNP_TOOL));
-			conf.addStrArray(Constants.PROJECT_IDS, c.getAttributeAsStringArray(Constants.PROJECT_IDS));
-			conf.addStrArray(Constants.TISSUE_IDS, c.getAttributeAsStringArray(Constants.TISSUE_IDS));
-			conf.addStrArray(Constants.EXPERIMENT_IDS, c.getAttributeAsStringArray(Constants.EXPERIMENT_IDS));
-			
-			//FoConfigData cd = (FoConfigData) c.getAttributeAsObject("config");
-			
-			req.fetchForConfig(geneId, ensemblId, conf, callback);
+			req.fetchForConfig(geneId, trackId, this.foConf, callback);
 		}
 		
 		if(request.getOperationId().equals(OperationId.MUTATION_FETCH_FOR_STUDY_ID)){
@@ -171,5 +170,4 @@ public class SNPMutationDS extends FoDataSource {
 		// TODO Auto-generated method stub
 		
 	}
-
 }

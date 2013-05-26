@@ -38,7 +38,6 @@ import de.unihamburg.zbh.fishoracle.client.data.FoOrgan;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoProjectAccess;
 import de.unihamburg.zbh.fishoracle.client.data.FoProperty;
-import de.unihamburg.zbh.fishoracle.client.data.FoTrackData;
 import de.unihamburg.zbh.fishoracle.client.data.FoTranslocation;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
@@ -187,7 +186,12 @@ public class DBInterface {
 		
 		Range r = ka.fetchRangeForKaryoband(fi, chr, band);
 		
-		Location l = new Location(chr, r.get_start(), r.get_end());
+		Location l = null;
+		try {
+			l = new Location(chr, r.get_start(), r.get_end());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		fi.delete();
 		adb.delete();
@@ -339,7 +343,12 @@ public class DBInterface {
 		FODriver driver = getFoDriver();
 		SegmentAdaptor sa = driver.getSegmentAdaptor();
 		
-		Location maxLoc = new Location(chr, start, end);
+		Location maxLoc = null;
+		try {
+			maxLoc = new Location(chr, start, end);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 		
 		for(int i = 0; i < query.getConfig().getTracks().length; i++){
 			
@@ -386,12 +395,17 @@ public class DBInterface {
 	@Deprecated
 	private int[] strArrToIntArr(String[] strArr){
 		
-		int[] intArr = new int[strArr.length];
+		int[] intArr;
 		
-		for(int j = 0; j < strArr.length; j++){
-			intArr[j] = Integer.parseInt(strArr[j]);
+		if(strArr != null){
+			intArr = new int[strArr.length];
+		
+			for(int j = 0; j < strArr.length; j++){
+				intArr[j] = Integer.parseInt(strArr[j]);
+			}
+		} else {
+			intArr = new int[0];
 		}
-		
 		return intArr;
 	}
 	
@@ -737,21 +751,30 @@ public class DBInterface {
 		return DataTypeConverter.segmentsToFoSegments(segments);
 	}
 	
-	public FoSNPMutation[] getMutationsForConfig(Location loc, FoTrackData cd){
+	public FoSNPMutation[] getMutationsForConfig(Location loc, int trackId, FoConfigData cd){
 		
 		FODriver driver = getFoDriver();
 		SNPMutationAdaptor ma = driver.getSNPMutationAdaptor();
 		
+		String[] strQual;
+		double qual = 0;
+		
+		strQual = cd.getTracks()[trackId].getStrArray(Constants.QUALTY_SCORE);
+		
+		if(strQual != null){
+			qual = Double.parseDouble(strQual[0]);
+		}
+		
 		SNPMutation[] mutations = ma.fetchSNPMutations(loc.getChromosome(),
 														loc.getStart(),
 														loc.getEnd(),
-														Double.parseDouble(cd.getStrArray(Constants.QUALTY_SCORE)[0]),
-														cd.getStrArray(Constants.SOMATIC),
-														cd.getStrArray(Constants.CONFIDENCE), 
-														cd.getStrArray(Constants.SNP_TOOL),
-														strArrToIntArr(cd.getStrArray(Constants.PROJECT_IDS)),
-														strArrToIntArr(cd.getStrArray(Constants.TISSUE_IDS)),
-														strArrToIntArr(cd.getStrArray(Constants.EXPERIMENT_IDS)));
+														qual,
+														cd.getTracks()[trackId].getStrArray(Constants.SOMATIC),
+														cd.getTracks()[trackId].getStrArray(Constants.CONFIDENCE), 
+														cd.getTracks()[trackId].getStrArray(Constants.SNP_TOOL),
+														strArrToIntArr(cd.getTracks()[trackId].getStrArray(Constants.PROJECT_IDS)),
+														strArrToIntArr(cd.getTracks()[trackId].getStrArray(Constants.TISSUE_IDS)),
+														strArrToIntArr(cd.getTracks()[trackId].getStrArray(Constants.EXPERIMENT_IDS)));
 		
 		return DataTypeConverter.snpMutationToFoSNPMutation(mutations);
 	}

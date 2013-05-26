@@ -217,9 +217,14 @@ public class DataTypeConverter {
 	
 	
 	public static Location foLocationToLocation(FoLocation foLoc){
-		Location loc = new Location(foLoc.getChromosome(),
-										foLoc.getStart(),
-										foLoc.getEnd());
+		Location loc = null;
+		try {
+			loc = new Location(foLoc.getChromosome(),
+											foLoc.getStart(),
+											foLoc.getEnd());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return loc;
 	}
 	
@@ -273,6 +278,7 @@ public class DataTypeConverter {
 		
 		foMutation.setPlatformId(mutation.getPlatformId());
 		foMutation.setPlatformName(mutation.getPlatformName());
+		foMutation.setStudyName(mutation.getStudyName());
 		foMutation.setStudyId(mutation.getStudyId());
 		return foMutation;
 	}

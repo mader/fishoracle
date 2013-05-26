@@ -7,7 +7,6 @@ import core.GTerrorJava;
 import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.FoConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoSNPMutation;
-import de.unihamburg.zbh.fishoracle.client.data.FoTrackData;
 import de.unihamburg.zbh.fishoracle.client.rpc.MutationService;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
@@ -35,7 +34,7 @@ public class MutationServiceImpl extends RemoteServiceServlet implements Mutatio
 	}
 
 	@Override
-	public FoSNPMutation[] fetchForConfig(String geneId, String ensemblId, FoTrackData cd) {
+	public FoSNPMutation[] fetchForConfig(String geneId, int trackId, FoConfigData cd) {
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
@@ -45,7 +44,7 @@ public class MutationServiceImpl extends RemoteServiceServlet implements Mutatio
 		EnsemblGene gene = null;
 		
 		try {
-			rdb = db.getEnsemblRDB(ensemblId);
+			rdb = db.getEnsemblRDB(cd.getStrArray(Constants.ENSEMBL_ID)[0]);
 			gene = db.getGeneInfos(rdb, geneId);
 		
 			rdb.delete();
@@ -55,9 +54,14 @@ public class MutationServiceImpl extends RemoteServiceServlet implements Mutatio
 			e.printStackTrace();
 		}
 		
-		Location loc = new Location(gene.getChr(), gene.getStart(), gene.getEnd());
+		Location loc = null;
+		try {
+			loc = new Location(gene.getChr(), gene.getStart(), gene.getEnd());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
-		return db.getMutationsForConfig(loc, cd);
+		return db.getMutationsForConfig(loc, trackId, cd);
 	}
 	
 	@Override

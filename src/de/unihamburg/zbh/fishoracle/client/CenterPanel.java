@@ -32,6 +32,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
+import com.smartgwt.client.types.GroupStartOpen;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.types.Overflow;
@@ -120,7 +121,6 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Search;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
-import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 
 public class CenterPanel extends VLayout {
 
@@ -744,11 +744,11 @@ public class CenterPanel extends VLayout {
 		
 	}
 	
-	public void loadMutationWindow(String id, int trackId, FoConfigData cd){
+	public void loadMutationWindow(String geneId, int trackId, FoConfigData cd){
 		//TODO
 		Window window = new Window();
 		window.setTitle("Mutations");
-		window.setWidth(500);
+		window.setWidth(700);
 		window.setHeight(330);
 		window.setAutoCenter(true);
 		window.setCanDragResize(true);
@@ -758,32 +758,25 @@ public class CenterPanel extends VLayout {
 		mutGrid.setHeight100();
 		mutGrid.setShowAllRecords(true);
 		mutGrid.setAlternateRecordStyles(true);
-		mutGrid.setShowHeader(false);
+		mutGrid.setShowHeader(true);
 		mutGrid.setWrapCells(true);
+		mutGrid.setFixedRecordHeights(false);
 		
 		mutGrid.setShowAllRecords(false);
 		mutGrid.setAutoFetchData(false);
 		
 		SNPMutationDS mDS = new SNPMutationDS();
+		mDS.addConfigData(cd);
 		
-		Criteria c = new Criteria("geneId", id);
-		
+		Criteria c = new Criteria("geneId", geneId);
 		c.setAttribute("trackId", trackId);
-		c.setAttribute("ensemblId", cd.getStrArray(Constants.ENSEMBL_ID)[0]);
-		
-		c.setAttribute(Constants.QUALTY_SCORE, cd.getTracks()[trackId].getStrArray(Constants.QUALTY_SCORE));
-		c.setAttribute(Constants.SOMATIC, cd.getStrArray(Constants.SOMATIC));
-		c.setAttribute(Constants.CONFIDENCE, cd.getStrArray(Constants.CONFIDENCE));
-		c.setAttribute(Constants.SNP_TOOL, cd.getStrArray(Constants.SNP_TOOL));
-		c.setAttribute(Constants.PROJECT_IDS, cd.getStrArray(Constants.PROJECT_IDS));
-		c.setAttribute(Constants.TISSUE_IDS, cd.getStrArray(Constants.TISSUE_IDS));
-		c.setAttribute(Constants.EXPERIMENT_IDS, cd.getStrArray(Constants.EXPERIMENT_IDS));
-		
-		//c.setAttribute("config", (Object) cd);
 		
 		mutGrid.setDataSource(mDS);
 		mutGrid.setFetchOperation(OperationId.MUTATION_FETCH_FOR_ATTRIBS);
 		mutGrid.fetchData(c);
+		
+		mutGrid.setGroupStartOpen(GroupStartOpen.ALL);
+		mutGrid.groupBy("studyName");
 		
 		window.addItem(mutGrid);
 		
@@ -4048,8 +4041,6 @@ class RecMapClickHandler implements ClickHandler{
 			
 			cp.loadMutationWindow(recInfo.getElementName(), recInfo.getTrackNumber(), cd);
 			
-			//updateImgInfoForTranslocationId(recInfo.getElementName(), imgInfo);
-			//SC.say("mutation clicked.");
 			//TODO
 		}
 	}
