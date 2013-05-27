@@ -1903,6 +1903,7 @@ public class CenterPanel extends VLayout {
 			SNPMutationDS mDS = new SNPMutationDS();
 		
 			dataTypeGrid.setDataSource(mDS);
+			dataTypeGrid.setFetchOperation(OperationId.MUTATION_FETCH_FOR_STUDY_ID);
 		}
 		
 		if(type.equals("Translocations")){
