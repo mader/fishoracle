@@ -98,14 +98,14 @@ public class FeatureDS extends FoDataSource {
 				ListGridRecord record = new ListGridRecord(); 
 				record.setAttribute("featureId", 0);
 				record.setAttribute("featureType", FoConstants.ACGH_INTENSITY);
-				record.setAttribute("type", "dnacopy");
+				record.setAttribute("type", FoConstants.ACGH_INTENSITY); //seems to be obsolete. remove
 				
 				list[0] = record;
 				
 				record = new ListGridRecord(); 
 				record.setAttribute("featureId", 0);
 				record.setAttribute("featureType", FoConstants.ACGH_STATUS);
-				record.setAttribute("type", "penncnv");
+				record.setAttribute("type", FoConstants.ACGH_STATUS); //seems to be obsolete. remove
 				
 				list[1] = record;
 				

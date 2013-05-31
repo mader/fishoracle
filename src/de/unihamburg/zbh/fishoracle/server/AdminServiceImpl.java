@@ -30,6 +30,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
@@ -264,8 +265,8 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 			DBInterface db = new DBInterface(servletContext);
 
-			if(importType.equals("Segments (DNACopy)") || 
-					importType.equals("Segments (PennCNV)")){
+			if(importType.equals("aCGH (intensity)") || 
+					importType.equals("aCGH (Status)")){
 		
 				Segment[] segments;
 				ArrayList<Segment> segmentContainer = new ArrayList<Segment>();
@@ -280,14 +281,14 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 					String status = "-1";
 					String statusScore = "-1.0";
 							
-					if(dataSubType.equals("dnacopy")){
+					if(dataSubType.equals(FoConstants.ACGH_INTENSITY)){
 						
 						mean = reader.get("seg.mean");
 						markers = reader.get("num.mark");
 						status = "-1";
 						statusScore = "-1.0";
 					}
-					if(dataSubType.equals("penncnv")){
+					if(dataSubType.equals(FoConstants.ACGH_STATUS)){
 						
 						status = reader.get("cnv.status");
 						statusScore = reader.get("status.score");
