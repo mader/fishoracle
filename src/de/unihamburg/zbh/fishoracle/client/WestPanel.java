@@ -72,7 +72,7 @@ public class WestPanel extends SectionStack{
 		/*data adminstration*/
 		
 		SectionStackSection dataAdminSection = new SectionStackSection();
-		dataAdminSection.setTitle("Data Adminstration");
+		dataAdminSection.setTitle("Data Administration");
 		dataAdminSection.setExpanded(true);
 		
 		VLayout dataAdminContent = new VLayout();

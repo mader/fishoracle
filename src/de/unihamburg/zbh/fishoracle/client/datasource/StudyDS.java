@@ -44,7 +44,7 @@ public class StudyDS extends FoDataSource {
         field = new DataSourceBooleanField("cnv", "CNV?");
         addField (field);
         
-        field = new DataSourceBooleanField("snp", "SNP?");
+        field = new DataSourceBooleanField("snp", "SNV?");
         addField (field);
         
         field = new DataSourceBooleanField("transloc", "Translocation?");
