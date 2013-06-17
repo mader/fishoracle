@@ -322,7 +322,14 @@ public class CenterPanel extends VLayout {
         				}
 
         				if(spaceImg.getWidth() <= 0){
-        					spaceImg.setWidth(1);
+        					if(!imgInfo.getRecmapinfo().get(rmc).getType().equals("translocation")  ){
+        						spaceImg.setWidth(1);
+            				} else {
+            					spaceImg.setWidth(10);
+            				}
+        				}
+        				if(imgInfo.getRecmapinfo().get(rmc).getType().equals("translocation")  ){
+        					
         				}
 
         				int southeast_y = (int) imgInfo.getRecmapinfo().get(rmc).getSoutheastY();
