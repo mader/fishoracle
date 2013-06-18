@@ -606,8 +606,10 @@ public class CenterPanel extends VLayout {
 				
 				Window w = new Window();
 				w.setTitle("Configuration");
-				w.setAutoCenter(true);
-				w.setAutoSize(true);
+				//w.setAutoCenter(true);
+				w.setLeft(500);
+				w.setWidth(300);
+				w.setHeight(cp.getInnerHeight() - 300);
 				w.setIsModal(true);
 				w.setShowModalMask(true);
 				ConfigLayout cl = new ConfigLayout(mp, false);
