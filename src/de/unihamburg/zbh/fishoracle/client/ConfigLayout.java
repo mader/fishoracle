@@ -159,6 +159,8 @@ public class ConfigLayout extends VLayout {
 					
 					thrItem.setValue(segMean);
 					thrItem.setVisible(true);
+				} else {
+					t.getThrItem().setVisible(false);
 				}
 				
 				if(dataType.equals(FoConstants.ACGH_STATUS)){
