@@ -281,14 +281,14 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 					String status = "-1";
 					String statusScore = "-1.0";
 							
-					if(dataSubType.equals(FoConstants.ACGH_INTENSITY)){
+					if(dataSubType.equals(FoConstants.CNV_INTENSITY)){
 						
 						mean = reader.get("seg.mean");
 						markers = reader.get("num.mark");
 						status = "-1";
 						statusScore = "-1.0";
 					}
-					if(dataSubType.equals(FoConstants.ACGH_STATUS)){
+					if(dataSubType.equals(FoConstants.CNV_STATUS)){
 						
 						status = reader.get("cnv.status");
 						statusScore = reader.get("status.score");

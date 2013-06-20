@@ -151,7 +151,7 @@ public class ConfigLayout extends VLayout {
 				
 				String dataType = td.getStrArray(Constants.DATA_TYPE)[0];
 				
-				if(dataType.equals(FoConstants.ACGH_INTENSITY)){
+				if(dataType.equals(FoConstants.CNV_INTENSITY)){
 				
 					SpinnerItem thrItem = t.getThrItem();
 					
@@ -163,7 +163,7 @@ public class ConfigLayout extends VLayout {
 					t.getThrItem().setVisible(false);
 				}
 				
-				if(dataType.equals(FoConstants.ACGH_STATUS)){
+				if(dataType.equals(FoConstants.CNV_STATUS)){
 					
 					t.getStatusSelectItem().setValues(td.getStrArray(Constants.CNV_STATI));
 					t.getStatusSelectItem().setVisible(true);
@@ -461,10 +461,10 @@ public class ConfigLayout extends VLayout {
 					for(int i = 0; i < tracks.size(); i++){
 						
 						Track t = tracks.get(i);
-						if(t.getSelectItemFilterType().getValueAsString().equals(FoConstants.ACGH_INTENSITY)){
+						if(t.getSelectItemFilterType().getValueAsString().equals(FoConstants.CNV_INTENSITY)){
 							t.getThrItem().show();
 						}
-						if(t.getSelectItemFilterType().getValueAsString().equals(FoConstants.ACGH_STATUS)){
+						if(t.getSelectItemFilterType().getValueAsString().equals(FoConstants.CNV_STATUS)){
 							t.getStatusSelectItem().show();
 						}
 						
@@ -791,7 +791,7 @@ public class ConfigLayout extends VLayout {
 						
 					} else {
 						
-						if(trackData[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_INTENSITY)){
+						if(trackData[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_INTENSITY)){
 							
 							double thr;
 							
@@ -813,7 +813,7 @@ public class ConfigLayout extends VLayout {
 								trackData[i].addStrArray(Constants.COLOR_ALPHA, new String[]{"70"});
 							}
 						}
-						else if(trackData[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_STATUS)){
+						else if(trackData[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_STATUS)){
 							trackData[i].addStrArray(Constants.COLOR_RED, new String[]{"0"});
 							trackData[i].addStrArray(Constants.COLOR_GREEN, new String[]{"0"});
 							trackData[i].addStrArray(Constants.COLOR_BLUE, new String[]{"128"});

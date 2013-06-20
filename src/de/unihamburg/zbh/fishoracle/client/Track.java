@@ -108,19 +108,19 @@ public class Track {
 			public void onChanged(ChangedEvent event) {
 				String val =  event.getValue().toString();
 				//TODO write external method
-				if(val.equals(FoConstants.ACGH_STATUS) || val.equals(FoConstants.ACGH_INTENSITY)){
+				if(val.equals(FoConstants.CNV_STATUS) || val.equals(FoConstants.CNV_INTENSITY)){
 					selectItemFilter.setValueMap("Project","Tissue","Experiments");
 					selectItemFilter.setValue("Project");
 					if(!(Boolean) cl.getGlobalThresholdCheckbox().getValue()){
 						
 						
-						if(val.equals(FoConstants.ACGH_INTENSITY)){
+						if(val.equals(FoConstants.CNV_INTENSITY)){
 							thrItem.show();
 							
 							statusSelectItem.hide();
 						}
 						
-						if(val.equals(FoConstants.ACGH_STATUS)){
+						if(val.equals(FoConstants.CNV_STATUS)){
 							statusSelectItem.show();
 							
 							thrItem.hide();

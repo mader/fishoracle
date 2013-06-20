@@ -97,15 +97,15 @@ public class FeatureDS extends FoDataSource {
 				
 				ListGridRecord record = new ListGridRecord(); 
 				record.setAttribute("featureId", 0);
-				record.setAttribute("featureType", FoConstants.ACGH_INTENSITY);
-				record.setAttribute("type", FoConstants.ACGH_INTENSITY); //seems to be obsolete. remove
+				record.setAttribute("featureType", FoConstants.CNV_INTENSITY);
+				record.setAttribute("type", FoConstants.CNV_INTENSITY); //seems to be obsolete. remove
 				
 				list[0] = record;
 				
 				record = new ListGridRecord(); 
 				record.setAttribute("featureId", 0);
-				record.setAttribute("featureType", FoConstants.ACGH_STATUS);
-				record.setAttribute("type", FoConstants.ACGH_STATUS); //seems to be obsolete. remove
+				record.setAttribute("featureType", FoConstants.CNV_STATUS);
+				record.setAttribute("type", FoConstants.CNV_STATUS); //seems to be obsolete. remove
 				
 				list[1] = record;
 				

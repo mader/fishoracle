@@ -353,8 +353,8 @@ public class DBInterface {
 		for(int i = 0; i < query.getConfig().getTracks().length; i++){
 			
 			Location l;
-			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_INTENSITY) || 
-					query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_STATUS)){
+			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_INTENSITY) || 
+					query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_STATUS)){
 				if(query.getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
 				
 					l = sa.fetchMaximalOverlappingSegmentRange(chr,
@@ -455,7 +455,7 @@ public class DBInterface {
 				adb.setAdditionalExperimentFilter(fifo, strArrToIntArr(eIds));
 			}
 			
-			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_INTENSITY)){
+			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_INTENSITY)){
 				
 				adb.segmentOnly(fifo, 0);
 				
@@ -471,7 +471,7 @@ public class DBInterface {
 				adb.setSegmentsSorted(fifo, query.getConfig().getStrArray(Constants.SORTED_SEGMENTS)[0].equals("true"));
 				adb.setSegmentsTh(fifo, th);
 				
-			} else if (query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_STATUS)){
+			} else if (query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_STATUS)){
 			
 				adb.segmentOnly(fifo, 1);
 				
@@ -609,8 +609,8 @@ public class DBInterface {
 		
 		Study s = sa.fetchStudyForName(study.getName(), false);
 		
-		if(importType.equals(FoConstants.ACGH_INTENSITY) || 
-				importType.equals(FoConstants.ACGH_STATUS)){
+		if(importType.equals(FoConstants.CNV_INTENSITY) || 
+				importType.equals(FoConstants.CNV_STATUS)){
 			SegmentAdaptor ca = driver.getSegmentAdaptor();
 		
 			ca.storeSegments(study.getSegments(), s.getId());

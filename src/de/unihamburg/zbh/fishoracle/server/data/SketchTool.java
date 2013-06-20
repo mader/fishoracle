@@ -104,8 +104,8 @@ public class SketchTool {
 			blue = Double.parseDouble(query.getConfig().getTracks()[l].getStrArray(Constants.COLOR_BLUE)[0])/255.0;
 			alpha = Double.parseDouble(query.getConfig().getTracks()[l].getStrArray(Constants.COLOR_ALPHA)[0])/100.0;
 			
-			if(query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_INTENSITY) || 
-					query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.ACGH_STATUS)){
+			if(query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_INTENSITY) || 
+					query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_STATUS)){
 				if(query.getConfig().getStrArray(Constants.SORTED_SEGMENTS)[0].equals("true")){
 			
 					style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(0.0,0.0,0.0,0.0));
