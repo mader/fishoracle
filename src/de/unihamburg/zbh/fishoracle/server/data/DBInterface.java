@@ -355,20 +355,32 @@ public class DBInterface {
 			Location l;
 			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_INTENSITY) || 
 					query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_STATUS)){
+				
 				if(query.getConfig().getStrArray(Constants.IS_GLOBAL_SEGMENT_TH)[0].equals("true")){
 				
+					if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_INTENSITY)){
+						sa.setSegmentIntensity(Double.parseDouble(query.getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]));
+					} else {
+						sa.setSegmentStati(query.getConfig().getStrArray(Constants.CNV_STATI));
+					}
+					
 					l = sa.fetchMaximalOverlappingSegmentRange(chr,
 																start,
 																end,
-																Double.parseDouble(query.getConfig().getStrArray(Constants.SEGMENT_MEAN)[0]),
 																query.getConfig().getTracks()[i].getStrArray(Constants.PROJECT_IDS),
 																query.getConfig().getTracks()[i].getStrArray(Constants.TISSUE_IDS),
 																query.getConfig().getTracks()[i].getStrArray(Constants.EXPERIMENT_IDS));
 				} else {
+					
+					if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_INTENSITY)){
+						sa.setSegmentIntensity(Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.SEGMENT_MEAN)[0]));
+					} else {
+						sa.setSegmentStati(query.getConfig().getTracks()[i].getStrArray(Constants.CNV_STATI));
+					}
+					
 					l = sa.fetchMaximalOverlappingSegmentRange(chr,
 																start,
 																end,
-																Double.parseDouble(query.getConfig().getTracks()[i].getStrArray(Constants.SEGMENT_MEAN)[0]),
 																query.getConfig().getTracks()[i].getStrArray(Constants.PROJECT_IDS),
 																query.getConfig().getTracks()[i].getStrArray(Constants.TISSUE_IDS),
 																query.getConfig().getTracks()[i].getStrArray(Constants.EXPERIMENT_IDS));
