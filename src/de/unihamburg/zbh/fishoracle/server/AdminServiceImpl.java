@@ -265,8 +265,8 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 			DBInterface db = new DBInterface(servletContext);
 
-			if(importType.equals("aCGH (intensity)") || 
-					importType.equals("aCGH (Status)")){
+			if(importType.equals(FoConstants.CNV_INTENSITY) || 
+					importType.equals(FoConstants.CNV_STATUS)){
 		
 				Segment[] segments;
 				ArrayList<Segment> segmentContainer = new ArrayList<Segment>();
