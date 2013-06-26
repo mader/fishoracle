@@ -109,7 +109,7 @@ public class Track {
 				String val =  event.getValue().toString();
 				//TODO write external method
 				if(val.equals(FoConstants.CNV_STATUS) || val.equals(FoConstants.CNV_INTENSITY)){
-					selectItemFilter.setValueMap("Project","Tissue","Experiments");
+					selectItemFilter.setValueMap("Project","Tissue"); //deactivated additional samples 
 					selectItemFilter.setValue("Project");
 					if(!(Boolean) cl.getGlobalThresholdCheckbox().getValue()){
 						
@@ -138,7 +138,6 @@ public class Track {
 				} else if(val.equals("Mutations")){
 					selectItemFilter.setValueMap("Project",
 							"Tissue",
-							"Experiments",
 							"Quality",
 							"Somatic",
 							"Confidence",
@@ -147,7 +146,7 @@ public class Track {
 					thrItem.hide();
 					statusSelectItem.hide();
 				} else {
-					selectItemFilter.setValueMap("Project","Tissue","Experiments");
+					selectItemFilter.setValueMap("Project","Tissue");
 					selectItemFilter.setValue("Project");
 					thrItem.hide();
 					statusSelectItem.hide();
@@ -157,7 +156,7 @@ public class Track {
 		
 		selectItemFilter = new SelectItem();
 		selectItemFilter.setTitle("Filter");
-		selectItemFilter.setValueMap("Project","Tissue","Experiments");
+		selectItemFilter.setValueMap("Project","Tissue");
 		selectItemFilter.setDefaultToFirstOption(true);
 		selectItemFilter.setStartRow(true);
 		selectItemFilter.setEndRow(false);

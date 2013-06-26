@@ -421,7 +421,7 @@ public class ConfigLayout extends VLayout {
 		});
 		
 		sortedCheckbox = new CheckboxItem();
-		sortedCheckbox.setTitle("sort segments by experiment");
+		sortedCheckbox.setTitle("group by sample");
 		sortedCheckbox.setValue(true);
 		sortedCheckbox.addKeyPressHandler(new KeyPressHandler(){
 			
