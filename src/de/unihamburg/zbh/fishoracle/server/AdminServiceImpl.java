@@ -280,13 +280,15 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 					String markers = "0";
 					String status = "-1";
 					String statusScore = "-1.0";
-							
+					String segmentType = "";
+					
 					if(dataSubType.equals(FoConstants.CNV_INTENSITY)){
 						
 						mean = reader.get("seg.mean");
 						markers = reader.get("num.mark");
 						status = "-1";
 						statusScore = "-1.0";
+						segmentType = "cnv_intensity";
 					}
 					if(dataSubType.equals(FoConstants.CNV_STATUS)){
 						
@@ -294,13 +296,14 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 						statusScore = reader.get("status.score");
 						mean = "0";
 						markers = "0";
+						segmentType = "cnv_status";
 					}
 			
 					Location loc = new Location(chr, Integer.parseInt(start), Integer.parseInt(end));
-			
+					
 					Segment segment = new Segment(0,
 													loc,
-													dataSubType);
+													segmentType);
 					
 					segment.setMean(Double.parseDouble(mean));
 					segment.setNumberOfMarkers(Integer.parseInt(markers));

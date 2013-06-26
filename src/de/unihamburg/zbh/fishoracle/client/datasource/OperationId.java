@@ -3,6 +3,7 @@ package de.unihamburg.zbh.fishoracle.client.datasource;
 public class OperationId {
 	
 	public static final String PROJECT_FETCH_ALL = "getAllProjects";
+	public static final String PROJECT_FETCH_READ_WRITE = "getReadWriteProjectsForUserGroup";
 	
 	public static final String STUDY_FETCH_ALL = "getAllStudies";
 	public static final String STUDY_FETCH_FOR_PROJECT = "getAllStudiesForProject";

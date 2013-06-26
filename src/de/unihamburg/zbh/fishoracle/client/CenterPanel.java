@@ -2856,7 +2856,7 @@ public class CenterPanel extends VLayout {
 		ProjectDS pDS = new ProjectDS();
 		
 		selectItemProjects.setOptionDataSource(pDS);
-		selectItemProjects.setOptionOperationId(OperationId.PROJECT_FETCH_ALL);
+		selectItemProjects.setOptionOperationId(OperationId.PROJECT_FETCH_READ_WRITE);
 		
 		selectItemProjects.setDefaultToFirstOption(true);
 		

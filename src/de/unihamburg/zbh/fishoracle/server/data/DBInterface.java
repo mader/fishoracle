@@ -900,7 +900,7 @@ public class DBInterface {
 		Project[] p;
 		
 		if(g.length > 0){
-			ProjectAccess[] projectAccess = pa.fetchProjectAccessForGroups(g, withChildren, writeOnly);
+			ProjectAccess[] projectAccess = pa.fetchProjectAccessForGroups(g, writeOnly, withChildren);
 			p = pa.fetchProjectsForProjectAccess(projectAccess, false);
 		} else {
 			p = new Project[1];

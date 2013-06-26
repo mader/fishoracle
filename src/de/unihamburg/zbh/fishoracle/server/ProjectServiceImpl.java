@@ -48,8 +48,14 @@ public class ProjectServiceImpl extends RemoteServiceServlet implements ProjectS
 		if(u.getIsAdmin() && operationId.equals(OperationId.PROJECT_FETCH_ALL)){
 			
 			projects = db.getAllProjects();
-		} else {
+			
+		} else if (!u.getIsAdmin() && operationId.equals(OperationId.PROJECT_FETCH_ALL)) {
+			
 			projects = db.getProjectsForUser(u, false, false);
+			
+		} else if(!u.getIsAdmin() && operationId.equals(OperationId.PROJECT_FETCH_READ_WRITE)){
+			
+			projects = db.getProjectsForUser(u, false, true);
 		}
 		
 		return projects;
