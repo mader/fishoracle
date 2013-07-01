@@ -30,7 +30,7 @@ public class SNPMutationDS extends FoDataSource {
 	
 	public SNPMutationDS() {
 		DataSourceField field;
-		field = new DataSourceIntegerField("mutationId", "Mutation ID");
+		field = new DataSourceIntegerField("mutationId", "SNV ID");
 		field.setPrimaryKey(true);
 		field.setRequired(true);
 		addField(field);

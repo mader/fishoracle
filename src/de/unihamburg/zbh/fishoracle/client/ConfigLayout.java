@@ -750,7 +750,7 @@ public class ConfigLayout extends VLayout {
 						String[] strArr = tracks.get(i).getSelectItemExperiments().getValues();
 						trackData[i].addStrArray(Constants.EXPERIMENT_IDS, strArr);
 					}
-					if(tracks.get(i).getSelectItemFilterType().getValueAsString().equals("Mutations")){
+					if(tracks.get(i).getSelectItemFilterType().getValueAsString().equals(FoConstants.SNV)){
 						if(tracks.get(i).getTextItemQuality().getVisible()){
 							
 							trackData[i].addStrArray(Constants.QUALTY_SCORE, new String[]{tracks.get(i).getTextItemQuality().getValueAsString()});
@@ -819,7 +819,7 @@ public class ConfigLayout extends VLayout {
 							trackData[i].addStrArray(Constants.COLOR_BLUE, new String[]{"128"});
 							trackData[i].addStrArray(Constants.COLOR_ALPHA, new String[]{"70"});
 						}
-						else if(trackData[i].getStrArray(Constants.DATA_TYPE)[0].equals("Mutations")){
+						else if(trackData[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.SNV)){
 							trackData[i].addStrArray(Constants.COLOR_RED, new String[]{"0"});
 							trackData[i].addStrArray(Constants.COLOR_GREEN, new String[]{"0"});
 							trackData[i].addStrArray(Constants.COLOR_BLUE, new String[]{"0"});

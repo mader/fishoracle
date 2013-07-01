@@ -124,7 +124,7 @@ public class SketchTool {
 					style.set_num(query.getConfig().getTracks()[l].getTrackName(), "max_capt_show_width", 0);
 				}
 				
-			} else if(query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals("Mutations")){
+			} else if(query.getConfig().getTracks()[l].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.SNV)){
 				
 				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "stroke", new Color(red,green,blue,1.0));
 				style.set_color(query.getConfig().getTracks()[l].getTrackName(), "fill", new Color(red,green,blue,alpha));

@@ -91,6 +91,7 @@ import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoConfigData;
+import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
 import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
@@ -756,7 +757,7 @@ public class CenterPanel extends VLayout {
 	public void loadMutationWindow(String geneId, int trackId, FoConfigData cd){
 		//TODO
 		Window window = new Window();
-		window.setTitle("Mutations");
+		window.setTitle("SNVs");
 		window.setWidth(700);
 		window.setHeight(330);
 		window.setAutoCenter(true);
@@ -1908,7 +1909,7 @@ public class CenterPanel extends VLayout {
 			dataTypeGrid.setDataSource(sDS);
 		}
 		
-		if(type.equals("Mutations")){
+		if(type.equals(FoConstants.SNV)){
 			SNPMutationDS mDS = new SNPMutationDS();
 		
 			dataTypeGrid.setDataSource(mDS);
@@ -2013,7 +2014,7 @@ public class CenterPanel extends VLayout {
 		sToolStrip.addButton(showSegmentsButton);
 		
 		ToolStripButton showMutationsButton = new ToolStripButton();
-		showMutationsButton.setTitle("show mutations");
+		showMutationsButton.setTitle("show SNVs");
 		showMutationsButton.addClickHandler(new ClickHandler(){
 
 			@Override
@@ -2023,7 +2024,7 @@ public class CenterPanel extends VLayout {
 				
 				if (lgr != null){
 				
-					openDataTab("Mutations", lgr.getAttributeAsString("studyId"));
+					openDataTab("SNVs", lgr.getAttributeAsString("studyId"));
 					
 				} else {
 					SC.say("Select a study.");
@@ -3793,7 +3794,7 @@ class ManualImportWindow extends Window {
 		selectItemSNPTool = new SelectItem();
 		selectItemSNPTool.setTitle("SNP Tool");
 		selectItemSNPTool.setValueMap("gatk", "varscan", "SNVMix", "samtools");
-		if(!importType.equals("Mutations")){
+		if(!importType.equals(FoConstants.SNV)){
 			selectItemSNPTool.setVisible(false);
 		}
 		

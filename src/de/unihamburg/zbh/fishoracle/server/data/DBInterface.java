@@ -500,7 +500,7 @@ public class DBInterface {
 				adb.addSegmentTypeFilter(fifo, strArrToIntArr(status));
 				
 			
-			} else if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Mutations")){
+			} else if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.SNV)){
 				
 				adb.mutationsOnly(fifo);
 				
@@ -533,7 +533,7 @@ public class DBInterface {
 			
 			feats = adb.getFeatures(fifo);
 			
-			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals("Mutations")){
+			if(query.getConfig().getTracks()[i].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.SNV)){
 				
 				core.Array procFeats;
 				procFeats = adb.processMutations(feats,
@@ -627,7 +627,7 @@ public class DBInterface {
 		
 			ca.storeSegments(study.getSegments(), s.getId());
 		}
-		else if(importType.equals("Mutations")){
+		else if(importType.equals(FoConstants.SNV)){
 			SNPMutationAdaptor ma = driver.getSNPMutationAdaptor();
 			
 			ma.storeSNPMutations(study.getMutations(), s.getId());

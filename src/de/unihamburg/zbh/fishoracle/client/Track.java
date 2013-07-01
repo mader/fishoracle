@@ -135,7 +135,7 @@ public class Track {
 					removeConfidenceButtonItem.hide();
 					selectItemSNPTool.hide();
 					removeSNPToolButtonItem.hide();
-				} else if(val.equals("Mutations")){
+				} else if(val.equals(FoConstants.SNV)){
 					selectItemFilter.setValueMap("Project",
 							"Tissue",
 							"Quality",

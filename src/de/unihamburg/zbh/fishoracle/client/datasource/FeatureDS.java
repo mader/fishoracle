@@ -111,7 +111,7 @@ public class FeatureDS extends FoDataSource {
 				
 				record = new ListGridRecord(); 
 				record.setAttribute("featureId", 0);
-				record.setAttribute("featureType", "Mutations");
+				record.setAttribute("featureType", FoConstants.SNV);
 				
 				list[2] = record;
 				

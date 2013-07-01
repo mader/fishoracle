@@ -324,7 +324,7 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 			
 				study.setSegments(segments);
 		
-			} else if(importType.equals("Mutations")){
+			} else if(importType.equals(FoConstants.SNV)){
 			
 				SNPMutation[] mutations;
 				ArrayList<SNPMutation> snpContainer = new ArrayList<SNPMutation>();
