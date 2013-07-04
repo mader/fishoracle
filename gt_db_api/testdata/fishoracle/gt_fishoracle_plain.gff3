@@ -1,0 +1,15 @@
+##gff-version   3
+##sequence-region   10 89263641 94301169
+10	.	testtrack	89263641	90044800	.	.	.	study_id=9;Name=GSM525784;feature_type=segment
+10	.	testtrack	89263641	91400513	.	.	.	study_id=6;Name=GSM525782;feature_type=segment
+10	.	testtrack	89348214	90131567	.	.	.	study_id=2;Name=GSM525767;feature_type=segment
+10	.	testtrack	89365163	90074414	.	.	.	study_id=1;Name=GSM525657;feature_type=segment
+10	.	testtrack	89507033	89625693	.	.	.	study_id=7;Name=GSM525799;feature_type=segment
+10	.	testtrack	89564502	89690025	.	.	.	study_id=3;Name=GSM525783;feature_type=segment
+10	.	testtrack	89583211	90596634	.	.	.	study_id=8;Name=GSM525789;feature_type=segment
+10	.	testtrack	89604739	90245438	.	.	.	study_id=10;Name=GSM525792;feature_type=segment
+10	.	testtrack	89640127	90139264	.	.	.	study_id=7;Name=GSM525799;feature_type=segment
+10	.	testtrack	89640127	90517389	.	.	.	study_id=5;Name=GSM525760;feature_type=segment
+10	.	testtrack	89676711	90488934	.	.	.	study_id=11;Name=GSM525804;feature_type=segment
+10	.	testtrack	89690025	90517389	.	.	.	study_id=4;Name=GSM525779;feature_type=segment
+10	.	testtrack	90536735	94301169	.	.	.	study_id=4;Name=GSM525779;feature_type=segment

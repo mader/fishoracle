@@ -1,0 +1,4 @@
+##gff-version   3
+##sequence-region   10 89633468 91632942
+10	.	testtrack	89633468	89633468	.	.	.	study_id=19;Name=testcase1;feature_type=mutation
+10	.	testtrack	91632942	91632942	.	.	.	study_id=21;Name=testcase2;feature_type=mutation

@@ -1,0 +1,7 @@
+##gff-version   3
+##sequence-region   10 89000000 90601000
+10	.	tracktitle	89000000	89001000	.	.	.	study_id=23;type=Methylation;Name=generic;feature_type=generic
+10	.	tracktitle	89500000	89501000	.	.	.	study_id=23;type=Methylation;Name=generic;feature_type=generic
+10	.	tracktitle	90000000	90001000	.	.	.	study_id=23;type=Methylation;Name=generic;feature_type=generic
+10	.	tracktitle	90500000	90501000	.	.	.	study_id=23;type=Methylation;Name=generic;feature_type=generic
+10	.	tracktitle	90600000	90601000	.	.	.	study_id=23;type=Methylation;Name=generic;feature_type=generic

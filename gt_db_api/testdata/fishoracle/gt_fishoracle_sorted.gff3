@@ -1,0 +1,37 @@
+##gff-version   3
+##sequence-region   10 88986342 94301169
+10	.	testtrack	88986342	90713681	.	.	.	ID=testtrack1;study_id=1;feature_type=segment_root
+10	.	testtrack_segments	89365163	90074414	.	.	.	Parent=testtrack1;Name=61;feature_type=segment;study_id=1
+###
+10	.	testtrack	88986342	90713681	.	.	.	ID=testtrack2;study_id=2;feature_type=segment_root
+10	.	testtrack_segments	89348214	90131567	.	.	.	Parent=testtrack2;Name=222;feature_type=segment;study_id=2
+###
+10	.	testtrack	88986342	90713681	.	.	.	ID=testtrack3;study_id=3;feature_type=segment_root
+10	.	testtrack_segments	89564502	89690025	.	.	.	Parent=testtrack3;Name=349;feature_type=segment;study_id=3
+###
+10	.	testtrack	88986342	90713681	.	.	.	ID=testtrack4;study_id=4;feature_type=segment_root
+10	.	testtrack_segments	89690025	90517389	.	.	.	Parent=testtrack4;Name=539;feature_type=segment;study_id=4
+10	.	testtrack_segments	90536735	94301169	.	.	.	Parent=testtrack4;Name=540;feature_type=segment;study_id=4
+###
+10	.	testtrack	88986342	90713681	.	.	.	ID=testtrack5;study_id=5;feature_type=segment_root
+10	.	testtrack_segments	89640127	90517389	.	.	.	Parent=testtrack5;Name=882;feature_type=segment;study_id=5
+###
+10	.	testtrack	88986342	90713681	.	.	.	ID=testtrack6;study_id=6;feature_type=segment_root
+10	.	testtrack_segments	89263641	91400513	.	.	.	Parent=testtrack6;Name=1110;feature_type=segment;study_id=6
+###
+10	.	testtrack	88986342	90713681	.	.	.	ID=testtrack7;study_id=7;feature_type=segment_root
+10	.	testtrack_segments	89507033	89625693	.	.	.	Parent=testtrack7;Name=1332;feature_type=segment;study_id=7
+10	.	testtrack_segments	89640127	90139264	.	.	.	Parent=testtrack7;Name=1333;feature_type=segment;study_id=7
+###
+10	.	testtrack	88986342	90713681	.	.	.	ID=testtrack8;study_id=8;feature_type=segment_root
+10	.	testtrack_segments	89583211	90596634	.	.	.	Parent=testtrack8;Name=1474;feature_type=segment;study_id=8
+###
+10	.	testtrack	88986342	90713681	.	.	.	ID=testtrack9;study_id=9;feature_type=segment_root
+10	.	testtrack_segments	89263641	90044800	.	.	.	Parent=testtrack9;Name=1656;feature_type=segment;study_id=9
+###
+10	.	testtrack	88986342	90713681	.	.	.	ID=testtrack10;study_id=10;feature_type=segment_root
+10	.	testtrack_segments	89604739	90245438	.	.	.	Parent=testtrack10;Name=2901;feature_type=segment;study_id=10
+###
+10	.	testtrack	88986342	90713681	.	.	.	ID=testtrack11;study_id=11;feature_type=segment_root
+10	.	testtrack_segments	89676711	90488934	.	.	.	Parent=testtrack11;Name=4137;feature_type=segment;study_id=11
+###

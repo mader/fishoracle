@@ -1,0 +1,17 @@
+##gff-version   3
+##sequence-region   10 88986342 95000000
+10	.	testtrack	88986342	91713681	.	.	.	ID=testtrack1;study_id=16;feature_type=segment_root
+10	.	testtrack_segments	89500000	90000000	.	.	.	Parent=testtrack1;Name=6013;feature_type=segment;study_id=16
+10	.	testtrack_segments	90500001	91000000	.	.	.	Parent=testtrack1;Name=6014;feature_type=segment;study_id=16
+10	.	testtrack_segments	91500001	92000000	.	.	.	Parent=testtrack1;Name=6015;feature_type=segment;study_id=16
+###
+10	.	testtrack	88986342	91713681	.	.	.	ID=testtrack2;study_id=17;feature_type=segment_root
+10	.	testtrack_segments	89000000	90000000	.	.	.	Parent=testtrack2;Name=6016;feature_type=segment;study_id=17
+10	.	testtrack_segments	90000001	91000000	.	.	.	Parent=testtrack2;Name=6017;feature_type=segment;study_id=17
+10	.	testtrack_segments	91000001	92000000	.	.	.	Parent=testtrack2;Name=6018;feature_type=segment;study_id=17
+###
+10	.	testtrack	88986342	91713681	.	.	.	ID=testtrack3;study_id=18;feature_type=segment_root
+10	.	testtrack_segments	89200000	90300000	.	.	.	Parent=testtrack3;Name=6019;feature_type=segment;study_id=18
+10	.	testtrack_segments	90600001	91000000	.	.	.	Parent=testtrack3;Name=6020;feature_type=segment;study_id=18
+10	.	testtrack_segments	91500001	95000000	.	.	.	Parent=testtrack3;Name=6021;feature_type=segment;study_id=18
+###

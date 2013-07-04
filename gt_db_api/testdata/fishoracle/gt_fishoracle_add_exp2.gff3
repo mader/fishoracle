@@ -1,0 +1,7 @@
+##gff-version   3
+##sequence-region   3 71927968 75386945
+3	.	testtrack	71927968	75386945	.	.	.	study_id=12;Name=GSM525649;feature_type=segment
+3	.	testtrack	72049622	72830015	.	.	.	study_id=14;Name=GSM525795;feature_type=segment
+3	.	testtrack	72049622	72830015	.	.	.	study_id=15;Name=GSM525796;feature_type=segment
+3	.	testtrack	72049622	72855834	.	.	.	study_id=13;Name=GSM525761;feature_type=segment
+3	.	testtrack	73487558	74336325	.	.	.	study_id=13;Name=GSM525761;feature_type=segment

@@ -1,0 +1,7 @@
+##gff-version   3
+##sequence-region   10 20000000 24000000
+10	.	testtrack	20000000	20000000	.	.	.	study_id=22;Name=RP11-354E11.2.1,C10orf112<->15:1600000;transloc_ref_id=10;feature_type=translocation
+10	.	testtrack	21000000	21000000	.	.	.	study_id=22;Name=10:21000000<->POLR3G;transloc_ref_id=4;feature_type=translocation
+10	.	testtrack	22000000	22000000	.	.	.	study_id=22;Name=MLLT10<->AC018816.4.1;transloc_ref_id=6;feature_type=translocation
+10	.	testtrack	23000000	23000000	.	.	.	study_id=22;Name=PIP4K2A<->4:63777788;transloc_ref_id=2;feature_type=translocation
+10	.	testtrack	24000000	24000000	.	.	.	study_id=22;Name=KIAA1217<->OTOF;transloc_ref_id=8;feature_type=translocation

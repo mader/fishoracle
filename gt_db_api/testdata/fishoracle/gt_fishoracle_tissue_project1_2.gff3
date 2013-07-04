@@ -1,0 +1,4 @@
+##gff-version   3
+##sequence-region   10 89507033 90139264
+10	.	testtrack	89507033	89625693	.	.	.	study_id=7;Name=GSM525799;feature_type=segment
+10	.	testtrack	89640127	90139264	.	.	.	study_id=7;Name=GSM525799;feature_type=segment
