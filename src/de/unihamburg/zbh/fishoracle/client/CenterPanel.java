@@ -2024,7 +2024,7 @@ public class CenterPanel extends VLayout {
 				
 				if (lgr != null){
 				
-					openDataTab("SNVs", lgr.getAttributeAsString("studyId"));
+					openDataTab(FoConstants.SNV, lgr.getAttributeAsString("studyId"));
 					
 				} else {
 					SC.say("Select a study.");
