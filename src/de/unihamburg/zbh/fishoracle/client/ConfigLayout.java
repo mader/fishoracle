@@ -422,7 +422,7 @@ public class ConfigLayout extends VLayout {
 		
 		sortedCheckbox = new CheckboxItem();
 		sortedCheckbox.setTitle("group by sample");
-		sortedCheckbox.setValue(true);
+		sortedCheckbox.setValue(false);
 		sortedCheckbox.addKeyPressHandler(new KeyPressHandler(){
 			
 			@Override
