@@ -45,7 +45,7 @@ public class ProjectServiceImpl extends RemoteServiceServlet implements ProjectS
 		
 		FoProject[] projects = null;
 		
-		if(u.getIsAdmin() && operationId.equals(OperationId.PROJECT_FETCH_ALL)){
+		if(u.getIsAdmin()){
 			
 			projects = db.getAllProjects();
 			
