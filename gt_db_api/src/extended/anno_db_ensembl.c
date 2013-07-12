@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
   Copyright (c) 2012 Malte Mader <mader@zbh.uni-hamburg.de>
-=======
-  Copyright (c) 2012 Sascha Steinbiss <steinbiss@zbh.uni-hamburg.de>
->>>>>>> Add database interfaces.
   Copyright (c) 2012 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
@@ -133,6 +129,11 @@ GtStrArray* gt_feature_index_ensembl_get_seqids()
 }
 
 int gt_feature_index_ensembl_get_range_for_seqid()
+{
+  return 0;
+}
+
+int gt_feature_index_ensembl_get_orig_range_for_seqid()
 {
   return 0;
 }
@@ -275,6 +276,7 @@ const GtFeatureIndexClass* feature_index_ensembl_class(void)
                                 gt_feature_index_ensembl_save,
                                 gt_feature_index_ensembl_get_seqids,
                                 gt_feature_index_ensembl_get_range_for_seqid,
+                                gt_feature_index_ensembl_get_orig_range_for_seqid,
                                 gt_feature_index_ensembl_has_seqid,
                                 gt_feature_index_ensembl_delete);
   }

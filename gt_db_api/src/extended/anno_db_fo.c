@@ -139,6 +139,11 @@ GtStrArray* gt_feature_index_fo_get_seqids()
   return NULL;
 }
 
+int gt_feature_index_fo_get_orig_range_for_seqid()
+{
+  return 0;
+}
+
 int gt_feature_index_fo_get_range_for_seqid()
 {
   return 0;
@@ -1853,6 +1858,7 @@ const GtFeatureIndexClass* feature_index_fo_class(void)
                                 gt_feature_index_fo_save,
                                 gt_feature_index_fo_get_seqids,
                                 gt_feature_index_fo_get_range_for_seqid,
+                                gt_feature_index_fo_get_orig_range_for_seqid,
                                 gt_feature_index_fo_has_seqid,
                                 gt_feature_index_fo_delete);
   }
