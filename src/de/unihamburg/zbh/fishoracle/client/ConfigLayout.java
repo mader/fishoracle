@@ -532,7 +532,12 @@ public class ConfigLayout extends VLayout {
 				if(saveConfigTextItem.getDisplayValue().equals("")){
 					SC.say("Configuration name needed!");
 				} else {
-					FoConfigData config = buildFoConfig();
+					FoConfigData config = null;
+					try {
+						config = buildFoConfig();
+					} catch (Exception e) {
+						SC.say(e.getMessage());
+					}
 					saveConfigData(config);
 				}
 			}
@@ -691,7 +696,7 @@ public class ConfigLayout extends VLayout {
 		}
 	}
 	
-	public FoConfigData buildFoConfig(){
+	public FoConfigData buildFoConfig() throws Exception{
 			
 				String globalThr = null;
 				int[] globalCnvStati;
@@ -701,6 +706,10 @@ public class ConfigLayout extends VLayout {
 					
 					if(thrItem.isVisible()){
 						globalThr = thrItem.getDisplayValue();
+						if(globalThr.equals("0")){
+							throw new Exception("An intensity threshold of 0 is not allowed." +
+									"Please specify a value lower or higher than 0.");
+						}
 					}
 					
 					if(statusSelectItem.getValues().length == 0){
@@ -726,6 +735,11 @@ public class ConfigLayout extends VLayout {
 					
 					if(!globalThresholdCheckbox.getValueAsBoolean()){
 						if(tracks.get(i).getThrItem().isVisible()){
+							String lthr = tracks.get(i).getThrItem().getDisplayValue();
+							if(lthr.equals("0")){
+								throw new Exception("An intensity threshold of 0 is not allowed." +
+										"Please specify a value lower or higher than 0.");
+							}
 							trackData[i].addStrArray(Constants.SEGMENT_MEAN, new String[]{tracks.get(i).getThrItem().getDisplayValue()});
 						}
 						
@@ -907,28 +921,38 @@ public class ConfigLayout extends VLayout {
 						
 				QueryInfo newQuery = null;
 
-				FoConfigData config = buildFoConfig();
-			
-				config.addStrArray("ensemblDBName", new String[]{ensemblSelectItem.getValueAsString()});
-				config.addStrArray("ensemblDBLabel", new String[]{ensemblSelectItem.getDisplayValue()});
-			
+				FoConfigData config = null;
+				
 				try {
-			
-					newQuery = new QueryInfo(qryStr,
-												typeStr,
-												"png",
-												mp.getCenterPanel().getWidth() - 30,
-												config);
-				} catch (Exception e) {
-					SC.say(e.getMessage());
+					config = buildFoConfig();
+					
+					config.addStrArray("ensemblDBName", new String[]{ensemblSelectItem.getValueAsString()});
+					config.addStrArray("ensemblDBLabel", new String[]{ensemblSelectItem.getDisplayValue()});
+					
+				} catch (Exception e1) {
+					SC.say(e1.getMessage());
 				}
 			
-				if(newSearch){
-					search(newQuery);
-				} else {
-					imgInfo.setQuery(newQuery);
-					win.destroy();
-					mp.getCenterPanel().refreshRange();
+				if(config != null){
+				
+					try {
+						
+						newQuery = new QueryInfo(qryStr,
+													typeStr,
+													"png",
+													mp.getCenterPanel().getWidth() - 30,
+													config);
+					} catch (Exception e) {
+						SC.say(e.getMessage());
+					}
+					
+					if(newSearch){
+						search(newQuery);
+					} else {
+						imgInfo.setQuery(newQuery);
+						win.destroy();
+						mp.getCenterPanel().refreshRange();
+					}
 				}
 			}
 		}
