@@ -506,7 +506,7 @@ int gt_ensembl_gene_adaptor_unit_test(GtError *err)
   adb = gt_anno_db_ensembl_new();
   
   fi = gt_anno_db_schema_get_feature_index(adb, rdb, err);
-  gt_ensure(had_err, fi);
+  gt_ensure(fi);
   
   GtGenomeNode *gn = NULL;
   GtFeatureNode *fn = NULL;
@@ -520,15 +520,15 @@ int gt_ensembl_gene_adaptor_unit_test(GtError *err)
   /* Test fetch gene for gene symbol */
   gt_ensembl_fetch_gene_for_symbol(ga, fi, &gn, "PTEN", err);
   
-  gt_ensure(had_err, gn);
+  gt_ensure(gn);
   
   fn = gt_feature_node_cast(gn);
   
-  gt_ensure(had_err, gt_feature_node_get_strand(fn) == GT_STRAND_FORWARD);
+  gt_ensure(gt_feature_node_get_strand(fn) == GT_STRAND_FORWARD);
   
-  gt_ensure(had_err, strcmp(gt_feature_node_get_attribute(fn, ID), "PTEN") == 0);
+  gt_ensure(strcmp(gt_feature_node_get_attribute(fn, ID), "PTEN") == 0);
   
-  gt_ensure(had_err, strcmp(gt_feature_node_get_attribute(fn, NAME), "ENSG00000171862") == 0);
+  gt_ensure(strcmp(gt_feature_node_get_attribute(fn, NAME), "ENSG00000171862") == 0);
   
   gt_genome_node_delete(gn);
   
@@ -536,15 +536,15 @@ int gt_ensembl_gene_adaptor_unit_test(GtError *err)
   
   gt_ensembl_fetch_gene_for_stable_id(ga, fi, &gn, "ENSG00000171862", err);
   
-  gt_ensure(had_err, gn);
+  gt_ensure(gn);
   
   fn = gt_feature_node_cast(gn);
   
-  gt_ensure(had_err, gt_feature_node_get_strand(fn) == GT_STRAND_FORWARD);
+  gt_ensure(gt_feature_node_get_strand(fn) == GT_STRAND_FORWARD);
   
-  gt_ensure(had_err,  strcmp(gt_feature_node_get_attribute(fn, ID), "PTEN") == 0);
+  gt_ensure(strcmp(gt_feature_node_get_attribute(fn, ID), "PTEN") == 0);
   
-  gt_ensure(had_err,  strcmp(gt_feature_node_get_attribute(fn, NAME), "ENSG00000171862") == 0);
+  gt_ensure(strcmp(gt_feature_node_get_attribute(fn, NAME), "ENSG00000171862") == 0);
   
   gt_genome_node_delete(gn);
   
@@ -565,13 +565,13 @@ int gt_ensembl_gene_adaptor_unit_test(GtError *err)
                                    0,
                                    err);
    
-  gt_ensure(had_err,  gt_array_size(results) == 4);
+  gt_ensure(gt_array_size(results) == 4);
   
   gn = *(GtGenomeNode**) gt_array_get(results,0);
   
   fn = gt_feature_node_cast(gn);
   
-  gt_ensure(had_err,  strcmp(gt_feature_node_get_attribute(fn, ID), "KLLN") == 0);
+  gt_ensure(strcmp(gt_feature_node_get_attribute(fn, ID), "KLLN") == 0);
   
   gt_genome_node_delete(gn);
   
@@ -579,7 +579,7 @@ int gt_ensembl_gene_adaptor_unit_test(GtError *err)
   
   fn = gt_feature_node_cast(gn);
   
-  gt_ensure(had_err,  strcmp(gt_feature_node_get_attribute(fn, ID), "CFL1P1") == 0);
+  gt_ensure(strcmp(gt_feature_node_get_attribute(fn, ID), "CFL1P1") == 0);
   
   gt_genome_node_delete(gn);
   
@@ -587,7 +587,7 @@ int gt_ensembl_gene_adaptor_unit_test(GtError *err)
   
   fn = gt_feature_node_cast(gn);
   
-  gt_ensure(had_err,  strcmp(gt_feature_node_get_attribute(fn, ID), "ATAD1") == 0);
+  gt_ensure(strcmp(gt_feature_node_get_attribute(fn, ID), "ATAD1") == 0);
   
   gt_genome_node_delete(gn);
    
@@ -595,7 +595,7 @@ int gt_ensembl_gene_adaptor_unit_test(GtError *err)
   
   fn = gt_feature_node_cast(gn);
   
-  gt_ensure(had_err,  strcmp(gt_feature_node_get_attribute(fn, ID), "PTEN") == 0);
+  gt_ensure(strcmp(gt_feature_node_get_attribute(fn, ID), "PTEN") == 0);
   
   gt_genome_node_delete(gn);
   
@@ -616,13 +616,13 @@ int gt_ensembl_gene_adaptor_unit_test(GtError *err)
                                    1,
                                    err);
                                                 
-  gt_ensure(had_err,  gt_array_size(results) == 3);
+  gt_ensure(gt_array_size(results) == 3);
   
   gn = *(GtGenomeNode**) gt_array_get(results,0);
   
   fn = gt_feature_node_cast(gn);
   
-  gt_ensure(had_err,  strcmp(gt_feature_node_get_attribute(fn, ID), "KLLN") == 0);
+  gt_ensure(strcmp(gt_feature_node_get_attribute(fn, ID), "KLLN") == 0);
   
   gt_genome_node_delete(gn);
   
@@ -630,7 +630,7 @@ int gt_ensembl_gene_adaptor_unit_test(GtError *err)
   
   fn = gt_feature_node_cast(gn);
   
-  gt_ensure(had_err,  strcmp(gt_feature_node_get_attribute(fn, ID), "ATAD1") == 0);
+  gt_ensure(strcmp(gt_feature_node_get_attribute(fn, ID), "ATAD1") == 0);
   
   gt_genome_node_delete(gn);
    
@@ -638,7 +638,7 @@ int gt_ensembl_gene_adaptor_unit_test(GtError *err)
   
   fn = gt_feature_node_cast(gn);
   
-  gt_ensure(had_err,  strcmp(gt_feature_node_get_attribute(fn, ID), "PTEN") == 0);
+  gt_ensure(strcmp(gt_feature_node_get_attribute(fn, ID), "PTEN") == 0);
   
   gt_genome_node_delete(gn);
   

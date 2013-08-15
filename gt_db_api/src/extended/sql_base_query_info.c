@@ -177,7 +177,7 @@ int gt_base_query_info_unit_test(GtError *err)
   //printf("Expected: \"%s\" \n", expected_left_join);
   //printf("Got: \"%s\" \n", gt_str_get(left_join));
   
-  gt_ensure(had_err, strcmp(gt_str_get(left_join), expected_left_join) == 0);
+  gt_ensure(strcmp(gt_str_get(left_join), expected_left_join) == 0);
   
   /* Test base query... */
   GtStr *base_qry = gt_base_query_info_get_base_query(bqi);
@@ -190,7 +190,7 @@ int gt_base_query_info_unit_test(GtError *err)
   //printf("Expected: \"%s\" \n", expected_base_qry);
   //printf("_____Got: \"%s\" \n", gt_str_get(base_qry));
   
-  gt_ensure(had_err, strcmp(gt_str_get(base_qry), expected_base_qry) == 0);
+  gt_ensure(strcmp(gt_str_get(base_qry), expected_base_qry) == 0);
   
   gt_str_delete(left_join);
   gt_str_delete(base_qry);

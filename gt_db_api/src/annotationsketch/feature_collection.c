@@ -90,8 +90,8 @@ int gt_feature_collection_unit_test(GtError *err){
   
   gt_feature_collection_add(fc, fn);
   
-  gt_ensure(had_err, gt_feature_collection_size(fc) == 1);
-  gt_ensure(had_err, gt_genome_node_cmp(gt_feature_collection_get(fc, 0), fn) == 0);
+  gt_ensure(gt_feature_collection_size(fc) == 1);
+  gt_ensure(gt_genome_node_cmp(gt_feature_collection_get(fc, 0), fn) == 0);
 
   gt_feature_collection_delete_contents(fc);
   gt_feature_collection_delete(fc);

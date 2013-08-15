@@ -244,7 +244,7 @@ int gt_ensembl_karyo_adaptor_unit_test(GtError *err)
   adb = gt_anno_db_ensembl_new();
 
   fi = gt_anno_db_schema_get_feature_index(adb, rdb, err);
-  gt_ensure(had_err, fi);
+  gt_ensure(fi);
   
   GtEnsemblKaryoAdaptor* ka = gt_ensembl_karyo_adaptor_new(66);
   
@@ -257,8 +257,8 @@ int gt_ensembl_karyo_adaptor_unit_test(GtError *err)
   
   gt_ensembl_fetch_range_for_karyoband(ka, fi, &range, "10", "q23.31", err);
   
-  gt_ensure(had_err, range.start == 89500001);
-  gt_ensure(had_err, range.end == 92900000);
+  gt_ensure(range.start == 89500001);
+  gt_ensure(range.end == 92900000);
   
   
   /* Test fetch karyobands for range */
@@ -280,15 +280,15 @@ int gt_ensembl_karyo_adaptor_unit_test(GtError *err)
 	 
 	fn = gt_feature_node_cast(gn);
 	
-	gt_ensure(had_err,  strcmp(gt_feature_node_get_attribute(fn, "ID"), "10q23.31") == 0);
+	gt_ensure(strcmp(gt_feature_node_get_attribute(fn, "ID"), "10q23.31") == 0);
 	
 	seqid = gt_genome_node_get_seqid(gn);
 	
-	gt_ensure(had_err,  strcmp(gt_str_get(seqid), "10") == 0);
+	gt_ensure(strcmp(gt_str_get(seqid), "10") == 0);
 	
-	gt_ensure(had_err,  gt_genome_node_get_start(gn) == 89500001);
+	gt_ensure(gt_genome_node_get_start(gn) == 89500001);
 	
-	gt_ensure(had_err,  gt_genome_node_get_end(gn) == 92900000);
+	gt_ensure(gt_genome_node_get_end(gn) == 92900000);
 	 
     gt_genome_node_delete(gn);
   }
