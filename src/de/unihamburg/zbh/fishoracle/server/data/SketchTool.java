@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2013 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2013 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above

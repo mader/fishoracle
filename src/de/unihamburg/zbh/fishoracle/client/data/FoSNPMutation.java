@@ -1,8 +1,6 @@
-package de.unihamburg.zbh.fishoracle.client.data;
-
 /*
-Copyright (c) 2012 Malte Mader <mader@zbh.uni-hamburg.de>
-Copyright (c) 2012 Center for Bioinformatics, University of Hamburg
+Copyright (c) 2012-2013 Malte Mader <mader@zbh.uni-hamburg.de>
+Copyright (c) 2012-2013 Center for Bioinformatics, University of Hamburg
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -16,6 +14,8 @@ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
+
+package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

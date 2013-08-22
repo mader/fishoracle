@@ -1,12 +1,13 @@
-All code of FISH Oracle except /home/jumm/workspace/fishoracle/src/de/
-unihamburg/zbh/fishoracle/server/data/SimpleSHA.java is released under the
-following ICS license. It is functionally equivalent to a two-term BSD
-copyright with language removed that is made unnecessary by the Berne
-convention.
+All code of FISH Oracle except
+/src/de/unihamburg/zbh/fishoracle/server/data/SimpleSHA.java and
+/src/de/unihamburg/zbh/fishoracle/client/datasource/FoDataSource.java is
+released under the following ICS license. It is functionally equivalent
+to a two-term BSD copyright with language removed that is made unnecessary 
+by the Berne convention.
 See http://openbsd.org/policy.html for more information on copyrights.
 
-Copyright (c) 2009-2011 Malte Mader
-Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+Copyright (c) 2009-2013 Malte Mader
+Copyright (c) 2009-2013 Center for Bioinformatics, University of Hamburg
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
