@@ -76,9 +76,21 @@
     <zip destfile="fishoracle.war" basedir="war"/>
   </target>
 
+  <target name="tar_head">
+    <exec executable="git">
+      <arg value="archive"/>
+      <arg value="-o"/>
+      <arg value="fishoracle_latest.tar.gz"/>
+      <arg value="HEAD"/>
+    </exec>
+  </target>
+
   <target name="clean" description="Cleans this project">
     <delete dir="war/WEB-INF/classes" failonerror="false" />
     <delete dir="war/fishoracle" failonerror="false" />
+    <delete failonerror="false">
+      <fileset dir="." includes="**/*.tar.gz"/>
+    </delete>
   </target>
 
 </project>
