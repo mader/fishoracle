@@ -47,7 +47,6 @@ This user manual describes how to install, configure and maintain the
 \FO software. To get a first impression of the software visit
 \url{http://www.zbh.uni-hamburg.de/fishoracle} to watch a screencast video or
 try out a demo installation.
-\begin{comment}
 We also offer a virtual machine with an
 already set up \FO application which provides a quick and easy way to
 use a private instance of \FO. If you want to use \FO
@@ -55,38 +54,11 @@ collaboratively in production mode we encourage to set up a private
 installation at an own machine. Due to the technical limitations of
 virtual machines (slow, little storage) its use for large amounts of
 data is not recommendable.
-\end{comment}
 
 \subsection{Requirements and Availability}
 
 To be able to install and run \FO, the following software packages are
-needed along with their individual dependencies:\documentclass{beamer}
-\usepackage{graphicx}
-
-\usetheme{ZBH}
-
-\author{Malte Mader}
-\title{FISH Oracle: a web server for flexible
-visualization of DNA copy number data in a
-genomic context}
-\date{\today}
-
-\begin{document}
-
-\begin{frame}
-
-\titlepage
-\end{frame}
-
-\begin{frame}{FISH Oracle Interface}
-  \begin{center}
-    \includegraphics[width=\textwidth]{frontend_new_icons.png}
-  \end{center}
-\end{frame}
-
-\end{document}
-
-
+needed along with their individual dependencies:
 
 \begin{itemize}
   \item MySQL database server
@@ -317,6 +289,9 @@ mysql> update user set isadmin = 1 where user.username = 'adminuser';
 \section{\FO installation}
 \label{fo-install}
 
+For the installation of the \Gt you can use the installation script
+\texttt{install\_geneomtools.sh} which is part of the \FO source code.
+
 The last part of the installation is distribution independent
 and therefore at every system the same. If the PC is a 64 bit
 architecture the \Gt need to be compiled with the 64bit
@@ -324,21 +299,25 @@ flag. So make sure that in line 4 you use \texttt{make 64bit=yes}
 instead of \texttt{make}.
 
 \begin{lstlisting}
-> wget http://genometools.org/pub/genometools-1.3.7.tar.gz
-
-> tar -xvzf genometools-1.3.7.tar.gz
-
-> cd genometools-1.3.7
-
-> make
-
-> sudo make install
 
 > wget http://www.zbh.uni-hamburg.de/fileadmin/gi/FISHOracle/fishoracle.tar.gz
 
 > tar -xvzf fishoracle.tar.gz
 
-> cd fishoracle
+> wget https://github.com/genometools/genometools/archive/master.zip
+
+> tar -xvzf master.tar.gz
+
+> cd master
+
+> cp ../fishoracle/gt_db_api/* .
+
+> make with-mysql=yes
+
+> sudo make install
+
+> cd ../fishoracle
+
 \end{lstlisting}
 
 Before compiling the \FO application, the database connections have
