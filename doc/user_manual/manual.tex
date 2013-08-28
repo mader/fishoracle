@@ -391,12 +391,18 @@ the Tomcat installation may be helpful.
 
 \subsection{Data Import}
 
-New data is imported from tab delimited files. The data format of these files
-needs to include the following data columns:
+\subsubsection{File Formats}
+
+New data is imported from tab delimited files. Depending on the datatype the
+necessary data columns vary.
+
+
+\paragraph{Copy Number Variation Data}
+
+Following columns have to be present in order to import Copy Number Variation
+(CNV) data:
 
 \begin{enumerate}
-  \item Row count column (header row stays empty)
-  \item ID column (``ID'')
   \item Chromosome column (``chr'')
   \item Start position (``start'')
   \item End position (``end loc'')
@@ -404,24 +410,64 @@ needs to include the following data columns:
   \item Segment mean intensity value (``segment mean'')
 \end{enumerate}
 
-Table \ref{tab:tsv} exemplifies the structure of a tab delimited import file.
+Table \ref{tab:tsv_cnv} exemplifies the structure of a tab delimited CNV data file.
 
 \begin{table}
 	\centering
 	\begin{tabular}[h]{|c|c|c|c|c|c|c|}
 	  \hline
-	  & ID & chr & start & end loc & markers & segment mean \\ \hline
-	 1 & pancreas\_experiment001 & 1 & 10000 & 20000 & 135 & -0.27 \\
-	 2 & pancreas\_experiment001 & 1 & 21000 & 25000 & 57 & 0.01 \\
-	 3 & pancreas\_experiment001 & 1 & 25001 & 30000 & 80 & -0.3 \\
-	 4 & pancreas\_experiment001 & 2 & 3000 & 5000 & 22 & 0.21 \\
-	 5 & pancreas\_experiment001 & 2 & 8000 & 10000 & 15 & 0.28 \\
-	 6 & pancreas\_experiment001 & 2 & 11000 & 18000 & 47 & 0.3 \\
-	 \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+	 chr & start & end loc & markers & segment mean \\ \hline
+	 1 & 10000 & 20000 & 135 & -0.27 \\
+	 1 & 21000 & 25000 & 57 & 0.01 \\
+	 1 & 25001 & 30000 & 80 & -0.3 \\
+	 2 & 3000 & 5000 & 22 & 0.21 \\
+	 2 & 8000 & 10000 & 15 & 0.28 \\
+	 2 & 11000 & 18000 & 47 & 0.3 \\
+	 \vdots & \vdots & \vdots & \vdots & \vdots \\
 	\end{tabular}
-	\caption{Structure of the tab delimited import files.}
-	\label{tab:tsv}
+	\caption{Structure of the tab delimited import files for CNV data}
+	\label{tab:tsv_cnv}
 \end{table}
+
+\paragraph{Single Nucleotide Varoation Data}
+
+Following columns have to be present in order to import Copy Number Variation
+(CNV) data:
+
+\begin{enumerate}
+  \item Chromosome column (``\#CHROM'')
+  \item SNV position (``POS'')
+  \item dbSNP ID (``DBSNP\_ID'')
+  \item Reference (``REF'')
+  \item Alternative (``ALT'')
+  \item Quality score (``QUAL'')
+  \item Somatic or germline mutation (``SOMATIC\_GERMLINE\_CLASSIFICATION'')
+  \item Confidence level (``CONFIDENCE'')
+\end{enumerate}
+
+\begin{table}
+	\centering
+	\begin{tabular}[h]{|c|c|c|c|c|c|c|c|}
+	  \hline
+	  \#CHROM & POS & DBSNP\_ID & REF & ALT & QUAL & {*}SGC & CONFIDENCE \\ \hline
+	 1 & 10000 & rs55798854 & G & T & 75 & somatic & high confidence\\
+         1 & 25001 & . & A & G & 66 & somatic & medium confidence\\
+         1 & 3000 & rs12345678 & T & C & 25 & somatic & low confidence\\
+         1 & 8000 & . & G & C & 120 & germline & high confidence\\
+	\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+	\end{tabular}
+	\caption{Structure of the tab delimited import files for SNV data.
+	{*}SOMATIC\_GERMLINE\_CLASSIFICATION}
+	\label{tab:tsv_snv}
+\end{table}
+
+Table \ref{tab:tsv_snv} exemplifies the structure of a tab delimited SNV data file.
+
+\paragraph{Translocation Data}
+
+\paragraph{Generic Feature data}
+
+\subsubsection{Web application import}
 
 The data import comprises 2 steps: The upload of the tab delimited file and
 the actual import of the data and meta data into the database.
@@ -436,6 +482,8 @@ tissue need to be specified. Figure \ref{fig:import} depicts the data import.
 	\caption{Screenshot of the import page.}
 	\label{fig:import}
 \end{figure}
+
+%\subsubsection{FISH Oracle importer}
 
 %\subsection{Run more than one \FO-Application on a Tomcat server}
 
