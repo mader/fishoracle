@@ -556,7 +556,56 @@ Figure \ref{fig:import} depicts the data import.
 	\label{fig:import}
 \end{figure}
 
-%\subsubsection{FISH Oracle importer}
+\subsubsection{FISH Oracle importer}
+
+FISH Oracle Importer is a command line tool for the batch import of genomic
+data into the FISH Oracle database. The data sources and additional attributes
+are specified in a meta data file called \texttt{metadata.csv}. 
+
+Required data columns are specified as follows:
+
+\begin{itemize}
+  \item Specifies if a study should be created. Takes ``TRUE'' and ``FALSE'' as
+    values. (``{CREATE\_STUDY}'')
+  \item Path to the directory storing the tab delimeted data files.
+        (``DATA\_PATH'')
+  \item Define the data type. Tha values ``Segments'', ``Mutations''
+        (corresponding to SNVs), ``Translocations'' and ``Generic'' are valid 
+	values. (``IMPORT\_TYPE'')
+  \item The subtyp is defined for segments, which can be divided into
+        ``cnv\_intensity'' and ``cnv\_status'', and generic features. The value
+	for generic features can be any freely defined string. For mutations and
+	translocation the value ``0'' has to be specified. (``SUB\_TYPE'')
+  \item Assign a project ID (an integer value) to the data set.
+        (``PROJECT\_ID'')
+  \item Specify a genome assembly (NCBI36 or GrCh37). (``ASSEMBLY'')
+  \item Give an optional description. Value can be empty. (``DESCRIPTION'')
+  \item Specify an organ to which the data refers to as organ ID (an integer
+        value). (``ORGAN\_ID'')
+  \item Specify a platform as ID (integer value) to which the data refers to.
+        (``PLATFORM\_ID'')
+\end{itemize}
+
+The \texttt{database.conf} file has to be setup as explained in
+\ref{fo-install}.
+
+The FISH Orcale Importer can be compiled with the \textit{ant} command:
+
+\begin{lstlisting}
+  
+> ant jar
+
+\end{lstlisting}
+
+When the meta data and database configuration file are correctly setup, the
+application can be started as follows
+
+\begin{lstlisting}
+  
+> java -jar fo_importer.jar
+
+\end{lstlisting}
+
 
 %\subsection{Run more than one \FO-Application on a Tomcat server}
 
