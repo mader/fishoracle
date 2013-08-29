@@ -403,11 +403,11 @@ Following columns have to be present in order to import Copy Number Variation
 (CNV) data:
 
 \begin{enumerate}
-  \item Chromosome column (``chr'')
-  \item Start position (``start'')
-  \item End position (``end loc'')
-  \item Number of markers (``markers'')
-  \item Segment mean intensity value (``segment mean'')
+  \item Chromosome column (``chrom'')
+  \item Start position (``loc.start'')
+  \item End position (``loc.end'')
+  \item Number of markers (``num.mark'')
+  \item Segment mean intensity value (``seg.mean'')
 \end{enumerate}
 
 Table \ref{tab:tsv_cnv} exemplifies the structure of a tab delimited CNV data file.
@@ -416,7 +416,7 @@ Table \ref{tab:tsv_cnv} exemplifies the structure of a tab delimited CNV data fi
 	\centering
 	\begin{tabular}[h]{|c|c|c|c|c|c|c|}
 	  \hline
-	 chr & start & end loc & markers & segment mean \\ \hline
+	 chrom & loc.start & loc.end & num.mark & seg.mean \\ \hline
 	 1 & 10000 & 20000 & 135 & -0.27 \\
 	 1 & 21000 & 25000 & 57 & 0.01 \\
 	 1 & 25001 & 30000 & 80 & -0.3 \\
@@ -429,10 +429,10 @@ Table \ref{tab:tsv_cnv} exemplifies the structure of a tab delimited CNV data fi
 	\label{tab:tsv_cnv}
 \end{table}
 
-\paragraph{Single Nucleotide Varoation Data}
+\paragraph{Single Nucleotide Variation Data}
 
-Following columns have to be present in order to import Copy Number Variation
-(CNV) data:
+Following columns have to be present in order to import Single Nucleotide
+Variation (SNV) data:
 
 \begin{enumerate}
   \item Chromosome column (``\#CHROM'')
@@ -465,15 +465,88 @@ Table \ref{tab:tsv_snv} exemplifies the structure of a tab delimited SNV data fi
 
 \paragraph{Translocation Data}
 
+Following columns have to be present in order to import interchromosomal
+translocation data:
+
+\begin{enumerate}
+  \item Chromosome 1 (``CHR1'')
+  \item Position 1 (``POS1'')
+  \item Chromosome 2 (``CHR2'')
+  \item Position 2 (``POS2'')
+\end{enumerate}
+
+\begin{table}
+	\centering
+	\begin{tabular}[h]{|c|c|c|c|c|c|c|c|}
+	  \hline
+	  CHR1 & POS1 & CHR2 & POS2 \\ \hline
+	 6 & 13191444 & X & 111586663 \\
+         22 & 29066043 & X & 131870734 \\
+         3 & 130813052 & 6 & 13191014 \\
+         1 & 159775163 & 6 & 13191014 \\
+	 \vdots & \vdots & \vdots & \vdots \\
+	\end{tabular}
+	\caption{Structure of the tab delimited import files for translocation
+	data.}
+	\label{tab:tsv_transloc}
+\end{table}
+
+Table \ref{tab:tsv_transloc} exemplifies the structure of a tab delimited
+translocation data file.
+
 \paragraph{Generic Feature data}
+
+Following columns have to be present in order to import generic feature data:
+
+\begin{enumerate}
+  \item Chromosome (``\#CHROM'')
+  \item Sart position (``START'')
+  \item End position (``END'')
+\end{enumerate}
+
+\begin{table}
+	\centering
+	\begin{tabular}[h]{|c|c|c|c|c|c|c|c|}
+	  \hline
+	  \#CHROM & START & END \\ \hline
+	 3 & 66991882 & 11593523 \\
+         7 & 66961609 & 67486129 \\
+         X & 40645548 & 52700325 \\
+         16 & 123747158 & 231771070 \\
+	 \vdots & \vdots & \vdots \\
+	\end{tabular}
+	\caption{Structure of the tab delimited import files for translocation
+	data.}
+	\label{tab:tsv_gen}
+\end{table}
+
+Table \ref{tab:tsv_gen} exemplifies the structure of a tab delimited
+genereic feature data file.
 
 \subsubsection{Web application import}
 
 The data import comprises 2 steps: The upload of the tab delimited file and
-the actual import of the data and meta data into the database.
-After the upload the user needs to specify an appropriate microarray study
-name. By default the file name is suggested. Furthermore the chip type and a
-tissue need to be specified. Figure \ref{fig:import} depicts the data import.
+the actual import of the data into the database. A grid shows all uploaded
+files. By default the study name equals the file name without the file
+extension but it can be changed to any other string.
+Further import options comprise: 
+
+\begin{itemize}
+  \item The data type, which determines which kind of data will be imported.
+  \item A project that will hold the data.
+  \item A tissue to which the data refers to.
+  \item A platform that has generated the data (e.g. microarray chips or
+        sequencing platforms)
+  \item The genome assembly.
+\end{itemize}
+
+Data can either be imported into a newly created or an existing study. 
+The batch import allows to import the data in one step. Otherwise the
+user will be able to check or change the already given data and to
+specify further attributes in a separate popup windor for the study
+if desired.
+
+Figure \ref{fig:import} depicts the data import.
 
 \begin{figure}[h]
 	\begin{center}
