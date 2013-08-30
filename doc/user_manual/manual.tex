@@ -125,7 +125,7 @@ To set up the actual \FO application, proceed to sections \ref{db-setup}
 
 An installation script for the automatic installation of all needed software
 packages and the \FO software is provided at
-\url{http://www.zbh.uni-hamburg.de/fileadmin/gi/FISHOracle/install_fishoracle_ubuntu.sh}.
+\url{http://public.zbh.uni-hamburg.de/~mader/fo/install_fishoracle_ubuntu.sh}.
 The script needs to be executed with administration rights (e.g.\ using
 \texttt{sudo}).
 
@@ -156,8 +156,12 @@ and execute the following commands (you may be prompted for your password):
 To set up the actual \FO application, proceed to sections \ref{db-setup}
 (Database setup) and \ref{fo-install} (\FO installation).
 
+\begin{comment}
+
 \subsection{Mac OS X 10.6 -- Snow Leopard}
 \label{macosx}
+
+%This has not been tested for the latest FISH Oracle version (20.08.2013).
 
 \subsubsection*{Installing the prerequisites}
 
@@ -208,6 +212,8 @@ location on the server. The destination will be further referred to as the
 
 To set up the actual \FO application, proceed to sections \ref{db-setup}
 (Database setup) and \ref{fo-install} (\FO installation).
+
+\end{comment}
 
 \section{Database setup}
 \label{db-setup}
@@ -390,8 +396,10 @@ the Tomcat installation may be helpful.
 \section{Configuration}
 
 \subsection{Data Import}
+\label{fo-import}
 
 \subsubsection{File Formats}
+\label{file-formats}
 
 New data is imported from tab delimited files. Depending on the datatype the
 necessary data columns vary.
@@ -524,6 +532,7 @@ Table \ref{tab:tsv_gen} exemplifies the structure of a tab delimited
 generic feature data file.
 
 \subsubsection{Web application import}
+\label{web-import}
 
 The data import comprises 2 steps: The upload of the tab delimited file and
 the actual import of the data into the database. A grid shows all uploaded
@@ -557,6 +566,7 @@ Figure \ref{fig:import} depicts the data import.
 \end{figure}
 
 \subsubsection{FISH Oracle importer}
+\label{batch-importer}
 
 FISH Oracle Importer is a command line tool for the batch import of genomic
 data into the FISH Oracle database. The data sources and additional attributes
