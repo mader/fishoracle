@@ -198,7 +198,7 @@ As Apache Tomcat is not available in the Fink repository, get a Tomcat
 \texttt{tar.gz} version. Then, unpack it in a directory of your choice:
 
 \begin{lstlisting}
- > tar -xzvf apache-tomcat-6.0.32.tar.gz
+ > tar -xvzf apache-tomcat-6.0.32.tar.gz
 \end{lstlisting}
 
 This results in a new directory \texttt{apache-tomcat-6.0.32} being created.
@@ -290,7 +290,7 @@ mysql> update user set isadmin = 1 where user.username = 'adminuser';
 \label{fo-install}
 
 For the installation of the \Gt you can use the installation script
-\texttt{install\_geneomtools.sh} which is part of the \FO source code.
+\texttt{install\_genometools.sh} which is part of the \FO source code.
 
 The last part of the installation is distribution independent
 and therefore at every system the same. If the PC is a 64 bit
@@ -521,7 +521,7 @@ Following columns have to be present in order to import generic feature data:
 \end{table}
 
 Table \ref{tab:tsv_gen} exemplifies the structure of a tab delimited
-genereic feature data file.
+generic feature data file.
 
 \subsubsection{Web application import}
 
@@ -543,7 +543,7 @@ Further import options comprise:
 Data can either be imported into a newly created or an existing study. 
 The batch import allows to import the data in one step. Otherwise the
 user will be able to check or change the already given data and to
-specify further attributes in a separate popup windor for the study
+specify further attributes in a separate popup window for the study
 if desired.
 
 Figure \ref{fig:import} depicts the data import.
@@ -567,9 +567,9 @@ Required data columns are specified as follows:
 \begin{itemize}
   \item Specifies if a study should be created. Takes ``TRUE'' and ``FALSE'' as
     values. (``{CREATE\_STUDY}'')
-  \item Path to the directory storing the tab delimeted data files.
+  \item Path to the directory storing the tab delimited data files.
         (``DATA\_PATH'')
-  \item Define the data type. Tha values ``Segments'', ``Mutations''
+  \item Define the data type. The values ``Segments'', ``Mutations''
         (corresponding to SNVs), ``Translocations'' and ``Generic'' are valid 
 	values. (``IMPORT\_TYPE'')
   \item The subtyp is defined for segments, which can be divided into
