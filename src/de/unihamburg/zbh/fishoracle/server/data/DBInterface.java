@@ -901,13 +901,24 @@ public class DBInterface {
 		
 		if(g.length > 0){
 			ProjectAccess[] projectAccess = pa.fetchProjectAccessForGroups(g, writeOnly, withChildren);
-			p = pa.fetchProjectsForProjectAccess(projectAccess, false);
+			
+			if(projectAccess.length > 0){
+				p = pa.fetchProjectsForProjectAccess(projectAccess, false);
+			} else {
+				p = getEmptyProject();
+			}
 		} else {
-			p = new Project[1];
-			p[0] = new Project(0, "No access to projects.", "You have no access to projects.");
+			p = getEmptyProject();
 		}
 		
 		return DataTypeConverter.projectsToFoProjects(p);
+	}
+	
+	public Project[] getEmptyProject(){
+		Project[] p;
+		p = new Project[1];
+		p[0] = new Project(0, "No access to projects.", "You have no access to projects.");
+		return p;
 	}
 	
 	public FoProject[] getAllProjects() throws Exception {
