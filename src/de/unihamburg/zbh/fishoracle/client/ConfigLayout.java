@@ -24,6 +24,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.types.MultipleAppearance;
+import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.form.DynamicForm;
@@ -717,6 +718,7 @@ public class ConfigLayout extends VLayout {
 			
 				String globalThr = null;
 				int[] globalCnvStati;
+				Boolean dataFilterIsSet = false;
 				
 				/* Get global options. */
 				if(globalThresholdCheckbox.getValueAsBoolean()){
@@ -765,39 +767,39 @@ public class ConfigLayout extends VLayout {
 						}
 					}
 					if(tracks.get(i).getSelectItemProjects().getVisible()){
-						
+						dataFilterIsSet = true;
 						String[] strArr = tracks.get(i).getSelectItemProjects().getValues();
 						trackData[i].addStrArray(Constants.PROJECT_IDS, strArr);
 					}
 					
 					if(tracks.get(i).getSelectItemTissues().getVisible()){
-						
+						dataFilterIsSet = true;
 						String[] strArr = tracks.get(i).getSelectItemTissues().getValues();
 						trackData[i].addStrArray(Constants.TISSUE_IDS, strArr);
 					}
 					
 					if(tracks.get(i).getSelectItemExperiments().getVisible()){
-						
+						dataFilterIsSet = true;
 						String[] strArr = tracks.get(i).getSelectItemExperiments().getValues();
 						trackData[i].addStrArray(Constants.EXPERIMENT_IDS, strArr);
 					}
 					if(tracks.get(i).getSelectItemFilterType().getValueAsString().equals(FoConstants.SNV)){
 						if(tracks.get(i).getTextItemQuality().getVisible()){
-							
+							dataFilterIsSet = true;
 							trackData[i].addStrArray(Constants.QUALTY_SCORE, new String[]{tracks.get(i).getTextItemQuality().getValueAsString()});
 						}
 						if(tracks.get(i).getSelectItemSomatic().getVisible()){
-							
+							dataFilterIsSet = true;
 							String[] strArr = tracks.get(i).getSelectItemSomatic().getValues();
 							trackData[i].addStrArray(Constants.SOMATIC, strArr);
 						}
 						if(tracks.get(i).getSelectItemConfidence().getVisible()){
-							
+							dataFilterIsSet = true;
 							String[] strArr = tracks.get(i).getSelectItemConfidence().getValues();							
 							trackData[i].addStrArray(Constants.CONFIDENCE, strArr);
 						}
 						if(tracks.get(i).getSelectItemSNPTool().getVisible()){
-							
+							dataFilterIsSet = true;
 							String[] strArr = tracks.get(i).getSelectItemSNPTool().getValues();							
 							trackData[i].addStrArray(Constants.SNP_TOOL, strArr);
 						}
@@ -877,6 +879,7 @@ public class ConfigLayout extends VLayout {
 					config.addStrArray(Constants.CNV_STATI, intArrToStrArr(globalCnvStati));
 				}
 				
+				
 				config.setName(saveConfigTextItem.getDisplayValue());
 				
 				config.addStrArray(Constants.ENSEMBL_ID, new String[]{ensemblSelectItem.getValueAsString()});
@@ -884,6 +887,8 @@ public class ConfigLayout extends VLayout {
 				config.addStrArray(Constants.SORTED_SEGMENTS, new String[]{String.valueOf(sortedCheckbox.getValueAsBoolean())});
 				config.addStrArray(Constants.SHOW_SEGMENT_CAPTION, new String[]{String.valueOf(showCNVCaptionsCheckbox.getValueAsBoolean())});
 				config.addStrArray(Constants.IS_GLOBAL_SEGMENT_TH, new String[]{String.valueOf(globalThresholdCheckbox.getValueAsBoolean())});
+				
+				config.addStrArray("dataFilterIsSet", new String[]{dataFilterIsSet.toString()});
 				
 		return config;
 	}
@@ -964,7 +969,19 @@ public class ConfigLayout extends VLayout {
 					}
 					
 					if(newSearch){
-						search(newQuery);
+						
+						boolean dataFilterIsSet =  Boolean.parseBoolean(config.getStrArray("dataFilterIsSet")[0]);
+						
+						if(!dataFilterIsSet){
+							
+							SC.confirm("No Filters", "You have not selected any filter option." +
+									"This will lead to the visualization of the complete database." +
+									"Depending on database size this may slow down the visualization process." +
+									"Do you want to proceed?", new SQBooleanCallback(newQuery, this));
+						} else {
+							search(newQuery);
+						}
+						
 					} else {
 						imgInfo.setQuery(newQuery);
 						win.destroy();
@@ -1044,5 +1061,23 @@ public class ConfigLayout extends VLayout {
 		};
 		
 		req.fetch(configId, callback);
+	}
+}
+
+class SQBooleanCallback implements BooleanCallback {
+
+	QueryInfo query = null;
+	ConfigLayout cl = null;
+	
+	public SQBooleanCallback(QueryInfo q, ConfigLayout cl){
+		this.query = q;
+		this.cl = cl;
+	}
+	
+	@Override
+	public void execute(Boolean value) {
+		if(value != null && value){
+			cl.search(query);
+		}
 	}
 }
