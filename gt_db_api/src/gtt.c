@@ -55,6 +55,7 @@
 #include "extended/alignment.h"
 #include "extended/anno_db_gfflike_api.h"
 #include "extended/compressed_bitsequence.h"
+#include "extended/editscript.h"
 #include "extended/elias_gamma.h"
 #include "extended/encdesc.h"
 #include "extended/evaluator.h"
@@ -77,6 +78,7 @@
 #include "extended/string_matching.h"
 #include "extended/tag_value_map.h"
 #include "extended/uint64hashtable.h"
+#include "extended/unique_encseq.h"
 #include "ltr/gt_ltrclustering.h"
 #include "ltr/gt_ltrdigest.h"
 #include "ltr/gt_ltrharvest.h"
@@ -84,6 +86,7 @@
 #include "match/rdj-spmlist.h"
 #include "match/rdj-strgraph.h"
 #include "match/shu-encseq-gc.h"
+#include "match/xdrop.h"
 #include "tools/gt_bed_to_gff3.h"
 #include "tools/gt_cds.h"
 #include "tools/gt_chain2dim.h"
@@ -115,7 +118,6 @@
 #include "tools/gt_interfeat.h"
 #include "tools/gt_matchtool.h"
 #include "tools/gt_matstat.h"
-#include "tools/gt_maxpairs.h"
 #include "tools/gt_md5_to_id.h"
 #include "tools/gt_merge.h"
 #include "tools/gt_mergefeat.h"
@@ -127,6 +129,7 @@
 #include "tools/gt_packedindex.h"
 #include "tools/gt_prebwt.h"
 #include "tools/gt_readjoiner.h"
+#include "tools/gt_repfind.h"
 #include "tools/gt_script_filter.h"
 #include "tools/gt_select.h"
 #include "tools/gt_seq.h"
@@ -153,6 +156,8 @@
 #include "tools/gt_uniq.h"
 #include "tools/gt_uniquesub.h"
 #include "tools/gt_wtree.h"
+#include "tools/gt_unique_encseq.h"
+#include "tools/gt_unique_encseq_extract.h"
 #ifndef WITHOUT_CAIRO
 #include "annotationsketch/block.h"
 #include "annotationsketch/diagram.h"
@@ -242,6 +247,9 @@ GtToolbox* gtt_tools(void)
   gt_toolbox_add_tool(tools, "tirvish", gt_tir());
   gt_toolbox_add_tool(tools, "uniq", gt_uniq());
   gt_toolbox_add_tool(tools, "wtree", gt_wtree());
+  gt_toolbox_add_tool(tools, "unique_encseq", gt_unique_encseq());
+  gt_toolbox_add_tool(tools, "unique_encseq_extract",
+      gt_unique_encseq_extract());
 #ifndef WITHOUT_CAIRO
   gt_toolbox_add_tool(tools, "sketch", gt_sketch());
   gt_toolbox_add_tool(tools, "sketch_page", gt_sketch_page());
@@ -260,8 +268,6 @@ GtHashmap* gtt_unit_tests(void)
 
   /* add unit tests */
 
-  gt_hashmap_add(unit_tests, "compactulongstore class",
-                                              gt_compact_ulong_store_unit_test);
   gt_hashmap_add(unit_tests, "alphabet class", gt_alphabet_unit_test);
   gt_hashmap_add(unit_tests, "alignment class", gt_alignment_unit_test);
   gt_hashmap_add(unit_tests, "array class", gt_array_unit_test);
@@ -283,6 +289,8 @@ GtHashmap* gtt_unit_tests(void)
                                             gt_codon_iterator_encseq_unit_test);
   gt_hashmap_add(unit_tests, "color space module", gt_colorspace_unit_test);
   gt_hashmap_add(unit_tests, "combinatorics", gt_combinatorics_unit_test);
+  gt_hashmap_add(unit_tests, "compactulongstore class",
+                                              gt_compact_ulong_store_unit_test);
   gt_hashmap_add(unit_tests, "compressed bitsequence",
                                            gt_compressed_bitsequence_unit_test);
   gt_hashmap_add(unit_tests, "countingsort module", gt_countingsort_unit_test);
@@ -294,6 +302,7 @@ GtHashmap* gtt_unit_tests(void)
   gt_hashmap_add(unit_tests, "dlist class", gt_dlist_unit_test);
   gt_hashmap_add(unit_tests, "dlist example", gt_dlist_example);
   gt_hashmap_add(unit_tests, "dynamic bittab class", gt_dyn_bittab_unit_test);
+  gt_hashmap_add(unit_tests, "editscript class", gt_editscript_unit_test);
   gt_hashmap_add(unit_tests, "elias gamma class", gt_elias_gamma_unit_test);
   gt_hashmap_add(unit_tests, "encdesc class", gt_encdesc_unit_test);
   gt_hashmap_add(unit_tests, "encseq builder class",
@@ -347,6 +356,7 @@ GtHashmap* gtt_unit_tests(void)
   gt_hashmap_add(unit_tests, "tokenizer class", gt_tokenizer_unit_test);
   gt_hashmap_add(unit_tests, "translator class", gt_translator_unit_test);
   gt_hashmap_add(unit_tests, "uint64hashtable", gt_uint64hashtable_unit_test);
+  gt_hashmap_add(unit_tests, "xdrop", gt_xdrop_unit_test);
 #ifndef WITHOUT_CAIRO
   gt_hashmap_add(unit_tests, "block class", gt_block_unit_test);
   gt_hashmap_add(unit_tests, "diagram class", gt_diagram_unit_test);
