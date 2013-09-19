@@ -51,6 +51,7 @@ public interface Admin extends RemoteService {
 	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
 	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);
 	boolean removeUserFromFoGroup(int groupId, int userId) throws UserException;
+	FoGroup[] getAllGroupsForUser() throws Exception;
 	
 	public static class Util {
 

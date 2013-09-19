@@ -62,5 +62,7 @@ public interface AdminAsync {
 			AsyncCallback<FoGroup[]> callback);
 
 	void removeUserFromFoGroup(int groupId, int userId,
-			AsyncCallback<Boolean> callback);	
+			AsyncCallback<Boolean> callback);
+
+	void getAllGroupsForUser(AsyncCallback<FoGroup[]> callback);	
 }

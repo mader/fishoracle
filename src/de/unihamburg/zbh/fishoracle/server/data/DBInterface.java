@@ -710,6 +710,15 @@ public class DBInterface {
 		return DataTypeConverter.groupsToFoGroups(groups, false);
 	}
 	
+	public FoGroup[] getAllGroupsForUser(FoUser user) throws Exception{
+		FODriver driver = getFoDriver();
+		GroupAdaptor ga = driver.getGroupAdaptor();
+		
+		Group[] groups = ga.fetchGroupsForUser(user.getId(), false);
+		
+		return DataTypeConverter.groupsToFoGroups(groups, false);
+	}
+	
 	public FoGroup addGroup(FoGroup foGroup){
 		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();

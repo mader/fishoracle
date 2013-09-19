@@ -85,7 +85,7 @@ public class NorthPanel extends HLayout{
 				
 				Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
 				for(int i=0; i < tabs.length; i++){
-					if(tabs[i].getTitle().equals("Profile")){
+					if(tabs[i].getTitle().equals("User Settings")){
 						exists = true;
 						index = i;
 					}
