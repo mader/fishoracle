@@ -26,7 +26,7 @@ public interface ConfigService extends RemoteService {
 
 	public void add(FoConfigData foConf);
 	public FoConfigData fetch(int configId);
-	public FoConfigData[] fetchForUser(int userId);
+	FoConfigData[] fetchForUser();
 	public void delete(int configId);
 
 	public static class Util {

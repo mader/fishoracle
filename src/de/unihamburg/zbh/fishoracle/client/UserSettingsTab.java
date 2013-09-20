@@ -25,6 +25,7 @@ import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
+import de.unihamburg.zbh.fishoracle.client.datasource.ConfigDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.datasource.UserDS;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
@@ -32,6 +33,8 @@ import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 
 public class UserSettingsTab extends Tab{
 
+	private MainPanel mp;
+	
 	private DynamicForm userProfileForm;
 	private DynamicForm userPwForm;
 	private TextItem userIdTextItem;
@@ -44,7 +47,9 @@ public class UserSettingsTab extends Tab{
 	
 	private ListGrid groupGrid;
 	
-	public UserSettingsTab(){
+	public UserSettingsTab(MainPanel mp){
+		
+		this.mp = mp;
 		
 		this.setTitle("User Settings");
 		this.setCanClose(true);
@@ -203,17 +208,16 @@ public class UserSettingsTab extends Tab{
 		
 		HLayout toolbarContainer = new HLayout();
 		toolbarContainer.setWidth100();
-		toolbarContainer.setHeight100();
+		toolbarContainer.setHeight("2%");
 		
 		HLayout gridContainer = new HLayout();
 		gridContainer.setWidth100();
-		gridContainer.setHeight100();
 		
 		ToolStrip configToolStrip = new ToolStrip();
 		configToolStrip.setWidth100();
 		
 		ToolStripButton updateConfigButton = new ToolStripButton();
-		updateConfigButton.setTitle("uUpdate Configuration");
+		updateConfigButton.setTitle("Update Configuration");
 		updateConfigButton.addClickHandler(new ClickHandler(){
 
 			@Override
@@ -235,12 +239,44 @@ public class UserSettingsTab extends Tab{
 			}});
 		
 		configToolStrip.addButton(updateConfigButton);
+		configToolStrip.addButton(deleteConfigButton);
 		
 		toolbarContainer.setMembers(configToolStrip);
 		
 		//grid showing saved configs
 		
+		ListGrid configGrid;
+		
+		configGrid = new ListGrid();
+		configGrid.setWidth("50%");
+		configGrid.setHeight100();
+		configGrid.setShowAllRecords(true);
+		configGrid.setAlternateRecordStyles(true);
+		configGrid.setWrapCells(true);
+		configGrid.setFixedRecordHeights(false);
+		configGrid.markForRedraw();
+		
+        ConfigDS cDS = new ConfigDS();
+		
+		configGrid.setDataSource(cDS);
+		configGrid.setFetchOperation(OperationId.ORGAN_FETCH_ALL);
+		
+		configGrid.fetchData();
+		
+		gridContainer.addMember(configGrid);
+		
+		
 		//config layout
+		
+		ConfigLayout cl = new ConfigLayout(mp, true);
+		
+		gridContainer.addMember(cl);
+		
+		pane.addMember(toolbarContainer);
+		
+		pane.addMember(gridContainer);
+		
+		userConfigsTab.setPane(pane);
 		
 		return userConfigsTab;
 	}

@@ -66,13 +66,15 @@ public class ConfigServiceImpl extends RemoteServiceServlet implements ConfigSer
 	}
 
 	@Override
-	public FoConfigData[] fetchForUser(int userId) {
+	public FoConfigData[] fetchForUser() {
+		
+		FoUser u =  getSessionUserObject();
 		
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.getConfigForUserId(userId);
+		return db.getConfigForUserId(u.getId());
 	}
 	
 	@Override

@@ -25,6 +25,6 @@ public interface ConfigServiceAsync {
 
 	void add(FoConfigData foConf, AsyncCallback<Void> callback);
 	void fetch(int configId, AsyncCallback<FoConfigData> callback);
-	void fetchForUser(int userId, AsyncCallback<FoConfigData[]> callback);	
+	void fetchForUser(AsyncCallback<FoConfigData[]> callback);	
 	void delete(int configId, AsyncCallback<Void> callback);
 }

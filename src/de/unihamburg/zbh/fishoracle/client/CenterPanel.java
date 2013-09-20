@@ -72,7 +72,6 @@ import com.smartgwt.client.widgets.form.fields.events.DataArrivedEvent;
 import com.smartgwt.client.widgets.form.fields.events.DataArrivedHandler;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
-import com.smartgwt.client.widgets.form.validator.MatchesFieldValidator;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
@@ -139,16 +138,7 @@ public class CenterPanel extends VLayout {
 	private SelectItem projectSelectItem;
 	private ListGrid ensemblGrid;
 	
-	private DynamicForm userProfileForm;
 	private DynamicForm pwForm;
-	private DynamicForm userPwForm;
-	private TextItem userIdTextItem;
-	private TextItem userNameTextItem;
-	private TextItem userFirstNameTextItem;
-	private TextItem userLastNameTextItem;
-	private TextItem userEmailTextItem;
-	private PasswordItem userPwItem;
-	private PasswordItem userPwConfirmItem;
 	private PasswordItem newPwPasswordItem;
 	
 	private ListGrid projectGrid;
@@ -1136,7 +1126,7 @@ public class CenterPanel extends VLayout {
 	
 	public void openUserProfileTab(){
 		
-		UserSettingsTab us = new UserSettingsTab();
+		UserSettingsTab us = new UserSettingsTab(mp);
 		
 		centerTabSet.addTab(us);
 		

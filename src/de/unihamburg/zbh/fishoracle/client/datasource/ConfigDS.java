@@ -113,7 +113,7 @@ public class ConfigDS extends FoDataSource {
 				if (result.length > 0) {
 					for (int i = 0; i < result.length; i++) {
 						
-						ListGridRecord record = new ListGridRecord (); 
+						ListGridRecord record = new ListGridRecord ();
 						record.setAttribute("configId", new Integer(result[i].getId()).toString());
 						record.setAttribute("configName", result[i].getName());
 						
@@ -132,17 +132,7 @@ public class ConfigDS extends FoDataSource {
 			}
 		};
 		
-		int userId = 0;
-		
-		Criteria c = request.getCriteria();
-			
-		if(c.getAttribute("userId") != null){
-			userId = Integer.parseInt(c.getAttribute("userId"));
-		} else {
-			userId = 1;
-		}
-		
-		req.fetchForUser(userId, callback);
+		req.fetchForUser(callback);
 	}
 
 	@Override
