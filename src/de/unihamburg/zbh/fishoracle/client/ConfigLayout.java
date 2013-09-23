@@ -159,6 +159,22 @@ public class ConfigLayout extends VLayout {
 		this.win = win;
 	}
 
+	public void reset() {
+		this.searchTextItem.setValue("");
+		this.chrTextItem.setValue("");
+		this.startTextItem.setValue("");
+		this.endTextItem.setValue("");
+		this.SearchRadioGroupItem.setValue("Gene");
+		this.sortedCheckbox.setValue(false);
+		this.showCNVCaptionsCheckbox.setValue(false);
+		this.globalThresholdCheckbox.setValue(true);
+		this.thrItem.setValue(-0.5);
+		this.statusSelectItem.setValues("0","1");
+		this.configSelectItem.setValue("");
+		removeAllTracks();
+		addTrack(null, this.globalThresholdCheckbox.getValueAsBoolean(), true, 1);
+	}
+	
 	public void addTrack(FoTrackData td, boolean globalTh, final boolean newSearch, int trackPos){
 		
 		Track t = new Track(trackPos, globalTh, newSearch, this);

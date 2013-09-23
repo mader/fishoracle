@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Side;
+import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
@@ -17,6 +18,8 @@ import com.smartgwt.client.widgets.form.validator.MatchesFieldValidator;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
+import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tab.Tab;
@@ -46,6 +49,8 @@ public class UserSettingsTab extends Tab{
 	private PasswordItem userPwConfirmItem;
 	
 	private ListGrid groupGrid;
+	
+	private ListGrid configGrid;
 	
 	public UserSettingsTab(MainPanel mp){
 		
@@ -206,12 +211,12 @@ public class UserSettingsTab extends Tab{
 		pane.setHeight100();
 		pane.setDefaultLayoutAlign(Alignment.CENTER);
 		
-		HLayout toolbarContainer = new HLayout();
-		toolbarContainer.setWidth100();
-		toolbarContainer.setHeight("2%");
-		
 		HLayout gridContainer = new HLayout();
 		gridContainer.setWidth100();
+		
+		ConfigLayout cl = new ConfigLayout(mp, true);
+		boolean globalTh = (Boolean)  cl.getGlobalThresholdCheckbox().getValue();
+		cl.addTrack(null, globalTh, true, 1);
 		
 		ToolStrip configToolStrip = new ToolStrip();
 		configToolStrip.setWidth100();
@@ -230,22 +235,8 @@ public class UserSettingsTab extends Tab{
 		
 		ToolStripButton deleteConfigButton = new ToolStripButton();
 		deleteConfigButton.setTitle("Delete Configuration");
-		deleteConfigButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-
-				SC.say("Hello!");
-			}});
 		
-		configToolStrip.addButton(updateConfigButton);
 		configToolStrip.addButton(deleteConfigButton);
-		
-		toolbarContainer.setMembers(configToolStrip);
-		
-		//grid showing saved configs
-		
-		ListGrid configGrid;
 		
 		configGrid = new ListGrid();
 		configGrid.setWidth("50%");
@@ -265,14 +256,13 @@ public class UserSettingsTab extends Tab{
 		
 		gridContainer.addMember(configGrid);
 		
+		configGrid.addRecordClickHandler(new MyConfigRecordClickHandler(cl));
 		
-		//config layout
-		
-		ConfigLayout cl = new ConfigLayout(mp, true);
+		deleteConfigButton.addClickHandler(new MyConfigDeleteClickHandler(cl, configGrid));
 		
 		gridContainer.addMember(cl);
 		
-		pane.addMember(toolbarContainer);
+		pane.addMember(configToolStrip);
 		
 		pane.addMember(gridContainer);
 		
@@ -355,4 +345,56 @@ public class UserSettingsTab extends Tab{
 		};
 		req.getAllGroupsForUser(callback);
 	}
+}
+
+class MyConfigRecordClickHandler implements RecordClickHandler {
+	
+	private ConfigLayout cl;
+	
+	public MyConfigRecordClickHandler(ConfigLayout cl){
+		this.cl = cl;
+	}
+
+	@Override
+	public void onRecordClick(RecordClickEvent event) {
+		String configId = event.getRecord().getAttribute("configId");
+		cl.loadConfigData(Integer.parseInt(configId));
+	}	
+}
+
+class MyConfigDeleteClickHandler implements ClickHandler {
+	
+	private ConfigLayout cl;
+	private ListGrid cg;
+	
+	public MyConfigDeleteClickHandler(ConfigLayout cl, ListGrid configGrid){
+		this.cl = cl;
+		this.cg = configGrid;
+	}
+
+	@Override
+	public void onClick(ClickEvent event) {
+		final ListGridRecord lgr = cg.getSelectedRecord();
+		
+		if(lgr != null) {
+		
+			SC.confirm("Do you really want to delete " + lgr.getAttribute("configName") + "?", new BooleanCallback(){
+
+				@Override
+				public void execute(Boolean value) {
+					if(value != null && value){
+						
+						//lgr.setAttribute("configId", cg.getAttribute("configId"));
+						
+						cg.removeData(lgr);
+						cl.reset();
+					}
+				}
+			});
+			
+		} else {
+			SC.say("Select a configuration.");
+		}
+	}
+	
 }
