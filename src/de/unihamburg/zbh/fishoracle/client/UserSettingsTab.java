@@ -384,17 +384,15 @@ class MyConfigDeleteClickHandler implements ClickHandler {
 				public void execute(Boolean value) {
 					if(value != null && value){
 						
-						//lgr.setAttribute("configId", cg.getAttribute("configId"));
-						
 						cg.removeData(lgr);
 						cl.reset();
+						cl.getMp().getWestPanel().getSearchContent().getConfigSelectItem().invalidateDisplayValueCache();
+						cl.getMp().getWestPanel().getSearchContent().getConfigSelectItem().fetchData();
 					}
 				}
-			});
-			
+			});		
 		} else {
 			SC.say("Select a configuration.");
 		}
-	}
-	
+	}	
 }

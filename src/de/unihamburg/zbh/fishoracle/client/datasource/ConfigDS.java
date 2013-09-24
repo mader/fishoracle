@@ -21,7 +21,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSourceField;
@@ -40,7 +39,7 @@ public class ConfigDS extends FoDataSource {
 	public ConfigDS() {
 		
 		DataSourceField field;
-		field = new DataSourceIntegerField("configId", "Study ID");
+		field = new DataSourceIntegerField("configId", "Config ID");
 		field.setPrimaryKey(true);
 		field.setRequired(true);
 		addField(field);

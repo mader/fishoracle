@@ -58,7 +58,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 public class ConfigLayout extends VLayout {
 
 	private MainPanel mp = null;
-	
+
 	private VLayout self;
 	
 	private TextItem searchTextItem;
@@ -77,7 +77,7 @@ public class ConfigLayout extends VLayout {
 	
 	private TextItem saveConfigTextItem;
 	private SelectItem configSelectItem;
-	
+
 	private SelectItem statusSelectItem;
 	
 	private TextItem trackPosTextItem;
@@ -97,6 +97,14 @@ public class ConfigLayout extends VLayout {
 			numberOfTracks--;
 			this.removeMember(t.getTrackForm());
 		}
+	}
+	
+	public MainPanel getMp() {
+		return mp;
+	}
+	
+	public SelectItem getConfigSelectItem() {
+		return configSelectItem;
 	}
 	
 	public SelectItem getStatusTextItem() {
@@ -171,6 +179,8 @@ public class ConfigLayout extends VLayout {
 		this.thrItem.setValue(-0.5);
 		this.statusSelectItem.setValues("0","1");
 		this.configSelectItem.setValue("");
+		this.configSelectItem.invalidateDisplayValueCache();
+		this.configSelectItem.fetchData();
 		removeAllTracks();
 		addTrack(null, this.globalThresholdCheckbox.getValueAsBoolean(), true, 1);
 	}
