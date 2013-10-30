@@ -231,7 +231,7 @@ public class UserSettingsTab extends Tab{
 				SC.say("Hello!");
 			}});
 		
-		configToolStrip.addButton(updateConfigButton);
+		//configToolStrip.addButton(updateConfigButton);
 		
 		ToolStripButton deleteConfigButton = new ToolStripButton();
 		deleteConfigButton.setTitle("Delete Configuration");
