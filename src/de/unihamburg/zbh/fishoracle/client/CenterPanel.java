@@ -102,6 +102,7 @@ import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.datasource.FeatureDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.FileImportDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.GroupDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.PlatformDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.SNPMutationDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.SegmentDS;
@@ -1201,6 +1202,7 @@ public class CenterPanel extends VLayout {
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				//TODO
 				addGroup(new FoGroup(0, groupNameTextItem.getDisplayValue(), true));
 				window.hide();
 			}
@@ -1250,6 +1252,7 @@ public class CenterPanel extends VLayout {
 		
 		ToolStripButton deleteGroupButton = new ToolStripButton();  
 		deleteGroupButton.setTitle("delete Group");
+		//TODO
 		deleteGroupButton.addClickHandler(new ClickHandler(){
 
 			@Override
@@ -1277,6 +1280,7 @@ public class CenterPanel extends VLayout {
 		
 		ToolStripButton addUserGroupButton = new ToolStripButton();  
 		addUserGroupButton.setTitle("add User to Group");
+		//TODO
 		addUserGroupButton.addClickHandler(new ClickHandler(){
 
 			@Override
@@ -1295,6 +1299,7 @@ public class CenterPanel extends VLayout {
 		
 		ToolStripButton removeUserGroupButton = new ToolStripButton();
 		removeUserGroupButton.setTitle("remove User from Group");
+		//TODO
 		removeUserGroupButton.addClickHandler(new ClickHandler(){
 
 			@Override
@@ -1330,13 +1335,12 @@ public class CenterPanel extends VLayout {
 		groupGrid.setFixedRecordHeights(false);
 		groupGrid.markForRedraw();
 		
-		ListGridField lgfGroupId = new ListGridField("groupId", "group ID");
-		ListGridField lgfGroupName = new ListGridField("groupName", "Group Name");
-		ListGridField lgfGroupActivated = new ListGridField("isactive", "Activated");
+		GroupDS gDS = new GroupDS();
 		
-		groupGrid.setFields(lgfGroupId, lgfGroupName, lgfGroupActivated);
+		groupGrid.setDataSource(gDS);
+		groupGrid.setFetchOperation(OperationId.GROUP_FETCH_ALL);;
 		
-		showAllGroups();
+		groupGrid.addRecordClickHandler(new MyGroupRecordClickHandler(groupUserGrid, cp));
 		
 		gridContainer.addMember(groupGrid);
 		
@@ -3259,7 +3263,7 @@ public class CenterPanel extends VLayout {
 	}
 	
 	public void showAllGroups(){
-		
+		//TODO
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
@@ -3392,7 +3396,7 @@ public class CenterPanel extends VLayout {
 	}
 	
 	public void getUsersForGroup(int groupId){
-		
+		//TODO
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";

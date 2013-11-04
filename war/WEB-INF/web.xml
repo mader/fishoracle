@@ -142,6 +142,16 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>GroupService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.GroupServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>GroupService</servlet-name>
+    <url-pattern>/fishoracle/GroupService</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>userService</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.UserServiceImpl</servlet-class>
   </servlet>
