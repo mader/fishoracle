@@ -22,12 +22,14 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
+import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
 @RemoteServiceRelativePath("user")
 public interface UserService extends RemoteService {
 	
 	FoUser add(FoUser user) throws Exception;
 	FoUser[] fetch() throws Exception;
+	FoUser[] fetchUsersForGroup(int groupId) throws UserException;
 	FoUser[] getSessionUserObject();
 	public FoUser login(String email, String password) throws Exception;
 	FoUser update(String operationId, FoUser user) throws Exception;

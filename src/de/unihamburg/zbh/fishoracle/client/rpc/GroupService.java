@@ -27,7 +27,6 @@ import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 public interface GroupService extends RemoteService {
 
 	FoGroup[] getAllFoGroups() throws Exception;
-	FoUser[] getUsersForGroup(int groupId) throws UserException;
 	FoGroup addGroup(FoGroup foGroup) throws UserException;
 	void deleteGroup(FoGroup foGroup) throws UserException;
 	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;

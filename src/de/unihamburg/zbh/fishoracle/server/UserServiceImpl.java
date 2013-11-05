@@ -24,6 +24,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
+import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.server.data.DBInterface;
 import de.unihamburg.zbh.fishoracle.server.data.SessionData;
@@ -58,6 +59,18 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		FoUser[] users = db.getAllUsers();
 		
 		return users;
+	}
+	
+	@Override
+	public FoUser[] fetchUsersForGroup(int groupId) throws UserException {
+		
+		SessionData s = getSessionData();
+		s.isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getUsersForGroup(groupId);
 	}
 	
 	public FoUser[] getSessionUserObject(){

@@ -21,6 +21,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSourceField;
@@ -123,6 +124,12 @@ public class UserDS extends FoDataSource {
 		}
 		if(operationId.equals(OperationId.USER_FETCH_ALL)){
 			req.fetch(callback);
+		}
+		if(operationId.equals(OperationId.USER_FETCH_FOR_GROUP)){
+			int groupId = 0;
+			Criteria c = request.getCriteria();
+			groupId = Integer.parseInt(c.getAttribute("groupId"));
+			req.fetchUsersForGroup(groupId, callback);
 		}
 	}
 

@@ -26,6 +26,7 @@ public interface UserServiceAsync {
 	void add(FoUser user, AsyncCallback<FoUser> callback);
 	public void login(String email, String password, AsyncCallback<FoUser> callback);
 	void fetch(AsyncCallback<FoUser[]> callback);
+	void fetchUsersForGroup(int groupId, AsyncCallback<FoUser[]> callback);
 	void getSessionUserObject(AsyncCallback<FoUser[]> callback);
 	void update(String operationId, FoUser user, AsyncCallback<FoUser> callback);
 	public void logout(AsyncCallback<Void> callback);

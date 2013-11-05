@@ -767,7 +767,6 @@ public class CenterPanel extends VLayout {
 	}
 	
 	public void loadMutationWindow(String geneId, int trackId, FoConfigData cd){
-		//TODO
 		Window window = new Window();
 		window.setTitle("SNVs");
 		window.setWidth(700);
@@ -1150,7 +1149,7 @@ public class CenterPanel extends VLayout {
 		
 		DynamicForm userToGroupForm = new DynamicForm();
 		
-		userSelectItem = new SelectItem();  
+		userSelectItem = new SelectItem();
         userSelectItem.setTitle("User");
         
         getAllUsersExceptGroup(foGroup); 
@@ -1338,9 +1337,11 @@ public class CenterPanel extends VLayout {
 		GroupDS gDS = new GroupDS();
 		
 		groupGrid.setDataSource(gDS);
-		groupGrid.setFetchOperation(OperationId.GROUP_FETCH_ALL);;
+		groupGrid.setFetchOperation(OperationId.GROUP_FETCH_ALL);
 		
-		groupGrid.addRecordClickHandler(new MyGroupRecordClickHandler(groupUserGrid, cp));
+		groupGrid.addRecordClickHandler(new MyGroupRecordClickHandler(groupUserGrid));		
+		
+		groupGrid.fetchData();
 		
 		gridContainer.addMember(groupGrid);
 		
@@ -1353,10 +1354,15 @@ public class CenterPanel extends VLayout {
 		groupUserGrid.setFixedRecordHeights(false);
 		groupUserGrid.markForRedraw();
 		
-		ListGridField lgfGroupUserId = new ListGridField("userId", "User ID");
-		ListGridField lgfGroupUserName = new ListGridField("userName", "Username");
+		UserDS uDS = new UserDS();
+		uDS.getField("firstName").setCanView(false);
+		uDS.getField("lastName").setCanView(false);
+		uDS.getField("email").setCanView(false);
+		uDS.getField("isActive").setCanView(false);
+		uDS.getField("isAdmin").setCanView(false);
 		
-		groupUserGrid.setFields(lgfGroupUserId, lgfGroupUserName);
+		groupUserGrid.setDataSource(uDS);
+		groupUserGrid.setFetchOperation(OperationId.USER_FETCH_FOR_GROUP);
 		
 		gridContainer.addMember(groupUserGrid);
 		
@@ -3261,9 +3267,9 @@ public class CenterPanel extends VLayout {
 		};
 		req.writeConfigData(data, callback);
 	}
-	
+	/**
 	public void showAllGroups(){
-		//TODO
+		//TODO remove obsolete code
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
@@ -3296,6 +3302,7 @@ public class CenterPanel extends VLayout {
 		req.getAllFoGroups(callback);
 	}
 	
+	**/
 	public void deleteGroup(FoGroup foGroup){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3395,6 +3402,7 @@ public class CenterPanel extends VLayout {
 		req.getAllUsersExceptFoGroup(foGroup, callback);
 	}
 	
+	/**
 	public void getUsersForGroup(int groupId){
 		//TODO
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3426,7 +3434,7 @@ public class CenterPanel extends VLayout {
 		};
 		req.getUsersForGroup(groupId, callback);
 	}
-	
+	**/
 	public void addUserToGroup(FoGroup foGroup, int userId){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3865,6 +3873,8 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 	private ListGrid projectAccessGrid;
 	private FoUser user;
 	
+	//TODO Remove CenterPanel. It's not used anyway.
+	
 	public MyProjectRecordClickHandler(ListGrid projectStudyGrid, ListGrid projectAccessGrid, FoUser user, CenterPanel cp){
 		this.projectStudyGrid = projectStudyGrid;
 		this.projectAccessGrid = projectAccessGrid;
@@ -3888,24 +3898,26 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 class MyGroupRecordClickHandler implements RecordClickHandler {
 
 	private ListGrid groupUserGrid;
-	private CenterPanel cp;
 	
-	public MyGroupRecordClickHandler(ListGrid groupUserGrid, CenterPanel cp){
+	public MyGroupRecordClickHandler(ListGrid groupUserGrid){
 		this.groupUserGrid = groupUserGrid;
-		this.cp = cp;
 	}
 	
 	@Override
 	public void onRecordClick(RecordClickEvent event) {
-		ListGridRecord[] oldRecords = groupUserGrid.getRecords();
+		//ListGridRecord[] oldRecords = groupUserGrid.getRecords();
 		
-		for (int i= 0; i < oldRecords.length; i++){
-			groupUserGrid.removeData(oldRecords[i]);
-		}
+		String groupId = event.getRecord().getAttribute("groupId");
 		
-		int groupId = Integer.parseInt(event.getRecord().getAttribute("groupId"));
+		groupUserGrid.fetchData(new Criteria("groupId", groupId));
 		
-		cp.getUsersForGroup(groupId);
+		//for (int i= 0; i < oldRecords.length; i++){
+		//	groupUserGrid.removeData(oldRecords[i]);
+		//}
+		
+		//int groupId = Integer.parseInt(event.getRecord().getAttribute("groupId"));
+		
+		//cp.getUsersForGroup(groupId);
 	}
 }
 
@@ -3942,8 +3954,6 @@ class RecMapClickHandler implements ClickHandler{
 			FoConfigData cd = imgInfo.getQuery().getConfig();
 			
 			cp.loadMutationWindow(recInfo.getElementName(), recInfo.getTrackNumber(), cd);
-			
-			//TODO
 		}
 	}
 	

@@ -128,17 +128,4 @@ public class GroupServiceImpl extends RemoteServiceServlet implements GroupServi
 		
 		return db.getAllGroupsExceptProject(foProject);
 	}
-	
-	@Override
-	public FoUser[] getUsersForGroup(int groupId) throws UserException {
-		
-		SessionData s = getSessionData();
-		s.isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getUsersForGroup(groupId);
-	}
-	
 }

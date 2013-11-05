@@ -40,6 +40,7 @@ public class OperationId {
 	
 	public static final String USER_FETCH_ALL = "getAllUsers";
 	public static final String USER_FETCH_PROFILE = "getUserProfile";
+	public static final String USER_FETCH_FOR_GROUP = "getUsersForGroup";
 	public static final String USER_UPDATE_PASSWORD = "getUpdateUserPw";
 	public static final String USER_UPDATE_PASSWORD_ADMIN = "getUpdateUserPwAdmin";
 	public static final String USER_UPDATE_PROFILE = "getUpdateUserProfile";
