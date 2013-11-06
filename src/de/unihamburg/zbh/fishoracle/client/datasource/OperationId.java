@@ -49,6 +49,7 @@ public class OperationId {
 	
 	public static final String GROUP_FETCH_ALL = "getAllGroups";
 	public static final String GROUP_FETCH_FOR_USER = "getAllGroupsForUsers";
+	public static final String GROUP_ADD_USER = "addUserToGroup";
 	
 	public static final String FEATURE_FETCH_ALL = "getAllFeatures";
 	public static final String FEATURE_FETCH_FOR_STUDY_ID = "getFeaturesForStudyId";

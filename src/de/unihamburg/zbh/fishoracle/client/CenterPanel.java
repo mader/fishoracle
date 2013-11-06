@@ -1254,7 +1254,6 @@ public class CenterPanel extends VLayout {
 		
 		ToolStripButton deleteGroupButton = new ToolStripButton();  
 		deleteGroupButton.setTitle("delete Group");
-		//TODO
 		deleteGroupButton.addClickHandler(new ClickHandler(){
 
 			@Override
