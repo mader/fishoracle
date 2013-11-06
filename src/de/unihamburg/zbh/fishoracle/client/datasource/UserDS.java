@@ -45,7 +45,6 @@ public class UserDS extends FoDataSource {
 		field = new DataSourceIntegerField("userId", "User ID");
 		field.setPrimaryKey(true);
 		field.setRequired(true);
-		field.setHidden(true);
 		addField(field);
 		
 		field = new DataSourceTextField("userName", "Username");

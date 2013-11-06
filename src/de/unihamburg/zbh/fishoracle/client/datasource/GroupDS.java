@@ -18,6 +18,7 @@
 package de.unihamburg.zbh.fishoracle.client.datasource;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.data.DSRequest;
@@ -100,12 +101,45 @@ public class GroupDS extends FoDataSource {
 	}
 
 	@Override
-	protected void executeAdd(
-			String requestId,
-			DSRequest request,
-			DSResponse response) {
-		// TODO Auto-generated method stub
+	protected void executeAdd(final String requestId,
+								final DSRequest request,
+								final DSResponse response) {
 		
+		final GroupServiceAsync req = (GroupServiceAsync) GWT.create(GroupService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "GroupService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<FoGroup> callback = new AsyncCallback<FoGroup>(){
+			
+			public void onSuccess(FoGroup result){
+				
+				ListGridRecord[] list = new ListGridRecord[1];
+				
+				ListGridRecord record = new ListGridRecord (); 
+				record.setAttribute("groupId", new Integer(result.getId()).toString());
+				record.setAttribute("groupName", result.getName());
+				record.setAttribute("isActive", result.isIsactive());
+				list[0] = record;
+				
+				response.setData(list);
+				processResponse(requestId, response);
+			}
+			
+			public void onFailure(Throwable caught){
+				response.setStatus(RPCResponse.STATUS_FAILURE);
+				processResponse(requestId, response);
+				SC.say(caught.getMessage());
+			}
+		};
+		
+		JavaScriptObject data = request.getData();
+		ListGridRecord rec = new ListGridRecord(data);
+        FoGroup group = new FoGroup();
+        
+        group.setName(rec.getAttribute("groupName"));
+        group.setIsactive(true);
+        
+		req.addGroup(group, callback);
 	}
 
 	@Override

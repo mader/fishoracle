@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2013 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2013 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -1201,8 +1201,11 @@ public class CenterPanel extends VLayout {
 			@Override
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				//TODO
-				addGroup(new FoGroup(0, groupNameTextItem.getDisplayValue(), true));
+				
+				ListGridRecord lgr = new ListGridRecord();
+				lgr.setAttribute("groupName", groupNameTextItem.getDisplayValue());
+				
+				groupGrid.addData(lgr);
 				window.hide();
 			}
 			
@@ -1356,6 +1359,7 @@ public class CenterPanel extends VLayout {
 		uDS.getField("firstName").setCanView(false);
 		uDS.getField("lastName").setCanView(false);
 		uDS.getField("email").setCanView(false);
+		uDS.getField("pw").setCanView(false);
 		uDS.getField("isActive").setCanView(false);
 		uDS.getField("isAdmin").setCanView(false);
 		
