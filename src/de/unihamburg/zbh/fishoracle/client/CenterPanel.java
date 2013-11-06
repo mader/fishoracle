@@ -1339,8 +1339,6 @@ public class CenterPanel extends VLayout {
 		groupGrid.setDataSource(gDS);
 		groupGrid.setFetchOperation(OperationId.GROUP_FETCH_ALL);
 		
-		groupGrid.addRecordClickHandler(new MyGroupRecordClickHandler(groupUserGrid));		
-		
 		groupGrid.fetchData();
 		
 		gridContainer.addMember(groupGrid);
@@ -1368,12 +1366,13 @@ public class CenterPanel extends VLayout {
 		
 		pane.addMember(gridContainer);
 		
+		groupGrid.addRecordClickHandler(new MyGroupRecordClickHandler(groupUserGrid));
+		
 		groupAdminTab.setPane(pane);
 		
 		centerTabSet.addTab(groupAdminTab);
 		
 		centerTabSet.selectTab(groupAdminTab);
-		
 	}
 	
 	public void loadOrganManageWindow(){
@@ -3905,19 +3904,10 @@ class MyGroupRecordClickHandler implements RecordClickHandler {
 	
 	@Override
 	public void onRecordClick(RecordClickEvent event) {
-		//ListGridRecord[] oldRecords = groupUserGrid.getRecords();
 		
 		String groupId = event.getRecord().getAttribute("groupId");
 		
 		groupUserGrid.fetchData(new Criteria("groupId", groupId));
-		
-		//for (int i= 0; i < oldRecords.length; i++){
-		//	groupUserGrid.removeData(oldRecords[i]);
-		//}
-		
-		//int groupId = Integer.parseInt(event.getRecord().getAttribute("groupId"));
-		
-		//cp.getUsersForGroup(groupId);
 	}
 }
 

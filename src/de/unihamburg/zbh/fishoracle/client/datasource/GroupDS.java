@@ -20,7 +20,6 @@ package de.unihamburg.zbh.fishoracle.client.datasource;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSourceField;
@@ -43,16 +42,15 @@ public class GroupDS extends FoDataSource {
 		field = new DataSourceIntegerField("groupId", "Group ID");
 		field.setPrimaryKey(true);
 		field.setRequired(true);
-		field.setHidden(true);
 		addField(field);
 		
 		field = new DataSourceTextField("groupName", "Group Name");
 		field.setRequired(true);
-        addField (field);
+        addField(field);
         
         field = new DataSourceBooleanField("isActive", "Active");
         field.setHidden(true);
-        addField (field);
+        addField(field);
 	}
 	
 	@Override
