@@ -1267,11 +1267,9 @@ public class CenterPanel extends VLayout {
 					@Override
 					public void execute(Boolean value) {
 						if(value != null && value){
-							FoGroup group = new FoGroup(Integer.parseInt(lgr.getAttribute("groupId")),
-											lgr.getAttribute("groupName"),
-											Boolean.parseBoolean(lgr.getAttribute("isactive")));
 				
-							deleteGroup(group);
+							final ListGridRecord lgr = groupGrid.getSelectedRecord();
+							groupGrid.removeData(lgr);
 						}
 					}
 				});
@@ -3306,6 +3304,8 @@ public class CenterPanel extends VLayout {
 	}
 	
 	**/
+	
+	/**
 	public void deleteGroup(FoGroup foGroup){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3327,6 +3327,7 @@ public class CenterPanel extends VLayout {
 		};
 		req.deleteGroup(foGroup, callback);
 	}
+	**/
 	
 	public void addGroup(FoGroup foGroup){
 		

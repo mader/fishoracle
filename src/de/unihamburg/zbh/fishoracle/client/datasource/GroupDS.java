@@ -152,11 +152,42 @@ public class GroupDS extends FoDataSource {
 	}
 
 	@Override
-	protected void executeRemove(
-			String requestId,
-			DSRequest request,
-			DSResponse response) {
-		// TODO Auto-generated method stub
+	protected void executeRemove(final String requestId,
+									final DSRequest request,
+									final DSResponse response) {
+		
+		JavaScriptObject data = request.getData();
+		final ListGridRecord rec = new ListGridRecord(data);
+		
+		final GroupServiceAsync req = (GroupServiceAsync) GWT.create(GroupService.class);
+		ServiceDefTarget endpoint = (ServiceDefTarget) req;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "GroupService";
+		endpoint.setServiceEntryPoint(moduleRelativeURL);
+		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
+			
+			public void onSuccess(Void v){
+				
+				ListGridRecord[] list = new ListGridRecord[1];
+				
+				list[0] = rec;
+				
+				response.setData(list);
+				processResponse(requestId, response);
+			}
+			
+			public void onFailure(Throwable caught){
+				response.setStatus(RPCResponse.STATUS_FAILURE);
+				processResponse(requestId, response);
+				SC.say(caught.getMessage());
+			}
+		};
+		
+		int groupId = Integer.parseInt(rec.getAttribute("groupId"));
+		
+		FoGroup group = new FoGroup(groupId, "", true);
+		
+		//TODO just use the id as parameter.
+		req.deleteGroup(group, callback);
 		
 	}
 }
