@@ -734,7 +734,28 @@ public class CenterPanel extends VLayout {
 			
 		});
 		
+		ToolStripButton ensemblButton = new ToolStripButton();
+		ensemblButton = new ToolStripButton();
+		ensemblButton.setTitle("Ensembl");
+		ensemblButton.setTooltip("Show region in Ensembl");
+		ensemblButton.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				
+				String chr = imgInfo.getChromosome();
+				String start = String.valueOf(imgInfo.getStart());
+				String end = String.valueOf(imgInfo.getEnd());
+				
+				String url = "http://www.ensembl.org/Homo_sapiens/Location/View?r=" + chr + ":" + start + "-" + end;
+				
+				com.google.gwt.user.client.Window.open(url,"_blank",null);
+			}
+			
+		});
+		
 		presentationToolStrip.addButton(selectButton);
+		presentationToolStrip.addButton(ensemblButton);
 		
 		presentationToolStrip.addMenuButton(exportMenuButton);
 		
