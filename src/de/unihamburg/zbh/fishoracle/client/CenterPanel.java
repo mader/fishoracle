@@ -2951,7 +2951,8 @@ public class CenterPanel extends VLayout {
 							
 							importData(studies,
 										cbItemFilterType.getValueAsString(),
-										cbItemFilterType.getSelectedRecord().getAttribute("type"),
+										//cbItemFilterType.getSelectedRecord().getAttribute("type"),
+										cbItemFilterType.getValueAsString(),
 										true,
 										Integer.parseInt(selectItemProjects.getValue().toString()),
 										"",
@@ -2962,7 +2963,7 @@ public class CenterPanel extends VLayout {
 							// import data into existing study
 							importData(studies,
 									cbItemFilterType.getValueAsString(), 
-									cbItemFilterType.getSelectedRecord().getAttribute("type"),
+									cbItemFilterType.getValueAsString(),
 									false,
 									Integer.parseInt(selectItemProjects.getValue().toString()),
 									"",
@@ -2978,7 +2979,7 @@ public class CenterPanel extends VLayout {
 						if(createStudyItem.getValueAsString().equals("Create new study")) {
 							miw = new ManualImportWindow(studies,
 										cbItemFilterType.getValueAsString(),
-										cbItemFilterType.getSelectedRecord().getAttribute("type"),
+										cbItemFilterType.getValueAsString(),
 										Integer.parseInt(selectItemProjects.getValue().toString()),
 										true,
 										fileGrid,
@@ -2988,7 +2989,7 @@ public class CenterPanel extends VLayout {
 						if(createStudyItem.getValueAsString().equals("Import to existing study")) {
 							miw = new ManualImportWindow(studies,
 										cbItemFilterType.getValueAsString(),
-										cbItemFilterType.getSelectedRecord().getAttribute("type"),
+										cbItemFilterType.getValueAsString(),
 										Integer.parseInt(selectItemProjects.getValue().toString()),
 										false,
 										fileGrid,

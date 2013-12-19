@@ -416,12 +416,14 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 					String chr = reader.get("#CHROM");
 					String start = reader.get("START");
 					String end = reader.get("END");
+					String name = reader.get("NAME");
 					
 					GenericFeature f = new GenericFeature(0, new Location(chr,
 														Integer.parseInt(start),
 														Integer.parseInt(end)),
 														importType);
 					f.setPlatformId(plId);
+					f.setName(name);
 				
 					featureContainer.add(f);
 		

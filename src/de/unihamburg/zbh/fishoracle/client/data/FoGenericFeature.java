@@ -28,11 +28,10 @@ public class FoGenericFeature implements IsSerializable {
 	private int id;
 	private FoLocation location;
 	private String type;
+	private String name;
 	private int platformId;
 	private String platformName;
 	private int studyId;
-	
-	
 	
 	public FoGenericFeature() {
 	}
@@ -71,6 +70,14 @@ public class FoGenericFeature implements IsSerializable {
 		this.type = type;
 	}
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public int getPlatformId() {
 		return platformId;
 	}

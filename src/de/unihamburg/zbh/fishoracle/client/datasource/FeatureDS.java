@@ -59,6 +59,9 @@ public class FeatureDS extends FoDataSource {
         field = new DataSourceTextField("featureType", "FeatureType");
         addField (field);
         
+        field = new DataSourceTextField("featureName", "Name");
+        addField (field);
+        
         field = new DataSourceTextField("platformName", "Platform");
         addField (field);
         
@@ -90,6 +93,7 @@ public class FeatureDS extends FoDataSource {
 						record.setAttribute("start", result[i].getFoLocation().getStart());
 						record.setAttribute("end", result[i].getFoLocation().getEnd());
 						record.setAttribute("featureType", result[i].getType());
+						record.setAttribute("featureName", result[i].getName());
 						record.setAttribute("platformName", result[i].getPlatformName());
 						list[i] = record;
 						

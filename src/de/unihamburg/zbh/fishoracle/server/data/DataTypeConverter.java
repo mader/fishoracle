@@ -328,6 +328,7 @@ public class DataTypeConverter {
 											locationToFoLocation(feature.getLocation()),
 											feature.getType());
 		
+		foFeature.setName(feature.getName());
 		foFeature.setStudyId(feature.getStudyId());
 		foFeature.setPlatformId(feature.getPlatformId());
 		foFeature.setPlatformName(feature.getPlatformName());
