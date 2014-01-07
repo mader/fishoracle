@@ -510,17 +510,18 @@ Following columns have to be present in order to import generic feature data:
   \item Chromosome (``\#CHROM'')
   \item Sart position (``START'')
   \item End position (``END'')
+  \item Optional name  (``NAME'')
 \end{enumerate}
 
 \begin{table}
 	\centering
 	\begin{tabular}[h]{|c|c|c|c|c|c|c|c|}
 	  \hline
-	  \#CHROM & START & END \\ \hline
-	 3 & 66991882 & 11593523 \\
-         7 & 66961609 & 67486129 \\
-         X & 40645548 & 52700325 \\
-         16 & 123747158 & 231771070 \\
+	  \#CHROM & START & END & NAME\\ \hline
+	 3 & 66991882 & 11593523 & MyGenomicElement\\
+         7 & 66961609 & 67486129 & GeneX\\
+         X & 40645548 & 52700325 & \\
+         16 & 123747158 & 231771070 & \\
 	 \vdots & \vdots & \vdots \\
 	\end{tabular}
 	\caption{Structure of the tab delimited import files for translocation
