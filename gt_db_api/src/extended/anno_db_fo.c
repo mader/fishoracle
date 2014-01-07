@@ -569,12 +569,14 @@ void init_adaptor(GtFeatureIndexFo *fi) {
   if(fi->feature_type == GENERIC){
     
     GtStr* feature_type;
+    GtStr* feature_name;
     
     feature_id = gt_str_new_cstr("DISTINCT(feature.feature_id)");
     seq_id = gt_str_new_cstr("feature.chromosome");
     start = gt_str_new_cstr("feature.start");
     end = gt_str_new_cstr("feature.end");
     feature_type = gt_str_new_cstr("feature.feature_type");
+    feature_name = gt_str_new_cstr("feature.name");
     study_id = gt_str_new_cstr("feature.study_id");
     study_name = gt_str_new_cstr("study.study_name");
    
@@ -585,6 +587,7 @@ void init_adaptor(GtFeatureIndexFo *fi) {
     gt_array_add(columns, start);
     gt_array_add(columns, end);
     gt_array_add(columns, feature_type);
+    gt_array_add(columns, feature_name);
     gt_array_add(columns, study_id);
     gt_array_add(columns, study_name);
   
@@ -832,6 +835,7 @@ int fetch_features(GtFeatureIndexFo *fi,
     unsigned long end = 0;
     int ref_id = 0;
     GtStr *feature_type = gt_str_new();
+    GtStr *feature_name = gt_str_new();
     GtStr *study_name = gt_str_new();
     int study_id = 0;
     
@@ -846,8 +850,9 @@ int fetch_features(GtFeatureIndexFo *fi,
       gt_rdb_stmt_get_string(stmt, 6, study_name, err);
     } else if (fi->feature_type == GENERIC) {
 	  gt_rdb_stmt_get_string(stmt, 4, feature_type, err);
-	  gt_rdb_stmt_get_int(stmt, 5, &study_id, err);
-      gt_rdb_stmt_get_string(stmt, 6, study_name, err);
+	  gt_rdb_stmt_get_string(stmt, 5, feature_name, err);
+	  gt_rdb_stmt_get_int(stmt, 6, &study_id, err);
+      gt_rdb_stmt_get_string(stmt, 7, study_name, err);
 	} else {
       gt_rdb_stmt_get_int(stmt, 4, &study_id, err);
       gt_rdb_stmt_get_string(stmt, 5, study_name, err);
@@ -860,15 +865,22 @@ int fetch_features(GtFeatureIndexFo *fi,
     
     GtStr *feature_id = gt_str_new();
     gt_str_append_ulong(feature_id, id);
+    char *fname;
     
     if(fi->feature_type == GENERIC){
       newgn = gt_feature_node_new(seq_id, track_id, start, end, strand);
 	  newfn = gt_feature_node_cast(newgn);
 	  
+	  if(strcmp(gt_str_get(feature_name),"") == 0){
+        fname = gt_str_get(study_name);
+      } else {
+        fname = gt_str_get(feature_name);
+      }
+	  
 	  gt_feature_node_set_attribute(newfn, STUDY_ID, s_id);
 	  gt_feature_node_set_attribute(newfn, ID, gt_str_get(feature_id));
 	  gt_feature_node_set_attribute(newfn, TYPE, gt_str_get(feature_type));
-      gt_feature_node_set_attribute(newfn, NAME, gt_str_get(study_name));
+      gt_feature_node_set_attribute(newfn, NAME, fname);
       gt_feature_node_set_attribute(newfn, FEATURE_TYPE, "generic");
 	  
 	  gt_array_add(results, newgn);
