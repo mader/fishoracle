@@ -17,6 +17,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <locale.h>
 #include "core/assert_api.h"
 #include "extended/anno_db_fo_api.h"
 #include "extended/anno_db_prepared_stmt.h"
@@ -868,14 +869,16 @@ int fetch_features(GtFeatureIndexFo *fi,
     char *fname;
     
     if(fi->feature_type == GENERIC){
-      newgn = gt_feature_node_new(seq_id, track_id, start, end, strand);
-	  newfn = gt_feature_node_cast(newgn);
 	  
 	  if(strcmp(gt_str_get(feature_name),"") == 0){
         fname = gt_str_get(study_name);
       } else {
         fname = gt_str_get(feature_name);
+        strand = GT_STRAND_UNKNOWN;
       }
+	  
+      newgn = gt_feature_node_new(seq_id, track_id, start, end, strand);
+	  newfn = gt_feature_node_cast(newgn);
 	  
 	  gt_feature_node_set_attribute(newfn, STUDY_ID, s_id);
 	  gt_feature_node_set_attribute(newfn, ID, gt_str_get(feature_id));
@@ -990,6 +993,7 @@ int gt_feature_index_fo_get_features(GtFeatureIndexFo *fi,
                                      GtArray *results,
                                      GtError *err)
 {
+  setlocale (LC_ALL, "POSIX");
   int had_err = 0;
   bool first = true;
 
