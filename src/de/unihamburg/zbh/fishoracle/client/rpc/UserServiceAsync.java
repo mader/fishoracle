@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -27,6 +27,8 @@ public interface UserServiceAsync {
 	public void login(String email, String password, AsyncCallback<FoUser> callback);
 	void fetch(AsyncCallback<FoUser[]> callback);
 	void fetchUsersForGroup(int groupId, AsyncCallback<FoUser[]> callback);
+	void fetchAllUsersExceptFoGroup(int groupId,
+			AsyncCallback<FoUser[]> callback);
 	void getSessionUserObject(AsyncCallback<FoUser[]> callback);
 	void update(String operationId, FoUser user, AsyncCallback<FoUser> callback);
 	public void logout(AsyncCallback<Void> callback);

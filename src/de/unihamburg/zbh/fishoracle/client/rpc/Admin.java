@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -48,7 +48,7 @@ public interface Admin extends RemoteService {
 	FoGroup addGroup(FoGroup foGroup) throws UserException;
 	void deleteGroup(FoGroup foGroup) throws UserException;
 	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
-	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
+	void addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
 	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);
 	boolean removeUserFromFoGroup(int groupId, int userId) throws UserException;
 	FoGroup[] getAllGroupsForUser() throws Exception;

@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -21,17 +21,14 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
-import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 
 public interface GroupServiceAsync {
 
 	void getAllFoGroups(AsyncCallback<FoGroup[]> callback);
 	void addGroup(FoGroup foGroup, AsyncCallback<FoGroup> callback);
 	void deleteGroup(FoGroup foGroup, AsyncCallback<Void> callback);
-	void addUserToFoGroup(FoGroup foGroup, int userId,
-			AsyncCallback<FoUser> callback);
-	void getAllUsersExceptFoGroup(FoGroup foGroup,
-			AsyncCallback<FoUser[]> callback);
+	void addUserToFoGroup(int groupId, int userId,
+			AsyncCallback<Void> callback);
 	void getAllGroupsExceptFoProject(FoProject foProject,
 			AsyncCallback<FoGroup[]> callback);
 	void removeUserFromFoGroup(int groupId, int userId,

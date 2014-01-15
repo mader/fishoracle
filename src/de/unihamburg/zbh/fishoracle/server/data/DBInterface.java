@@ -740,26 +740,20 @@ public class DBInterface {
 		ga.deleteGroup(g);
 	}
 	
-	public FoUser[] getAllUserExceptGroup(FoGroup foGroup){
+	public FoUser[] getAllUserExceptGroup(int groupId){
 		FODriver driver = getFoDriver();
 		UserAdaptor ua = driver.getUserAdaptor();
 		
-		User[] users = ua.fetchAllUsersNotInGroup(foGroup.getId());
+		User[] users = ua.fetchAllUsersNotInGroup(groupId);
 		
 		return DataTypeConverter.usersToFoUsers(users);
 	}
 	
-	public FoUser addUserGroup(FoGroup foGroup, int userId){
+	public void addUserGroup(int groupId, int userId){
 		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();
-		UserAdaptor ua = driver.getUserAdaptor();
 		
-		ga.addUserToGroup(foGroup.getId(), userId);
-		
-		User user = ua.fetchUserByID(userId);
-		
-		return DataTypeConverter.userToFoUser(user);
-		
+		ga.addUserToGroup(groupId, userId);	
 	}
 	
 	public FoSegment[] getSegmentsForStudyId(int studyId){

@@ -183,18 +183,18 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.getAllUserExceptGroup(foGroup);
+		return db.getAllUserExceptGroup(foGroup.getId());
 	}
 	
 	@Override
-	public FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException {
+	public void addUserToFoGroup(FoGroup foGroup, int userId) throws UserException {
 		
 		isAdmin();
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.addUserGroup(foGroup, userId);
+		db.addUserGroup(foGroup.getId(), userId);
 	}
 	
 	@Override

@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -21,7 +21,6 @@ import com.google.gwt.user.client.rpc.RemoteService;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
-import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
 public interface GroupService extends RemoteService {
@@ -29,8 +28,7 @@ public interface GroupService extends RemoteService {
 	FoGroup[] getAllFoGroups() throws Exception;
 	FoGroup addGroup(FoGroup foGroup) throws UserException;
 	void deleteGroup(FoGroup foGroup) throws UserException;
-	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
-	FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
+	void addUserToFoGroup(int groupId, int userId) throws UserException;
 	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);
 	boolean removeUserFromFoGroup(int groupId, int userId) throws UserException;
 	FoGroup[] getAllGroupsForUser() throws Exception;

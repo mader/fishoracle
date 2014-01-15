@@ -84,18 +84,7 @@ public class GroupServiceImpl extends RemoteServiceServlet implements GroupServi
 	}
 	
 	@Override
-	public FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException {
-		SessionData s = getSessionData();
-		s.isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getAllUserExceptGroup(foGroup);
-	}
-	
-	@Override
-	public FoUser addUserToFoGroup(FoGroup foGroup, int userId) throws UserException {
+	public void addUserToFoGroup(int groupId, int userId) throws UserException {
 		
 		SessionData s = getSessionData();
 		s.isAdmin();
@@ -103,7 +92,7 @@ public class GroupServiceImpl extends RemoteServiceServlet implements GroupServi
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.addUserGroup(foGroup, userId);
+		db.addUserGroup(groupId, userId);
 	}
 	
 	@Override

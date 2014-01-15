@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -51,7 +51,7 @@ public interface AdminAsync {
 	void deleteGroup(FoGroup foGroup, AsyncCallback<Void> callback);
 	
 	void addUserToFoGroup(FoGroup foGroup, int userId,
-			AsyncCallback<FoUser> callback);
+			AsyncCallback<Void> callback);
 
 	void getAllUsersExceptFoGroup(FoGroup foGroup,
 			AsyncCallback<FoUser[]> callback);

@@ -22,6 +22,7 @@ import javax.servlet.http.HttpSession;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
@@ -71,6 +72,17 @@ public class UserServiceImpl extends RemoteServiceServlet implements UserService
 		DBInterface db = new DBInterface(servletContext);
 		
 		return db.getUsersForGroup(groupId);
+	}
+	
+	@Override
+	public FoUser[] fetchAllUsersExceptFoGroup(int groupId) throws UserException {
+		SessionData s = getSessionData();
+		s.isAdmin();
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return db.getAllUserExceptGroup(groupId);
 	}
 	
 	public FoUser[] getSessionUserObject(){

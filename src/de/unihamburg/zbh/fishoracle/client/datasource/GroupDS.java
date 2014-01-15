@@ -109,37 +109,66 @@ public class GroupDS extends FoDataSource {
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "GroupService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoGroup> callback = new AsyncCallback<FoGroup>(){
-			
-			public void onSuccess(FoGroup result){
-				
-				ListGridRecord[] list = new ListGridRecord[1];
-				
-				ListGridRecord record = new ListGridRecord (); 
-				record.setAttribute("groupId", new Integer(result.getId()).toString());
-				record.setAttribute("groupName", result.getName());
-				record.setAttribute("isActive", result.isIsactive());
-				list[0] = record;
-				
-				response.setData(list);
-				processResponse(requestId, response);
-			}
-			
-			public void onFailure(Throwable caught){
-				response.setStatus(RPCResponse.STATUS_FAILURE);
-				processResponse(requestId, response);
-				SC.say(caught.getMessage());
-			}
-		};
 		
+		String operationId = request.getOperationId();
 		JavaScriptObject data = request.getData();
 		ListGridRecord rec = new ListGridRecord(data);
-        FoGroup group = new FoGroup();
+		
+		if (operationId.equals(OperationId.GROUP_ADD)){
+		
+			final AsyncCallback<FoGroup> callbackAdd = new AsyncCallback<FoGroup>(){
+			
+				public void onSuccess(FoGroup result){
+				
+					ListGridRecord[] list = new ListGridRecord[1];
+				
+					ListGridRecord record = new ListGridRecord (); 
+					record.setAttribute("groupId", new Integer(result.getId()).toString());
+					record.setAttribute("groupName", result.getName());
+					record.setAttribute("isActive", result.isIsactive());
+					list[0] = record;
+					
+					response.setData(list);
+					processResponse(requestId, response);
+				}
+			
+				public void onFailure(Throwable caught){
+					response.setStatus(RPCResponse.STATUS_FAILURE);
+					processResponse(requestId, response);
+					SC.say(caught.getMessage());
+				}
+			};
+			
+			FoGroup group = new FoGroup();
+			group.setName(rec.getAttribute("groupName"));
+			group.setIsactive(true);
         
-        group.setName(rec.getAttribute("groupName"));
-        group.setIsactive(true);
-        
-		req.addGroup(group, callback);
+			req.addGroup(group, callbackAdd);
+		}
+		
+		if (operationId.equals(OperationId.GROUP_ADD_USER)) {
+			
+			final AsyncCallback<Void> callbackAddUser = new AsyncCallback<Void>(){
+				
+				public void onSuccess(Void result){
+				
+					SC.say("User was successfully added to Group.");
+				}
+			
+				public void onFailure(Throwable caught){
+					response.setStatus(RPCResponse.STATUS_FAILURE);
+					processResponse(requestId, response);
+					SC.say(caught.getMessage());
+				}
+			};
+
+	        int userId;
+	        int groupId;
+	        
+	        userId = Integer.parseInt(rec.getAttribute("userId"));
+	        groupId =  Integer.parseInt(rec.getAttribute("groupId"));
+	        req.addUserToFoGroup(groupId, userId, callbackAddUser);
+		}
 	}
 
 	@Override

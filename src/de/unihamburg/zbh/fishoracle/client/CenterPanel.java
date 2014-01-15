@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -141,6 +141,8 @@ public class CenterPanel extends VLayout {
 	
 	private DynamicForm pwForm;
 	private PasswordItem newPwPasswordItem;
+	
+	private DynamicForm userToGroupForm;
 	
 	private ListGrid projectGrid;
 	private ListGrid projectStudyGrid;
@@ -1071,6 +1073,7 @@ public class CenterPanel extends VLayout {
 		userGrid.setFetchOperation(OperationId.USER_FETCH_ALL);
 		userGrid.fetchData();
 		
+		//TODO Remove obsolete fields
 		ListGridField lgfId = new ListGridField("userId", "User ID");
 		lgfId.setCanEdit(false);
 		ListGridField lgfFirstName = new ListGridField("firstName", "First Name");
@@ -1147,12 +1150,19 @@ public class CenterPanel extends VLayout {
 		window.setIsModal(true);
 		window.setShowModalMask(true);
 		
-		DynamicForm userToGroupForm = new DynamicForm();
+		userToGroupForm = new DynamicForm();
 		
 		userSelectItem = new SelectItem();
         userSelectItem.setTitle("User");
         
-        getAllUsersExceptGroup(foGroup); 
+        UserDS uDS = new UserDS();
+		
+        userSelectItem.setOptionDataSource(uDS);
+        userSelectItem.setOptionOperationId(OperationId.USER_FETCH_EXCEPT_GROUP);
+        Criteria c = new Criteria("groupId", String.valueOf(foGroup.getId()));
+        userSelectItem.setOptionCriteria(c);
+        
+        userSelectItem.fetchData(); 
         
         ButtonItem addUserToGroupButton = new ButtonItem("Add");
 		addUserToGroupButton.setWidth(50);
@@ -1163,7 +1173,13 @@ public class CenterPanel extends VLayout {
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
 
-				addUserToGroup(foGroup, Integer.parseInt(userSelectItem.getValueAsString()));
+				//TODO
+				userToGroupForm.setAddOperation(OperationId.GROUP_ADD_USER);
+				userSelectItem.getSelectedRecord().setAttribute("groupId", String.valueOf(foGroup.getId()));
+				userToGroupForm.saveData();
+				groupUserGrid.invalidateCache();
+				groupUserGrid.fetchData(new Criteria("groupId", String.valueOf(foGroup.getId())));
+				
 				window.hide();
 			}
 			
@@ -3380,6 +3396,7 @@ public class CenterPanel extends VLayout {
 	}
 	
 	
+	/**
 	public void getAllUsersExceptGroup(FoGroup foGroup){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3404,6 +3421,7 @@ public class CenterPanel extends VLayout {
 		};
 		req.getAllUsersExceptFoGroup(foGroup, callback);
 	}
+	**/
 	
 	/**
 	public void getUsersForGroup(int groupId){
@@ -3438,6 +3456,7 @@ public class CenterPanel extends VLayout {
 		req.getUsersForGroup(groupId, callback);
 	}
 	**/
+	/**
 	public void addUserToGroup(FoGroup foGroup, int userId){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
@@ -3460,7 +3479,7 @@ public class CenterPanel extends VLayout {
 		};
 		req.addUserToFoGroup(foGroup, userId, callback);
 	}
-	
+	**/
 	public void removeUserFromGroup(int groupId, int userId){
 		
 		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
