@@ -1153,9 +1153,12 @@ public class CenterPanel extends VLayout {
 		userToGroupForm = new DynamicForm();
 		
 		GroupDS gDS = new GroupDS();
+		gDS.getField("groupName").setHidden(true);
+		gDS.getField("userId").setHidden(false);
 		
 		userToGroupForm.setDataSource(gDS);
 		userToGroupForm.setAddOperation((OperationId.GROUP_ADD_USER));
+		userToGroupForm.setUseAllDataSourceFields(true);
 		
 		userSelectItem = new SelectItem();
         userSelectItem.setTitle("User");
@@ -1171,6 +1174,7 @@ public class CenterPanel extends VLayout {
         userSelectItem.setValueField("userId");	
         
         userSelectItem.setAutoFetchData(false);
+        userSelectItem.setName("userId");
         
         ButtonItem addUserToGroupButton = new ButtonItem("Add");
 		addUserToGroupButton.setWidth(50);
@@ -1183,7 +1187,6 @@ public class CenterPanel extends VLayout {
 
 				//TODO
 				userToGroupForm.setAddOperation(OperationId.GROUP_ADD_USER);
-				userSelectItem.getSelectedRecord().setAttribute("groupId", String.valueOf(foGroup.getId()));
 				userToGroupForm.saveData();
 				groupUserGrid.invalidateCache();
 				groupUserGrid.fetchData(new Criteria("groupId", String.valueOf(foGroup.getId())));
@@ -1194,6 +1197,7 @@ public class CenterPanel extends VLayout {
 		});
 		
 		userToGroupForm.setItems(userSelectItem, addUserToGroupButton);
+		userToGroupForm.setValue("groupId", foGroup.getId());
 		
 		window.addItem(userToGroupForm);
 		

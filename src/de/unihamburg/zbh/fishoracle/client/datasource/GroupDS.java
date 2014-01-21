@@ -52,6 +52,11 @@ public class GroupDS extends FoDataSource {
         field = new DataSourceBooleanField("isActive", "Active");
         field.setHidden(true);
         addField(field);
+        
+        field = new DataSourceIntegerField("userId", "User ID");
+		field.setRequired(false);
+		field.setHidden(true);
+		addField(field);
 	}
 	
 	@Override

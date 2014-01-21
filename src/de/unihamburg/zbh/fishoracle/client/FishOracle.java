@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -18,6 +18,11 @@
 package de.unihamburg.zbh.fishoracle.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+import com.smartgwt.client.core.KeyIdentifier;
+import com.smartgwt.client.util.KeyCallback;
+import com.smartgwt.client.util.Page;
+import com.smartgwt.client.util.SC;
 
 
 public class FishOracle implements EntryPoint {
@@ -28,5 +33,16 @@ public class FishOracle implements EntryPoint {
 		mainPanel.setWidth100();
 		mainPanel.setHeight100();
 		mainPanel.draw();
+		
+		if (!GWT.isScript()) { 
+		    KeyIdentifier debugKey = new KeyIdentifier(); 
+		    //debugKey.setCtrlKey(true); 
+		    debugKey.setKeyName("M"); 
+		    Page.registerKey(debugKey, new KeyCallback() { 
+		        public void execute(String keyName) { 
+		            SC.showConsole(); 
+		        }
+		    });
+		}
 	}
 }
