@@ -32,8 +32,8 @@ import com.smartgwt.client.util.JSOHelper;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
-import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
-import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
+import de.unihamburg.zbh.fishoracle.client.rpc.AdminService;
+import de.unihamburg.zbh.fishoracle.client.rpc.AdminServiceAsync;
 
 public class FileImportDS extends FoDataSource {
 
@@ -59,7 +59,7 @@ public class FileImportDS extends FoDataSource {
 	protected void executeFetch(final String requestId, final DSRequest request,
 			final DSResponse response) {
 		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		final AdminServiceAsync req = (AdminServiceAsync) GWT.create(AdminService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
@@ -140,7 +140,7 @@ public class FileImportDS extends FoDataSource {
 		JavaScriptObject data = request.getData();
 		final Record[] rec = (Record[]) Record.convertToRecordArray(data);
 		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		final AdminServiceAsync req = (AdminServiceAsync) GWT.create(AdminService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);

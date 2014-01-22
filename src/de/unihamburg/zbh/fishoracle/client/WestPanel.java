@@ -35,8 +35,8 @@ import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
 import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
-import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
+import de.unihamburg.zbh.fishoracle.client.rpc.AdminService;
+import de.unihamburg.zbh.fishoracle.client.rpc.AdminServiceAsync;
 
 public class WestPanel extends SectionStack{
 	
@@ -349,7 +349,7 @@ public class WestPanel extends SectionStack{
 	
 	public void getDatabaseConnectionData(){
 		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		final AdminServiceAsync req = (AdminServiceAsync) GWT.create(AdminService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);

@@ -12,13 +12,13 @@
   
   <!-- Servlets -->
   <servlet>
-    <servlet-name>search</servlet-name>
-    <servlet-class>de.unihamburg.zbh.fishoracle.server.SearchImpl</servlet-class>
+    <servlet-name>SearchService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.SearchServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
-    <servlet-name>search</servlet-name>
-    <url-pattern>/fishoracle/Search</url-pattern>
+    <servlet-name>SearchService</servlet-name>
+    <url-pattern>/fishoracle/SearchService</url-pattern>
   </servlet-mapping>
 
   <servlet>
@@ -152,22 +152,22 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>userService</servlet-name>
+    <servlet-name>UserService</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.UserServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
-    <servlet-name>userService</servlet-name>
+    <servlet-name>UserService</servlet-name>
     <url-pattern>/fishoracle/UserService</url-pattern>
   </servlet-mapping>
   
   <servlet>
-    <servlet-name>adminservice</servlet-name>
+    <servlet-name>AdminService</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.AdminServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
-    <servlet-name>adminservice</servlet-name>
+    <servlet-name>AdminService</servlet-name>
     <url-pattern>/fishoracle/AdminService</url-pattern>
   </servlet-mapping>
   

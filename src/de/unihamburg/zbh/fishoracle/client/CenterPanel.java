@@ -116,10 +116,10 @@ import de.unihamburg.zbh.fishoracle.client.datasource.PropertyDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.TranslocationDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.UserDS;
 import de.unihamburg.zbh.fishoracle.client.ImgCanvas;
-import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
-import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
-import de.unihamburg.zbh.fishoracle.client.rpc.Search;
-import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
+import de.unihamburg.zbh.fishoracle.client.rpc.AdminService;
+import de.unihamburg.zbh.fishoracle.client.rpc.AdminServiceAsync;
+import de.unihamburg.zbh.fishoracle.client.rpc.SearchService;
+import de.unihamburg.zbh.fishoracle.client.rpc.SearchServiceAsync;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserService;
 import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 
@@ -3218,9 +3218,9 @@ public class CenterPanel extends VLayout {
 		
 	public void imageRedraw(GWTImageInfo imgInfo){
 			
-		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
+		final SearchServiceAsync req = (SearchServiceAsync) GWT.create(SearchService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "SearchService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
 		final AsyncCallback<GWTImageInfo> callback = new AsyncCallback<GWTImageInfo>(){
 			public void onSuccess(GWTImageInfo result){
@@ -3260,9 +3260,9 @@ public class CenterPanel extends VLayout {
 	
 	public void exportImage(GWTImageInfo imgInfo){
 		
-		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
+		final SearchServiceAsync req = (SearchServiceAsync) GWT.create(SearchService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "SearchService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
 		final AsyncCallback<GWTImageInfo> callback = new AsyncCallback<GWTImageInfo>(){
 			public void onSuccess(GWTImageInfo result){
@@ -3298,7 +3298,7 @@ public class CenterPanel extends VLayout {
 	
 	public void storedbConfigData(DBConfigData data){
 	
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		final AdminServiceAsync req = (AdminServiceAsync) GWT.create(AdminService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
@@ -3351,7 +3351,7 @@ public class CenterPanel extends VLayout {
 							int importNumber,
 							int nofImports){
 		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
+		final AdminServiceAsync req = (AdminServiceAsync) GWT.create(AdminService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
@@ -3790,9 +3790,9 @@ class RecMapClickHandler implements ClickHandler{
 	
 	public void segmentDetails(String query){
 		
-		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
+		final SearchServiceAsync req = (SearchServiceAsync) GWT.create(SearchService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "SearchService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
 		final AsyncCallback<FoSegment> callback = new AsyncCallback<FoSegment>(){
 			public void onSuccess(FoSegment segmentData){
@@ -3810,9 +3810,9 @@ class RecMapClickHandler implements ClickHandler{
 	
 	public void geneDetails(String query, String ensemblDB){
 		
-		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
+		final SearchServiceAsync req = (SearchServiceAsync) GWT.create(SearchService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "SearchService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
 		final AsyncCallback<EnsemblGene> callback = new AsyncCallback<EnsemblGene>(){
 			public void onSuccess(EnsemblGene gene){
@@ -3830,9 +3830,9 @@ class RecMapClickHandler implements ClickHandler{
 	
 	public void updateImgInfoForTranslocationId(String query, GWTImageInfo imgInfo){
 		
-		final SearchAsync req = (SearchAsync) GWT.create(Search.class);
+		final SearchServiceAsync req = (SearchServiceAsync) GWT.create(SearchService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "SearchService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
 		final AsyncCallback<QueryInfo> callback = new AsyncCallback<QueryInfo>(){
 			public void onSuccess(QueryInfo query){

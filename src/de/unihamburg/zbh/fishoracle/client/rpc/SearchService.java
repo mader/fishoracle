@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -28,7 +28,7 @@ import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
 @RemoteServiceRelativePath("search")
-public interface Search extends RemoteService {
+public interface SearchService extends RemoteService {
 
 	
 	public GWTImageInfo generateImage(QueryInfo q) throws Exception;
@@ -40,9 +40,9 @@ public interface Search extends RemoteService {
 	
 	public static class Util {
 
-		public static SearchAsync getInstance() {
+		public static SearchServiceAsync getInstance() {
 
-			return GWT.create(Search.class);
+			return GWT.create(SearchService.class);
 		}
 	}
 }

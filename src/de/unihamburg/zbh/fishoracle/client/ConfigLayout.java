@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2012-2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2012-2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2012-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2012-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -51,8 +51,8 @@ import de.unihamburg.zbh.fishoracle.client.datasource.ConfigDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.EnsemblDBDS;
 import de.unihamburg.zbh.fishoracle.client.rpc.ConfigService;
 import de.unihamburg.zbh.fishoracle.client.rpc.ConfigServiceAsync;
-import de.unihamburg.zbh.fishoracle.client.rpc.Search;
-import de.unihamburg.zbh.fishoracle.client.rpc.SearchAsync;
+import de.unihamburg.zbh.fishoracle.client.rpc.SearchService;
+import de.unihamburg.zbh.fishoracle.client.rpc.SearchServiceAsync;
 import de.unihamburg.zbh.fishoracle_db_api.data.Constants;
 
 public class ConfigLayout extends VLayout {
@@ -1026,9 +1026,9 @@ public class ConfigLayout extends VLayout {
 		
 	public void search(QueryInfo q){
 			
-			final SearchAsync req = (SearchAsync) GWT.create(Search.class);
+			final SearchServiceAsync req = (SearchServiceAsync) GWT.create(SearchService.class);
 			ServiceDefTarget endpoint = (ServiceDefTarget) req;
-			String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
+			String moduleRelativeURL = GWT.getModuleBaseURL() + "SearchService";
 			endpoint.setServiceEntryPoint(moduleRelativeURL);
 			final AsyncCallback<GWTImageInfo> callback = new AsyncCallback<GWTImageInfo>(){
 				public void onSuccess(GWTImageInfo result){

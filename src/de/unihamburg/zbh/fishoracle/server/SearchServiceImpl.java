@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -23,7 +23,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import de.unihamburg.zbh.fishoracle.client.rpc.Search;
+import de.unihamburg.zbh.fishoracle.client.rpc.SearchService;
 import annotationsketch.FeatureCollection;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -40,7 +40,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.Location;
 import de.unihamburg.zbh.fishoracle_db_api.data.Translocation;
 import extended.RDBMysql;
 
-public class SearchImpl extends RemoteServiceServlet implements Search {
+public class SearchServiceImpl extends RemoteServiceServlet implements SearchService {
 
 	private static final long serialVersionUID = -6555234092930978494L;
 	

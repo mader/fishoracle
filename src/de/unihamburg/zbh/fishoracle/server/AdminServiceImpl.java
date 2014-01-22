@@ -27,7 +27,7 @@ import javax.servlet.http.HttpSession;
 
 import com.csvreader.CsvReader;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
+import de.unihamburg.zbh.fishoracle.client.rpc.AdminService;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
@@ -44,7 +44,7 @@ import de.unihamburg.zbh.fishoracle_db_api.data.Segment;
 import de.unihamburg.zbh.fishoracle_db_api.data.Study;
 import de.unihamburg.zbh.fishoracle_db_api.data.Translocation;
 
-public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
+public class AdminServiceImpl extends RemoteServiceServlet implements AdminService {
 
 	private static final long serialVersionUID = 4434993420272783276L;
 

@@ -17,34 +17,27 @@
 
 package de.unihamburg.zbh.fishoracle.client.rpc;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 
-@RemoteServiceRelativePath("admin")
-public interface Admin extends RemoteService {
+public interface AdminServiceAsync {
 
-	public String[] getUploadedFiles() throws Exception;
-	void deleteFiles(String[] files);
-	public DBConfigData fetchDBConfigData() throws Exception;
-	public boolean writeConfigData(DBConfigData dbcdata) throws Exception;
-	int[] importData(FoStudy[] foStudy,
-						String importType,
-						String dataSubType,
-						boolean createStudy,
-						int projectId,
-						String tool,
-						int importNumber,
-						int nofImports) throws Exception;
+	void getUploadedFiles(AsyncCallback<String[]> callback);
+
+	void deleteFiles(String[] files, AsyncCallback<Void> callback);
 	
-	public static class Util {
+	void fetchDBConfigData(AsyncCallback<DBConfigData> callback);
+	
+	void writeConfigData(DBConfigData dbcdata, AsyncCallback<Boolean> callback);
 
-		public static AdminAsync getInstance() {
-
-			return GWT.create(Admin.class);
-		}
-	}
+	void importData(FoStudy[] foStudy,
+					String importType,
+					String dataSubType,
+					boolean createStudy,
+					int projectId,
+					String tool,
+					int importNumber,
+					int nofImports, AsyncCallback<int[]> callback);	
 }
