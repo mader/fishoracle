@@ -1,0 +1,67 @@
+This directory contains the source code for the FISH Oracle web application.
+
+Copyright (c) 2009-2014 Malte Mader
+Copyright (c) 2009-2014 Center for Bioinformatics, University of Hamburg
+
+SOURCE CODE
+-----------
+
+All Java source code is deposited in src/de/unihamburg/zbh/fishoracle.
+Following refered to as src/.
+
+src/client/                Client side code which is compiled to JavaScript by
+                           the GWT compiler.
+src/server/                Server side code containing the servlet services and
+                           further classes for processing data or fetching data
+                           from and storing data in the databas.
+
+The necessary C source code for drawing genome annotations ist stored in
+gt_db_api/.
+                
+EXTERNAL LIBRARIES
+------------------
+                           
+External libraries are stored in war/Web-inf/lib.
+
+fo_db_api.jar              Library for accessing the FISH Oracle database.
+gt_java.jar                Library for accessing the GenomeTools. Used for
+                           drawing genome annotations with AnnotationSketch.
+jna.jar                    Needed by gt_java.jar to make C calls from java.
+javacsv.jar                Library for reading csv files.
+
+mysql-connector-java-5.1.18-bin.JAR MySQL Connector library needed by fo_db_api.
+
+smartgwt.jar               GWT Widget library (version 4.0p) based on
+                           SmartClient 9.0.
+gwtUpdload.jar             Library to upload files using AJAX.
+
+commons-fileupload-1.2.1.jar,
+commons-io-1.4.jar         Libraries needed for server side file upload handling.
+
+CONFIGURATION FILES
+------------------
+
+Configuration files for the web application are stored in config/
+
+database.conf              Connection parameters for the Ensembl and FISH Oracle
+                           database.
+default.conf               Configuration parameters for AnnotationSketch.
+
+BUILDING FISH ORACLE WAR FILE
+-----------------------------
+In the root directory of source tree, run
+
+  ``ant'war'           to build the war file.
+  ``ant clean''        to remove all compiled binaries and war file.
+
+BUILDING GENOMETOOLS FOR FISH ORACLE
+------------------------------------
+
+Just run the script ./install_genometools. This will fetch the latest version
+of the GenomeTools from Github, merge the codebase with the necessary additions
+to fetch and draw genome annotations for FISH Oracle and compile the binaries
+automatically.
+
+The resulting lib/libgenometools.so library file can either be copied to your 
+/lib or /lib64 (depending on your system architecture) or the systems
+$LD_LIBRARY_PATH can be set to the GenomeTools lib/ folder.
