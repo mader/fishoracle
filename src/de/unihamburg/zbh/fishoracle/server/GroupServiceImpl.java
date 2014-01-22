@@ -20,7 +20,6 @@ package de.unihamburg.zbh.fishoracle.server;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
-import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle.client.rpc.GroupService;
@@ -108,11 +107,11 @@ public class GroupServiceImpl extends RemoteServiceServlet implements GroupServi
 	}
 	
 	@Override
-	public FoGroup[] getAllGroupsExceptFoProject(FoProject foProject) {
+	public FoGroup[] getAllGroupsExceptFoProject(int projectId) {
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
 		
-		return db.getAllGroupsExceptProject(foProject);
+		return db.getAllGroupsExceptProject(projectId);
 	}
 }

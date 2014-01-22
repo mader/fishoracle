@@ -2151,8 +2151,17 @@ public class CenterPanel extends VLayout {
 		groupSelectItem = new SelectItem();
         groupSelectItem.setTitle("Group");
         
-        getAllGroupsExceptProject(project);
+        GroupDS gDS = new GroupDS();
+        groupSelectItem.setOptionDataSource(gDS);
+        groupSelectItem.setOptionOperationId(OperationId.GROUP_FETCH_EXCEPT_PROJECT);
+        
+		Criteria c = new Criteria("projectId", String.valueOf(project.getId()));
+		groupSelectItem.setOptionCriteria(c);
 		
+		groupSelectItem.setDisplayField("groupName");
+		groupSelectItem.setValueField("groupId");			
+		groupSelectItem.setAutoFetchData(false);
+        
 		accessRightSelectItem = new SelectItem();
 		accessRightSelectItem.setTitle("Access right");
 		
@@ -3331,31 +3340,6 @@ public class CenterPanel extends VLayout {
 			}
 		};
 		req.getSessionUserObject(callback);
-	}
-	
-	public void getAllGroupsExceptProject(FoProject foProject){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoGroup[]> callback = new AsyncCallback<FoGroup[]>(){
-			
-			public void onSuccess(FoGroup[] result){
-				
-				 LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
-				 
-				 for(int i=0; i< result.length; i++){
-					 valueMap.put(new Integer(result[i].getId()).toString(), result[i].getName());
-				 }
-				 
-				 groupSelectItem.setValueMap(valueMap);
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-		};
-		req.getAllGroupsExceptFoProject(foProject, callback);
 	}
 	
 	public void importData(FoStudy[] foStudy,

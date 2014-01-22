@@ -20,9 +20,7 @@ package de.unihamburg.zbh.fishoracle.client.rpc;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
-import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 
 public interface AdminAsync {
 
@@ -41,8 +39,5 @@ public interface AdminAsync {
 					int projectId,
 					String tool,
 					int importNumber,
-					int nofImports, AsyncCallback<int[]> callback);
-	
-	void getAllGroupsExceptFoProject(FoProject foProject,
-			AsyncCallback<FoGroup[]> callback);
+					int nofImports, AsyncCallback<int[]> callback);	
 }

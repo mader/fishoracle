@@ -22,9 +22,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
-import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 
 @RemoteServiceRelativePath("admin")
 public interface Admin extends RemoteService {
@@ -41,7 +39,6 @@ public interface Admin extends RemoteService {
 						String tool,
 						int importNumber,
 						int nofImports) throws Exception;
-	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);
 	
 	public static class Util {
 

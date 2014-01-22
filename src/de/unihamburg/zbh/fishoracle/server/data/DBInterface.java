@@ -945,11 +945,11 @@ public class DBInterface {
 		
 	}
 	
-	public FoGroup[] getAllGroupsExceptProject(FoProject foProject){
+	public FoGroup[] getAllGroupsExceptProject(int projectId){
 		FODriver driver = getFoDriver();
 		GroupAdaptor ga = driver.getGroupAdaptor();
 		
-		Group[] groups = ga.fetchGroupsNotInProject(foProject.getId(), false);
+		Group[] groups = ga.fetchGroupsNotInProject(projectId, false);
 		
 		return DataTypeConverter.groupsToFoGroups(groups, false);
 	}

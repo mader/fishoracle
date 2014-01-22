@@ -20,7 +20,6 @@ package de.unihamburg.zbh.fishoracle.client.rpc;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
-import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 
 public interface GroupServiceAsync {
 
@@ -29,7 +28,7 @@ public interface GroupServiceAsync {
 	void deleteGroup(FoGroup foGroup, AsyncCallback<Void> callback);
 	void addUserToFoGroup(int groupId, int userId,
 			AsyncCallback<Void> callback);
-	void getAllGroupsExceptFoProject(FoProject foProject,
+	void getAllGroupsExceptFoProject(int projectId,
 			AsyncCallback<FoGroup[]> callback);
 	void removeUserFromFoGroup(int groupId, int userId,
 			AsyncCallback<Void> callback);

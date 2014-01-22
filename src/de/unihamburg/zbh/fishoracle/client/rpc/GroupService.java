@@ -20,7 +20,6 @@ package de.unihamburg.zbh.fishoracle.client.rpc;
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
-import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
 public interface GroupService extends RemoteService {
@@ -29,7 +28,7 @@ public interface GroupService extends RemoteService {
 	FoGroup addGroup(FoGroup foGroup) throws UserException;
 	void deleteGroup(FoGroup foGroup) throws UserException;
 	void addUserToFoGroup(int groupId, int userId) throws UserException;
-	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);
+	FoGroup[] getAllGroupsExceptFoProject(int projectId);
 	void removeUserFromFoGroup(int groupId, int userId) throws UserException;
 	FoGroup[] getAllGroupsForUser() throws Exception;
 }

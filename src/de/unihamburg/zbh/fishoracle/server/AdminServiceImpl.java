@@ -31,9 +31,7 @@ import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
-import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
-import de.unihamburg.zbh.fishoracle.client.data.FoProject;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 import de.unihamburg.zbh.fishoracle.server.data.DBConfig;
@@ -130,15 +128,6 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	    	throw new IllegalArgumentException("Delete: deletion failed");
 			}
 	    }
-	}
-	
-	@Override
-	public FoGroup[] getAllGroupsExceptFoProject(FoProject foProject) {
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getAllGroupsExceptProject(foProject);
 	}
 	
 	public DBConfigData fetchDBConfigData() throws Exception{
