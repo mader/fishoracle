@@ -17,9 +17,6 @@
 
 package de.unihamburg.zbh.fishoracle.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.util.BooleanCallback;
@@ -43,13 +40,10 @@ import com.smartgwt.client.widgets.tab.TabSet;
 import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.datasource.ConfigDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.GroupDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.datasource.UserDS;
-import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
-import de.unihamburg.zbh.fishoracle.client.rpc.AdminAsync;
 
 public class UserSettingsTab extends Tab{
 
@@ -329,38 +323,6 @@ public class UserSettingsTab extends Tab{
 	private Tab createStudiesTab(){
 		Tab userStudiesTab = new Tab("Studies");
 		return userStudiesTab;
-	}
-	
-	public void getAllGroupsForUser(){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoGroup[]> callback = new AsyncCallback<FoGroup[]>(){
-			
-			public void onSuccess(FoGroup[] result){
-				
-				FoGroup[] groups = result;
-								
-				ListGridRecord[] lgr = new ListGridRecord[groups.length];
-				
-				for(int i=0; i < groups.length; i++){
-					lgr[i] = new ListGridRecord();
-					lgr[i].setAttribute("groupId", groups[i].getId());
-					lgr[i].setAttribute("groupName", groups[i].getName());
-					lgr[i].setAttribute("isactive", groups[i].isIsactive());
-				}
-
-				groupGrid.setData(lgr);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getAllGroupsForUser(callback);
 	}
 }
 

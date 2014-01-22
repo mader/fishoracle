@@ -42,7 +42,6 @@ public interface Admin extends RemoteService {
 						int importNumber,
 						int nofImports) throws Exception;
 	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);
-	FoGroup[] getAllGroupsForUser() throws Exception;
 	
 	public static class Util {
 

@@ -133,18 +133,6 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
-	public FoGroup[] getAllGroupsForUser() throws Exception {
-		
-		FoUser user = getSessionUserObject();
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getAllGroupsForUser(user);
-	}
-	
-	@Override
 	public FoGroup[] getAllGroupsExceptFoProject(FoProject foProject) {
 		String servletContext = this.getServletContext().getRealPath("/");
 		

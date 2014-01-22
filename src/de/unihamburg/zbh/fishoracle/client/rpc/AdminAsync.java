@@ -45,6 +45,4 @@ public interface AdminAsync {
 	
 	void getAllGroupsExceptFoProject(FoProject foProject,
 			AsyncCallback<FoGroup[]> callback);
-
-	void getAllGroupsForUser(AsyncCallback<FoGroup[]> callback);	
 }
