@@ -25,8 +25,6 @@ import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
-import de.unihamburg.zbh.fishoracle.client.data.FoUser;
-import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
 @RemoteServiceRelativePath("admin")
 public interface Admin extends RemoteService {
@@ -43,14 +41,7 @@ public interface Admin extends RemoteService {
 						String tool,
 						int importNumber,
 						int nofImports) throws Exception;
-	FoGroup[] getAllFoGroups() throws Exception;
-	FoUser[] getUsersForGroup(int groupId) throws UserException;
-	FoGroup addGroup(FoGroup foGroup) throws UserException;
-	void deleteGroup(FoGroup foGroup) throws UserException;
-	FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException;
-	void addUserToFoGroup(FoGroup foGroup, int userId) throws UserException;
 	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);
-	boolean removeUserFromFoGroup(int groupId, int userId) throws UserException;
 	FoGroup[] getAllGroupsForUser() throws Exception;
 	
 	public static class Util {

@@ -23,7 +23,6 @@ import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.data.FoStudy;
 import de.unihamburg.zbh.fishoracle.client.data.FoProject;
-import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 
 public interface AdminAsync {
 
@@ -43,26 +42,9 @@ public interface AdminAsync {
 					String tool,
 					int importNumber,
 					int nofImports, AsyncCallback<int[]> callback);
-
-	void getAllFoGroups(AsyncCallback<FoGroup[]> callback);
-
-	void addGroup(FoGroup foGroup, AsyncCallback<FoGroup> callback);
-
-	void deleteGroup(FoGroup foGroup, AsyncCallback<Void> callback);
-	
-	void addUserToFoGroup(FoGroup foGroup, int userId,
-			AsyncCallback<Void> callback);
-
-	void getAllUsersExceptFoGroup(FoGroup foGroup,
-			AsyncCallback<FoUser[]> callback);
-
-	void getUsersForGroup(int groupId, AsyncCallback<FoUser[]> callback);
 	
 	void getAllGroupsExceptFoProject(FoProject foProject,
 			AsyncCallback<FoGroup[]> callback);
-
-	void removeUserFromFoGroup(int groupId, int userId,
-			AsyncCallback<Boolean> callback);
 
 	void getAllGroupsForUser(AsyncCallback<FoGroup[]> callback);	
 }

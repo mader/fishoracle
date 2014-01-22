@@ -30,6 +30,6 @@ public interface GroupService extends RemoteService {
 	void deleteGroup(FoGroup foGroup) throws UserException;
 	void addUserToFoGroup(int groupId, int userId) throws UserException;
 	FoGroup[] getAllGroupsExceptFoProject(FoProject foProject);
-	boolean removeUserFromFoGroup(int groupId, int userId) throws UserException;
+	void removeUserFromFoGroup(int groupId, int userId) throws UserException;
 	FoGroup[] getAllGroupsForUser() throws Exception;
 }

@@ -32,6 +32,6 @@ public interface GroupServiceAsync {
 	void getAllGroupsExceptFoProject(FoProject foProject,
 			AsyncCallback<FoGroup[]> callback);
 	void removeUserFromFoGroup(int groupId, int userId,
-			AsyncCallback<Boolean> callback);
+			AsyncCallback<Void> callback);
 	void getAllGroupsForUser(AsyncCallback<FoGroup[]> callback);
 }

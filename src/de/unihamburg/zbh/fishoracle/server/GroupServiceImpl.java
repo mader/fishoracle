@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -96,7 +96,7 @@ public class GroupServiceImpl extends RemoteServiceServlet implements GroupServi
 	}
 	
 	@Override
-	public boolean removeUserFromFoGroup(int groupId, int userId) throws UserException {
+	public void removeUserFromFoGroup(int groupId, int userId) throws UserException {
 		
 		SessionData s = getSessionData();
 		s.isAdmin();
@@ -105,8 +105,6 @@ public class GroupServiceImpl extends RemoteServiceServlet implements GroupServi
 		DBInterface db = new DBInterface(servletContext);
 		
 		db.removeUserFromGroup(groupId, userId);
-		
-		return true;
 	}
 	
 	@Override

@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -181,8 +181,6 @@ public class GroupDS extends FoDataSource {
 			String requestId,
 			DSRequest request,
 			DSResponse response) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -190,6 +188,7 @@ public class GroupDS extends FoDataSource {
 									final DSRequest request,
 									final DSResponse response) {
 		
+		String operationId = request.getOperationId();
 		JavaScriptObject data = request.getData();
 		final ListGridRecord rec = new ListGridRecord(data);
 		
@@ -197,31 +196,57 @@ public class GroupDS extends FoDataSource {
 		ServiceDefTarget endpoint = (ServiceDefTarget) req;
 		String moduleRelativeURL = GWT.getModuleBaseURL() + "GroupService";
 		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
+		
+		if (operationId.equals(OperationId.GROUP_REMOVE)) {
 			
-			public void onSuccess(Void v){
-				
-				ListGridRecord[] list = new ListGridRecord[1];
-				
-				list[0] = rec;
-				
-				response.setData(list);
-				processResponse(requestId, response);
-			}
+			final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
 			
-			public void onFailure(Throwable caught){
-				response.setStatus(RPCResponse.STATUS_FAILURE);
-				processResponse(requestId, response);
-				SC.say(caught.getMessage());
-			}
-		};
+				public void onSuccess(Void v){
+				
+					ListGridRecord[] list = new ListGridRecord[1];
+				
+					list[0] = rec;
+				
+					response.setData(list);
+					processResponse(requestId, response);
+				}
+			
+				public void onFailure(Throwable caught){
+					response.setStatus(RPCResponse.STATUS_FAILURE);
+					processResponse(requestId, response);
+					SC.say(caught.getMessage());
+				}
+			};
 		
-		int groupId = Integer.parseInt(rec.getAttribute("groupId"));
+			int groupId = Integer.parseInt(rec.getAttribute("groupId"));
 		
-		FoGroup group = new FoGroup(groupId, "", true);
+			FoGroup group = new FoGroup(groupId, "", true);
 		
-		//TODO just use the id as parameter.
-		req.deleteGroup(group, callback);
+			//TODO just use the id as parameter.
+			req.deleteGroup(group, callback);
+		}
+		
+		if (operationId.equals(OperationId.GROUP_REMOVE_USER)) {
+			
+			final AsyncCallback<Void> callbackRemoveUser = new AsyncCallback<Void>(){
+			
+				public void onSuccess(Void v){
+					
+					SC.say("User was successfully removed from Group.");
+				}
+			
+				public void onFailure(Throwable caught){
+					response.setStatus(RPCResponse.STATUS_FAILURE);
+					processResponse(requestId, response);
+					SC.say(caught.getMessage());
+				}
+			};
+			
+			int userId = Integer.parseInt(rec.getAttribute("userId"));
+			int groupId = Integer.parseInt(rec.getAttribute("groupId"));
+			
+			req.removeUserFromFoGroup(groupId, userId, callbackRemoveUser);
+		}
 		
 	}
 }

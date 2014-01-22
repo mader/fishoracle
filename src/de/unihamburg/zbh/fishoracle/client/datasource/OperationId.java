@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2012-2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2012-2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2012-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2012-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -52,8 +52,9 @@ public class OperationId {
 	public static final String GROUP_FETCH_ALL = "getAllGroups";
 	public static final String GROUP_FETCH_FOR_USER = "getAllGroupsForUsers";
 	public static final String GROUP_ADD_USER = "addUserToGroup";
+	public static final String GROUP_REMOVE_USER = "removeUserFromGroup";
 	public static final String GROUP_ADD = "addGroup";
-	
+	public static final String GROUP_REMOVE = "removeGroup";
 	
 	public static final String FEATURE_FETCH_ALL = "getAllFeatures";
 	public static final String FEATURE_FETCH_FOR_STUDY_ID = "getFeaturesForStudyId";

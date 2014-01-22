@@ -1297,6 +1297,7 @@ public class CenterPanel extends VLayout {
 							if(value != null && value){
 				
 								final ListGridRecord lgr = groupGrid.getSelectedRecord();
+								groupGrid.setRemoveOperation(OperationId.GROUP_REMOVE);
 								groupGrid.removeData(lgr);
 							}
 						}
@@ -1332,18 +1333,24 @@ public class CenterPanel extends VLayout {
 		
 		ToolStripButton removeUserGroupButton = new ToolStripButton();
 		removeUserGroupButton.setTitle("remove User from Group");
-		//TODO
 		removeUserGroupButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
-				ListGridRecord userLgr = groupUserGrid.getSelectedRecord();
-				ListGridRecord groupLgr = groupGrid.getSelectedRecord();
+				ListGridRecord lgr = groupUserGrid.getSelectedRecord();
 				
-				int groupId = groupLgr.getAttributeAsInt("groupId");
-				int userId = userLgr.getAttributeAsInt("userId");
+				if (lgr != null){
+					ListGridRecord groupLgr = groupGrid.getSelectedRecord();
+					lgr.setAttribute("groupId", groupLgr.getAttribute("groupId"));
 				
-				removeUserFromGroup(groupId, userId);
+					groupGrid.setRemoveOperation(OperationId.GROUP_REMOVE_USER);
+					groupGrid.removeData(lgr);
+				
+					groupUserGrid.invalidateCache();
+					groupUserGrid.fetchData(new Criteria("groupId", groupLgr.getAttribute("groupId")));
+				} else {
+					SC.say("Select a group and an user.");
+				}
 		}});
 		
 		groupToolStrip.addButton(removeUserGroupButton);
@@ -3300,92 +3307,6 @@ public class CenterPanel extends VLayout {
 		};
 		req.writeConfigData(data, callback);
 	}
-	/**
-	public void showAllGroups(){
-		//TODO remove obsolete code
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoGroup[]> callback = new AsyncCallback<FoGroup[]>(){
-			
-			public void onSuccess(FoGroup[] result){
-				
-				FoGroup[] groups = result;
-				
-				groupGrid.addRecordClickHandler(new MyGroupRecordClickHandler(groupUserGrid, cp));
-								
-				ListGridRecord[] lgr = new ListGridRecord[groups.length];
-				
-				for(int i=0; i < groups.length; i++){
-					lgr[i] = new ListGridRecord();
-					lgr[i].setAttribute("groupId", groups[i].getId());
-					lgr[i].setAttribute("groupName", groups[i].getName());
-					lgr[i].setAttribute("isactive", groups[i].isIsactive());
-				}
-
-				groupGrid.setData(lgr);
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.getAllFoGroups(callback);
-	}
-	
-	**/
-	
-	/**
-	public void deleteGroup(FoGroup foGroup){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Void> callback = new AsyncCallback<Void>(){
-			
-			public void onSuccess(Void result){
-				
-				groupGrid.removeData(groupGrid.getSelectedRecord());
-				groupGrid.getRecords();
-				
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.deleteGroup(foGroup, callback);
-	}
-	**/
-	
-	public void addGroup(FoGroup foGroup){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoGroup> callback = new AsyncCallback<FoGroup>(){
-			
-			public void onSuccess(FoGroup result){
-				FoGroup group = result;
-				
-				ListGridRecord lgr = new ListGridRecord();
-				lgr.setAttribute("groupId", group.getId());
-				lgr.setAttribute("groupName", group.getName());
-				lgr.setAttribute("isactive", group.isIsactive());
-				
-				groupGrid.addData(lgr);
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-
-		};
-		req.addGroup(foGroup, callback);
-	}
 	
 	public void getUserObject(final String forWhat){
 		
@@ -3410,110 +3331,6 @@ public class CenterPanel extends VLayout {
 			}
 		};
 		req.getSessionUserObject(callback);
-	}
-	
-	
-	/**
-	public void getAllUsersExceptGroup(FoGroup foGroup){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoUser[]> callback = new AsyncCallback<FoUser[]>(){
-			
-			public void onSuccess(FoUser[] result){
-				
-				 LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
-				 
-				 for(int i=0; i< result.length; i++){
-					 valueMap.put(new Integer(result[i].getId()).toString(), result[i].getUserName());
-				 }
-			     
-				 userSelectItem.setValueMap(valueMap);
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-		};
-		req.getAllUsersExceptFoGroup(foGroup, callback);
-	}
-	**/
-	
-	/**
-	public void getUsersForGroup(int groupId){
-		//TODO
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoUser[]> callback = new AsyncCallback<FoUser[]>(){
-			
-			public void onSuccess(FoUser[] result){
-				
-				FoUser[] users = result;
-				ListGridRecord[] userLgr = null;
-				
-				if(users != null){
-					userLgr = new ListGridRecord[users.length];
-				
-					for(int i=0; i < users.length; i++){
-						userLgr[i] = new ListGridRecord();
-						userLgr[i].setAttribute("userId", users[i].getId());
-						userLgr[i].setAttribute("userName", users[i].getUserName());
-					}
-				}
-				
-				groupUserGrid.setData(userLgr);
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-		};
-		req.getUsersForGroup(groupId, callback);
-	}
-	**/
-	/**
-	public void addUserToGroup(FoGroup foGroup, int userId){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoUser> callback = new AsyncCallback<FoUser>(){
-			
-			public void onSuccess(FoUser result){
-
-				ListGridRecord lgr = new ListGridRecord();
-				lgr.setAttribute("userId", result.getId());
-				lgr.setAttribute("userName", result.getUserName());
-				
-				groupUserGrid.addData(lgr);
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-		};
-		req.addUserToFoGroup(foGroup, userId, callback);
-	}
-	**/
-	public void removeUserFromGroup(int groupId, int userId){
-		
-		final AdminAsync req = (AdminAsync) GWT.create(Admin.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "AdminService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>(){
-			
-			public void onSuccess(Boolean result){
-				groupUserGrid.removeData(groupUserGrid.getSelectedRecord());
-				groupUserGrid.getRecords();
-			}
-			public void onFailure(Throwable caught){
-				SC.say(caught.getMessage());
-			}
-		};
-		req.removeUserFromFoGroup(groupId, userId, callback);
 	}
 	
 	public void getAllGroupsExceptProject(FoProject foProject){

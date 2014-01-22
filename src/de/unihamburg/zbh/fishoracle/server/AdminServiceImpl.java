@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2012 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2012 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -133,16 +133,6 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
-	public FoGroup[] getAllFoGroups() throws Exception {
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getAllGroups();
-	}
-	
-	@Override
 	public FoGroup[] getAllGroupsForUser() throws Exception {
 		
 		FoUser user = getSessionUserObject();
@@ -155,79 +145,12 @@ public class AdminServiceImpl extends RemoteServiceServlet implements Admin {
 	}
 	
 	@Override
-	public FoGroup addGroup(FoGroup foGroup) throws UserException {
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.addGroup(foGroup);
-	}
-	
-	@Override
-	public void deleteGroup(FoGroup foGroup) throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		db.deleteGroup(foGroup);
-		
-	}
-	
-	@Override
-	public FoUser[] getAllUsersExceptFoGroup(FoGroup foGroup) throws UserException {
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getAllUserExceptGroup(foGroup.getId());
-	}
-	
-	@Override
-	public void addUserToFoGroup(FoGroup foGroup, int userId) throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		db.addUserGroup(foGroup.getId(), userId);
-	}
-	
-	@Override
-	public boolean removeUserFromFoGroup(int groupId, int userId) throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		db.removeUserFromGroup(groupId, userId);
-		
-		return true;
-	}
-	
-	@Override
 	public FoGroup[] getAllGroupsExceptFoProject(FoProject foProject) {
 		String servletContext = this.getServletContext().getRealPath("/");
 		
 		DBInterface db = new DBInterface(servletContext);
 		
 		return db.getAllGroupsExceptProject(foProject);
-	}
-	
-	@Override
-	public FoUser[] getUsersForGroup(int groupId) throws UserException {
-		
-		isAdmin();
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		return db.getUsersForGroup(groupId);
 	}
 	
 	public DBConfigData fetchDBConfigData() throws Exception{
