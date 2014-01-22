@@ -2560,7 +2560,7 @@ public class CenterPanel extends VLayout {
 			pane.addMember(projectAccessGrid);
 		}
 		
-		projectGrid.addRecordClickHandler(new MyProjectRecordClickHandler(projectStudyGrid, projectAccessGrid, user, cp));
+		projectGrid.addRecordClickHandler(new MyProjectRecordClickHandler(projectStudyGrid, projectAccessGrid, user));
 		
 		projectAdminTab.setPane(pane);
 		
@@ -3713,9 +3713,7 @@ class MyProjectRecordClickHandler implements RecordClickHandler {
 	private ListGrid projectAccessGrid;
 	private FoUser user;
 	
-	//TODO Remove CenterPanel. It's not used anyway.
-	
-	public MyProjectRecordClickHandler(ListGrid projectStudyGrid, ListGrid projectAccessGrid, FoUser user, CenterPanel cp){
+	public MyProjectRecordClickHandler(ListGrid projectStudyGrid, ListGrid projectAccessGrid, FoUser user){
 		this.projectStudyGrid = projectStudyGrid;
 		this.projectAccessGrid = projectAccessGrid;
 		this.user = user;
