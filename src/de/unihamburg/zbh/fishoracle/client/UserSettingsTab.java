@@ -1,3 +1,20 @@
+/*
+  Copyright (c) 2013-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2013-2014 Center for Bioinformatics, University of Hamburg
+
+  Permission to use, copy, modify, and distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*/
+
 package de.unihamburg.zbh.fishoracle.client;
 
 import com.google.gwt.core.client.GWT;
@@ -16,7 +33,6 @@ import com.smartgwt.client.widgets.form.fields.PasswordItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.validator.MatchesFieldValidator;
 import com.smartgwt.client.widgets.grid.ListGrid;
-import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
@@ -29,6 +45,7 @@ import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoGroup;
 import de.unihamburg.zbh.fishoracle.client.datasource.ConfigDS;
+import de.unihamburg.zbh.fishoracle.client.datasource.GroupDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.datasource.UserDS;
 import de.unihamburg.zbh.fishoracle.client.rpc.Admin;
@@ -292,13 +309,13 @@ public class UserSettingsTab extends Tab{
 		groupGrid.setFixedRecordHeights(false);
 		groupGrid.markForRedraw();
 		
-		ListGridField lgfGroupId = new ListGridField("groupId", "group ID");
-		ListGridField lgfGroupName = new ListGridField("groupName", "Group Name");
-		ListGridField lgfGroupActivated = new ListGridField("isactive", "Activated");
+		GroupDS gDS = new GroupDS();
 		
-		groupGrid.setFields(lgfGroupId, lgfGroupName, lgfGroupActivated);
+		groupGrid.setDataSource(gDS);
+		groupGrid.setFetchOperation(OperationId.GROUP_FETCH_FOR_USER);
+		groupGrid.setUseAllDataSourceFields(true);
 		
-		getAllGroupsForUser();
+		groupGrid.fetchData();
 		
 		gridContainer.addMember(groupGrid);
 		
