@@ -1143,7 +1143,7 @@ public class CenterPanel extends VLayout {
 		
 		window.setTitle("Add User to Group: " + foGroup.getName());
 		window.setWidth(250);
-		window.setHeight(100);
+		window.setHeight(120);
 		window.setAlign(Alignment.CENTER);
 		
 		window.setAutoCenter(true);
@@ -1153,12 +1153,14 @@ public class CenterPanel extends VLayout {
 		userToGroupForm = new DynamicForm();
 		
 		GroupDS gDS = new GroupDS();
-		gDS.getField("groupName").setHidden(true);
-		gDS.getField("userId").setHidden(false);
+		
+		TextItem groupIdTextItem = new TextItem();
+		groupIdTextItem.setName("groupId");
+		groupIdTextItem.setValue(foGroup.getId());
+		groupIdTextItem.setDisabled(true);
 		
 		userToGroupForm.setDataSource(gDS);
 		userToGroupForm.setAddOperation((OperationId.GROUP_ADD_USER));
-		userToGroupForm.setUseAllDataSourceFields(true);
 		
 		userSelectItem = new SelectItem();
         userSelectItem.setTitle("User");
@@ -1185,7 +1187,6 @@ public class CenterPanel extends VLayout {
 			public void onClick(
 					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
 
-				//TODO
 				userToGroupForm.setAddOperation(OperationId.GROUP_ADD_USER);
 				userToGroupForm.saveData();
 				groupUserGrid.invalidateCache();
@@ -1193,11 +1194,9 @@ public class CenterPanel extends VLayout {
 				
 				window.hide();
 			}
-			
 		});
 		
-		userToGroupForm.setItems(userSelectItem, addUserToGroupButton);
-		userToGroupForm.setValue("groupId", foGroup.getId());
+		userToGroupForm.setItems(groupIdTextItem, userSelectItem, addUserToGroupButton);
 		
 		window.addItem(userToGroupForm);
 		
@@ -1289,37 +1288,44 @@ public class CenterPanel extends VLayout {
 				
 				final ListGridRecord lgr = groupGrid.getSelectedRecord();
 				
-				SC.confirm("Do you really want to delete " + lgr.getAttribute("groupName") + "?", new BooleanCallback(){
+				if (lgr != null){
+				
+					SC.confirm("Do you really want to delete " + lgr.getAttribute("groupName") + "?", new BooleanCallback(){
 
-					@Override
-					public void execute(Boolean value) {
-						if(value != null && value){
+						@Override
+						public void execute(Boolean value) {
+							if(value != null && value){
 				
-							final ListGridRecord lgr = groupGrid.getSelectedRecord();
-							groupGrid.removeData(lgr);
+								final ListGridRecord lgr = groupGrid.getSelectedRecord();
+								groupGrid.removeData(lgr);
+							}
 						}
-					}
-				});
-				
+					});
+				} else {
+					SC.say("Select a group.");
+				}
 			}});
 		
 		groupToolStrip.addButton(deleteGroupButton);
 		
 		ToolStripButton addUserGroupButton = new ToolStripButton();  
 		addUserGroupButton.setTitle("add User to Group");
-		//TODO
 		addUserGroupButton.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
 				ListGridRecord lgr = groupGrid.getSelectedRecord();
 				
-				FoGroup group = new FoGroup(Integer.parseInt(lgr.getAttribute("groupId")),
+				if (lgr != null){
+					
+					FoGroup group = new FoGroup(Integer.parseInt(lgr.getAttribute("groupId")),
 															lgr.getAttribute("groupName"),
 															Boolean.parseBoolean(lgr.getAttribute("isactive")));
 				
-				loadUserToGroupWindow(group);
-				
+					loadUserToGroupWindow(group);
+				} else {
+					SC.say("Select a group.");
+				}
 		}});
 		
 		groupToolStrip.addButton(addUserGroupButton);
@@ -1338,7 +1344,6 @@ public class CenterPanel extends VLayout {
 				int userId = userLgr.getAttributeAsInt("userId");
 				
 				removeUserFromGroup(groupId, userId);
-				
 		}});
 		
 		groupToolStrip.addButton(removeUserGroupButton);
