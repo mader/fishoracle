@@ -126,8 +126,6 @@ import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 public class CenterPanel extends VLayout {
 
 	private ToolStripButton selectButton;
-	
-	private ListGrid userGrid;
 	private ListGrid organGrid;
 	private ListGrid propertyGrid;
 	private ListGrid studyGrid;
@@ -138,9 +136,6 @@ public class CenterPanel extends VLayout {
 	private SelectItem userSelectItem;
 	private SelectItem projectSelectItem;
 	private ListGrid ensemblGrid;
-	
-	private DynamicForm pwForm;
-	private PasswordItem newPwPasswordItem;
 	
 	private DynamicForm userToGroupForm;
 	
@@ -946,184 +941,13 @@ public class CenterPanel extends VLayout {
 		window.show();
 	}
 	
-	public void loadSetPwWindow(final int userId, String username, UserDS uDS){
-		
-		final Window window = new Window();
-
-		window.setTitle("Set password for " + username);
-		window.setWidth(250);
-		window.setHeight(100);
-		window.setAlign(Alignment.CENTER);
-		
-		window.setAutoCenter(true);
-		window.setIsModal(true);
-		window.setShowModalMask(true);
-		
-		pwForm = new DynamicForm();
-		pwForm.setUseAllDataSourceFields(true);
-		pwForm.setDataSource(uDS);
-		
-		uDS.getField("userId").setHidden(true);
-		uDS.getField("userName").setHidden(true);
-		uDS.getField("firstName").setHidden(true);
-		uDS.getField("lastName").setHidden(true);
-		uDS.getField("email").setHidden(true);
-		
-		
-		pwForm.editSelectedData(userGrid);
-		
-		newPwPasswordItem = new PasswordItem();
-		newPwPasswordItem.setName("pw");
-		
-		ButtonItem submitPwButton = new ButtonItem("submit");
-		submitPwButton.setWidth(50);
-		
-		submitPwButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
-
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				
-				pwForm.setUpdateOperation(OperationId.USER_UPDATE_PASSWORD_ADMIN);
-				pwForm.saveData();
-				
-				window.hide();
-			}
-			
-		});
-
-		pwForm.setItems(newPwPasswordItem, submitPwButton);
-	
-		window.addItem(pwForm);
-		
-		window.show();
-		
-	}
-	
 	public void openUserAdminTab(){
-	
-		Tab usersAdminTab = new Tab("Users");
-		usersAdminTab.setCanClose(true);
 		
-		VLayout pane = new VLayout();
-		pane.setWidth100();
-		pane.setHeight100();
-		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		UserAdminTab uat = new UserAdminTab(mp);
 		
-		VLayout headerContainer = new VLayout();
-		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
-		headerContainer.setWidth100();
-		headerContainer.setAutoHeight();
+		centerTabSet.addTab(uat);
 		
-		HLayout controlsPanel = new HLayout();
-		controlsPanel.setWidth100();
-		controlsPanel.setAutoHeight();
-		
-		ToolStrip userToolStrip = new ToolStrip();
-		userToolStrip.setWidth100();
-		
-		UserDS uDS = new UserDS();
-		
-		ToolStripButton changePwButton = new ToolStripButton();  
-		changePwButton.setTitle("Change Password");
-		changePwButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				
-				ListGridRecord lgr = userGrid.getSelectedRecord();
-				
-				UserDS uDS = (UserDS) userGrid.getDataSource();
-				
-				if (lgr != null){
-				
-					loadSetPwWindow(Integer.parseInt(userGrid.getSelectedRecord().getAttribute("userId")),
-						userGrid.getSelectedRecord().getAttribute("userName"), uDS);
-					
-				} else {
-					SC.say("Select a user.");
-				}
-			}});
-		
-		userToolStrip.addButton(changePwButton);
-		
-		controlsPanel.addMember(userToolStrip);
-		
-		headerContainer.addMember(controlsPanel);
-		
-		pane.addMember(headerContainer);
-		
-		HLayout gridContainer = new HLayout();
-		gridContainer.setWidth100();
-		gridContainer.setHeight100();
-		
-		userGrid = new ListGrid();
-		userGrid.setWidth100();
-		userGrid.setHeight100();
-		userGrid.setAlternateRecordStyles(true);
-		userGrid.setWrapCells(true);
-		userGrid.setFixedRecordHeights(false);
-		userGrid.setEditByCell(true);
-		userGrid.setAutoSaveEdits(false);
-		
-		userGrid.setShowAllRecords(false);
-		userGrid.setAutoFetchData(false);
-		
-		userGrid.setDataSource(uDS);
-		userGrid.setFetchOperation(OperationId.USER_FETCH_ALL);
-		userGrid.fetchData();
-		
-		//TODO Remove obsolete fields
-		ListGridField lgfId = new ListGridField("userId", "User ID");
-		lgfId.setCanEdit(false);
-		ListGridField lgfFirstName = new ListGridField("firstName", "First Name");
-		lgfFirstName.setCanEdit(false);
-		ListGridField lgfLastName = new ListGridField("lastName", "Last Name");
-		lgfFirstName.setCanEdit(false);
-		ListGridField lgfUserName = new ListGridField("userName", "Username");
-		lgfUserName.setCanEdit(false);
-		ListGridField lgfEmail = new ListGridField("email", "E-Mail");
-		lgfEmail.setCanEdit(false);
-		ListGridField lgfIsActive = new ListGridField("isActive", "Activated");
-		lgfIsActive.setCanEdit(true);
-		
-		lgfIsActive.addChangedHandler(new com.smartgwt.client.widgets.grid.events.ChangedHandler(){
-
-			@Override
-			public void onChanged(
-					com.smartgwt.client.widgets.grid.events.ChangedEvent event) {
-				
-				ListGridRecord lgr = userGrid.getSelectedRecord();
-				userGrid.setUpdateOperation(OperationId.USER_UPDATE_ISACTIVE);
-				userGrid.updateData(lgr);
-			}
-		});
-		
-		ListGridField lgfisAdmin = new ListGridField("isAdmin", "Administator");
-		lgfisAdmin.setCanEdit(true);
-		lgfisAdmin.addChangedHandler(new com.smartgwt.client.widgets.grid.events.ChangedHandler(){
-
-			@Override
-			public void onChanged(
-					com.smartgwt.client.widgets.grid.events.ChangedEvent event) {
-				
-				ListGridRecord lgr = userGrid.getSelectedRecord();
-				userGrid.setUpdateOperation(OperationId.USER_UPDATE_ISADMIN);
-				userGrid.updateData(lgr);
-			}
-		});
-		
-		userGrid.setFields(lgfId, lgfFirstName, lgfLastName, lgfUserName, lgfEmail, lgfIsActive, lgfisAdmin);
-		
-		gridContainer.addMember(userGrid);
-		
-		pane.addMember(gridContainer);
-		
-		usersAdminTab.setPane(pane);
-		
-		centerTabSet.addTab(usersAdminTab);
-		
-		centerTabSet.selectTab(usersAdminTab);
+		centerTabSet.selectTab(uat);
 		
 	}
 	

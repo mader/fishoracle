@@ -45,7 +45,7 @@ import de.unihamburg.zbh.fishoracle.client.datasource.GroupDS;
 import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.datasource.UserDS;
 
-public class UserSettingsTab extends Tab{
+public class UserSettingsTab extends Tab {
 
 	private MainPanel mp;
 	
