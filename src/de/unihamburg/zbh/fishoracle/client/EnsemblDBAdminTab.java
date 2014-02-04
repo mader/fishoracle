@@ -46,7 +46,7 @@ public class EnsemblDBAdminTab extends Tab {
 	
 	public EnsemblDBAdminTab(){
 		
-		this.setTitle("Ensembl Databases;");
+		this.setTitle("Ensembl Databases");
 		this.setCanClose(true);
 		
 		VLayout pane = new VLayout();

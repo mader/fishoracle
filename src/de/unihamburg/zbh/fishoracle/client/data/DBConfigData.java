@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -30,6 +30,7 @@ public class DBConfigData implements IsSerializable {
 	
 	//fish oracle connection parameters
 	private String fhost = null;
+	private int fport;
 	private String fdb = null;
 	private String fuser = null;
 	private String fpw = null;
@@ -37,8 +38,16 @@ public class DBConfigData implements IsSerializable {
 	public DBConfigData() {
 	}
 
-	public DBConfigData(String ehost, int eport, String edb, String euser,
-			String epw, String fhost, String fdb, String fuser, String fpw) {
+	public DBConfigData(String ehost,
+							int eport,
+							String edb,
+							String euser,
+							String epw,
+							String fhost,
+							int fport,
+							String fdb,
+							String fuser,
+							String fpw) {
 		super();
 		this.ehost = ehost;
 		this.eport = eport;
@@ -46,6 +55,7 @@ public class DBConfigData implements IsSerializable {
 		this.euser = euser;
 		this.epw = epw;
 		this.fhost = fhost;
+		this.fport = fport;
 		this.fdb = fdb;
 		this.fuser = fuser;
 		this.fpw = fpw;
@@ -98,6 +108,14 @@ public class DBConfigData implements IsSerializable {
 	public void setFhost(String fhost) {
 		this.fhost = fhost;
 	}
+	
+	public int getFport() {
+		return fport;
+	}
+
+	public void setFport(int fport) {
+		this.fport = fport;
+	}
 
 	public String getFdb() {
 		return fdb;
@@ -122,5 +140,4 @@ public class DBConfigData implements IsSerializable {
 	public void setFpw(String fpw) {
 		this.fpw = fpw;
 	}
-
 }

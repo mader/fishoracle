@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2011 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2011 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2009-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2009-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -74,6 +74,8 @@ public class DBConfig implements IsSerializable {
             bufferedWriter.newLine();
             bufferedWriter.write("host = " + connectionData.getFhost());
             bufferedWriter.newLine();
+            bufferedWriter.write("port = " + connectionData.getFport());
+            bufferedWriter.newLine();
             bufferedWriter.write("db = " + connectionData.getFdb());
             bufferedWriter.newLine();
             bufferedWriter.write("user = " + connectionData.getFuser());
@@ -110,6 +112,7 @@ public class DBConfig implements IsSerializable {
 		String epw = null;
 			
 		String fhost = null;
+		int fport = 0;
 		String fdb = null;
 		String fuser = null;
 		String fpw = null;
@@ -123,16 +126,16 @@ public class DBConfig implements IsSerializable {
 		    String strLine;
 		    String[] dataStr;
 		    
-		    Boolean ensmbl = false;
+		    Boolean ensembl = false;
 		    Boolean fishoracle = false;   
 		    
 		    while ((strLine = br.readLine()) != null)   {
 			  
 		      Pattern pensmbl = Pattern.compile("^\\[ensembl\\]$");
-			  Matcher mensmbl = pensmbl.matcher(strLine);
+			  Matcher mensembl = pensmbl.matcher(strLine);
 		      
-			  if(mensmbl.find()){
-				  ensmbl = true;  
+			  if(mensembl.find()){
+				  ensembl = true;  
 				  fishoracle = false; 
 			  }
 			  
@@ -141,7 +144,7 @@ public class DBConfig implements IsSerializable {
 			  
 			  if(mforacle.find()){
 				  fishoracle = true; 
-				  ensmbl = false; 
+				  ensembl = false; 
 			  }
 			  
 			  Pattern phost = Pattern.compile("^host");
@@ -159,7 +162,7 @@ public class DBConfig implements IsSerializable {
 			  Pattern ppw = Pattern.compile("^pw");
 			  Matcher mpw = ppw.matcher(strLine);
 			  
-			  if(ensmbl){
+			  if(ensembl){
 				  
 				  if(mhost.find()){
 					  dataStr = strLine.split("=");
@@ -188,6 +191,10 @@ public class DBConfig implements IsSerializable {
 					  dataStr = strLine.split("=");
 					  fhost = dataStr[1].trim();
 				  }
+				  if(mport.find()){
+					  dataStr = strLine.split("=");
+					  fport = Integer.parseInt(dataStr[1].trim());
+				  }
 				  if(mdb.find()){
 					  dataStr = strLine.split("=");
 					  fdb = dataStr[1].trim();
@@ -208,13 +215,14 @@ public class DBConfig implements IsSerializable {
 		    	e.printStackTrace();
 		    	System.err.println("Error: " + e.getMessage());
 		    }
-		    connectionData = new DBConfigData(ehost, 
-		    									eport, 
+		    connectionData = new DBConfigData(ehost,
+		    									eport,
 		    									edb,
 		    									euser,
-		    									epw, 
-		    									fhost, 
-		    									fdb, 
+		    									epw,
+		    									fhost,
+		    									fport,
+		    									fdb,
 		    									fuser,
 		    									fpw);
 		

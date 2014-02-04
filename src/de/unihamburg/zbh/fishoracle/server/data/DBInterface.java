@@ -122,7 +122,7 @@ public class DBInterface {
 	}
 	
 	public RDBMysql getFishoracleRDB() throws GTerrorJava {
-		RDBMysql rdb = new RDBMysql(connectionData.getFhost(), 3306, connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
+		RDBMysql rdb = new RDBMysql(connectionData.getFhost(), connectionData.getFport(), connectionData.getFdb(), connectionData.getFuser(), connectionData.getFpw());
 		return rdb;
 	}
 	
@@ -326,7 +326,7 @@ public class DBInterface {
 									connectionData.getFdb(),
 									connectionData.getFuser(),
 									connectionData.getFpw(),
-									"3306");
+									String.valueOf(connectionData.getFport()));
 	}
 	
 	/**
