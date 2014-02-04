@@ -125,7 +125,6 @@ public class CenterPanel extends VLayout {
 
 	private ToolStripButton selectButton;
 	private ListGrid studyGrid;
-	private ListGrid platformGrid;
 	private ListGrid dataTypeGrid;
 	private SelectItem projectSelectItem;
 	private ListGrid ensemblGrid;
@@ -139,8 +138,6 @@ public class CenterPanel extends VLayout {
 	private SelectItem groupSelectItem;
 	private SelectItem studySelectItem;
 	
-	private TextItem platformLabelTextItem;
-	private ComboBoxItem platformTypeCbItem;
 	private TextItem dbNameTextItem;
 	private TextItem dbLabelTextItem;
 	private TextItem dbVersionTextItem;
@@ -974,134 +971,13 @@ public class CenterPanel extends VLayout {
 		centerTabSet.selectTab(pat);
 	}
 	
-	public void loadPlatformManageWindow(){
-		
-		final Window window = new Window();
-
-		window.setTitle("Add Platform");
-		window.setWidth(250);
-		window.setHeight(120);
-		window.setAlign(Alignment.CENTER);
-		
-		window.setAutoCenter(true);
-		window.setIsModal(true);
-		window.setShowModalMask(true);
-		
-		DynamicForm chipForm = new DynamicForm();
-		platformLabelTextItem = new TextItem();
-		platformLabelTextItem.setTitle("Platform Label");
-		
-		platformTypeCbItem = new ComboBoxItem(); 
-		platformTypeCbItem.setTitle("Type");
-		platformTypeCbItem.setType("comboBox");
-		
-		platformTypeCbItem.setAutoFetchData(false);
-		
-		PlatformDS pDS = new PlatformDS();
-		
-		platformTypeCbItem.setOptionDataSource(pDS);
-		platformTypeCbItem.setOptionOperationId(OperationId.PLATFORM_FETCH_TYPES);
-		platformTypeCbItem.setDisplayField("typeName");
-		platformTypeCbItem.setValueField("typeId");
-		
-		ButtonItem addPlatformButton = new ButtonItem("Add");
-		addPlatformButton.setWidth(50);
-		
-		addPlatformButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				
-				ListGridRecord lgr = new ListGridRecord();
-				lgr.setAttribute("platformName", platformLabelTextItem.getDisplayValue());
-				lgr.setAttribute("platformType", platformTypeCbItem.getDisplayValue());
-				
-				platformGrid.addData(lgr);
-				
-				window.hide();
-			}
-		});
-
-		chipForm.setItems(platformLabelTextItem, platformTypeCbItem, addPlatformButton);
-	
-		window.addItem(chipForm);
-		
-		window.show();
-	}
-	
 	public void openPlatformAdminTab(){
 		
-		Tab platformsAdminTab = new Tab("Manage Platforms");
-		platformsAdminTab.setCanClose(true);
+		PlatformAdminTab plat = new PlatformAdminTab();
 		
-		VLayout pane = new VLayout();
-		pane.setWidth100();
-		pane.setHeight100();
-		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		centerTabSet.addTab(plat);
 		
-		VLayout headerContainer = new VLayout();
-		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
-		headerContainer.setWidth100();
-		headerContainer.setAutoHeight();
-		
-		HLayout controlsPanel = new HLayout();
-		controlsPanel.setWidth100();
-		controlsPanel.setAutoHeight();
-		
-		ToolStrip platformToolStrip = new ToolStrip();
-		platformToolStrip.setWidth100();
-		
-		ToolStripButton addPlatformButton = new ToolStripButton();
-		addPlatformButton.setTitle("add Platform");
-		addPlatformButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				loadPlatformManageWindow();
-			}});
-		
-		platformToolStrip.addButton(addPlatformButton);
-		
-		controlsPanel.addMember(platformToolStrip);
-		
-		headerContainer.addMember(controlsPanel);
-		
-		pane.addMember(headerContainer);
-		
-		HLayout gridContainer = new HLayout();
-		gridContainer.setWidth100();
-		gridContainer.setHeight100();
-		
-		platformGrid = new ListGrid();
-		platformGrid.setWidth100();
-		platformGrid.setHeight100();
-		platformGrid.setAlternateRecordStyles(true);
-		platformGrid.setWrapCells(true);
-		platformGrid.setFixedRecordHeights(false);
-		platformGrid.setShowAllRecords(false);
-		platformGrid.setAutoFetchData(false);
-		
-		ListGridField lgfId = new ListGridField("platformId", "Platform ID");
-		ListGridField lgfLabel = new ListGridField("platformName", "Platform Name");
-		ListGridField lgfType = new ListGridField("platformType", "Platform Type");
-		
-		platformGrid.setFields(lgfId, lgfLabel, lgfType);
-		
-		PlatformDS pDS = new PlatformDS();
-		
-		platformGrid.setDataSource(pDS);
-		platformGrid.setFetchOperation(OperationId.PLATFORM_FETCH_ALL);
-		platformGrid.fetchData();
-		
-		gridContainer.addMember(platformGrid);
-		
-		pane.addMember(gridContainer);
-		
-		platformsAdminTab.setPane(pane);
-		
-		centerTabSet.addTab(platformsAdminTab);
-		
-		centerTabSet.selectTab(platformsAdminTab);
+		centerTabSet.selectTab(plat);
 	}
 	
 	public void openDataTab(String type, String studyId){

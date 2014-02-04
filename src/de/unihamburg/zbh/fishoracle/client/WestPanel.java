@@ -268,7 +268,7 @@ public class WestPanel extends SectionStack{
 					TabSet centerTabSet = mp.getCenterPanel().getCenterTabSet();
 					Tab[] tabs = mp.getCenterPanel().getCenterTabSet().getTabs();
 					for(int i=0; i < tabs.length; i++){
-						if(tabs[i].getTitle().equals("Management Platforms")){
+						if(tabs[i].getTitle().equals("Manage Platforms")){
 							exists = true;
 							index = i;
 						}
