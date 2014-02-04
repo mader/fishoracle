@@ -124,8 +124,6 @@ import de.unihamburg.zbh.fishoracle.client.rpc.UserServiceAsync;
 public class CenterPanel extends VLayout {
 
 	private ToolStripButton selectButton;
-	private ListGrid organGrid;
-	private ListGrid propertyGrid;
 	private ListGrid studyGrid;
 	private ListGrid platformGrid;
 	private ListGrid dataTypeGrid;
@@ -141,10 +139,6 @@ public class CenterPanel extends VLayout {
 	private SelectItem groupSelectItem;
 	private SelectItem studySelectItem;
 	
-	private TextItem organLabelTextItem;
-	private ComboBoxItem organTypeCbItem;
-	private TextItem propertyLabelTextItem;
-	private ComboBoxItem propertyTypeCbItem;
 	private TextItem platformLabelTextItem;
 	private ComboBoxItem platformTypeCbItem;
 	private TextItem dbNameTextItem;
@@ -962,273 +956,22 @@ public class CenterPanel extends VLayout {
 		centerTabSet.selectTab(gat);
 	}
 	
-	public void loadOrganManageWindow(){
-		
-		final Window window = new Window();
-
-		window.setTitle("Add Organ");
-		window.setWidth(250);
-		window.setHeight(120);
-		window.setAlign(Alignment.CENTER);
-		
-		window.setAutoCenter(true);
-		window.setIsModal(true);
-		window.setShowModalMask(true);
-		
-		DynamicForm organForm = new DynamicForm();
-		organLabelTextItem = new TextItem();
-		organLabelTextItem.setTitle("Property Label");
-		
-		organTypeCbItem = new ComboBoxItem(); 
-		organTypeCbItem.setTitle("Type");
-		organTypeCbItem.setType("comboBox");
-		
-		organTypeCbItem.setAutoFetchData(false);
-		
-		OrganDS oDS = new OrganDS();
-		
-		organTypeCbItem.setOptionDataSource(oDS);
-		organTypeCbItem.setOptionOperationId(OperationId.ORGAN_FETCH_TYPES);
-		organTypeCbItem.setDisplayField("typeName");
-		organTypeCbItem.setValueField("typeId");
-		
-		ButtonItem addOrganButton = new ButtonItem("Add");
-		addOrganButton.setWidth(50);
-		
-		addOrganButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				
-				ListGridRecord lgr = new ListGridRecord();
-				lgr.setAttribute("organName", organLabelTextItem.getDisplayValue());
-				lgr.setAttribute("organType", organTypeCbItem.getDisplayValue());
-				
-				organGrid.addData(lgr);
-				
-				window.hide();
-			}
-		});
-
-		organForm.setItems(organLabelTextItem, organTypeCbItem, addOrganButton);
-	
-		window.addItem(organForm);
-		
-		window.show();
-	}
-	
 	public void openOrganAdminTab(){
 		
-		Tab organsAdminTab = new Tab("Manage Organs");
-		organsAdminTab.setCanClose(true);
-
-		VLayout pane = new VLayout();
-		pane.setWidth100();
-		pane.setHeight100();
-		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		OrganAdminTab oat = new OrganAdminTab();
 		
-		VLayout headerContainer = new VLayout();
-		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
-		headerContainer.setWidth100();
-		headerContainer.setAutoHeight();
+		centerTabSet.addTab(oat);
 		
-		HLayout controlsPanel = new HLayout();
-		controlsPanel.setWidth100();
-		controlsPanel.setAutoHeight();
-		
-		ToolStrip organToolStrip = new ToolStrip();
-		organToolStrip.setWidth100();
-		
-		ToolStripButton addOrganButton = new ToolStripButton();
-		addOrganButton.setTitle("add Organ");
-		addOrganButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				loadOrganManageWindow();
-			}});
-		
-		organToolStrip.addButton(addOrganButton);
-		
-		controlsPanel.addMember(organToolStrip);
-		
-		headerContainer.addMember(controlsPanel);
-		
-		pane.addMember(headerContainer);
-		
-		HLayout gridContainer = new HLayout();
-		gridContainer.setWidth100();
-		gridContainer.setHeight100();
-		
-		organGrid = new ListGrid();
-		organGrid.setWidth100();
-		organGrid.setHeight100();
-		organGrid.setAlternateRecordStyles(true);
-		organGrid.setWrapCells(true);
-		organGrid.setFixedRecordHeights(false);
-		organGrid.setShowAllRecords(false);
-		organGrid.setAutoFetchData(false);
-		
-		ListGridField lgfId = new ListGridField("organId", "Organ ID");
-		ListGridField lgfLabel = new ListGridField("organName", "Organ Name");
-		ListGridField lgfType = new ListGridField("organType", "Organ Type");
-		ListGridField lgfActivity = new ListGridField("organActivity", "enabled");
-		
-		organGrid.setFields(lgfId, lgfLabel, lgfType, lgfActivity);
-		
-		OrganDS oDS = new OrganDS();
-		
-		organGrid.setDataSource(oDS);
-		organGrid.setFetchOperation(OperationId.ORGAN_FETCH_ALL);
-		
-		organGrid.fetchData();
-		
-		gridContainer.addMember(organGrid);
-		
-		pane.addMember(gridContainer);
-		
-		organsAdminTab.setPane(pane);
-		
-		centerTabSet.addTab(organsAdminTab);
-		
-		centerTabSet.selectTab(organsAdminTab);
-	}
-	
-	public void loadPropertyManageWindow(){
-		
-		final Window window = new Window();
-
-		window.setTitle("Add Property");
-		window.setWidth(250);
-		window.setHeight(120);
-		window.setAlign(Alignment.CENTER);
-		
-		window.setAutoCenter(true);
-		window.setIsModal(true);
-		window.setShowModalMask(true);
-		
-		DynamicForm propertyForm = new DynamicForm();
-		propertyLabelTextItem = new TextItem();
-		propertyLabelTextItem.setTitle("Property Label");
-		
-		propertyTypeCbItem = new ComboBoxItem(); 
-		propertyTypeCbItem.setTitle("Type");
-		propertyTypeCbItem.setType("comboBox");
-		
-		propertyTypeCbItem.setDisplayField("typeName");
-		propertyTypeCbItem.setValueField("typeId");
-		
-		propertyTypeCbItem.setAutoFetchData(false);
-		
-		PropertyDS pDS = new PropertyDS();
-		
-		propertyTypeCbItem.setOptionDataSource(pDS);
-		propertyTypeCbItem.setOptionOperationId(OperationId.PROPERTY_FETCH_TYPES);
-		
-		ButtonItem addPropertyButton = new ButtonItem("Add");
-		addPropertyButton.setWidth(50);
-		
-		addPropertyButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				
-				ListGridRecord lgr = new ListGridRecord();
-				lgr.setAttribute("propertyName", propertyLabelTextItem.getDisplayValue());
-				lgr.setAttribute("propertyType", propertyTypeCbItem.getDisplayValue());
-				
-				propertyGrid.addData(lgr);
-				
-				window.hide();
-				
-				window.hide();
-			}
-		});
-
-		propertyForm.setItems(propertyLabelTextItem, propertyTypeCbItem, addPropertyButton);
-	
-		window.addItem(propertyForm);
-		
-		window.show();
+		centerTabSet.selectTab(oat);
 	}
 	
 	public void openPropertyAdminTab(){
 		
-		Tab propertiesAdminTab = new Tab("Manage Properties");
-		propertiesAdminTab.setCanClose(true);
+		PropertyAdminTab pat = new PropertyAdminTab();
 		
-		VLayout pane = new VLayout();
-		pane.setWidth100();
-		pane.setHeight100();
-		pane.setDefaultLayoutAlign(Alignment.CENTER);
+		centerTabSet.addTab(pat);
 		
-		VLayout headerContainer = new VLayout();
-		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
-		headerContainer.setWidth100();
-		headerContainer.setAutoHeight();
-		
-		HLayout controlsPanel = new HLayout();
-		controlsPanel.setWidth100();
-		controlsPanel.setAutoHeight();
-		
-		ToolStrip propertyToolStrip = new ToolStrip();
-		propertyToolStrip.setWidth100();
-		
-		ToolStripButton addPropertyButton = new ToolStripButton();
-		addPropertyButton.setTitle("add Property");
-		addPropertyButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				loadPropertyManageWindow();
-			}});
-		
-		propertyToolStrip.addButton(addPropertyButton);
-		
-		controlsPanel.addMember(propertyToolStrip);
-		
-		headerContainer.addMember(controlsPanel);
-		
-		pane.addMember(headerContainer);
-		
-		HLayout gridContainer = new HLayout();
-		gridContainer.setWidth100();
-		gridContainer.setHeight100();
-				
-		propertyGrid = new ListGrid();
-		propertyGrid.setWidth100();
-		propertyGrid.setHeight100();
-		propertyGrid.setAlternateRecordStyles(true);
-		propertyGrid.setWrapCells(true);
-		propertyGrid.setFixedRecordHeights(false);
-		propertyGrid.setShowAllRecords(false);
-		propertyGrid.setAutoFetchData(false);
-		
-		ListGridField lgfId = new ListGridField("propertyId", "Property ID");
-		ListGridField lgfLabel = new ListGridField("propertyName", "Property Name");
-		ListGridField lgfType = new ListGridField("propertyType", "Property Type");
-		ListGridField lgfActivity = new ListGridField("propertyActivity", "enabled");
-		
-		propertyGrid.setFields(lgfId, lgfLabel, lgfType, lgfActivity);
-		
-		propertyGrid.setFields(lgfId, lgfLabel, lgfType, lgfActivity);
-		
-		PropertyDS pDS = new PropertyDS();
-		
-		propertyGrid.setDataSource(pDS);
-		propertyGrid.setFetchOperation(OperationId.PROPERTY_FETCH_ALL);
-		
-		propertyGrid.fetchData();
-		
-		gridContainer.addMember(propertyGrid);
-		
-		pane.addMember(gridContainer);
-		
-		propertiesAdminTab.setPane(pane);
-		
-		centerTabSet.addTab(propertiesAdminTab);
-		
-		centerTabSet.selectTab(propertiesAdminTab);
+		centerTabSet.selectTab(pat);
 	}
 	
 	public void loadPlatformManageWindow(){
