@@ -127,7 +127,6 @@ public class CenterPanel extends VLayout {
 	private ListGrid studyGrid;
 	private ListGrid dataTypeGrid;
 	private SelectItem projectSelectItem;
-	private ListGrid ensemblGrid;
 	
 	private ListGrid projectGrid;
 	private ListGrid projectStudyGrid;
@@ -137,10 +136,6 @@ public class CenterPanel extends VLayout {
 	private SelectItem accessRightSelectItem;
 	private SelectItem groupSelectItem;
 	private SelectItem studySelectItem;
-	
-	private TextItem dbNameTextItem;
-	private TextItem dbLabelTextItem;
-	private TextItem dbVersionTextItem;
 	
 	private TabSet centerTabSet = null;
 	private TextItem chrTextItem;
@@ -927,9 +922,7 @@ public class CenterPanel extends VLayout {
 	public void openUserAdminTab(){
 		
 		UserAdminTab uat = new UserAdminTab();
-		
 		centerTabSet.addTab(uat);
-		
 		centerTabSet.selectTab(uat);
 		
 	}
@@ -937,9 +930,7 @@ public class CenterPanel extends VLayout {
 	public void openUserProfileTab(){
 		
 		UserSettingsTab us = new UserSettingsTab(mp);
-		
 		centerTabSet.addTab(us);
-		
 		centerTabSet.selectTab(us);
 		
 	}
@@ -947,37 +938,36 @@ public class CenterPanel extends VLayout {
 	public void openGroupAdminTab(){
 		
 		GroupAdminTab gat = new GroupAdminTab();
-		
 		centerTabSet.addTab(gat);
-		
 		centerTabSet.selectTab(gat);
 	}
 	
 	public void openOrganAdminTab(){
 		
 		OrganAdminTab oat = new OrganAdminTab();
-		
 		centerTabSet.addTab(oat);
-		
 		centerTabSet.selectTab(oat);
 	}
 	
 	public void openPropertyAdminTab(){
 		
 		PropertyAdminTab pat = new PropertyAdminTab();
-		
 		centerTabSet.addTab(pat);
-		
 		centerTabSet.selectTab(pat);
 	}
 	
 	public void openPlatformAdminTab(){
 		
 		PlatformAdminTab plat = new PlatformAdminTab();
-		
 		centerTabSet.addTab(plat);
-		
 		centerTabSet.selectTab(plat);
+	}
+	
+	public void openEnsemblDBAdminTab(){	
+		
+		EnsemblDBAdminTab edbat = new EnsemblDBAdminTab();		
+		centerTabSet.addTab(edbat);
+		centerTabSet.selectTab(edbat);
 	}
 	
 	public void openDataTab(String type, String studyId){
@@ -2117,155 +2107,6 @@ public class CenterPanel extends VLayout {
 		centerTabSet.addTab(dataAdminTab);
 		
 		centerTabSet.selectTab(dataAdminTab);
-	}
-	
-	public void loadEnsemblManageWindow(){
-		
-		final Window window = new Window();
-
-		window.setTitle("Add Ensembl Database");
-		window.setWidth(250);
-		window.setHeight(150);
-		window.setAlign(Alignment.CENTER);
-		
-		window.setAutoCenter(true);
-		window.setIsModal(true);
-		window.setShowModalMask(true);
-		
-		DynamicForm ensemblForm = new DynamicForm();
-		
-		dbNameTextItem = new TextItem();
-		dbNameTextItem.setTitle("Database Name");
-		
-		dbLabelTextItem = new TextItem();
-		dbLabelTextItem.setTitle("Database Label");
-		
-		dbVersionTextItem = new TextItem();
-		dbVersionTextItem.setTitle("Database Version");
-		
-		ButtonItem addDBButton = new ButtonItem("Add");
-		addDBButton.setWidth(50);
-		
-		addDBButton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler(){
-			@Override
-			public void onClick(
-					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
-				
-				ListGridRecord lgr = new ListGridRecord();
-				lgr.setAttribute("ensemblDBName", dbNameTextItem.getDisplayValue());
-				lgr.setAttribute("ensemblDBLabel", dbLabelTextItem.getDisplayValue());
-				lgr.setAttribute("ensemblDBVersion", dbVersionTextItem.getDisplayValue());
-				
-				ensemblGrid.addData(lgr);
-				
-				window.hide();
-			}
-		});
-
-		ensemblForm.setItems(dbNameTextItem, dbLabelTextItem, dbVersionTextItem, addDBButton);
-	
-		window.addItem(ensemblForm);
-		
-		window.show();
-	}
-	
-	public void openEnsemblConfigTab(){
-		
-		Tab ensemblConfigTab = new Tab("Ensembl Databases");
-		ensemblConfigTab.setCanClose(true);
-		
-		VLayout pane = new VLayout();
-		pane.setWidth100();
-		pane.setHeight100();
-		pane.setDefaultLayoutAlign(Alignment.CENTER);
-		
-		VLayout headerContainer = new VLayout();
-		headerContainer.setDefaultLayoutAlign(Alignment.CENTER);
-		headerContainer.setWidth100();
-		headerContainer.setAutoHeight();
-		
-		HLayout controlsPanel = new HLayout();
-		controlsPanel.setWidth100();
-		controlsPanel.setAutoHeight();
-		
-		ToolStrip ensemblToolStrip = new ToolStrip();
-		ensemblToolStrip.setWidth100();
-		
-		ToolStripButton addEDBButton = new ToolStripButton();
-		addEDBButton.setTitle("add Database");
-		addEDBButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				loadEnsemblManageWindow();
-			}});
-		
-		ensemblToolStrip.addButton(addEDBButton);
-		
-		ToolStripButton deleteEDBButton = new ToolStripButton();  
-		deleteEDBButton.setTitle("delete Database");
-		deleteEDBButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				
-				final ListGridRecord lgr = ensemblGrid.getSelectedRecord();
-				
-				if (lgr != null) {
-				
-					SC.confirm("Do you really want to delete " + lgr.getAttribute("ensemblDBLabel") + "?", new BooleanCallback(){
-
-						@Override
-						public void execute(Boolean value) {
-							if(value != null && value){
-						
-								ensemblGrid.removeData(lgr);
-							}
-						}
-					});
-				
-				} else {
-					SC.say("Select a database.");
-				}
-			}});
-		
-		ensemblToolStrip.addButton(deleteEDBButton);
-		
-		
-		controlsPanel.addMember(ensemblToolStrip);
-		
-		headerContainer.addMember(controlsPanel);
-		
-		pane.addMember(headerContainer);
-		
-		HLayout gridContainer = new HLayout();
-		gridContainer.setWidth100();
-		gridContainer.setHeight100();
-		
-		ensemblGrid = new ListGrid();
-		ensemblGrid.setWidth100();
-		ensemblGrid.setHeight100();
-		ensemblGrid.setAlternateRecordStyles(true);
-		ensemblGrid.setWrapCells(true);
-		ensemblGrid.setFixedRecordHeights(false);
-		ensemblGrid.setShowAllRecords(false);
-		ensemblGrid.setAutoFetchData(false);
-		
-		EnsemblDBDS edbDS = new EnsemblDBDS();
-		
-		ensemblGrid.setDataSource(edbDS);
-		ensemblGrid.fetchData();
-		
-		gridContainer.addMember(ensemblGrid);
-		
-		pane.addMember(gridContainer);
-		
-		ensemblConfigTab.setPane(pane);
-		
-		centerTabSet.addTab(ensemblConfigTab);
-		
-		centerTabSet.selectTab(ensemblConfigTab);
-		
 	}
 	
 	public void openDatabaseConfigTab(DBConfigData dbdata){
