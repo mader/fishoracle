@@ -55,8 +55,6 @@ import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
-import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
-import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.menu.Menu;
@@ -1348,23 +1346,6 @@ class ProgressWindow extends Window {
 		int per = getPercentage(imp, nofi);
 		this.setTitle("Upload Files "+ per + "%");
 		bar.setPercentDone(per);	
-	}
-}
-
-class MyGroupRecordClickHandler implements RecordClickHandler {
-
-	private ListGrid groupUserGrid;
-	
-	public MyGroupRecordClickHandler(ListGrid groupUserGrid){
-		this.groupUserGrid = groupUserGrid;
-	}
-	
-	@Override
-	public void onRecordClick(RecordClickEvent event) {
-		
-		String groupId = event.getRecord().getAttribute("groupId");
-		
-		groupUserGrid.fetchData(new Criteria("groupId", groupId));
 	}
 }
 

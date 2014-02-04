@@ -22,30 +22,19 @@ import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoUser;
+public class MyGroupRecordClickHandler implements RecordClickHandler {
 
-public class MyProjectRecordClickHandler implements RecordClickHandler {
-
-	private ListGrid projectStudyGrid;
-	private ListGrid projectAccessGrid;
-	private FoUser user;
+	private ListGrid groupUserGrid;
 	
-	public MyProjectRecordClickHandler(ListGrid projectStudyGrid, ListGrid projectAccessGrid, FoUser user){
-		this.projectStudyGrid = projectStudyGrid;
-		this.projectAccessGrid = projectAccessGrid;
-		this.user = user;
+	public MyGroupRecordClickHandler(ListGrid groupUserGrid){
+		this.groupUserGrid = groupUserGrid;
 	}
 	
 	@Override
 	public void onRecordClick(RecordClickEvent event) {
 		
-		String projectId = event.getRecord().getAttribute("projectId");
+		String groupId = event.getRecord().getAttribute("groupId");
 		
-		projectStudyGrid.fetchData(new Criteria("projectId", projectId));
-		
-		if(user.getIsAdmin()){
-			
-			projectAccessGrid.fetchData(new Criteria("projectId", projectId));
-		}
-	}
+		groupUserGrid.fetchData(new Criteria("groupId", groupId));
+	}	
 }
