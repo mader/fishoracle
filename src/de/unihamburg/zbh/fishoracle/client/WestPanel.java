@@ -129,7 +129,7 @@ public class WestPanel extends SectionStack{
 					if(exists){
 						centerTabSet.selectTab(index);
 					} else {
-						mp.getCenterPanel().openDataAdminTab();
+						mp.getCenterPanel().openDataImportTab();
 					}
 				}
 				
