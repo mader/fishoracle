@@ -63,6 +63,9 @@ public class OperationId {
 	public static final String MUTATION_FETCH_FOR_STUDY_ID = "getMutationsForStudyId";
 	public static final String MUTATION_FETCH_FOR_ATTRIBS = "getMutationsForAttributes";
 	
+	public static final String SEGMENT_FETCH_FOR_ID = "getSegmentForId";
+	public static final String SEGMENT_FETCH_FOR_STUDY = "getSegmentsForStudy";
+	
 	public OperationId() {
 	}
 }
