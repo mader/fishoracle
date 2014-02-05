@@ -21,10 +21,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
-import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
-import com.smartgwt.client.types.GroupStartOpen;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.SelectionType;
@@ -69,8 +67,6 @@ import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
-import de.unihamburg.zbh.fishoracle.client.datasource.SNPMutationDS;
-import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.ImgCanvas;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchService;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchServiceAsync;
@@ -649,41 +645,8 @@ public class CenterPanel extends VLayout {
 	}
 	
 	public void loadMutationWindow(String geneId, int trackId, FoConfigData cd){
-		Window window = new Window();
-		window.setTitle("SNVs");
-		window.setWidth(700);
-		window.setHeight(330);
-		window.setAutoCenter(true);
-		window.setCanDragResize(true);
-		
-		ListGrid mutGrid = new ListGrid();
-		mutGrid.setWidth100();
-		mutGrid.setHeight100();
-		mutGrid.setShowAllRecords(true);
-		mutGrid.setAlternateRecordStyles(true);
-		mutGrid.setShowHeader(true);
-		mutGrid.setWrapCells(true);
-		mutGrid.setFixedRecordHeights(false);
-		
-		mutGrid.setShowAllRecords(false);
-		mutGrid.setAutoFetchData(false);
-		
-		SNPMutationDS mDS = new SNPMutationDS();
-		mDS.addConfigData(cd);
-		
-		Criteria c = new Criteria("geneId", geneId);
-		c.setAttribute("trackId", trackId);
-		
-		mutGrid.setDataSource(mDS);
-		mutGrid.setFetchOperation(OperationId.MUTATION_FETCH_FOR_ATTRIBS);
-		mutGrid.fetchData(c);
-		
-		mutGrid.setGroupStartOpen(GroupStartOpen.ALL);
-		mutGrid.groupBy("studyName");
-		
-		window.addItem(mutGrid);
-		
-		window.show();
+
+		new MutationWindow(geneId, trackId, cd);
 	}
 	
 	public void loadWindow(FoSegment segmentData){
