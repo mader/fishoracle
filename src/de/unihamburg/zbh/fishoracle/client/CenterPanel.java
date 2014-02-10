@@ -1044,8 +1044,9 @@ class RecMapClickHandler implements ClickHandler{
 		}
 		
 		if(recInfo.getType().equals("segment")){
-			
-			segmentDetails(recInfo.getElementName());
+			//TODO
+			//segmentDetails(recInfo.getElementName());
+			new FeatureDetailWindow("segment", recInfo.getElementName(),null);
 		}
 		
 		if(recInfo.getType().equals("translocation")){
@@ -1059,6 +1060,8 @@ class RecMapClickHandler implements ClickHandler{
 		}
 	}
 	
+	/**
+	 * TODO
 	public void segmentDetails(String query){
 		
 		final SearchServiceAsync req = (SearchServiceAsync) GWT.create(SearchService.class);
@@ -1078,6 +1081,7 @@ class RecMapClickHandler implements ClickHandler{
 		};
 		req.getSegmentInfo(Integer.parseInt(query), callback);
 	}
+	**/
 	
 	public void geneDetails(String query, String ensemblDB){
 		

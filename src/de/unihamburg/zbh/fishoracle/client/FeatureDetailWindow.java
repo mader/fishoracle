@@ -1,13 +1,16 @@
 package de.unihamburg.zbh.fishoracle.client;
 
+import com.smartgwt.client.data.Criteria;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.viewer.DetailViewer;
+import com.smartgwt.client.widgets.viewer.DetailViewerField;
 
+import de.unihamburg.zbh.fishoracle.client.datasource.OperationId;
 import de.unihamburg.zbh.fishoracle.client.datasource.SegmentDS;
 
 public class FeatureDetailWindow extends Window {
 
-	public FeatureDetailWindow(String featureType){
+	public FeatureDetailWindow(String featureType, String elementName, String ensemblId){
 		
 		this.setWidth(500);
 		this.setHeight(330);
@@ -19,13 +22,22 @@ public class FeatureDetailWindow extends Window {
 		itemViewer.setAutoFetchData(false);
 		
 		
-		if(featureType.equals("Segments")){
+		if(featureType.equals("segments")){
 			
 			SegmentDS ds = new SegmentDS();
 			itemViewer.setDataSource(ds);
-			itemViewer.setFetchOperation();
-			this.setTitle("Segment " + segmentData.getId());
+			itemViewer.setFetchOperation(OperationId.SEGMENT_FETCH_FOR_ID);
+			itemViewer.setCanSelectText(true);
 			
+			//DetailViewerField ivf = new DetailViewerField("segmentId", "SegmentId");
+			
+			//itemViewer.setFields(ivf);
+			Criteria c = new Criteria();
+			c.addCriteria("elementName", elementName);
+			c.addCriteria("elementName", elementName);
+			//c.addCriteria(field, value);
+			itemViewer.fetchData(c);
+			this.setTitle("Segment " + itemViewer.getAttribute("segmentId"));
 		}
 		
 		/*
@@ -39,7 +51,7 @@ public class FeatureDetailWindow extends Window {
 			
 		}
 		*/
-		itemViewer.fetchData();
+		//itemViewer.fetchData();
 		
 		this.addItem(itemViewer);
 		this.show();

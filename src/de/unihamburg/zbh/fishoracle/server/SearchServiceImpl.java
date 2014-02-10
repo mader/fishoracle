@@ -353,6 +353,7 @@ public class SearchServiceImpl extends RemoteServiceServlet implements SearchSer
 	 * @throws Exception
 	 * @throws Exception
 	 * */
+	/**
 	public FoSegment getSegmentInfo(
 			int segmentId) throws Exception {
 		
@@ -369,7 +370,8 @@ public class SearchServiceImpl extends RemoteServiceServlet implements SearchSer
 		
 		return segmentData;
 	}
-	
+	**/
+	//TODO
 	/**
 	 * Fetches gene data for a particular gene.
 	 * 

@@ -28,7 +28,7 @@ public interface SearchServiceAsync {
 	
 	public void generateImage(QueryInfo q, AsyncCallback<GWTImageInfo> callback);
 	public void redrawImage(GWTImageInfo imageInfo, AsyncCallback<GWTImageInfo> callback);
-	public void getSegmentInfo(int segmentId, AsyncCallback<FoSegment> callback);
+	//public void getSegmentInfo(int segmentId, AsyncCallback<FoSegment> callback);
 	public void getGeneInfo(String query, String ensemblDB, AsyncCallback<EnsemblGene> callback);
 	public void updateImgInfoForTranslocationId(int translocId,
 			GWTImageInfo imgInfo, AsyncCallback<QueryInfo> callback);

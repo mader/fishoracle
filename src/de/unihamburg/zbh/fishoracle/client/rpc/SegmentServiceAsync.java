@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2012-2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2012-2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2012-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2012-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -24,11 +24,8 @@ import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 public interface SegmentServiceAsync {
 
 	void add(FoSegment foSegment, AsyncCallback<FoSegment> callback);
-
 	void delete(int studyId, AsyncCallback<Void> callback);
-
-	void fetch(int studyId,
-			AsyncCallback<FoSegment[]> callback);
-
+	void fetch(int studyId, AsyncCallback<FoSegment[]> callback);
+	void fetchForSegmentId(int segmentId, AsyncCallback<FoSegment[]> callback);
 	void update(FoSegment foSegment, AsyncCallback<Void> callback);
 }

@@ -119,12 +119,23 @@ public class SegmentDS extends FoDataSource {
 			}
 		};
 		
+		String operationId = request.getOperationId();
+		
 		int studyId = 0;
+		int segmentId = 0;
 		
 		Criteria c = request.getCriteria();
-		studyId = Integer.parseInt(c.getAttribute("studyId"));
 		
-		req.fetch(studyId, callback);
+		if(operationId.equals(OperationId.SEGMENT_FETCH_FOR_STUDY)){
+		
+			studyId = Integer.parseInt(c.getAttribute("studyId"));
+			req.fetch(studyId, callback);
+		}
+		
+		if(operationId.equals(OperationId.SEGMENT_FETCH_FOR_ID)){
+			segmentId = Integer.parseInt(c.getAttribute("segementId"));
+			req.fetchForSegmentId(segmentId, callback);
+		}
 	}
 
 	@Override

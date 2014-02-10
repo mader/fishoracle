@@ -17,6 +17,8 @@
 
 package de.unihamburg.zbh.fishoracle.server;
 
+import java.util.Date;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
@@ -45,6 +47,27 @@ public class SegmentServiceImpl extends RemoteServiceServlet implements SegmentS
 		
 	}
 
+	/**
+	 * Fetches segment data for a particular CNV.
+	 * 
+	 * @param query The segment id
+	 * 
+	 * @return Segment
+	 * @throws Exception
+	 * */
+	public FoSegment[] fetchForSegmentId(int segmentId) throws Exception {
+		
+		String servletContext = this.getServletContext().getRealPath("/");
+		
+		//TODO replace by logger.
+		Date dt = new Date();
+		System.out.println(dt + " Get segment data for: " + segmentId);
+		
+		DBInterface db = new DBInterface(servletContext);
+		
+		return new FoSegment[]{db.getSegmentInfos(segmentId)};
+	}
+	
 	@Override
 	public void update(FoSegment foStudy) {
 		// TODO Auto-generated method stub
