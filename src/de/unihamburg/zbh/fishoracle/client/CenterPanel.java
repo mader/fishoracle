@@ -31,15 +31,12 @@ import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Img;
 import com.smartgwt.client.widgets.Label;
-import com.smartgwt.client.widgets.Progressbar;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.events.MouseOverEvent;
 import com.smartgwt.client.widgets.events.MouseOverHandler;
 
-import com.smartgwt.client.widgets.events.ResizedEvent;
-import com.smartgwt.client.widgets.events.ResizedHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
@@ -119,21 +116,16 @@ public class CenterPanel extends VLayout {
 	    int newEnd;
 	    
 		newChr = chrTextItem.getDisplayValue();
-	    
 	    newStart = Integer.parseInt(startTextItem.getDisplayValue());
-	    
 	    newEnd = Integer.parseInt(endTextItem.getDisplayValue());
 	    
 	    if(newStart >= newEnd || newEnd - newStart <= 10){
 	    	
-	    	SC.say("The end value must at least be 10 base pairs greater than the start value!");
-	    	
+	    	SC.say("The end value must at least be 10 base pairs greater than the start value!");	
 	    } else {
 	    
 	    	imgInfo.setChromosome(newChr);
-	    	
 	    	imgInfo.setStart(newStart);
-	    
 	    	imgInfo.setEnd(newEnd);
 	    	
 	    	cp.imageRedraw(imgInfo);
@@ -175,7 +167,6 @@ public class CenterPanel extends VLayout {
         				spaceImg.addClickHandler(new RecMapClickHandler(imgInfo.getRecmapinfo().get(rmc), imgInfo, cp));
 
         				int southeast_x = (int) imgInfo.getRecmapinfo().get(rmc).getSoutheastX();
-
         				int northwest_x = (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestX();
 
         				if(southeast_x > imgInfo.getWidth()){
@@ -193,15 +184,11 @@ public class CenterPanel extends VLayout {
         				}
 
         				int southeast_y = (int) imgInfo.getRecmapinfo().get(rmc).getSoutheastY();
-
         				int northwest_y = (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestY();
 
         				spaceImg.setHeight(southeast_y - northwest_y);
-
         				spaceImg.setLeft( (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestX());
-
         				spaceImg.setTop( (int) imgInfo.getRecmapinfo().get(rmc).getNorthwestY());
-
         				spaceImg.setCursor(Cursor.HAND);
 
         				image.addChild(spaceImg);
@@ -243,28 +230,23 @@ public class CenterPanel extends VLayout {
 				int newEnd;
 		
 				range = imgInfo.getEnd() - imgInfo.getStart(); 
-		
 				percRange = range * perc / 100;
-	    
 				newStart = imgInfo.getStart() - percRange;
-	    
 				newEnd = imgInfo.getEnd() - percRange;
 	    
 				if(newStart > 0){
 	    
 					imgInfo.setStart(newStart);
-	    
 					imgInfo.setEnd(newEnd);
 		
 					cp.imageRedraw(imgInfo);
 	    	
 				} else {
 					SC.say("You have reached the chromsomes end ...");
-				}
-				
-			}
-			
+				}	
+			}	
 		});
+		
 		scrollLeftButton.setIcon("[APP]/icons/arrow_left.png");
 		scrollLeftButton.setAppImgDir("/");
 		presentationToolStrip.addButton(scrollLeftButton);
@@ -288,16 +270,10 @@ public class CenterPanel extends VLayout {
     			int newEnd;
     			
     			range = imgInfo.getEnd() - imgInfo.getStart(); 
-    			
-    		    percRange = range * perc / 100;
-    			
-    		    
+    		    percRange = range * perc / 100; 
     		    newStart = imgInfo.getStart() + percRange;
-    		    
     		    newEnd = imgInfo.getEnd() + percRange;
-    		    
     		    imgInfo.setStart(newStart);
-    		    
     		    imgInfo.setEnd(newEnd);
     		    
     		    cp.imageRedraw(imgInfo);
@@ -325,18 +301,13 @@ public class CenterPanel extends VLayout {
     			int newEnd;
     			
     			range = imgInfo.getEnd() - imgInfo.getStart(); 
-    			
-    		    percRange = range * perc / 100;
-    			
-    		    
+    		    percRange = range * perc / 100; 
     		    newStart = imgInfo.getStart() + percRange;
-    		    
     		    newEnd = imgInfo.getEnd() - percRange;
     		    
     		    if(newEnd - newStart > 10){
     		    
-    		    	imgInfo.setStart(newStart);
-    		    
+    		    	imgInfo.setStart(newStart);    		   
     		    	imgInfo.setEnd(newEnd);
     			
     		    	cp.imageRedraw(imgInfo);
@@ -370,14 +341,9 @@ public class CenterPanel extends VLayout {
     			int newEnd;
     			
     			range = imgInfo.getEnd() - imgInfo.getStart(); 
-    			
     		    percRange = range * perc / 100;
-    			
-    		    
     		    newStart = imgInfo.getStart() - percRange;
-    		    
     		    newEnd = imgInfo.getEnd() + percRange;
-    		    
     		    
     		    if(newStart < 0){
     		    	
@@ -386,7 +352,6 @@ public class CenterPanel extends VLayout {
     		    }
     		    
     		    imgInfo.setStart(newStart);
-    		    
     		    imgInfo.setEnd(newEnd);
     			
     		    cp.imageRedraw(imgInfo);
@@ -414,6 +379,7 @@ public class CenterPanel extends VLayout {
 				}
 			}
 		});
+		
 		presentationToolStrip.addFormItem(chrTextItem);
 		
 		startTextItem = new TextItem();
@@ -430,6 +396,7 @@ public class CenterPanel extends VLayout {
 				}
 			}
 		});
+		
 		presentationToolStrip.addFormItem(startTextItem);
 		
 		endTextItem = new TextItem();
@@ -437,7 +404,6 @@ public class CenterPanel extends VLayout {
 		endTextItem.setTooltip("Set end position");
 		endTextItem.setWidth(70);
 		endTextItem.setValue(imgInfo.getEnd());
-		
 		endTextItem.addKeyPressHandler(new KeyPressHandler(){
 
 			@Override
@@ -447,6 +413,7 @@ public class CenterPanel extends VLayout {
 				}
 			}
 		});
+		
 		presentationToolStrip.addFormItem(endTextItem);
 		
 		presentationToolStrip.addSeparator();
@@ -462,7 +429,6 @@ public class CenterPanel extends VLayout {
 				
 				Window w = new Window();
 				w.setTitle("Configuration");
-				//w.setAutoCenter(true);
 				w.setLeft(500);
 				w.setWidth(300);
 				w.setHeight(cp.getInnerHeight() - 300);
@@ -586,7 +552,6 @@ public class CenterPanel extends VLayout {
 					imgLayer.hideRec();
 				}
 			}
-			
 		});
 		
 		ToolStripButton ensemblButton = new ToolStripButton();
@@ -606,7 +571,6 @@ public class CenterPanel extends VLayout {
 				
 				com.google.gwt.user.client.Window.open(url,"_blank",null);
 			}
-			
 		});
 		
 		presentationToolStrip.addButton(selectButton);
@@ -625,9 +589,7 @@ public class CenterPanel extends VLayout {
 		imgTab.setPane(presentationLayer);
 		
 		centerTabSet.addTab(imgTab);
-	
 		centerTabSet.selectTab(imgTab);
-		
 	}
 	
 	/** 
@@ -815,71 +777,11 @@ public class CenterPanel extends VLayout {
 				if(forWhat.equals("StudyAdminTab")){
 					openStudyConfigTab(result[0]);
 				}
-				
 			}
 			public void onFailure(Throwable caught){
 				SC.say(caught.getMessage());
 			}
 		};
 		req.getSessionUserObject(callback);
-	}
-}
-
-class ProgressWindow extends Window {
-	
-	private Progressbar bar;
-	
-	public ProgressWindow(int imp, int nofi){
-		super();
-		
-		int per = getPercentage(imp, nofi);
-		
-		this.setTitle("Upload Files "+ per + "%");
-		this.setWidth(400);
-		this.setHeight(60);
-		this.setAlign(Alignment.CENTER);
-	
-		this.setAutoCenter(true);
-		this.setIsModal(true);
-		this.setShowModalMask(true);
-		
-		bar = new Progressbar(); 
-		bar.setVertical(false); 
-		bar.setHeight(24);
-		
-		this.addItem(bar);
-	
-		bar.setPercentDone(per);
-	}
-	
-	private int getPercentage(int x, int y){
-		return (x/y)*100;
-	}
-	
-	public void updateValues(int imp, int nofi){
-		
-		int per = getPercentage(imp, nofi);
-		this.setTitle("Upload Files "+ per + "%");
-		bar.setPercentDone(per);	
-	}
-}
-
-class ImageFrameResizedHandler implements ResizedHandler{
-
-	private CenterPanel cp;
-	
-	public ImageFrameResizedHandler(CenterPanel centerPanel){
-		cp = centerPanel;
-	}
-	
-	@Override
-	public void onResized(ResizedEvent event) {
-		if(cp.getCenterTabSet().getTabs().length > 1){
-			Canvas[] tabContents = cp.getCenterTabSet().getSelectedTab().getPane().getChildren();
-			Canvas presentationLayer = cp.getCenterTabSet().getSelectedTab().getPane();
-			ImgCanvas imgLayer = (ImgCanvas) tabContents[1];
-			imgLayer.getImageInfo().setWidth(presentationLayer.getInnerWidth());
-			cp.imageRedraw(imgLayer.getImageInfo());
-		}
 	}
 }
