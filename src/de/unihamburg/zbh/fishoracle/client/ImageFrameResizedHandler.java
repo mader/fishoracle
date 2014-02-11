@@ -34,9 +34,11 @@ public class ImageFrameResizedHandler implements ResizedHandler {
 		if(cp.getCenterTabSet().getTabs().length > 1){
 			Canvas[] tabContents = cp.getCenterTabSet().getSelectedTab().getPane().getChildren();
 			Canvas presentationLayer = cp.getCenterTabSet().getSelectedTab().getPane();
-			ImgCanvas imgLayer = (ImgCanvas) tabContents[1];
-			imgLayer.getImageInfo().setWidth(presentationLayer.getInnerWidth());
-			cp.imageRedraw(imgLayer.getImageInfo());
+			if(tabContents[1] instanceof ImgCanvas){
+				ImgCanvas imgLayer = (ImgCanvas) tabContents[1];
+				imgLayer.getImageInfo().setWidth(presentationLayer.getInnerWidth());
+				cp.imageRedraw(imgLayer.getImageInfo());
+			}
 		}
 	}	
 }
