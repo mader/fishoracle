@@ -23,7 +23,6 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
-import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.SelectionType;
 import com.smartgwt.client.types.Side;
@@ -46,9 +45,6 @@ import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
-import com.smartgwt.client.widgets.grid.ListGrid;
-import com.smartgwt.client.widgets.grid.ListGridField;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
@@ -60,12 +56,8 @@ import com.smartgwt.client.widgets.toolbar.ToolStripButton;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
 import de.unihamburg.zbh.fishoracle.client.data.DBConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoConfigData;
-import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
+import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
-import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
-import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
-import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.ImgCanvas;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchService;
@@ -171,9 +163,10 @@ public class CenterPanel extends VLayout {
         			for(rmc=0; rmc < imgInfo.getRecmapinfo().size(); rmc++){
         				
         				if((imgInfo.getRecmapinfo().get(rmc).getSoutheastX() - imgInfo.getRecmapinfo().get(rmc).getNorthwestX()) < 3 
-        						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals("gene")
-        						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals("translocation")
+        						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals(FoConstants.GENE)
+        						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals(FoConstants.TRANSLOCATION)
         						&& !imgInfo.getRecmapinfo().get(rmc).getType().equals("mutation")){
+        					//TODO replace mutation string with SNV constants.
         					continue;
         				}
         				
@@ -192,14 +185,11 @@ public class CenterPanel extends VLayout {
         				}
 
         				if(spaceImg.getWidth() <= 0){
-        					if(!imgInfo.getRecmapinfo().get(rmc).getType().equals("translocation")  ){
+        					if(!imgInfo.getRecmapinfo().get(rmc).getType().equals(FoConstants.TRANSLOCATION)  ){
         						spaceImg.setWidth(1);
             				} else {
             					spaceImg.setWidth(10);
             				}
-        				}
-        				if(imgInfo.getRecmapinfo().get(rmc).getType().equals("translocation")  ){
-        					
         				}
 
         				int southeast_y = (int) imgInfo.getRecmapinfo().get(rmc).getSoutheastY();
@@ -215,14 +205,10 @@ public class CenterPanel extends VLayout {
         				spaceImg.setCursor(Cursor.HAND);
 
         				image.addChild(spaceImg);
-
         			}
-        			
         			image.setSetChildren(true);
         		}
-
         	}
-
         });
         
 		return image;
@@ -644,151 +630,6 @@ public class CenterPanel extends VLayout {
 		
 	}
 	
-	public void loadMutationWindow(String geneId, int trackId, FoConfigData cd){
-
-		new MutationWindow(geneId, trackId, cd);
-	}
-	
-	public void loadWindow(FoSegment segmentData){
-		
-		Window window = new Window();
-		window.setTitle("Segment " + segmentData.getId());
-		window.setWidth(500);
-		window.setHeight(330);
-		window.setAutoCenter(true);
-		window.setCanDragResize(true);
-		
-		final ListGrid cncGrid = new ListGrid();
-		cncGrid.setWidth100();
-		cncGrid.setHeight100();
-		cncGrid.setShowAllRecords(true);
-		cncGrid.setAlternateRecordStyles(true);
-		cncGrid.setShowHeader(false);
-		cncGrid.setWrapCells(true);
-		cncGrid.setCellHeight(40);
-		cncGrid.setCanEdit(true);
-		cncGrid.setEditEvent(ListGridEditEvent.CLICK);
-		
-		
-		ListGridField key = new ListGridField("key", "key");
-		ListGridField val = new ListGridField("val", "val");
-		
-		cncGrid.setFields(key, val);
-		
-		ListGridRecord[] lgr = new ListGridRecord[15];
-		
-		lgr[0] = new ListGridRecord();
-		lgr[0].setAttribute("key", "Segment ID ");
-		lgr[0].setAttribute("val", segmentData.getId());
-		
-		lgr[1] = new ListGridRecord();
-		lgr[1].setAttribute("key", "Chromosome");
-		lgr[1].setAttribute("val", segmentData.getLocation().getChromosome());
-		
-		lgr[2] = new ListGridRecord();
-		lgr[2].setAttribute("key", "Start");
-		lgr[2].setAttribute("val", segmentData.getLocation().getStart());
-		
-		lgr[3] = new ListGridRecord();
-		lgr[3].setAttribute("key", "End");
-		lgr[3].setAttribute("val", segmentData.getLocation().getEnd());
-		
-		lgr[4] = new ListGridRecord();
-		lgr[4].setAttribute("key", "Segment Mean");
-		lgr[4].setAttribute("val", segmentData.getMean());
-		
-		lgr[5] = new ListGridRecord();
-		lgr[5].setAttribute("key", "Markers");
-		lgr[5].setAttribute("val", segmentData.getNumberOfMarkers());
-		
-		lgr[6] = new ListGridRecord();
-		lgr[6].setAttribute("key", "Status");
-		lgr[6].setAttribute("val", segmentData.getStatus());
-		
-		lgr[7] = new ListGridRecord();
-		lgr[7].setAttribute("key", "Status score");
-		lgr[7].setAttribute("val", segmentData.getStatusScore());
-		
-		lgr[8] = new ListGridRecord();
-		lgr[8].setAttribute("key", "Study");
-		lgr[8].setAttribute("val", segmentData.getStudyName());
-		
-		cncGrid.setData(lgr);
-		
-		window.addItem(cncGrid);
-		
-		window.show();
-	}
-	
-	public void loadWindow(EnsemblGene gene){
-		
-		Window window = new Window();
-
-		window.setTitle("Gene " + gene.getGenName());
-		window.setAutoSize(true);
-		window.setAutoCenter(true);
-		
-		final ListGrid geneGrid = new ListGrid();
-		geneGrid.setWidth(450);
-		geneGrid.setHeight(270);  
-		geneGrid.setShowAllRecords(true);  
-		geneGrid.setAlternateRecordStyles(true);
-		geneGrid.setShowHeader(false);
-		geneGrid.setWrapCells(true);
-		geneGrid.setFixedRecordHeights(false);
-		geneGrid.setCanEdit(true);
-		geneGrid.setEditEvent(ListGridEditEvent.CLICK);
-		
-		ListGridField key = new ListGridField("key", "key");
-		ListGridField val = new ListGridField("val", "val");
-		
-		geneGrid.setFields(key, val);
-		
-		ListGridRecord[] lgr = new ListGridRecord[9];
-		
-		lgr[0] = new ListGridRecord();
-		lgr[0].setAttribute("key", "Ensembl Stable ID");
-		lgr[0].setAttribute("val", gene.getAccessionID());
-		
-		lgr[1] = new ListGridRecord();
-		lgr[1].setAttribute("key", "Name");
-		lgr[1].setAttribute("val", gene.getGenName());
-		
-		lgr[2] = new ListGridRecord();
-		lgr[2].setAttribute("key", "Chromosome");
-		lgr[2].setAttribute("val", gene.getChr());
-		
-		lgr[3] = new ListGridRecord();
-		lgr[3].setAttribute("key", "Start");
-		lgr[3].setAttribute("val", gene.getStart());
-		
-		lgr[4] = new ListGridRecord();
-		lgr[4].setAttribute("key", "End");
-		lgr[4].setAttribute("val", gene.getEnd());
-		
-		lgr[5] = new ListGridRecord();
-		lgr[5].setAttribute("key", "Length");
-		lgr[5].setAttribute("val", gene.getLength());
-		
-		lgr[6] = new ListGridRecord();
-		lgr[6].setAttribute("key", "Strand");
-		lgr[6].setAttribute("val", gene.getStrand());
-		
-		lgr[7] = new ListGridRecord();
-		lgr[7].setAttribute("key", "Bio Type");
-		lgr[7].setAttribute("val", gene.getBioType());
-		
-		lgr[8] = new ListGridRecord();
-		lgr[8].setAttribute("key", "Description");
-		lgr[8].setAttribute("val", gene.getDescription());
-		
-		geneGrid.setData(lgr);
-		
-		window.addItem(geneGrid);
-		
-		window.show();
-	}
-	
 	/** 
 	 * Data administration Tabs.
 	 */
@@ -1020,107 +861,6 @@ class ProgressWindow extends Window {
 		int per = getPercentage(imp, nofi);
 		this.setTitle("Upload Files "+ per + "%");
 		bar.setPercentDone(per);	
-	}
-}
-
-class RecMapClickHandler implements ClickHandler{
-	
-	private RecMapInfo recInfo;
-	private CenterPanel cp;
-	private GWTImageInfo imgInfo;
-	
-	
-	public RecMapClickHandler(RecMapInfo recmapinfo, GWTImageInfo imgInfo, CenterPanel centerPanel){
-		this.recInfo = recmapinfo;
-		this.imgInfo = imgInfo;
-		this.cp = centerPanel;
-	}
-	
-	public void onClick(ClickEvent event) {
-		
-		if(recInfo.getType().equals("gene")){
-			
-			geneDetails(recInfo.getElementName(), imgInfo.getQuery().getConfig().getStrArray("ensemblDBName")[0]);
-		}
-		
-		if(recInfo.getType().equals("segment")){
-			//TODO
-			//segmentDetails(recInfo.getElementName());
-			new FeatureDetailWindow("segment", recInfo.getElementName(),null);
-		}
-		
-		if(recInfo.getType().equals("translocation")){
-			
-			updateImgInfoForTranslocationId(recInfo.getElementName(), imgInfo);
-		}
-		if(recInfo.getType().equals("mutation_root")){
-			FoConfigData cd = imgInfo.getQuery().getConfig();
-			
-			cp.loadMutationWindow(recInfo.getElementName(), recInfo.getTrackNumber(), cd);
-		}
-	}
-	
-	/**
-	 * TODO
-	public void segmentDetails(String query){
-		
-		final SearchServiceAsync req = (SearchServiceAsync) GWT.create(SearchService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "SearchService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<FoSegment> callback = new AsyncCallback<FoSegment>(){
-			public void onSuccess(FoSegment segmentData){
-				
-				cp.loadWindow(segmentData);
-				
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());
-			}
-		};
-		req.getSegmentInfo(Integer.parseInt(query), callback);
-	}
-	**/
-	
-	public void geneDetails(String query, String ensemblDB){
-		
-		final SearchServiceAsync req = (SearchServiceAsync) GWT.create(SearchService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "SearchService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<EnsemblGene> callback = new AsyncCallback<EnsemblGene>(){
-			public void onSuccess(EnsemblGene gene){
-				
-				cp.loadWindow(gene);
-				
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());
-			}
-		};
-		req.getGeneInfo(query, ensemblDB, callback);
-	}
-	
-	public void updateImgInfoForTranslocationId(String query, GWTImageInfo imgInfo){
-		
-		final SearchServiceAsync req = (SearchServiceAsync) GWT.create(SearchService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "SearchService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<QueryInfo> callback = new AsyncCallback<QueryInfo>(){
-			public void onSuccess(QueryInfo query){
-				
-				cp.getMainPanel().getWestPanel().getSearchContent().search(query);
-				
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say(caught.getMessage());
-			}
-		};
-		req.updateImgInfoForTranslocationId(Integer.parseInt(query), imgInfo, callback);
 	}
 }
 

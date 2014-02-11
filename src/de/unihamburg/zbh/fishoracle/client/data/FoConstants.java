@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2012-2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2012-2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2012-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2012-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -18,12 +18,16 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 public class FoConstants {
 
+	public static final String GENE = "gene";
+	public static final String SEGMENT = "segment";
+	
 	public static final String CNV_INTENSITY = "CNV (intensity)";
 	public static final String CNV_STATUS = "CNV (status)";
 	public static final String MRNA_INTENSITY = "mRNA (intensity)";
 	public static final String MRNA_STATUS = "mRNA (status)";
 	
 	public static final String SNV = "SNV";
+	public static final String TRANSLOCATION = "translocation";
 	
 	public static final String PROJECT_SELECT_MULTI = "project_select_multi";
 	public static final String PROJECT_SELECT_SINGLE = "project_select_single";

@@ -162,6 +162,16 @@
   </servlet-mapping>
   
   <servlet>
+    <servlet-name>EnsemblService</servlet-name>
+    <servlet-class>de.unihamburg.zbh.fishoracle.server.EnsemblServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>EnsemblService</servlet-name>
+    <url-pattern>/fishoracle/EnsemblService</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
     <servlet-name>AdminService</servlet-name>
     <servlet-class>de.unihamburg.zbh.fishoracle.server.AdminServiceImpl</servlet-class>
   </servlet>

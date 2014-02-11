@@ -21,9 +21,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
-import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.exceptions.UserException;
 
@@ -33,8 +31,6 @@ public interface SearchService extends RemoteService {
 	
 	public GWTImageInfo generateImage(QueryInfo q) throws Exception;
 	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) throws Exception;
-	//public FoSegment getSegmentInfo(int segmentId) throws Exception;
-	public EnsemblGene getGeneInfo(String query, String ensemblDB) throws Exception;
 	public QueryInfo updateImgInfoForTranslocationId(int translocId,
 			GWTImageInfo imgInfo) throws UserException;
 	

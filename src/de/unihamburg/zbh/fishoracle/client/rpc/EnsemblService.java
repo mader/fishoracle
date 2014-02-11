@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2009-2014 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2009-2014 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -17,15 +17,12 @@
 
 package de.unihamburg.zbh.fishoracle.client.rpc;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.RemoteService;
 
-import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
-import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
+import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 
-public interface SearchServiceAsync {
+public interface EnsemblService  extends RemoteService {
+
+	public EnsemblGene fetchGeneForId(String stableId, String ensmeblDB) throws Exception;
 	
-	public void generateImage(QueryInfo q, AsyncCallback<GWTImageInfo> callback);
-	public void redrawImage(GWTImageInfo imageInfo, AsyncCallback<GWTImageInfo> callback);
-	public void updateImgInfoForTranslocationId(int translocId,
-			GWTImageInfo imgInfo, AsyncCallback<QueryInfo> callback);
 }

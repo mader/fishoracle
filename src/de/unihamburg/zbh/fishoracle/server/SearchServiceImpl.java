@@ -28,9 +28,7 @@ import annotationsketch.FeatureCollection;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.unihamburg.zbh.fishoracle.server.data.*;
-import de.unihamburg.zbh.fishoracle.client.data.FoSegment;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
-import de.unihamburg.zbh.fishoracle.client.data.EnsemblGene;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
 import de.unihamburg.zbh.fishoracle.client.exceptions.SearchException;
@@ -342,62 +340,6 @@ public class SearchServiceImpl extends RemoteServiceServlet implements SearchSer
 		rdbFishoracle.delete();
 		
 		return imgInfo;
-	}
-
-	/**
-	 * Fetches segment data for a particular copy number change.
-	 * 
-	 * @param query The segment id
-	 * 
-	 * @return Segment
-	 * @throws Exception
-	 * @throws Exception
-	 * */
-	/**
-	public FoSegment getSegmentInfo(
-			int segmentId) throws Exception {
-		
-		isActiveUser();
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		Date dt = new Date();
-		System.out.println(dt + " Get segment data for: " + segmentId);
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		FoSegment  segmentData = db.getSegmentInfos(segmentId);
-		
-		return segmentData;
-	}
-	**/
-	//TODO
-	/**
-	 * Fetches gene data for a particular gene.
-	 * 
-	 * @param query The ensembl stable id
-	 * 
-	 * @return gene
-	 * @throws Exception 
-	 * */
-	public EnsemblGene getGeneInfo(String query, String ensemblDB) throws Exception {
-		
-		isActiveUser();
-		
-		String servletContext = this.getServletContext().getRealPath("/");
-		
-		Date dt = new Date();
-		System.out.println(dt + " Get gene data for: " + query);
-		
-		DBInterface db = new DBInterface(servletContext);
-		
-		RDBMysql rdb = db.getEnsemblRDB(ensemblDB);
-		
-		EnsemblGene  gene = db.getGeneInfos(rdb, query);
-		
-		rdb.delete();
-		
-		return gene;
 	}
 	
 	@Override

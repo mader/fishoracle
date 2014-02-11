@@ -66,6 +66,8 @@ public class OperationId {
 	public static final String SEGMENT_FETCH_FOR_ID = "getSegmentForId";
 	public static final String SEGMENT_FETCH_FOR_STUDY = "getSegmentsForStudy";
 	
+	public static final String ENSEMBL_FETCH_GENE_FOR_ID = "getEnsemblGeneForId";
+	
 	public OperationId() {
 	}
 }
