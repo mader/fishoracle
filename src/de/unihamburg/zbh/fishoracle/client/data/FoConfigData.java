@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2012-2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2012-2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2012-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2012-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -22,7 +22,6 @@ public class FoConfigData extends FoConfig implements IsSerializable {
 
 	private int id;
 	private int userId;
-	private int ensemblDBId;
 	private String name;
 	private FoTrackData[] tracks;
 	
@@ -45,14 +44,6 @@ public class FoConfigData extends FoConfig implements IsSerializable {
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
-
-	public int getEnsemblDBId() {
-		return ensemblDBId;
-	}
-
-	public void setEnsemblDBId(int ensemblDBId) {
-		this.ensemblDBId = ensemblDBId;
-	}
 	
 	public String getName() {
 		return name;
@@ -69,5 +60,4 @@ public class FoConfigData extends FoConfig implements IsSerializable {
 	public void setTracks(FoTrackData[] tracks) {
 		this.tracks = tracks;
 	}
-	
 }

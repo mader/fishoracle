@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2012 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2012 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2012-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2012-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -72,7 +72,6 @@ public class DataTypeConverter {
 		FoConfigData foCd = new FoConfigData();
 		foCd.setId(cd.getId());
 		foCd.setUserId(cd.getUserId());
-		foCd.setEnsemblDBId(cd.getEnsemblDBId());
 		foCd.setName(cd.getName());
 		foCd.setStrArrays(cd.getStrArray());
 		foCd.setTracks(TrackDataToFoTrackData(cd.getTracks()));
@@ -94,7 +93,6 @@ public class DataTypeConverter {
 		ConfigData cd = new ConfigData();
 		cd.setId(foCd.getId());
 		cd.setUserId(foCd.getUserId());
-		cd.setEnsemblDBId(foCd.getEnsemblDBId());
 		cd.setName(foCd.getName());
 		cd.setStrArrays(foCd.getStrArray());
 		cd.setTracks(FoTrackDataToTrackData(foCd.getTracks()));
