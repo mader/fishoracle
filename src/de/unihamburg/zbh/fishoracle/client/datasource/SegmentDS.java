@@ -94,9 +94,9 @@ public class SegmentDS extends FoDataSource {
 						
 						ListGridRecord record = new ListGridRecord ();
 						record.setAttribute("segmentId", new Integer(result[i].getId()).toString());
-						record.setAttribute("chromosome", result[i].getLocation().getChromosome());
-						record.setAttribute("start", result[i].getLocation().getStart());
-						record.setAttribute("end", result[i].getLocation().getEnd());
+						record.setAttribute("chromosome", result[i].getFoLocation().getChromosome());
+						record.setAttribute("start", result[i].getFoLocation().getStart());
+						record.setAttribute("end", result[i].getFoLocation().getEnd());
 						record.setAttribute("mean", result[i].getMean());
 						record.setAttribute("markers", result[i].getNumberOfMarkers());
 						record.setAttribute("status", result[i].getStatus());

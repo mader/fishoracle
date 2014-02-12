@@ -273,6 +273,7 @@ public class StudyConfigTab extends Tab {
 			SegmentDS sDS = new SegmentDS();
 		
 			dataTypeGrid.setDataSource(sDS);
+			dataTypeGrid.setFetchOperation(OperationId.SEGMENT_FETCH_FOR_STUDY);
 		}
 		
 		if(type.equals(FoConstants.SNV)){

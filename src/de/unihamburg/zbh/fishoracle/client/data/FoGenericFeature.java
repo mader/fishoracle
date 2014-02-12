@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2012-2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2012-2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2012-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2012-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -31,6 +31,7 @@ public class FoGenericFeature implements IsSerializable {
 	private String name;
 	private int platformId;
 	private String platformName;
+	private String studyName;
 	private int studyId;
 	
 	public FoGenericFeature() {
@@ -43,6 +44,7 @@ public class FoGenericFeature implements IsSerializable {
 		this.type = featureType;
 		this.platformName = "";
 		this.platformId = 0;
+		this.studyName = "";
 		this.studyId = 0;
 	}
 
@@ -94,6 +96,14 @@ public class FoGenericFeature implements IsSerializable {
 		this.platformName = platformName;
 	}
 
+	public String getStudyName() {
+		return studyName;
+	}
+
+	public void setStudyName(String studyName) {
+		this.studyName = studyName;
+	}
+	
 	public int getStudyId() {
 		return studyId;
 	}

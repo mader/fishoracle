@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2012-2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2012-2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2012-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2012-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -89,11 +89,11 @@ public class TranslocationDS  extends FoDataSource {
 						
 						ListGridRecord record = new ListGridRecord ();
 						record.setAttribute("translocationId1", new Integer(result[i][0].getId()).toString());
-						record.setAttribute("chromosome1", result[i][0].getLocation().getChromosome());
-						record.setAttribute("pos1", result[i][0].getLocation().getStart());
+						record.setAttribute("chromosome1", result[i][0].getFoLocation().getChromosome());
+						record.setAttribute("pos1", result[i][0].getFoLocation().getStart());
 						record.setAttribute("translocationId2", new Integer(result[i][1].getId()).toString());
-						record.setAttribute("chromosome2", result[i][1].getLocation().getChromosome());
-						record.setAttribute("pos2", result[i][1].getLocation().getStart());
+						record.setAttribute("chromosome2", result[i][1].getFoLocation().getChromosome());
+						record.setAttribute("pos2", result[i][1].getFoLocation().getStart());
 						record.setAttribute("platformName", result[i][1].getPlatformName());
 						
 						list[i] = record;

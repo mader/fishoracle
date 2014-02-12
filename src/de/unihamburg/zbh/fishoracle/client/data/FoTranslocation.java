@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2012 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2012 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2012-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2012-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -23,14 +23,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author Malte Mader
  *
  */
-public class FoTranslocation implements IsSerializable {
+public class FoTranslocation extends FoGenericFeature implements IsSerializable {
 	
-	private int id;
-	private FoLocation location;
 	private int refId;
-	private int platformId;
-	private String platformName;
-	private int studyId;
 	
 	public FoTranslocation() {
 	}
@@ -39,27 +34,8 @@ public class FoTranslocation implements IsSerializable {
 							FoLocation location,
 							int refId) {
 		
-		this.id = id;
-		this.location = location;
+		super(refId, location, "translocation");
 		this.refId = refId;
-		this.platformName = "";
-		this.platformId = 0;
-	}
-	
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public FoLocation getLocation() {
-		return location;
-	}
-
-	public void setLocation(FoLocation location) {
-		this.location = location;
 	}
 
 	public int getRefId() {
@@ -68,29 +44,5 @@ public class FoTranslocation implements IsSerializable {
 
 	public void setRefId(int refId) {
 		this.refId = refId;
-	}
-
-	public int getPlatformId() {
-		return platformId;
-	}
-
-	public void setPlatformId(int platformId) {
-		this.platformId = platformId;
-	}
-
-	public String getPlatformName() {
-		return platformName;
-	}
-
-	public void setPlatformName(String platformName) {
-		this.platformName = platformName;
-	}
-
-	public int getStudyId() {
-		return studyId;
-	}
-
-	public void setStudyId(int studyId) {
-		this.studyId = studyId;
 	}
 }

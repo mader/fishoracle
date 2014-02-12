@@ -1,6 +1,6 @@
 /*
-Copyright (c) 2012-2013 Malte Mader <mader@zbh.uni-hamburg.de>
-Copyright (c) 2012-2013 Center for Bioinformatics, University of Hamburg
+Copyright (c) 2012-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+Copyright (c) 2012-2014 Center for Bioinformatics, University of Hamburg
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -19,10 +19,8 @@ package de.unihamburg.zbh.fishoracle.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class FoSNPMutation implements IsSerializable {
+public class FoSNPMutation extends FoGenericFeature implements IsSerializable {
 
-	private int id;
-	private FoLocation location;
 	private String dbSnpId;
 	private String ref;
 	private String alt;
@@ -30,10 +28,6 @@ public class FoSNPMutation implements IsSerializable {
 	private String somatic;
 	private String confidence;
 	private String snpTool;
-	private int platformId;
-	private String platformName;
-	private String studyName;
-	private int studyId;
 	
 	public FoSNPMutation() {
 	}
@@ -47,8 +41,8 @@ public class FoSNPMutation implements IsSerializable {
 						String somatic,
 						String confidence,
 						String snpTool) {
-		this.id = id;
-		this.location = location;
+		
+		super(id, location, snpTool);
 		this.dbSnpId = db_snp_id;
 		this.ref = ref;
 		this.alt = alt;
@@ -56,22 +50,6 @@ public class FoSNPMutation implements IsSerializable {
 		this.somatic = somatic;
 		this.confidence = confidence;
 		this.snpTool = snpTool;
-	}
-	
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public FoLocation getLocation() {
-		return location;
-	}
-
-	public void setLocation(FoLocation location) {
-		this.location = location;
 	}
 
 	public String getDbSnpId() {
@@ -128,37 +106,5 @@ public class FoSNPMutation implements IsSerializable {
 
 	public void setSnpTool(String snpTool) {
 		this.snpTool = snpTool;
-	}	
-	
-	public int getPlatformId() {
-		return platformId;
-	}
-
-	public void setPlatformId(int platformId) {
-		this.platformId = platformId;
-	}
-
-	public String getPlatformName() {
-		return platformName;
-	}
-
-	public void setPlatformName(String platformName) {
-		this.platformName = platformName;
-	}
-	
-	public String getStudyName() {
-		return studyName;
-	}
-
-	public void setStudyName(String studyName) {
-		this.studyName = studyName;
-	}
-
-	public int getStudyId() {
-		return studyId;
-	}
-
-	public void setStudyId(int studyId) {
-		this.studyId = studyId;
 	}	
 }

@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2012-2013 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2012-2013 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2012-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2012-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -107,8 +107,8 @@ public class SNPMutationDS extends FoDataSource {
 						
 						ListGridRecord record = new ListGridRecord ();
 						record.setAttribute("mutationId", new Integer(result[i].getId()).toString());
-						record.setAttribute("chromosome", result[i].getLocation().getChromosome());
-						record.setAttribute("pos", result[i].getLocation().getStart());
+						record.setAttribute("chromosome", result[i].getFoLocation().getChromosome());
+						record.setAttribute("pos", result[i].getFoLocation().getStart());
 						record.setAttribute("snpId", result[i].getDbSnpId());
 						record.setAttribute("ref", result[i].getRef());
 						record.setAttribute("alt", result[i].getAlt());

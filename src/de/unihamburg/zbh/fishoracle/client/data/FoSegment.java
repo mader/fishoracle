@@ -1,6 +1,6 @@
 /*
-  Copyright (c) 2011-2012 Malte Mader <mader@zbh.uni-hamburg.de>
-  Copyright (c) 2011-2012 Center for Bioinformatics, University of Hamburg
+  Copyright (c) 2011-2014 Malte Mader <mader@zbh.uni-hamburg.de>
+  Copyright (c) 2011-2014 Center for Bioinformatics, University of Hamburg
 
   Permission to use, copy, modify, and distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -23,19 +23,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author Malte Mader
  *
  */
-public class FoSegment implements IsSerializable {
+public class FoSegment extends FoGenericFeature implements IsSerializable {
 
-	private int id;
-	private FoLocation location;
 	private double mean;
 	private int numberOfMarkers;
 	private int status;
 	private double statusScore;
 	private String type;
-	private int platformId;
-	private String platformName;
-	private int studyId;
-	private String studyName;
 	
 	public FoSegment() {
 	}
@@ -43,32 +37,12 @@ public class FoSegment implements IsSerializable {
 	public FoSegment(int id,
 						FoLocation loc,
 						String type) {
-		this.id = id;
-		this.location = loc;
+		super(id, loc, type);
 		this.type = type;
-		
 		this.mean = -23;
 		this.numberOfMarkers = -1;
 		this.status = -1;
 		this.statusScore = -1.0;
-		this.studyId = 0;
-		this.studyName = "";
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-	
-	public FoLocation getLocation() {
-		return location;
-	}
-
-	public void setLocation(FoLocation location) {
-		this.location = location;
 	}
 
 	public double getMean() {
@@ -109,37 +83,5 @@ public class FoSegment implements IsSerializable {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-	
-	public int getPlatformId() {
-		return platformId;
-	}
-
-	public void setPlatformId(int platformId) {
-		this.platformId = platformId;
-	}
-
-	public String getPlatformName() {
-		return platformName;
-	}
-
-	public void setPlatformName(String platformName) {
-		this.platformName = platformName;
-	}
-
-	public int getStudyId() {
-		return studyId;
-	}
-
-	public void setStudyId(int studyId) {
-		this.studyId = studyId;
-	}
-
-	public String getStudyName() {
-		return studyName;
-	}
-
-	public void setStudyName(String studyName) {
-		this.studyName = studyName;
 	}
 }
