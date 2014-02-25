@@ -20,9 +20,9 @@ package de.unihamburg.zbh.fishoracle.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
+import com.smartgwt.client.types.DragAppearance;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.SelectionType;
 import com.smartgwt.client.types.Side;
@@ -34,9 +34,10 @@ import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.events.DropEvent;
+import com.smartgwt.client.widgets.events.DropHandler;
 import com.smartgwt.client.widgets.events.MouseOverEvent;
 import com.smartgwt.client.widgets.events.MouseOverHandler;
-
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
@@ -139,7 +140,7 @@ public class CenterPanel extends VLayout {
         image.setWidth(imgInfo.getWidth());
         image.setHeight(imgInfo.getHeight());
         image.setAppImgDir("/");
-		
+        
         image.addMouseOverHandler(new MouseOverHandler(){
 
         	@Override
@@ -554,15 +555,16 @@ public class CenterPanel extends VLayout {
 			}
 		});
 		
-		ToolStripButton ensemblButton = new ToolStripButton();
-		ensemblButton = new ToolStripButton();
-		ensemblButton.setTitle("Ensembl");
-		ensemblButton.setTooltip("Show region in Ensembl");
-		ensemblButton.addClickHandler(new ClickHandler(){
+		Menu externMenu = new Menu();
+		
+		MenuItem EnsemblItem = new MenuItem("Ensembl");
+		MenuItem UCSCItem = new MenuItem("UCSC");
+		//MenuItem RefSeqItem = new MenuItem("RefSeq");
+		//MenuItem AnotherItem = new MenuItem("Export image as png document");
+		
+		EnsemblItem.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler(){
 
-			@Override
-			public void onClick(ClickEvent event) {
-				
+			public void onClick(MenuItemClickEvent event) {
 				String chr = imgInfo.getChromosome();
 				String start = String.valueOf(imgInfo.getStart());
 				String end = String.valueOf(imgInfo.getEnd());
@@ -573,9 +575,26 @@ public class CenterPanel extends VLayout {
 			}
 		});
 		
-		presentationToolStrip.addButton(selectButton);
-		presentationToolStrip.addButton(ensemblButton);
+		UCSCItem.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler(){
+
+			public void onClick(MenuItemClickEvent event) {
+				String chr = imgInfo.getChromosome();
+				String start = String.valueOf(imgInfo.getStart());
+				String end = String.valueOf(imgInfo.getEnd());
+				
+				String url = "http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr" + chr + "%3A" + start + "-" + end;
+				
+				com.google.gwt.user.client.Window.open(url,"_blank",null);
+			}
+		});
 		
+		externMenu.setItems(EnsemblItem, UCSCItem);
+		
+		ToolStripMenuButton externMenuButton = new ToolStripMenuButton("View in", externMenu);
+		
+		presentationToolStrip.addButton(selectButton);
+		
+		presentationToolStrip.addMenuButton(externMenuButton);
 		presentationToolStrip.addMenuButton(exportMenuButton);
 		
 		presentationLayer.addMember(presentationToolStrip);
