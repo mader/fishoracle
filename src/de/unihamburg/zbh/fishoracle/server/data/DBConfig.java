@@ -49,7 +49,7 @@ public class DBConfig implements IsSerializable {
 		BufferedWriter bufferedWriter = null;
 		try {
             
-            bufferedWriter = new BufferedWriter(new FileWriter(serverPath + "config" + System.getProperty("file.separator") + "database.conf"));
+            bufferedWriter = new BufferedWriter(new FileWriter(serverPath + System.getProperty("file.separator") + "config" + System.getProperty("file.separator") + "database.conf"));
             
             bufferedWriter.newLine();
             bufferedWriter.write("-- This is the configuration file for the database connection parameters.");
@@ -119,7 +119,7 @@ public class DBConfig implements IsSerializable {
 		
 		try{
 			
-		    FileInputStream fStream = new FileInputStream(serverPath + "config" + System.getProperty("file.separator") + "database.conf");
+		    FileInputStream fStream = new FileInputStream(serverPath + System.getProperty("file.separator") + "config" + System.getProperty("file.separator") + "database.conf");
 		    DataInputStream inStream = new DataInputStream(fStream);
 		    BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
 		    

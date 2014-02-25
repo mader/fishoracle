@@ -27,7 +27,6 @@ import java.util.Calendar;
 import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
-
 import annotationsketch.*;
 import core.*;
 import de.unihamburg.zbh.fishoracle.client.data.RecMapInfo;
@@ -90,7 +89,7 @@ public class SketchTool {
 		
 		style = new Style();
 		
-		style.load_file(serverPath + "config" + System.getProperty("file.separator") + "default.style");
+		style.load_file(serverPath + System.getProperty("file.separator") + "config" + System.getProperty("file.separator") + "default.style");
 		
 		for(int l=0; l < query.getConfig().getTracks().length; l++ ){
 		
@@ -213,7 +212,7 @@ public class SketchTool {
 
 		String fileName = shaStr + "_" + loc.getChromosome() + ":" + loc.getStart() + "-" + loc.getEnd() + "_" + query;
 		
-		imgUrl = "as_output" + System.getProperty("file.separator") + fileName + "." + query.getImageType();
+		imgUrl = System.getProperty("file.separator") + "as_output" + System.getProperty("file.separator") + fileName + "." + query.getImageType();
 		
 		file = new File(serverPath + imgUrl);
 
