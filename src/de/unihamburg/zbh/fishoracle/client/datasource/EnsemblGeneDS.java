@@ -25,6 +25,7 @@ import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSourceField;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
+import com.smartgwt.client.data.fields.DataSourceLinkField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
@@ -68,6 +69,12 @@ public class EnsemblGeneDS extends FoDataSource {
         
         field = new DataSourceIntegerField("length", "Length");
         addField (field);
+        
+        field = new DataSourceLinkField("refSeqLink", "RefSeq Gene Link");
+        addField (field);
+        
+        field = new DataSourceLinkField("cosmicLink", "COSMIC Link");
+        addField (field);
 	}
 	
 	@Override
@@ -98,6 +105,10 @@ public class EnsemblGeneDS extends FoDataSource {
 					record.setAttribute("description", result.getDescription());
 					record.setAttribute("strand", result.getStrand());
 					record.setAttribute("length", result.getLength());
+					record.setAttribute("refSeqLink", "<a href=\"http://www.ncbi.nlm.nih.gov/gene/?term="
+					+ result.getAccessionID() + "[sym]\" target=_blank>" + result.getAccessionID() + "</a>");
+					record.setAttribute("cosmicLink", "<a href=\"http://cancer.sanger.ac.uk/cosmic/search?q="
+							+ result.getAccessionID() + "\" target=_blank>" + result.getAccessionID() + "</a>");
 					
 					lgr = record;		
 				}

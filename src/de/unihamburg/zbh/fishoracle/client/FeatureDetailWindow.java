@@ -31,7 +31,7 @@ public class FeatureDetailWindow extends Window {
 	public FeatureDetailWindow(String featureType, String elementName, String ensemblId){
 		
 		this.setWidth(300);
-		this.setHeight(250);
+		this.setHeight(300);
 		this.setAutoCenter(true);
 		this.setCanDragResize(true);
 		
