@@ -26,6 +26,7 @@ import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSourceField;
 import com.smartgwt.client.data.fields.DataSourceFloatField;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
+import com.smartgwt.client.data.fields.DataSourceLinkField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
@@ -73,6 +74,9 @@ public class SegmentDS extends FoDataSource {
         
         field = new DataSourceTextField("platformName", "Platform");
         addField (field);
+        
+        field = new DataSourceLinkField("dgv", "DGV Link");
+        addField (field);
 	}
 
 	@Override
@@ -103,6 +107,11 @@ public class SegmentDS extends FoDataSource {
 						record.setAttribute("statusScore", result[i].getStatusScore());
 						record.setAttribute("type", result[i].getType());
 						record.setAttribute("platformName", result[i].getPlatformName());
+						record.setAttribute("dgv", "<a href=\"http://dgv.tcag.ca/gb2/gbrowse/dgv2_hg19/?name=chr"
+								+ result[i].getFoLocation().getChromosome() + ":"
+								+ result[i].getFoLocation().getStart() 
+								+ "-" +  result[i].getFoLocation().getEnd()
+								+ ";search=Search\" target=_blank> Inspect in DGV </a>");
 						
 						list[i] = record;
 						
