@@ -25,6 +25,7 @@ import com.smartgwt.client.data.DSRequest;
 import com.smartgwt.client.data.DSResponse;
 import com.smartgwt.client.data.DataSourceField;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
+import com.smartgwt.client.data.fields.DataSourceLinkField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.rpc.RPCResponse;
 import com.smartgwt.client.util.SC;
@@ -54,7 +55,7 @@ public class SNPMutationDS extends FoDataSource {
         field.setRequired(true);
         addField (field);
         
-        field = new DataSourceTextField("snpId", "DB SNP ID");
+        field = new DataSourceLinkField("snpId", "DB SNP ID");
         addField (field);
         
         field = new DataSourceTextField("ref", "REF");
@@ -109,7 +110,8 @@ public class SNPMutationDS extends FoDataSource {
 						record.setAttribute("mutationId", new Integer(result[i].getId()).toString());
 						record.setAttribute("chromosome", result[i].getFoLocation().getChromosome());
 						record.setAttribute("pos", result[i].getFoLocation().getStart());
-						record.setAttribute("snpId", result[i].getDbSnpId());
+						record.setAttribute("snpId", "<a href=\"http://www.ncbi.nlm.nih.gov/snp/?term="
+								+ result[i].getDbSnpId() + "\" target=_blank>" + result[i].getDbSnpId() + "</a>");
 						record.setAttribute("ref", result[i].getRef());
 						record.setAttribute("alt", result[i].getAlt());
 						record.setAttribute("quality", result[i].getQuality());
