@@ -20,9 +20,7 @@ package de.unihamburg.zbh.fishoracle.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Cursor;
-import com.smartgwt.client.types.DragAppearance;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.SelectionType;
 import com.smartgwt.client.types.Side;
@@ -34,12 +32,8 @@ import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
-import com.smartgwt.client.widgets.events.DropEvent;
-import com.smartgwt.client.widgets.events.DropHandler;
 import com.smartgwt.client.widgets.events.MouseOverEvent;
 import com.smartgwt.client.widgets.events.MouseOverHandler;
-import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.LinkItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
@@ -488,7 +482,7 @@ public class CenterPanel extends VLayout {
 				
 				newImgInfo.getQuery().setImageType("pdf");
 				
-				cp.exportImage(newImgInfo);
+				new ExportWindow(newImgInfo);
 			}
 		});
 		
@@ -502,7 +496,7 @@ public class CenterPanel extends VLayout {
 				
 				newImgInfo.getQuery().setImageType("ps");
 				
-				cp.exportImage(newImgInfo);
+				new ExportWindow(newImgInfo);
 			}
 		});
 		
@@ -515,7 +509,7 @@ public class CenterPanel extends VLayout {
 				
 				newImgInfo.getQuery().setImageType("svg");
 				
-				cp.exportImage(newImgInfo);
+				new ExportWindow(newImgInfo);
 			}
 		});
 		
@@ -527,8 +521,8 @@ public class CenterPanel extends VLayout {
 				GWTImageInfo newImgInfo = imgInfo.clone();
 				
 				newImgInfo.getQuery().setImageType("png");
-								
-				cp.exportImage(newImgInfo);
+						
+				new ExportWindow(newImgInfo);
 			}
 		});
 		
@@ -559,8 +553,6 @@ public class CenterPanel extends VLayout {
 		
 		MenuItem EnsemblItem = new MenuItem("Ensembl");
 		MenuItem UCSCItem = new MenuItem("UCSC");
-		//MenuItem RefSeqItem = new MenuItem("RefSeq");
-		//MenuItem AnotherItem = new MenuItem("Export image as png document");
 		
 		EnsemblItem.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler(){
 
@@ -737,44 +729,6 @@ public class CenterPanel extends VLayout {
 			public void onFailure(Throwable caught){
 				System.out.println(caught.getMessage());
 				SC.say(caught.getMessage());
-			}
-		};
-		req.redrawImage(imgInfo, callback);
-	}
-	
-	public void exportImage(GWTImageInfo imgInfo){
-		
-		final SearchServiceAsync req = (SearchServiceAsync) GWT.create(SearchService.class);
-		ServiceDefTarget endpoint = (ServiceDefTarget) req;
-		String moduleRelativeURL = GWT.getModuleBaseURL() + "SearchService";
-		endpoint.setServiceEntryPoint(moduleRelativeURL);
-		final AsyncCallback<GWTImageInfo> callback = new AsyncCallback<GWTImageInfo>(){
-			public void onSuccess(GWTImageInfo result){
-				
-				Window window = new Window();
-				window.setTitle("export image as " + result.getQuery().getImageType() +  " document");
-				window.setAutoCenter(true);
-				window.setWidth(160);
-				window.setHeight(100);
-				
-				DynamicForm downloadForm = new DynamicForm();
-				downloadForm.setPadding(25);
-				
-				LinkItem link = new LinkItem();
-				link.setValue(result.getImgUrl());
-				link.setLinkTitle("download");
-				link.setAlign(Alignment.CENTER);
-				link.setShowTitle(false);
-				
-				downloadForm.setItems(link);
-				
-				window.addItem(downloadForm);
-				
-				window.show();
-			}
-			public void onFailure(Throwable caught){
-				System.out.println(caught.getMessage());
-				SC.say("Nothing found!");
 			}
 		};
 		req.redrawImage(imgInfo, callback);
