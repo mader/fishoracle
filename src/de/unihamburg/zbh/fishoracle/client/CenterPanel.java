@@ -563,7 +563,7 @@ public class CenterPanel extends VLayout {
 				
 				String url = "http://www.ensembl.org/Homo_sapiens/Location/View?r=" + chr + ":" + start + "-" + end;
 				
-				com.google.gwt.user.client.Window.open(url,"_blank",null);
+				com.google.gwt.user.client.Window.open(url,"_blank","");
 			}
 		});
 		
@@ -576,7 +576,7 @@ public class CenterPanel extends VLayout {
 				
 				String url = "http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr" + chr + "%3A" + start + "-" + end;
 				
-				com.google.gwt.user.client.Window.open(url,"_blank",null);
+				com.google.gwt.user.client.Window.open(url,"_blank","");
 			}
 		});
 		
