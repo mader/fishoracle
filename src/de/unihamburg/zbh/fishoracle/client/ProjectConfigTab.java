@@ -264,6 +264,7 @@ public class ProjectConfigTab extends Tab {
 		projectStudyGrid.setWrapCells(true);
 		projectStudyGrid.setFixedRecordHeights(false);
 		projectStudyGrid.setShowAllRecords(false);
+		projectStudyGrid.setShowGridSummary(true);
 		projectStudyGrid.setAutoFetchData(false);
 		projectStudyGrid.markForRedraw();
 		

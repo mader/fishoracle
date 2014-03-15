@@ -29,6 +29,7 @@ import com.smartgwt.client.data.fields.DataSourceBooleanField;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.rpc.RPCResponse;
+import com.smartgwt.client.types.SummaryFunctionType;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
@@ -44,6 +45,7 @@ public class StudyDS extends FoDataSource {
 		field = new DataSourceIntegerField("studyId", "Study ID");
 		field.setPrimaryKey(true);
 		field.setRequired(true);
+		field.setSummaryFunction(SummaryFunctionType.COUNT);
 		addField(field);
 		
 		field = new DataSourceTextField("studyName", "Name");
@@ -59,17 +61,20 @@ public class StudyDS extends FoDataSource {
         addField (field);
         
         field = new DataSourceBooleanField("cnv", "CNV?");
+        //field.setSummaryFunction(SummaryFunctionType.COUNT);
         addField (field);
         
         field = new DataSourceBooleanField("snp", "SNV?");
+        //field.setSummaryFunction(SummaryFunctionType.COUNT);
         addField (field);
         
         field = new DataSourceBooleanField("transloc", "Translocation?");
+        //field.setSummaryFunction(SummaryFunctionType.COUNT);
         addField (field);
         
         field = new DataSourceBooleanField("generic", "Generic?");
+        //field.setSummaryFunction(SummaryFunctionType.COUNT);
         addField (field);
-        
 	}
 	
 	@Override

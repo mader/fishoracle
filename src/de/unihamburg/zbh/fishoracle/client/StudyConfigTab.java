@@ -230,6 +230,7 @@ public class StudyConfigTab extends Tab {
 		studyGrid.setAlternateRecordStyles(true);
 		studyGrid.setWrapCells(true);
 		studyGrid.setShowAllRecords(false);
+		studyGrid.setShowGridSummary(true);
 		studyGrid.setAutoFetchData(true);
 		studyGrid.setFixedRecordHeights(false);
 		
