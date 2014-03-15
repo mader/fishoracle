@@ -551,8 +551,8 @@ public class CenterPanel extends VLayout {
 		
 		Menu externMenu = new Menu();
 		
-		MenuItem EnsemblItem = new MenuItem("Ensembl");
-		MenuItem UCSCItem = new MenuItem("UCSC");
+		MenuItem EnsemblItem = new MenuItem("in Ensembl");
+		MenuItem UCSCItem = new MenuItem("in UCSC");
 		
 		EnsemblItem.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler(){
 
@@ -582,7 +582,7 @@ public class CenterPanel extends VLayout {
 		
 		externMenu.setItems(EnsemblItem, UCSCItem);
 		
-		ToolStripMenuButton externMenuButton = new ToolStripMenuButton("View in", externMenu);
+		ToolStripMenuButton externMenuButton = new ToolStripMenuButton("View", externMenu);
 		
 		presentationToolStrip.addButton(selectButton);
 		
