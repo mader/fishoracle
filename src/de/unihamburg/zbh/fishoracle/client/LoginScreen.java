@@ -127,6 +127,8 @@ public class LoginScreen extends VLayout{
 		loginForm.setItems(userTextItem, passwordItem, logInButton, registerLink);
 		
 		UserDS uDS = new UserDS();
+		uDS.getField("userId").setRequired(false);
+		uDS.getField("userId").setHidden(true);
 		
 		registerForm = new DynamicForm();
 		registerForm.setDataSource(uDS);
