@@ -75,6 +75,9 @@ public class SegmentDS extends FoDataSource {
         field = new DataSourceTextField("platformName", "Platform");
         addField (field);
         
+        field = new DataSourceTextField("studyName", "Study");
+        addField (field);
+        
         field = new DataSourceLinkField("dgv", "DGV Link");
         addField (field);
 	}
@@ -107,6 +110,7 @@ public class SegmentDS extends FoDataSource {
 						record.setAttribute("statusScore", result[i].getStatusScore());
 						record.setAttribute("type", result[i].getType());
 						record.setAttribute("platformName", result[i].getPlatformName());
+						record.setAttribute("studyName", result[i].getStudyName());
 						record.setAttribute("dgv", "<a href=\"http://dgv.tcag.ca/gb2/gbrowse/dgv2_hg19/?name=chr"
 								+ result[i].getFoLocation().getChromosome() + ":"
 								+ result[i].getFoLocation().getStart() 
