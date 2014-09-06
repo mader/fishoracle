@@ -17,17 +17,22 @@
 
 package de.unihamburg.zbh.fishoracle.server;
 
+import java.io.IOException;
 import java.util.regex.*;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 import de.unihamburg.zbh.fishoracle.client.rpc.SearchService;
 import annotationsketch.FeatureCollection;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+
 import de.unihamburg.zbh.fishoracle.server.data.*;
+import de.unihamburg.zbh.fishoracle.client.data.FoConstants;
 import de.unihamburg.zbh.fishoracle.client.data.GWTImageInfo;
 import de.unihamburg.zbh.fishoracle.client.data.QueryInfo;
 import de.unihamburg.zbh.fishoracle.client.data.FoUser;
@@ -285,9 +290,8 @@ public class SearchServiceImpl extends RemoteServiceServlet implements SearchSer
 		if(start < 0 || end < 0 || start > end){
 			throw new Exception("0 < Start < End required!");
 		}
-		
-		Date dt = new Date();
-		
+	
+		Date dt = new Date();			
 		System.out.println(dt + " Redraw range: " + chr + ":" +  start + "-" + end);
 		
 		DBInterface db = new DBInterface(servletContext);
@@ -307,7 +311,7 @@ public class SearchServiceImpl extends RemoteServiceServlet implements SearchSer
 			System.out.println(e.getCause());
 			throw e;
 		}
-		
+			
 		db.getFeaturesForTracks(rdbFishoracle, rdbEnsembl, chr, start, end, imageInfo.getQuery(), features);
 		
 		if(end - start < 10000000){
@@ -339,7 +343,91 @@ public class SearchServiceImpl extends RemoteServiceServlet implements SearchSer
 		rdbEnsembl.delete();
 		rdbFishoracle.delete();
 		
-		return imgInfo;
+	return imgInfo;
+	}
+	
+	//TODO adapt to new track concept
+	public String exportData(GWTImageInfo imageInfo) throws Exception {
+			
+		isActiveUser();
+			
+		String servletContext = this.getServletContext().getRealPath("/");
+			
+		String url = null;
+		
+		if(imageInfo.getQuery().getConfig().getTracks().length == 1){
+			
+			if(imageInfo.getQuery().getConfig().getTracks()[0].getStrArray(Constants.DATA_TYPE)[0].equals(FoConstants.CNV_INTENSITY)){
+		
+				if(!imageInfo.getQuery().getConfig().getStrArray(Constants.SORTED_SEGMENTS)[0].equals("true")){
+				
+					String chr = imageInfo.getChromosome();
+					int start = imageInfo.getStart();
+					int end = imageInfo.getEnd();
+		
+					if(start < 0 || end < 0 || start > end){
+						throw new Exception("0 < Start < End required!");
+					}
+		
+					Date dt = new Date();
+		
+					System.out.println(dt + " Exprot: " + chr + ":" +  start + "-" + end);
+		
+					DBInterface db = new DBInterface(servletContext);
+		
+					RDBMysql rdbEnsembl = db.getEnsemblRDB(imageInfo.getQuery().getConfig().getStrArray("ensemblDBName")[0]);
+					RDBMysql rdbFishoracle = db.getFishoracleRDB();
+		
+					FeatureCollection segments =  new FeatureCollection();
+					FeatureCollection genes =  new FeatureCollection();
+		
+					Location maxRange = null;
+		
+					try {
+						maxRange = new Location(chr, start, end);
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.out.println("Error: " + e.getMessage());
+						System.out.println(e.getCause());
+						throw e;
+					}
+		
+					db.getFeaturesForTracks(rdbFishoracle, rdbEnsembl, chr, start, end, imageInfo.getQuery(), segments);
+		
+					db.getEnsembleGenes(rdbEnsembl,
+									chr,
+									start,
+									end,
+									imageInfo.getQuery().getConfig().getStrArray(Constants.ENSEMBL_BIOTYPES),
+									genes);
+			
+					Export exp = new Export();
+			
+					try {
+						url = exp.exportImageAsExcelDocument(segments, genes, maxRange, servletContext);
+					} catch (RowsExceededException e) {
+						e.printStackTrace();
+					} catch (WriteException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+		
+					segments.delete();
+					genes.delete();
+					rdbEnsembl.delete();
+					rdbFishoracle.delete();
+		
+				} else {
+					throw new Exception("Only non sorted segments allowed.");
+				}
+			} else {
+				throw new Exception("Only CNV intensity data allowed.");		
+			}
+		} else {
+			throw new Exception("Only one Track allowed.");
+		}
+		return url;
 	}
 	
 	@Override

@@ -26,6 +26,7 @@ public interface SearchServiceAsync {
 	
 	public void generateImage(QueryInfo q, AsyncCallback<GWTImageInfo> callback);
 	public void redrawImage(GWTImageInfo imageInfo, AsyncCallback<GWTImageInfo> callback);
+	public void exportData(GWTImageInfo imageInfo, AsyncCallback<String> callback);
 	public void updateImgInfoForTranslocationId(int translocId,
 			GWTImageInfo imgInfo, AsyncCallback<QueryInfo> callback);
 }

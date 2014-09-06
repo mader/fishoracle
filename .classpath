@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/fo_db_api.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwtupload-1.0.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jxl.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

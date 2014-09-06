@@ -31,6 +31,7 @@ public interface SearchService extends RemoteService {
 	
 	public GWTImageInfo generateImage(QueryInfo q) throws Exception;
 	public GWTImageInfo redrawImage(GWTImageInfo imageInfo) throws Exception;
+	public String exportData(GWTImageInfo imageInfo) throws Exception;
 	public QueryInfo updateImgInfoForTranslocationId(int translocId,
 			GWTImageInfo imgInfo) throws UserException;
 	
