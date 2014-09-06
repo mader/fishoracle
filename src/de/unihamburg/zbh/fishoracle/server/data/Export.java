@@ -61,7 +61,7 @@ public class Export {
 		
 		fileName = shaStr + "_" + maxRange.getChromosome() + ":" + maxRange.getStart() + "-" + maxRange.getEnd() + ".xls";
 		
-		String url = "excel_output" + System.getProperty("file.separator") + fileName;
+		String url = System.getProperty("file.separator") + "excel_output" + System.getProperty("file.separator") + fileName;
 		
 		WritableWorkbook workbook = Workbook.createWorkbook(new File(servletPath + url));
 		WritableSheet sheet = workbook.createSheet(maxRange.getChromosome() + "," + maxRange.getStart() + "-" + maxRange.getEnd(), 0); 
@@ -77,7 +77,7 @@ public class Export {
 		
 		for(i = 0; i < genes.size(); i++){
 		
-			Label label = new Label(geneCol, i, new FeatureNode(genes.get(i).to_ptr()).get_attribute("NAME"), text);
+			Label label = new Label(geneCol, i, new FeatureNode(genes.get(i).to_ptr()).get_attribute("Name"), text);
 			Label startlabel = new Label(geneCol+1, i, Integer.toString(genes.get(i).get_range().get_start()), text);
 			Label endlabel = new Label(geneCol+2, i, Integer.toString(genes.get(i).get_range().get_end()), text);
 			sheet.setColumnView(geneCol, 15);
@@ -99,7 +99,7 @@ public class Export {
 							(segments.get(j).get_range().get_end() > genes.get(k).get_range().get_start() && segments.get(j).get_range().get_start() < genes.get(k).get_range().get_end())) ||
 							(segments.get(j).get_range().get_start() > genes.get(k).get_range().get_start() && segments.get(j).get_range().get_end() < genes.get(k).get_range().get_end()))
 					{
-						Label label = new Label(j, k, new FeatureNode(segments.get(j).to_ptr()).get_attribute("study_id"), background);
+						Label label = new Label(j, k, new FeatureNode(segments.get(j).to_ptr()).get_attribute("Name"), background);
 						sheet.setColumnView(j, 10);
 						sheet.addCell(label);
 					}

@@ -480,9 +480,9 @@ public class CenterPanel extends VLayout {
 		excelExportItem.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler(){
 			
 			public void onClick(MenuItemClickEvent event) {
-			//GWTImageInfo imgInfo = ((ImgCanvas) cp.getCenterTabSet().getSelectedTab().getPane().getChildren()[1]).getImageInfo();
-			//cp.exportExcel(imgInfo);
-			SC.say("This function is currently not supported.");
+			GWTImageInfo imgInfo = ((ImgCanvas) cp.getCenterTabSet().getSelectedTab().getPane().getChildren()[1]).getImageInfo();
+			cp.exportExcel(imgInfo);
+			//SC.say("This function is currently not supported.");
 			}
 		});
 		
@@ -751,7 +751,7 @@ public class CenterPanel extends VLayout {
 				
 				final SearchServiceAsync req = (SearchServiceAsync) GWT.create(SearchService.class);
 				ServiceDefTarget endpoint = (ServiceDefTarget) req;
-				String moduleRelativeURL = GWT.getModuleBaseURL() + "Search";
+				String moduleRelativeURL = GWT.getModuleBaseURL() + "SearchService";
 				endpoint.setServiceEntryPoint(moduleRelativeURL);
 				final AsyncCallback<String> callback = new AsyncCallback<String>(){
 					public void onSuccess(String result){
@@ -779,7 +779,7 @@ public class CenterPanel extends VLayout {
 					}
 					public void onFailure(Throwable caught){
 						System.out.println(caught.getMessage());
-						SC.say("Nothing found!");
+						SC.say(caught.getMessage());
 					}
 				};
 				req.exportData(imgInfo, callback);
