@@ -427,7 +427,7 @@ public class SearchServiceImpl extends RemoteServiceServlet implements SearchSer
 		} else {
 			throw new Exception("Only one Track allowed.");
 		}
-		return servletContext + url;
+		return url;
 	}
 	
 	@Override
